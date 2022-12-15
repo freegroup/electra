@@ -1,0 +1,423 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "c55dd135-15db-7c71-5efa-f6761c073e66",
+      "x": 7980,
+      "y": 7968.561199999999,
+      "width": 40,
+      "height": 63,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n    \n    calculate:function(context)\n    {\n        var s = !!this.getInputPort(\"input_s\").getBooleanValue();\n        var r = !!this.getInputPort(\"input_r\").getBooleanValue();\n\n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        // do nothing\n        if(s===false && r===false){\n           \n        }\n        // reset\n        else if(s===false && r===true){\n            q.setValue(false);\n            q_.setValue(true);\n        }\n        // set\n        else if(s===true && r===false){\n            q.setValue(true);\n            q_.setValue(false);\n        }\n        // invalid\n        else if(s===true && r===true){\n            q.setValue( false);\n            q_.setValue( false);\n        }\n    }\n});",
+        "name": "Rectangle",
+        "markdown": "# SR-FlipFlop\n\n\n\nThe SR flip-flop can be considered as a\n1-bit memory, since it stores the input pulse even after it has passed. \nFlip-flops (or bi-stables) of different types can be made from logic\ngates and, as with other combinations of logic gates, the NAND and\nNOR gates are the most versatile, the NAND being most widely used. \nThis is because, as well as being universal, i.e. it can be made \nto mimic any of the other standard logic functions, it is also \ncheaper to construct. Other, more widely used types of flip-flop \nare the JK, the D type and T type, which are developments of the \nSR flip-flop\n\n\n\n![](data:image/gif;base64,R0lGODlhSwGvALMAAHBwcJCQkEdHR+bm5snJydjY2AEBAb29vTIyMqmpqRYWFu/v7/n5+f////z8/P7+/iH5BAAAAAAALAAAAABLAa8AAAT/sMlJq7046827/2AojmRpnmiqrmzrvnAsz3Rt33iu73zv/8CgcEgsGo/IpHLJbDqf0Kh0Sq1ar9hsxsDtervasHgM+pq5xoB6zW673/D4YUCu23/nvH7PNygABQt3g4QzCgYIAoqLjI2Oj5COCF0CCXSFmJkmDocFDQ+goaKjpKWmDxQLBACHiAcMmrE1CwBdCgFKhwQ9BQmTBgIEDrLELQ8DrV4CSJwGuz0PCwGTCgnF1yq1AoINBAIGAcNGukG0XAni2OohD5PcEgXAFgesCvYABznNz0EHkwGw1gn0UAvXBn9mEOTDQW7IgG/bBkrUsIAaAEAXHGgjwICBNwMA/3DsK8IgAKJLE1NWCPCNy610EnShkkDAT46GRQ7Y86SyZwUA3wxOOBRwQp+jSM3wK5IA0TufUO3NjGmgqISkWJEuJcKgFoCpULEdkFfh21Oc3WzeeIDWyDeeYdUdwijBJIKfwDh6/PaVoTMlYwWAjUus6ZmFEh4g/KJQZFu3fwljK1CrC90K9OzdQ3zjcRECChBYlYwNFIbBO0Yq0QiStGsfnovEU7D1te0ZqlcHvc27RuwiJq31Hv4it5J4AGASX47iN5EF9mANaCPsCa1Wf5hDMa7k24EAySyjVJIgvMva2pE4J1Lr0J8DBAhM8wMXR2bN+DAUOCRgAKoE3yjwVP96R3CHxAMmATNeAyU5lcNiXjRmwW5ltUZgLpExYdeAiRXUwQAAIIAAAAuGsFFHHyVngT0XQKfAhUkYWKCHGCBz1wYOJMhFSCXg9EBNL1ZQE48TGsAhjEKsN0QtBShHQUtZRXlGBQyoRUFTRFZ4JJI/yGhEVwbUV6SUZHpBpZUTDImBAEFyWYSSQtTCWQXttKlBZTuacIiQaA5l5wTQCeYmEV4a4VUGgXVgDjglfvDAiXtZWKFQCgRTi3CDDgFnEO3NKcEAkxzgJAZcODDqBxB2oRBqyCj4Y0sqZipEoc/9wugEDCAEwGgaoIHCfZudVt4ZCGwp6w6b/hAPAsNWKkD/iDsae4GvLqCWCisuAeWHf8d2mWwPDjQVznT2UPJKCNQCsUq3QXzLw6MZLjDAAPLy2kG67ApEqxDQZZgCvvmu4+4OJi3DAsABX7MvEMgo0KgJCCdczMA5mCTUChFLHMvCPjRs7wkZa6wJxTbA6+m/BohMhpToBZEjMKeCnLLKYZDZMhBjOQxDyDRHwTMFbPnr0CQJWItyz1r8TAHJMiBUdAxKI81E1A1wjINhJx88s9RWUN0A0y6AeIioM3jN9RFUWz0DA774cbPWZ3e9dQedGG3DAG2D9LALZsdNRNqHJFDA4IQXbvjhiCeuOIC/BBMz33P7DYXX5pUZpXnBfAx1/+SSO0F10JaHHloABWi+OeedT436EnbvbGbqk68+kBmwS9E3JrTXbrvsxeSu+xRgrDPl71V8cY3vxF9hfCbIJ5/08nY077wY0isP/fSEXF+89tgXUr3qr3ffO/dIDC++8OQL8f352Ky/g/vsC5Q+DvDHL1H9kIdvv2v4o6z//reZHwr6B0DCEJAD5itgeg44LQEqkDkObOD/Hjgo/DGQghBM3wUxeCHfbZCDSNoDCOOWwBH2rA8mFFnzPphC3rgvgi0cDgFZGEOVbJCGNVQHDq8ywRxCpYQDhKEPx9dDjAlxiN47ov9uh8TnFZEGO2yi55R4uuBJsQ5RbEEWrwiELf+67olcXAIQlUDFMPrAizlAoxmNCMbYtXGN9CtjE+QIRzYy0Y1WrOMN8pjEN+rRiMfz4x9lpkM6DhKBvGOeIQ9JqkTGQo11vGP0FsnIBtwuDpjMpCbXMAcbUHKQtwud6AAhLTtKUo+3O0QiIsHKVrbSVpXYm9YEWUlLOtICzfDEKXbJy1KkYhWtUIjpZnnKMKZSaDjoReOqU4NPSrFvantBNOZTjTje8pDHfNsNFoWOPV4TlN+cQDRngBCAeDKcqEQnVbSZg4cAo5QqKOYz1TlOGjQIAbKMpzrhmM0j6EQBYoJcLXtlOXbyoCnFkoE8mxg6g+4ATH1x3UCNATYavGX/cxNtQUXJCYzWQWyfGcVAPXPwDYeKYKEh/RoyPxOaYZIApRkdqUgOJVCFotCHG6XBbEz6AZhKUIQ5lKlIKAS3lKYgpzQITk2NugmkzgA5jxuBTyfqVBm4SDrUieoWQCqC62SriUIlqQG+UzkSSZWrIBjWF2iDxKrKoD1+wEd8qBlQRJIAWO/RD3+4BSA/wPOBYV1LgvpDpQ2ha5+p4oKEJlWkLMXQrTEwrAXgdbENgGhH+bQApFLkJBZZwEU+DKwNWFNZCtjIAy+zTAh8BCQLqOkCZsHpSo/ApJhBSZRIOdOfGoClNRkpqJB9AZjqOoHb4vamuOpTWhxb3N2mMLgv/5BTBur0ATxJygNoae2KnBsojwIWui6g6QUS5QFaiCgAmQXaZvkCW3AMxVIGwFQNwduCTl0AVGPVagVMpV8KJNYVrNrrq3bU3/sht0D0XUFFuoBeXOnKpSvAa34u8AC1MuavEznKEhKsgmU1SxHQAgmGY9A6r8Y1QNyKoWhpEC5wOIBcyRDAuaSwLtny9F214Ie86DUACDM1BiueQb9uPELrUoLIyJotEQpWRyPboq4SzhqLOXyChqW3hjmuUEQn8N/F3kTJQrCYHrOcCrKIc73XvUGQYeCxMftrAeytgEzSpFwbUJkEJvujk10SUKJQoErHLROSa/AyARQYy2foD6Rq/JzcQNsMCTm7sg/JDJ6IXCC7daZB0AY9A/w+Tc8ZsgsG0Lxlv3A6Bk7zbhPJ/AnxTkAxtlKVlGWwZhVgrZKsbkC/ThblHtz5Q9giGyNz3QBRT3YItS4B26hx6hgSuwFBObQO6taxvJn1x09ohuAUx+1ue3twjOOC47Adhco5eg+Y4wi5owC6cydldKVbN3FULe962/ve+M63vvfN73772wgRAAA7)\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 1,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7980,
+          "y": 7968.561199999999
+        },
+        {
+          "x": 8020,
+          "y": 7968.561199999999
+        },
+        {
+          "x": 8020,
+          "y": 8031.561199999999
+        },
+        {
+          "x": 7980,
+          "y": 8031.561199999999
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "eada3849-d35d-7391-47aa-888a2469513d",
+      "x": 8002.28125,
+      "y": 8009.1896799999995,
+      "width": 28.328125,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Q",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
+      "x": 8016.008125,
+      "y": 7974.118487500001,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_q",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "078497de-04ae-57d8-a141-a3d4afacfe39",
+      "x": 8016.008125,
+      "y": 8014.931767499998,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_q_not",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "e7b9ebe8-3f2a-b126-49ce-dae5447c5010",
+      "x": 8002.28125,
+      "y": 7968.496079999999,
+      "width": 28.328125,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Q",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "5d090264-9572-d0a8-61be-b62664ed1ca6",
+      "x": 7973.512800000001,
+      "y": 7974.118487500001,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_s",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "0a965270-f177-032a-013c-38bd8ca7ddae",
+      "x": 7972.9788800000015,
+      "y": 8014.931767499998,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_r",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "65ab38d3-1bc2-1a52-0748-3cfd06b1e05d",
+      "x": 7984.0078125,
+      "y": 7968.438800000001,
+      "width": 28.328125,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "S",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "d3932694-11f2-f623-4928-efaee06136ce",
+      "x": 7983.9788800000015,
+      "y": 8009.1896799999995,
+      "width": 28.328125,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "R",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "75ad5ac1-3b3f-7d01-8f6b-95e175688076",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 1,
+      "color": "rgba(0,0,0,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 8006.348,
+          "y": 8013.994479999997
+        },
+        {
+          "x": 8013.8748,
+          "y": 8013.994479999997
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": "",
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    }
+  ]
+}

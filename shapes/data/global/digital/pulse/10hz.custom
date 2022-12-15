@@ -1,0 +1,41 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_pulse_10hz = digital_pulse_10hz.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.currentTimer=0;
+        this.value = 0.0
+    },
+    
+    calculate:function()
+    {
+       // 2  ticks => 50Hz   
+       // 10 ticks => 10Hz 
+       this.currentTimer = (this.currentTimer+1)%10; 
+       if(this.currentTimer===0){
+           this.value = 5.0-this.value;
+           this.getOutputPort(0).setValue(this.value);
+       }
+    },
+    
+    onStart:function()
+    {
+         this.currentTimer=0;
+    },
+    
+    onStop:function()
+    {
+    }
+
+});

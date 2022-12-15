@@ -1,0 +1,55 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_flipflop_JKFlipFlop = digital_flipflop_JKFlipFlop.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.last_t = false;
+    },
+    
+    calculate:function()
+    {
+        var j = this.getInputPort("input_j").getBooleanValue();
+        var k = this.getInputPort("input_k").getBooleanValue();
+        var t = this.getInputPort("input_t").getBooleanValue();
+        
+        var q = this.getOutputPort("output_q");
+        var q_ = this.getOutputPort("output_q_not");
+        
+        var rising = this.last_t===false && t===true; 
+        
+        if(rising===true){
+            // do nothing
+            if(j===false && k ===false){
+               
+            }
+            // reset
+            else if(j===false && k===true){
+                q.setValue(false);
+                q_.setValue(true);
+            }
+            // set
+            else if(j===true && k===false){
+                q.setValue(true);
+                q_.setValue(false);
+            }
+            // toggle
+            else if(j===true && k===true){
+                var v = q.getBooleanValue();
+                q.setValue( !v);
+                q_.setValue( v);
+            }
+        }
+        this.last_t = t;
+    }
+});

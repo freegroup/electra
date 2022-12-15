@@ -1,0 +1,248 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title></title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="icon" type="image/png"    href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
+
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+
+  <script>
+  var app = null
+  var socket = null
+  </script>
+
+</head>
+
+<body id="container">
+
+<div id="layout">
+
+  <ul class="nav nav-tabs" id="leftTabStrip">
+    <li id="editor_tab"  class="active">
+      <a href="#editor" class="leftTab editor" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_edit.svg"/>
+      </a>
+    </li>
+
+    
+    <li id="files_tab" class="">
+      <a href="#files" class="leftTab files" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+      </a>
+    </li>
+
+    <li id="index_tab">
+      <a href="#home" class="leftTab home" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_index.svg"/>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+     <div class="tab-pane active" id="editor">
+       <div class="workspace">
+          <div class="toolbar">
+               <span class="group" id="editorgroup_fileoperations">
+                  <span class="image-button" id="editorFileSave" >
+                    <img title="Save circuit" src="../common/images/toolbar_save.svg"/>
+                    <div>Save</div>
+                  </span>
+               </span>
+
+
+              <span class="group">
+                <span class="image-button disabled" id="editUndo">
+                  <img src="../common/images/toolbar_undo.svg"/>
+                  <div>Undo</div>
+                </span>
+                <span class="image-button disabled" id="editRedo">
+                  <img src="../common/images/toolbar_redo.svg"/>
+                  <div>Redo</div>
+                </span>
+              </span>
+
+              <span class="group" id="editorgroup_share">
+                  <span class="image-button" id="editorFileShare" >
+                    <img title="Share the Document" src="../common/images/toolbar_share.svg"/>
+                    <div>Share</div>
+                  </span>
+                  <span class="image-button" id="editorFileToPDF" >
+                    <img title="Download Document as PDF" src="../common/images/toolbar_pdf.svg"/>
+                    <div>Download</div>
+                  </span>
+              </span>
+
+
+              <span class="group applicationSwitch">
+
+                <label class="userinfo_toggler dropdown" >
+                  <span class="image-button" data-toggle="dropdown">
+                    <img  src="../common/images/toolbar_user.svg"/>
+                  </span>
+                  <div class="dropdown-menu" role="menu" >
+                  </div>
+                </label>
+
+              </span>
+
+
+          </div>
+
+           <div class="paletteContainer">
+             <div id="paletteHeader">
+               <div class="paletteTitle">
+                 <a href="https://github.com/thindexed" target="_blank"><img src="../common/images/favicon_64x64.svg"/>
+                 <div>
+                   <h1>Documention</h1>
+                   <h2>Author</h2>
+                 </div>
+                 </a>
+               </div>
+               <div id="paletteFilter"></div>
+             </div>
+             <div id="paletteElementsScroll">
+               <div id="paletteElements"></div>
+               <div id="paletteElementsOverlay"></div>
+             </div>
+           </div>
+
+           <div class="content">
+
+           </div>
+       </div>
+     </div>
+
+
+
+      <div class="tab-pane" id="files">
+        <div class="row hidden-xs teaser">
+          <div class="col-sm-8 col-md-8">
+            <div class="title">
+              <img src="../common/images/navigation_file.svg"/>
+              <span>Open a Document</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <header>
+            <div id="material-tabs">
+              <a id="userFilesTab" href="#userFiles" class="active">Your Documents</a>
+              <a id="globalFilesTab" href="#globalFiles">Public Documents</a>
+              <span class="yellow-bar"></span>
+            </div>
+          </header>
+
+          <div class="material-tab-content">
+            <div id="userFiles">
+            </div>
+            <div id="globalFiles">
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="toolbar">
+              <span class="group applicationSwitch">
+
+                <label class="userinfo_toggler dropdown" >
+                  <span class="image-button" data-toggle="dropdown">
+                    <img  src="../common/images/toolbar_user.svg"/>
+                  </span>
+                  <div class="dropdown-menu" role="menu" >
+                  </div>
+                </label>
+
+              </span>
+        </div>
+
+      </div>
+
+
+      <div class="tab-pane" id="home">
+        Home
+      </div>
+
+    </div>
+</div>
+
+
+<!-- Template for the shapes files in the brain editor
+  -->
+<script id="shapeTemplate" type="text/x-jsrender">
+{{#shapes}}
+  <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="mix palette_item">
+    <div>
+        <img data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+        <div>{{displayName}}</div>
+    </div>
+  </div>
+{{/shapes}}
+</script>
+
+
+<script id="welcomeTemplate" type="text/x-jsrender">
+
+  <div class="welcomeMessage">
+    <div class="teaser">
+      <h2>Documentation Editor</h2>
+      <p>
+        Create exciting educational content using Electra Academy.
+      </p>
+    </div>
+    <div class="description">
+      <p>
+      The aim of the <i>Documentation Editor</i> is to provide an easy and comfortable way to create documents, tasks and course
+      material online. All documents can be enriched with circuits, math formulas, pictures, ...and can be shared with others.
+      </p>
+      <button id="welcomeNewDocument">New Document</button> <button id="welcomeOpenExample">Open Example</button>
+    </div>
+    <img src="../common/images/app_lessons.svg" width="200px">
+  </div>
+
+</script>
+
+
+<div class="loader">
+  <div class="title">Loading the <i>Document Editor</i>...</div>
+  <div class="gooey">
+    <span class="dot"></span>
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" rel="stylesheet" >
+<link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
+
+<!-- "include" files in a world of ES6 is not perfect. Unfortunately draw2d.js isn't complete
+     ES6 and therefore I run into some compatibility issues with jQuery and prerequisite
+-->
+<script src="../common/js/ASCIIMathTeXImg.js"></script>
+<script src="../common/js/jquery/jquery.js"></script>
+<script src="../common/js/jquery/jquery-ui.js"></script>
+<script src="../common/js/shufflejs/jquery.shuffle.modernizr.min.js"></script>
+
+<script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+<script src="../common/js/bootbox/bootbox.min.js"></script>
+
+<script src="../common/js/anno.js/anno.js"></script>
+<script src="../common/js/draw2d.js"></script>
+<script src="../socket.io/socket.io.js"></script>
+<SCRIPT src="./js/webpack/bundle.js"></SCRIPT>
+
+</html>

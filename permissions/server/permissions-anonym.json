@@ -1,0 +1,59 @@
+{
+  "type": "anonym",
+  "featureset": {
+    "share": true,
+    "simulator": true,
+    "designer": true,
+    "author": true,
+    "usermanagement": false,
+    "records": false
+  },
+  "updates": {
+    "update": false,
+    "list": false
+  },
+  "brains": {
+    "create": false,
+    "update": false,
+    "delete": false,
+    "read": true,
+    "list": false,
+    "global": {
+      "create": false,
+      "update": false,
+      "delete": false,
+      "read": true,
+      "list": true
+    }
+  },
+  "shapes": {
+    "create": false,
+    "update": false,
+    "delete": false,
+    "read": false,
+    "list": false,
+    "global": {
+      "create": false,
+      "update": false,
+      "delete": false,
+      "read": true,
+      "list": true
+    }
+  },
+  "sheets": {
+    "create": false,
+    "update": false,
+    "delete": false,
+    "read": true,
+    "list": false,
+    "pdf": false,
+    "global": {
+      "create": false,
+      "update": false,
+      "delete": false,
+      "read": true,
+      "list": true,
+      "pdf": true
+    }
+  }
+}

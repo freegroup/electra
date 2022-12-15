@@ -1,0 +1,145 @@
+.layer-name-prompt {
+  .modal-title{
+    font-weight:100;
+  }
+  .modal-footer{
+    border:0;
+  }
+  .modal-header{
+    border-bottom:3px solid @tintColor;
+  }
+
+  input{
+    outline:none !important;
+    -webkit-box-shadow: inset !important;
+    box-shadow: inset !important;
+    background-color: rgba(0,0,0,0.02) !important;
+    border-radius: 1px !important;
+    &:focus{
+      border:1px solid @tintColor;
+    }
+  }
+  .btn-primary{
+    background-color:@tintColor;
+    border:0;
+
+    &:hover{
+      background-color:darken(@tintColor,10%);
+    }
+  }
+}
+
+#layer {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: @leftPaneWidth;
+  background-color: @layerPaneBgColor;
+  text-align: center;
+  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3);
+  z-index: 1;
+
+  .panetitle {
+    position: fixed;
+    height: @layerPaneTitleHeight;
+    width: @leftPaneWidth;
+    top: @layerTitleHeight;
+    border-bottom: 1px solid #222222;
+    font-weight: 500;
+    font-size: 12px;
+    padding: 4px 4px 4px 20px;
+    letter-spacing: 5px;
+    text-align: left;
+    color: @tintColor;
+    box-shadow: 0 4px 2px -2px rgba(31, 73, 125, 0.3);
+  }
+
+  #layer_elements {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    position: fixed;
+    top: @layerPaneTitleHeight + @layerTitleHeight;
+    bottom: 0;
+    width: @leftPaneWidth;
+    overflow: auto;
+
+    .layerElement {
+      background-color:darken(@layerPaneBgColor, 2%);
+      color: @layerPaneColor;
+      cursor: move;
+      font-weight: 400;
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 4px 4px 4px 5px;
+      text-align: left;
+      border: 1px solid transparent;
+      border-bottom: 1px solid #222222;
+
+      &::before {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 20px;
+        float: left;
+        margin-right: 5px;
+      }
+
+      &.ExtLine::before {
+        background: url("../images/layer_line.svg") no-repeat;
+        background-size: cover;
+      }
+      &.PolyRect::before {
+        background: url("../images/layer_rect.svg") no-repeat;
+        background-size: cover;
+      }
+
+      &.PolyCircle::before {
+        background: url("../images/layer_circle.svg") no-repeat;
+        background-size: cover;
+      }
+
+      &.ExtLabel::before {
+        background: url("../images/layer_text.svg") no-repeat;
+        background-size: cover;
+      }
+
+      &.ExtPort::before {
+        background: url("../images/layer_port.svg") no-repeat;
+        background-size: cover;
+      }
+
+      &[data-visibility="false"]{
+        opacity: 0.5;
+        font-style: italic;
+      }
+      .icon {
+        cursor: pointer;
+        padding-right: 4px;
+        width: 20px;
+        height: 20px;
+        * {
+          stroke: @layerPaneColor !important;
+        }
+        &:hover {
+          * {
+            stroke: @tintColor !important;
+          }
+        }
+      }
+    }
+
+    .layerSelectedElement {
+      background-color: darken(@layerPaneBgColor, 4%);
+      color: @layerPaneColor;
+      border-style: dotted;
+      border-width: 1px;
+      border-color: @tintColor;
+      font-weight: 600;
+    }
+  }
+}

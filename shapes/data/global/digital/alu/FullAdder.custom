@@ -1,0 +1,52 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_alu_FullAdder = digital_alu_FullAdder.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function(context)
+    {
+        var a = this.getInputPort("input_a").getBooleanValue();
+        var b = this.getInputPort("input_b").getBooleanValue();
+        var c = this.getInputPort("input_c").getBooleanValue();
+        
+        // s = a XOR b XOR  c
+        this.getOutputPort("output_s").setValue(a ^ b ^ c);
+        
+        // c = (at least two bits are set)
+        this.getOutputPort("output_c").setValue((a+b+c)>1);
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function(context)
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function(context)
+    {
+    }
+});

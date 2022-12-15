@@ -1,0 +1,21 @@
+#canvas_zoom{
+  position: fixed;
+  bottom: 20px;
+  right: @rightMenuWidth + 20px;
+  background-color:fadeout(@toolbarBackground,70%);
+  border-radius:5px;
+
+  button {
+    background-color:transparent;
+    font-weight:300;
+    padding:5px;
+    padding-left:10px;
+    padding-right:10px;
+    border:1px solid transparent;
+    outline:none;
+    transition: all 0.5s;
+    &:hover {
+      border:1px solid @tintColor;
+    }
+  }
+}

@@ -1,0 +1,64 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_timer_Delay = digital_timer_Delay.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.on("change:userData.delay",(emitter, event)=>{
+            var value = event.value;
+            this.delayedValues = []; 
+            this.delayedValues.length = parseInt(parseInt(value)/10);
+            this.pointer=0;
+            
+        });
+        this.attr({
+            resizeable:false,
+            "userData.delay":500
+        });
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+    
+    /**
+     * called every '10 [ms]' from the application.
+     * 
+     **/
+    calculate:function(context)
+    {
+       this.getOutputPort(0).setValue(this.delayedValues[this.pointer]);
+       this.delayedValues[this.pointer] = this.getInputPort(0).getBooleanValue();
+       this.pointer = (this.pointer+1)%this.delayedValues.length; 
+    },
+    
+    onStart:function(context)
+    {
+        this.currentTimer=0;
+    },
+    
+    onStop:function(context)
+    {
+    },
+
+    getParameterSettings:function()
+    {
+        return [
+        {
+            name:"delay",
+            label:"Delay [ms]",
+            property:{
+                type: "integer",
+                min: 10,
+                max: 15000,
+                increment:10
+        }
+        
+        }];
+    }
+
+});

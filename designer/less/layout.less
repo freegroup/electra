@@ -1,0 +1,67 @@
+#layout {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+
+  .nav-tabs {
+    float: left;
+    border-bottom: 0;
+
+    li {
+      float: none;
+      margin: 0;
+
+      a {
+        margin-right: 0;
+        border: 0;
+
+        &:hover {
+        }
+      }
+    }
+
+    .active .glyphicon {
+    }
+  }
+
+  #leftTabStrip {
+    height: 100%;
+    position: absolute;
+    width: @tabSize;
+    padding-top: @tabSize;
+    overflow: hidden;
+
+    .leftTab {
+      border-radius: 0 !important;
+      width: @tabSize;
+      height: @tabSize;
+    }
+  }
+  .tab-content {
+    position: relative;
+    margin-left: @tabSize;
+    height: 100%;
+
+    .tab-pane {
+      display: none;
+      padding: 0;
+      height: 100%;
+      position: relative;
+
+      .workspace {
+
+        .palette {
+          position: absolute;
+          height: 100%;
+          width: @leftPaneWidth;
+          padding: 0;
+
+        }
+      }
+    }
+    .active {
+      display: block;
+    }
+  }
+}

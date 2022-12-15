@@ -1,0 +1,693 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "e92ac7a1-d149-90c6-1281-23d32bf22f9d",
+      "x": 7960,
+      "y": 7959.2198625,
+      "width": 80,
+      "height": 80,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.worker= null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n        this.getInputPort(\"input_port1\").setSemanticGroup(\"Image\");\n        this.getOutputPort(\"output_port1\").setSemanticGroup(\"Image\");\n\n        this.attr({\n            resizeable:false\n        });\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        var img = this.getInputPort(\"input_port1\").getValue();\n        if(img instanceof HTMLImageElement && this.worker!==null){\n            var imageData = this.imageToData(img);\n            // Push it to the WebWorker with \"Transferable Objects\"\n            // Passing data by reference instead of structure clone\n            //\n            this.worker.postMessage(imageData, [imageData.data.buffer]);\n        }\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n        // the method which runs as WebWorker\n        //\n        var workerFunction = function(event){\n            var imageData = event.data;\n            var pixels = imageData.data;\n            for( let x = 0; x < pixels.length; x += 4 ) {\n                // normal grayscale conversion\n                let average = 0.3*pixels[x] + 0.59*pixels[x+1] + 0.11*pixels[x+2];\n\n                pixels[x]     = average;\n                pixels[x + 1] = average;\n                pixels[x + 2] = average;\n            }\n            self.postMessage(imageData, [imageData.data.buffer]);\n        };\n        \n        // the method which receives the WebWorker result\n        //\n       var receiverFunction = (event) => {\n            var imageData = event.data;\n            this.tmpContext.putImageData(imageData,0,0);\n            var image = new Image();\n            image.onload = () => {\n                this.getOutputPort(\"output_port1\").setValue(image);\n            }\n            image.src = this.tmpCanvas.toDataURL();\n        };\n        \n        // convert a js function to a WebWorker\n        //\n        this.worker = this.createWorker(workerFunction);\n        this.worker.onmessage = receiverFunction\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n        if(this.worker) this.worker.terminate();\n        delete this.worker;\n        delete this.tmpContext;\n        delete this.tmpCanvas;\n        this.worker = null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n    },\n    \n\n    /**\n     *  Helper function to dynamically create Web Workers.\n     */\n    createWorker: function(fn) {\n        var blob = new Blob([\"self.onmessage = \", fn.toString()], {\n           type: \"text/javascript\"\n        });\n        var url = window.URL.createObjectURL(blob);\n        return new Worker(url);\n    },\n    \n    \n    imageToData: function(image){\n        var width = image.naturalWidth;\n        var height= image.naturalHeight;\n        if(this.tmpContext !==null && this.tmpContext.width!== width){\n            delete this.tmpContext;\n            delete this.tmpCanvas;\n            this.tmpCanvas = null;\n            this.tmpContext = null;\n        }\n        \n        // convert the HTMLImageElement to an ImageData object. Required for the WebWorker\n        //\n        if(this.tmpContext === null) {\n            this.tmpCanvas = document.createElement('canvas');\n            this.tmpCanvas.width = width;\n            this.tmpCanvas.height = height;\n            this.tmpContext = this.tmpCanvas.getContext('2d');\n        }\n        this.tmpContext.drawImage(image, 0, 0, width, height);\n        return this.tmpContext.getImageData(0, 0, width, height);\n    }\n});",
+        "markdown": "## Full Adder\n\nFull adder is developed to overcome the drawback of \nHalf Adder circuit. It can add two one-bit numbers \nA and B, and carry c. The full adder is a three \ninput and two output combinational circuit.\n\n\n\n|  A    |    B    |  Cin     |    S    |    C   |\n|:-----:|:-------:|:--------:|:--------:|:-------|\n|   0   |    0    |     0    |     0    |     0  |\n|   0   |    0    |     1    |     1    |     0  |\n|   0   |    1    |     0    |     1    |     0  |\n|   0   |    1    |     1    |     0    |     1  |\n|   1   |    0    |     0    |     0    |     1  |\n|   1   |    0    |     1    |     0    |     1  |\n|   1   |    1    |     0    |     0    |     1  |\n|   1   |    1    |     1    |     0    |     1  |\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7960,
+          "y": 7959.2198625
+        },
+        {
+          "x": 8040,
+          "y": 7959.2198625
+        },
+        {
+          "x": 8040,
+          "y": 8039.2198625
+        },
+        {
+          "x": 7960,
+          "y": 8039.2198625
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "08ecbf02-d0c7-c225-b373-3d46a828f568",
+      "x": 7959.984375,
+      "y": 8014.8582625,
+      "width": 53.03125,
+      "height": 21.375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Grayscale",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 16,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "509f0f7f-9c3d-3b54-d79c-877493488fa7",
+      "x": 7954.2288,
+      "y": 7994.1294625,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_port1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": null
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "b832e06d-477d-4ffc-697b-d19504dc9aad",
+      "x": 8035.26005,
+      "y": 7994.1294625,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_port1",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "9b27eac1-9f9b-50ce-5506-46211eb19c51",
+      "x": 7965.2288,
+      "y": 7964.8582625,
+      "width": 69,
+      "height": 51,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(214,247,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 5,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7965.2288,
+          "y": 7964.8582625
+        },
+        {
+          "x": 8034.2288,
+          "y": 7964.8582625
+        },
+        {
+          "x": 8034.2288,
+          "y": 8015.8582625
+        },
+        {
+          "x": 7965.2288,
+          "y": 8015.8582625
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "b28adb4a-4ac9-70a5-611d-ff95924c8a2d",
+      "x": 7987.938235418125,
+      "y": 7989.345959113127,
+      "width": 26,
+      "height": 23,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Body"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(199,29,61,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7987.938235418125,
+          "y": 8012.345959113127
+        },
+        {
+          "x": 8013.938235418125,
+          "y": 8012.345959113127
+        },
+        {
+          "x": 8009.878220030091,
+          "y": 7997.037133235276
+        },
+        {
+          "x": 8009.459074980523,
+          "y": 7995.470030616062
+        },
+        {
+          "x": 8008.774664943404,
+          "y": 7993.999651350674
+        },
+        {
+          "x": 8007.8457853713835,
+          "y": 7992.670672169042
+        },
+        {
+          "x": 8006.700659800222,
+          "y": 7991.5234734311025
+        },
+        {
+          "x": 8005.374082290938,
+          "y": 7990.59291219
+        },
+        {
+          "x": 8003.906360229869,
+          "y": 7989.9072630781575
+        },
+        {
+          "x": 8002.342089609139,
+          "y": 7989.487359196883
+        },
+        {
+          "x": 8000.7288,
+          "y": 7989.345959113127
+        },
+        {
+          "x": 7999.11551039086,
+          "y": 7989.487359196883
+        },
+        {
+          "x": 7997.55123977013,
+          "y": 7989.9072630781575
+        },
+        {
+          "x": 7996.083517709062,
+          "y": 7990.59291219
+        },
+        {
+          "x": 7994.756940199778,
+          "y": 7991.5234734311025
+        },
+        {
+          "x": 7993.611814628616,
+          "y": 7992.670672169042
+        },
+        {
+          "x": 7992.682935056596,
+          "y": 7993.999651350674
+        },
+        {
+          "x": 7991.998525019477,
+          "y": 7995.470030616062
+        },
+        {
+          "x": 7991.554781618305,
+          "y": 7997.318802701256
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyCircle",
+      "id": "8eefbcc9-c4b1-8727-b883-c936caa543e5",
+      "x": 7990.438235418125,
+      "y": 7969.764829949377,
+      "width": 18.581129163749686,
+      "height": 18.581129163749686,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Head"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(26,177,232,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "f4bbb764-52fe-a168-d78f-e675fe31bcc2",
+      "x": 8000.049235937504,
+      "y": 7964.8582625,
+      "width": 34,
+      "height": 51,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(237,237,237,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 8000.049235937504,
+          "y": 7964.8582625
+        },
+        {
+          "x": 8034.049235937504,
+          "y": 7964.8582625
+        },
+        {
+          "x": 8034.049235937504,
+          "y": 8015.8582625
+        },
+        {
+          "x": 8000.049235937504,
+          "y": 8015.8582625
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "7ec25f40-4af5-e19f-7566-40293ed74a18",
+      "x": 7999.390435937504,
+      "y": 7989.345959113127,
+      "width": 13.020764062500348,
+      "height": 22.941928813374943,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Shadow_Body"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(179,179,179,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7999.390435937504,
+          "y": 8012.287887926502
+        },
+        {
+          "x": 8012.411200000004,
+          "y": 8012.287887926502
+        },
+        {
+          "x": 8008.35118461197,
+          "y": 7997.006727481113
+        },
+        {
+          "x": 8007.932039562402,
+          "y": 7995.442456860383
+        },
+        {
+          "x": 8007.247629525283,
+          "y": 7993.974734799314
+        },
+        {
+          "x": 8006.318749953262,
+          "y": 7992.64815729003
+        },
+        {
+          "x": 8005.173624382101,
+          "y": 7991.503031718868
+        },
+        {
+          "x": 8003.8470468728165,
+          "y": 7990.574152146848
+        },
+        {
+          "x": 8002.379324811748,
+          "y": 7989.889742109729
+        },
+        {
+          "x": 8000.815054191018,
+          "y": 7989.470597060161
+        },
+        {
+          "x": 7999.390435937504,
+          "y": 7989.345959113127
+        },
+        {
+          "x": 7999.390435937504,
+          "y": 8012.287887926502
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "13828b23-a9c9-9095-b344-1b1c6a8ac8c9",
+      "x": 8000.049235937504,
+      "y": 7969.764829949377,
+      "width": 9.216599480624609,
+      "height": 18.56818694803769,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Shadow_Head"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(105,106,107,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 8000.049235937504,
+          "y": 7988.333016897414
+        },
+        {
+          "x": 8001.588560445393,
+          "y": 7988.198343453487
+        },
+        {
+          "x": 8003.152831066123,
+          "y": 7987.779198403919
+        },
+        {
+          "x": 8004.620553127192,
+          "y": 7987.0947883668
+        },
+        {
+          "x": 8005.947130636476,
+          "y": 7986.165908794779
+        },
+        {
+          "x": 8007.092256207638,
+          "y": 7985.020783223617
+        },
+        {
+          "x": 8008.021135779658,
+          "y": 7983.694205714333
+        },
+        {
+          "x": 8008.705545816777,
+          "y": 7982.226483653265
+        },
+        {
+          "x": 8009.124690866345,
+          "y": 7980.662213032535
+        },
+        {
+          "x": 8009.2658354181285,
+          "y": 7979.0489234233955
+        },
+        {
+          "x": 8009.124690866345,
+          "y": 7977.435633814256
+        },
+        {
+          "x": 8008.705545816777,
+          "y": 7975.871363193526
+        },
+        {
+          "x": 8008.021135779658,
+          "y": 7974.403641132458
+        },
+        {
+          "x": 8007.092256207638,
+          "y": 7973.077063623174
+        },
+        {
+          "x": 8005.947130636476,
+          "y": 7971.931938052012
+        },
+        {
+          "x": 8004.620553127192,
+          "y": 7971.0030584799915
+        },
+        {
+          "x": 8003.152831066123,
+          "y": 7970.3186484428725
+        },
+        {
+          "x": 8001.588560445393,
+          "y": 7969.899503393304
+        },
+        {
+          "x": 8000.049235937504,
+          "y": 7969.764829949377
+        },
+        {
+          "x": 8000.049235937504,
+          "y": 7988.333016897414
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "bddc72fa-7f6a-dc61-9015-97d088725a53",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 3,
+      "color": "rgba(0,0,0,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 7999.713735937504,
+          "y": 7966.402759375001
+        },
+        {
+          "x": 8000.000235937504,
+          "y": 7989.795259375
+        },
+        {
+          "x": 8000.549235937504,
+          "y": 8014.500259374999
+        },
+        {
+          "x": 8000.549235937504,
+          "y": 8014.061059374999
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": "",
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    }
+  ]
+}

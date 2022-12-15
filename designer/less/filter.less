@@ -1,0 +1,195 @@
+
+
+.portDirectionOption{
+  height: 60px;
+  text-align: center;
+
+  & label > input{ /* HIDE RADIO */
+    display:none;
+  }
+
+  & label > input + span{ /* IMAGE STYLES */
+    cursor:pointer;
+    color:gray !important;
+    padding-right: 5px;
+  }
+
+  & label > input:checked + span{ /* (CHECKED) IMAGE STYLES */
+    color:@tintColor !important;
+  }
+}
+
+
+
+
+.portTypeOption{
+  height: 65px;
+  padding-left:60px;
+
+  & label > input{ /* HIDE RADIO */
+    display:none;
+
+    + span{ /* IMAGE STYLES */
+      cursor:pointer;
+      color:gray !important;
+      padding-right: 5px;
+      font-weight:100;
+      font-size:14px;
+      &:before{
+        padding-right:10px;
+      }
+    }
+  }
+
+  & label > input:checked + span{ /* (CHECKED) IMAGE STYLES */
+    color:@tintColor !important;
+  }
+}
+
+#filter {
+  position:absolute;
+  top:@toolbarHeight;
+  right:0;
+  bottom:0;
+  width:@filterPaneWidth;
+  padding:0;
+  margin:0;
+  border-radius:0;
+  border:0;
+  background-color: @filterPaneBackground;
+
+  .filter_header{
+    background:none repeat scroll 0 0 #303030;
+    position: fixed;
+    height: @filterPaneTitleHeight;
+    width: @filterPaneWidth;
+    top:@toolbarHeight;
+    border-bottom: 1px solid #222222;
+    border-top: 1px solid #111111;
+    font-weight: 500;
+    font-size: 12px;
+    padding-top: 5px;
+    padding-left: 8px;
+    letter-spacing: 5px;
+    text-align: left;
+    color: white;
+  }
+
+  .filter_toolbar{
+    overflow:visible;
+    border:0;
+    padding:3px;
+    padding-left:10px;
+    position:absolute;
+    bottom:0;
+    right:0;
+    width:@filterPaneWidth;
+    height:30px;
+    background:none repeat scroll 0 0 #303030;
+    #add_filter_button {
+      color: @tintColor;
+      border-radius: 2px !important;
+      .glyphicon{
+        top:2px;
+      }
+    }
+  }
+
+  .filter_actions{
+    position:fixed;
+    top:@toolbarHeight+30;
+    bottom:30px;
+    width:@filterPaneWidth;
+    border:0;
+    padding:0;
+    overflow-y: auto;
+
+    .panel-body{
+      padding:7px;
+      padding-top:0;
+      .btn-primary {
+        color: #fff;
+        background-color: #C71D3D;
+        border-color: #C71D3D;
+      }
+    }
+
+
+    .form-group{
+      margin-bottom: 2px !important;
+
+      > .input-group{
+        margin-bottom: 10px;
+      }
+
+      > .input-group:last-child{
+        margin-bottom: 0px;
+      }
+    }
+
+    .icon {
+      color: #26B4A8;
+      padding:0;
+      top: -4px;
+      color:rgba(255,255,255,0.25);
+      &:hover{
+        color:@tintColor;
+      }
+    }
+
+    .filter-heading{
+      color: #DDDDDD !important;
+      font-size: 12px;
+      padding-right:10px !important;
+      padding-top:1px !important;
+      padding-bottom:0 !important;
+      padding-left: 8px !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      border: 0 !important;
+      margin-top:4px;
+      cursor:pointer;
+      font-weight:300;
+      .icon {
+        width: 15px;
+        * {
+          stroke : white !important;
+        }
+      }
+    }
+
+  }
+
+  .form-control{
+    height:25px;
+  }
+
+  .btn{
+    padding-left:5px;
+    padding-right:5px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+  }
+
+  .input-group-addon{
+    padding:0;
+    padding-left:5px;
+    padding-right:5px;
+    color:rgba(0,0,0,0.3);
+    background-color: white;
+    border-left: 0;
+    border-radius:0;
+    font-weight: 100;
+    text-transform: lowercase;
+    font-size: 12px;
+  }
+  .panel-default {
+    margin: 0;
+    border-radius: 0;
+    background-color: fade(@tintColor, 2%);
+    border: 0;
+    border-top: 1px solid #303030;
+    border-bottom: 1px solid #202525;
+    margin-top: 3px;
+  }
+}

@@ -1,0 +1,55 @@
+
+
+.readonly-highlight{
+  background-color: rgba(50,43,168,0.5);
+  opacity: 0.2;
+  color:darkblue;
+  position: absolute;
+}
+
+.content {
+  position: absolute;
+  top: @toolbarHeight;
+  right: @filterPaneWidth;
+  left: @leftPaneWidth;
+  overflow: scroll;
+  padding:0;
+  margin:0;
+  border:0;
+  bottom: 0;
+  background-color:#FFFFFF;
+}
+
+#canvas {
+  width:6000px;
+  height:6000px;
+}
+
+
+#canvas_config{
+  position: fixed;
+  width:40px;
+  top:@toolbarHeight+5;
+  left:@leftPaneWidth+5px;
+  cursor:pointer;
+  border:1px solid transparent;
+  background-color:fadeout(@toolbarBackground,70%);
+  &:hover {
+    border:1px solid @tintColor  !important;
+  }
+}
+
+#canvas_config:hover{
+  color:@tintColor;
+}
+
+
+#canvas_config_items{
+  position: fixed;
+  top:@toolbarHeight+30;
+  left:@leftPaneWidth+5px;
+  cursor:pointer;
+  padding:10px;
+  white-space:nowrap;
+  min-width:250px;
+}

@@ -1,0 +1,42 @@
+#fileSelectDialog{
+
+  .modal-content {
+    position:relative;
+    display:inline-block;
+    width: 100%;
+
+    .container {
+      width:100%;
+      margin-top:20px;
+
+      .file-select-content {
+        position: relative;
+        height: 300px;
+
+        .tab-pane {
+          padding-top: 5px;
+          height: 300px;
+          width:100%;
+          overflow: scroll;
+          position: absolute;
+          top: 0;
+
+          .list-group-item {
+            padding: 0;
+            cursor: pointer;
+
+            .media-heading {
+              font-weight: 300;
+              font-size: 16px;
+              padding-top: 3px;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

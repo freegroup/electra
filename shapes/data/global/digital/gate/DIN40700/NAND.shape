@@ -1,0 +1,284 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "6e834d54-6700-ad9b-ab50-0faefeaea483",
+      "x": 7983.5271637666365,
+      "y": 7980,
+      "width": 25,
+      "height": 40,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        var i1 = this.getInputPort(0);\n        var i2 = this.getInputPort(1);\n        var o1 = this.getOutputPort(0);\n        \n        o1.setValue(!(i1.getBooleanValue() && i2.getBooleanValue()));\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function(context)\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function(context)\n    {\n    },\n\n    /**\n     * Get the simulator a hint which kind of hardware the shapes requires or supports\n     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost\n     * and your are running a circuit which needs this kind of hardware...\n     **/\n    getRequiredHardware: function(){\n      return {\n        arduino: false\n      }\n    }\n\n});",
+        "markdown": "# NAND Gate\n\nIn digital electronics, a **NAND** gate (NOT-AND) is a logic gate which produces \nan output which is false only if all its inputs are true; thus its output is \ncomplement to that of an AND gate. A LOW (0) output results only if all the \ninputs to the gate are HIGH (1); if any input is LOW (0), a HIGH (1) output \nresults. \n\nA NAND gate is made using transistors and junction diodes. By \nDe Morgan's theorem, a two-input NAND gate's logic may be expressed as AB=A+B, \nmaking a NAND gate equivalent to inverters followed by an OR gate.\n\n**The NAND gate is significant because `any` boolean function can be implemented \nby using a combination of NAND gates. This property is called functional \ncompleteness. It shares this property with the NOR gate.**\n\n## Logic table\n\n| INPUT A   | INPUT B  |  OUTPUT    |\n|:---------:|:--------:|:----------:|\n| Low       | Low      |  `High`    |\n| `High`    | Low      |  `High`    |\n| Low       | `High`   |  `High`    |\n| `High`    | `High`   |  Low       |\n\n",
+        "name": "shape",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(252,252,252,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7983.5271637666365,
+          "y": 8019.992866146254
+        },
+        {
+          "x": 7983.628675304271,
+          "y": 8020
+        },
+        {
+          "x": 7987.952252452422,
+          "y": 8019.696155060245
+        },
+        {
+          "x": 7992.144459896762,
+          "y": 8018.793852415718
+        },
+        {
+          "x": 7996.0779195354535,
+          "y": 8017.320508075689
+        },
+        {
+          "x": 7999.633115187803,
+          "y": 8015.320888862379
+        },
+        {
+          "x": 8002.702024032928,
+          "y": 8012.855752193731
+        },
+        {
+          "x": 8005.191398828513,
+          "y": 8010
+        },
+        {
+          "x": 8007.025601181079,
+          "y": 8006.840402866514
+        },
+        {
+          "x": 8008.1488997802935,
+          "y": 8003.472963553339
+        },
+        {
+          "x": 8008.5271637666365,
+          "y": 8000
+        },
+        {
+          "x": 8008.1488997802935,
+          "y": 7996.527036446661
+        },
+        {
+          "x": 8007.025601181079,
+          "y": 7993.159597133486
+        },
+        {
+          "x": 8005.191398828513,
+          "y": 7990
+        },
+        {
+          "x": 8002.702024032928,
+          "y": 7987.144247806269
+        },
+        {
+          "x": 7999.633115187803,
+          "y": 7984.679111137621
+        },
+        {
+          "x": 7996.0779195354535,
+          "y": 7982.679491924311
+        },
+        {
+          "x": 7992.144459896762,
+          "y": 7981.206147584282
+        },
+        {
+          "x": 7987.952252452422,
+          "y": 7980.303844939755
+        },
+        {
+          "x": 7983.628675304271,
+          "y": 7980
+        },
+        {
+          "x": 7983.5271637666365,
+          "y": 7980.007133853746
+        },
+        {
+          "x": 7983.5271637666365,
+          "y": 8019.992866146254
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "19fd1dcb-f9e4-190d-a717-7444122d9964",
+      "x": 8006.4728362333635,
+      "y": 7995,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "7297563e-896e-648c-d774-7e1a662d65a4",
+      "x": 7978.423963766636,
+      "y": 7983.5,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input0",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "31c229c7-f64e-5b82-2349-767cb9cd57be",
+      "x": 7978.423963766636,
+      "y": 8007,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyCircle",
+      "id": "8d9954ab-b5d2-b3c8-89a6-79f7ea30cfae",
+      "x": 8006.4728362333635,
+      "y": 7995,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Circle"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    }
+  ]
+}

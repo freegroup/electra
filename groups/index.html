@@ -1,0 +1,253 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title>Brainbox User Management</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="icon" type="image/png"    href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+
+</head>
+
+<body id="container">
+
+<div id="layout">
+
+  <ul class="nav nav-tabs" id="leftTabStrip">
+    <li id="editor_tab"  class="active">
+      <a href="#editor" class="leftTab editor" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_edit.svg"/>
+      </a>
+    </li>
+
+    <li id="index_tab">
+      <a href="#home" class="leftTab home" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_index.svg"/>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+
+    <div class="tab-pane active" id="editor">
+      <div class="workspace">
+
+        <div class="toolbar navbar-default">
+           <span class="group" id="editorgroup_fileoperations">
+              <span class="image-button disabled" id="editorSave" >
+                <img title="Save Group" src="../common/images/toolbar_save.svg"/>
+                <div>Save</div>
+              </span>
+           </span>
+
+           <span class="group">
+              <span class="image-button disabled" id="editorDelete">
+                <img title="Delete Group" src="../common/images/toolbar_delete.svg"/>
+                <div>Delete</div>
+              </span>
+           </span>
+
+           <span class="group applicationSwitch">
+
+                <label class="userinfo_toggler dropdown" >
+                  <span class="image-button" data-toggle="dropdown">
+                    <img  src="../common/images/toolbar_user.svg"/>
+                  </span>
+
+                  <div class="dropdown-menu" role="menu" >
+                  </div>
+                </label>
+
+              </span>
+        </div>
+
+        <div class="paletteContainer">
+          <div id="paletteHeader">
+            <div class="paletteTitle">
+              <a href="https://github.com/freegroup/brainbox" target="_blank"><img src="../common/images/favicon_64x64.svg"/></a>
+              <div>
+                <h1>Brainbox</h1>
+                <h2>My Groups</h2>
+              </div>
+            </div>
+            <div id="paletteFilter">
+              <button id="createGroupButton">Create Group</button>
+              <button id="joinGroupButton">Join Group</button></div>
+          </div>
+          <div id="paletteElementsScroll">
+            <div id="paletteElements" class="row">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="content">
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+</div>
+
+
+<script id="welcomeTemplate" type="text/x-jsrender">
+
+  <div class="welcomeMessage">
+    <div class="teaser">
+      <h2>User Groups</h2>
+      <p>
+        One of the versatile functions of Brainbox is the management of classes or learning groups.
+      </p>
+    </div>
+    <div class="description">
+      You can:
+      <ul>
+         <li>Create groups</li>
+         <li>Invite people</li>
+         <li>Post assignments</li>
+         <li>Create them easily with the help of the Lesson Author.</li>
+         <li>Submit them remotely.</li>
+      </ul>
+    </div>
+    <img src="../common/images/app_groups.svg" width="200px">
+  </div>
+
+</script>
+
+
+<script id="recordsTemplate" type="text/x-jsrender">
+{{#records}}
+    <div class="paletteItem {{role}}" data-id="{{id}}">
+       <div class="icon fa {{icon}}"> </div>{{name}}
+    </div>
+{{/records}}
+</script>
+
+
+<script id="recordOwnerTemplate" type="text/x-jsrender">
+
+  <div class="form">
+      <div class="groupHeader">
+        <h1>{{record.name}}</h1>
+        <h2>Group join code: <span class="joinToken">{{record.joinToken}}</span> <i class="showJoinToken fa fa-eye" ></i></h2>
+      </div>
+      <div class="role">
+          <img src="./images/teacher.svg">
+          <h2>You are Mentor of this group</h2>
+      </div>
+      <input type="hidden" id="recordId" value="{{record.id}}" data-id="id">
+      <div class="owner">
+        <h3>Tutor: <span>YOU</span></h3>
+      </div>
+      <div class="groupContent">
+        <h3>Members  <i class="inviteGroupMember fa fa-plus-square-o"></i></h3>
+        <table>
+        {{#record.members}}
+            <tr>
+              <td>{{displayName}}</td>
+              <td><i class="deleteGroupMember fa fa-trash"></i></td>
+            </tr>
+        {{/record.members}}
+        </table>
+        <h3>Assignments  <i class="addGroupAssignment fa fa-plus-square-o"></i></h3>
+        <table>
+        {{#record.assignments}}
+            <tr>
+              <td><a href="../author?shared={{shared}}" target="author">{{name}}</a></td>
+              <td><i class="deleteGroupAssignment fa fa-trash" data-id="{{id}}"></i></td>
+            </tr>
+        {{/record.assignments}}
+        </table>
+      </div>
+  </div>
+</script>
+
+<script id="recordMemberTemplate" type="text/x-jsrender">
+
+  <div class="form">
+      <div class="groupHeader">
+        <h1>{{record.name}}</h1>
+        <h2>Group join code: <span class="joinToken">{{record.joinToken}}</span> <div class="showJoinToken fa fa-eye" ></div></h2>
+      </div>
+      <div class="role">
+          <img src="./images/student.svg">
+          <h2>You are a Student in this group</h2>
+      </div>
+      <input type="hidden" id="recordId" value="{{record.id}}" data-id="id">
+      <div class="owner">
+        <h3>Tutor: <span>{{record.owner.displayName}}</span></h3>
+      </div>
+
+      <div class="groupContent">
+        <h3>Members</h3>
+        {{#record.members}}
+            <div>
+               {{displayName}}
+            </div>
+        {{/record.members}}
+        <h3>Assignments</h3>
+        {{#record.assignments}}
+            <div>
+               {{id}}
+            </div>
+        {{/record.assignments}}
+      </div>
+
+  </div>
+</script>
+
+<script id="recordCreateTemplate" type="text/x-jsrender">
+
+  <div class="form">
+      Create Group
+      <div class="form-group">
+        <label for="recordName">Name</label>
+        <input class="form-control" id="recordName" placeholder="name" value="{{record.name}}" data-id="name">
+        <small id="recordNameHelp" class="form-text text-muted"></small>
+      </div>
+  </div>
+</script>
+
+
+
+<div class="loader">
+  <div class="title">Loading the Classroom...</div>
+  <div class="gooey">
+    <span class="dot"></span>
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
+
+<!-- "include" files in a world of ES6 is not perfect. Unfortunately draw2d.js isn't complete
+     ES6 and therefore I run into some compatibility issues with jQuery and prerequisite
+-->
+<script src="../common/js/jquery/jquery.js"></script>
+<script src="../common/js/jquery/jquery-ui.js"></script>
+
+<script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+<script src="../common/js/bootbox/bootbox.min.js"></script>
+
+<script src="../common/js/anno.js/anno.js"></script>
+<script src="../socket.io/socket.io.js"></script>
+<SCRIPT src="./js/webpack/bundle.js"></SCRIPT>
+
+</html>

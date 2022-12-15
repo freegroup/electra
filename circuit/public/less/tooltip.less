@@ -1,0 +1,26 @@
+/* CSS from the cool website: http://cssarrowplease.com/ */
+
+.draw2d_tooltip {
+  position: absolute;
+  background: #88b7d5;
+  padding:10px;
+  border-radius:6px;
+}
+
+.draw2d_tooltip:after,.draw2d_tooltip:before {
+  bottom: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.draw2d_tooltip:after {
+  border-color: rgba(136, 183, 213, 0);
+  border-bottom-color: #88b7d5;
+  border-width: 4px;
+  left: 50%;
+  margin-left: -4px;
+}

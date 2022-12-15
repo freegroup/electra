@@ -1,0 +1,37 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_display_7Segment = digital_display_7Segment.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        // ensure that the ports has the same order as the segments
+        //
+        this.portLockup = [];
+        this.portLockup.push({ p:this.getPort("port_a"), s:"seg_a"});
+        this.portLockup.push({ p:this.getPort("port_b"), s:"seg_b"});
+        this.portLockup.push({ p:this.getPort("port_c"), s:"seg_c"});
+        this.portLockup.push({ p:this.getPort("port_d"), s:"seg_d"});
+        this.portLockup.push({ p:this.getPort("port_e"), s:"seg_e"});
+        this.portLockup.push({ p:this.getPort("port_f"), s:"seg_f"});
+        this.portLockup.push({ p:this.getPort("port_g"), s:"seg_g"});
+    },
+    
+    calculate:function(context)
+    {
+        var _this = this;
+        this.portLockup.forEach(function(element, index){
+            _this.layerAttr(element.s, { 
+                fill  : element.p.getBooleanValue()?"#C21B7A":null,
+                stroke: element.p.getBooleanValue()?"#000000":"#f4f4f9"
+            });
+        });
+    }
+
+});

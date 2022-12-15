@@ -1,0 +1,92 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+video_tools_VideoSelector = video_tools_VideoSelector.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.getOutputPort("output_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+        
+        this.getInputPort("input_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+        
+        this.getInputPort("input_port2").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        let inValue1 = this.getInputPort("input_port1").getValue();
+        let inValue2 = this.getInputPort("input_port2").getValue();
+        let inValue3 = this.getInputPort("input_port3").getBooleanValue();
+        if(inValue3 === true){
+            this.getOutputPort("output_port1").setValue(inValue1);
+        }
+        else{
+            this.getOutputPort("output_port1").setValue(inValue2);
+        }
+        
+        if(this.getInputPort("input_port3").hasChangedValue()){
+            this.layerShow("low" , !inValue3, 100);
+            this.layerShow("high",  inValue3, 100);
+        }
+    },
+    
+    onStart:function(context){
+        let inValue3 = this.getInputPort("input_port3").getBooleanValue();
+        this.layerShow("low" , !inValue3, 100);
+        this.layerShow("high",  inValue3, 100);
+    },
+    
+    
+    setPersistentAttributes: function (memento) {
+        this._super(memento);
+        
+        this.getOutputPort("output_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+        
+        this.getInputPort("input_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+        
+        this.getInputPort("input_port2").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        });
+
+    },
+    
+
+});

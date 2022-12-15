@@ -1,0 +1,86 @@
+
+#simulationStartStop {
+  position: absolute;
+  right:30px;
+  top: unit( @toolbarHeight + 10, px);
+  z-index:1000;
+
+  display: inline-block;
+  width: 4em;
+  height: 4em;
+  background-color: #FFF;
+  color: #9e9e9e;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 2em;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition: all 500ms ease;
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  &:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    -webkit-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+  }
+
+  &:focus {
+    outline: 0;
+    border: none;
+    color: rgba(0, 0, 0, 0);
+  }
+
+  &>span {
+    display: block;
+    position: relative;
+    width: 2em;
+    height: 2em;
+    transition: all 500ms ease;
+    overflow: hidden;
+    margin: 1em;
+
+    &>span {
+      display: block;
+      background-color: @tintColorHIGH;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2em;
+      height: 2em;
+      transition: all 500ms ease;
+      border: 1px solid transparent;
+    }
+  }
+
+  &.play{
+    &>span {
+      -webkit-transform: translate(1em, 0) scale(1.6, 1);
+      transform: translate(1em, 0) scale(1.6, 1);
+
+      &>span {
+        -webkit-transform: rotate(-45deg) translate(-1em, -1em) scale(1, 1);
+        transform: rotate(-45deg) translate(-1em, -1em) scale(1, 1);
+        background-color: @tintColorHIGH;
+      }
+    }
+  }
+
+  &.pause{
+
+    &>span {
+
+      &>span {
+        -webkit-transform: scale(0.4, 1) translate(-1.6em, 0);
+        transform: scale(0.4, 1) translate(-1.6em, 0);
+
+        &.s3 {
+          -webkit-transform: scale(0.4, 1) translate(1.6em, 0);
+          transform: scale(0.4, 1) translate(1.6em, 0);
+        }
+      }
+    }
+  }
+}
+

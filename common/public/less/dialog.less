@@ -1,0 +1,121 @@
+.modal-backdrop.in{
+  opacity: 0.7;
+  background-color: black;
+  transition: opacity .4s linear;
+}
+
+.genericDialog {
+  .modal-content{
+    border-radius:4px;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    background-color: rgb(255,255,255);
+
+    .modal-header{
+      border-bottom:0;
+      font-weight:400;
+      box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+    }
+
+    .modal-body {
+      min-height:120px;
+
+      .form-control{
+         -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        box-sizing: border-box;
+        border-radius: 4px;
+        margin: 0;
+        padding: 0;
+        color: #4D4D4D;
+        display: inline-block;
+        font: inherit;
+        border: 1px solid #DFDFDF;
+        box-shadow: none;
+        height: 24px;
+        padding: 0 3px;
+        &:focus{
+          background-color: rgb(245,245,245);
+        }
+      }
+
+      .list-group {
+        overflow-y: auto;
+        overflow-x: auto;
+
+        *[data-draw2d="true"] {
+          font-weight: bold;
+          color: @tintColor;
+        }
+
+        .glyphicon, .fa {
+          font-size: 20px;
+          padding-right: 10px;
+          color: @tintColor;
+        }
+
+        .list-group-item {
+          background-color: transparent;
+          font-weight: 300;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        *[data-draw2d="false"][data-type="file"] {
+          color: gray;
+          cursor: default;
+          text-decoration: none !important;
+          .fa {
+            color: gray;
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      background-color: transparent;
+      border-top:0;
+
+      .btn, .btn-group{
+        border:0;
+        text-transform: uppercase;
+        background-color:transparent;
+        color:@tintColor;
+        transition: all 0.5s;
+
+        &:hover{
+          background-color: fadeout(@tintColor,96);
+          transition: all 0.5s;
+        }
+      }
+      .btn-group{
+        .btn{
+          &:hover{
+            background-color: transparent;
+          }
+        }
+        .dropdown-toggle{
+          .caret{
+            margin-top:7px;
+          }
+        }
+        border:0;
+        text-transform: uppercase;
+        background-color:transparent;
+        color:@tintColor;
+        transition: all 0.5s;
+
+        &:hover{
+          background-color: fadeout(@tintColor,96);
+          transition: all 0.5s;
+        }
+      }
+
+      .btn-primary{
+        font-weight: bold;
+      }
+    }
+  }
+}

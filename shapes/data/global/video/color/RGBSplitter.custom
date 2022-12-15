@@ -1,0 +1,221 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+video_color_RGBSplitter = video_color_RGBSplitter.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.worker= null;
+        this.tmpCanvas = null;
+        this.tmpContext = null;
+        this.tmpCanvasR = null;
+        this.tmpContextR = null;
+        this.tmpCanvasG = null;
+        this.tmpContextG = null;
+        this.tmpCanvasB = null;
+        this.tmpContextB = null;
+        this.processing = false;
+        this.getInputPort("input_port1").setSemanticGroup("Image");
+        this.getOutputPort("output_port1").setSemanticGroup("Image");
+        this.getOutputPort("output_port2").setSemanticGroup("Image");
+        this.getOutputPort("output_port3").setSemanticGroup("Image");
+        this.attr({
+            resizeable:false
+        });
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        var img = this.getInputPort("input_port1").getValue();
+        var threshold = this.getInputPort("input_port2").getValue();
+        if(img instanceof HTMLImageElement && this.worker!==null && this.processing === false){
+            var imageData = this.imageToData(img);
+            // Push it to the WebWorker with "Transferable Objects"
+            // Passing data by reference instead of structure clone
+            //
+            this.processing = true;
+            this.worker.postMessage({imageData: imageData,threshold: threshold}, [imageData.data.buffer]);
+        }
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+        // the method which runs as WebWorker
+        //
+        var workerFunction = function(event){
+            var imageData = event.data.imageData;
+            var threshold = event.data.threshold;
+            // map offset from 0-5 => 0-255
+            threshold = 255/5*threshold;
+            var pixels = imageData.data;
+            var w = imageData.width;
+            var h = imageData.height;
+            
+            var r = new Uint8ClampedArray(pixels.length);
+            var g = new Uint8ClampedArray(pixels.length);
+            var b = new Uint8ClampedArray(pixels.length);
+            r.fill(255);
+            g.fill(255);
+            b.fill(255);
+            
+            for( let x = 0; x < pixels.length; x += 4 ) {
+                r[x]=r[x+1]=r[x+2] = threshold < (pixels[x]  -((pixels[x+1]+pixels[x+2])/2))?0:255;
+                g[x]=g[x+1]=g[x+2] = threshold < (pixels[x+1]-((pixels[x]  +pixels[x+2])/2))?0:255;
+                b[x]=b[x+1]=b[x+2] = threshold < (pixels[x+2]-((pixels[x+1]+pixels[x])/2))?0:255;
+            }
+            var imageDataR = new ImageData(r, w, h);
+            var imageDataG = new ImageData(g, w, h);
+            var imageDataB = new ImageData(b, w, h);
+            self.postMessage({imageDataR, imageDataG, imageDataB}, [imageDataR.data.buffer,imageDataG.data.buffer,imageDataB.data.buffer]);
+        };
+        
+        // the method which receives the WebWorker result
+        //
+       var receiverFunction = (event) => {
+            var imageDataR = event.data.imageDataR;
+            var imageDataG = event.data.imageDataG;
+            var imageDataB = event.data.imageDataB;
+            this.tmpContextR.putImageData(imageDataR,0,0);
+            this.tmpContextG.putImageData(imageDataG,0,0);
+            this.tmpContextB.putImageData(imageDataB,0,0);
+            
+            var imageR = new Image();
+            imageR.onload = () => {
+                this.getOutputPort("output_port1").setValue(imageR);
+                this.processing = false;
+            };
+            imageR.src = this.tmpCanvasR.toDataURL();
+            
+            var imageG = new Image();
+            imageG.onload = () => {
+                this.getOutputPort("output_port2").setValue(imageG);
+                this.processing = false;
+            };
+            imageG.src = this.tmpCanvasG.toDataURL();
+            
+            var imageB = new Image();
+            imageB.onload = () => {
+                this.getOutputPort("output_port3").setValue(imageB);
+                this.processing = false;
+            };
+            imageB.src = this.tmpCanvasB.toDataURL();
+        };
+        
+        // convert a js function to a WebWorker
+        //
+        this.worker = this.createWorker(workerFunction);
+        this.worker.onmessage = receiverFunction;
+        this.processing = false;
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+        if(this.worker) this.worker.terminate();
+        delete this.worker;
+        delete this.tmpContext;
+        delete this.tmpCanvas;
+        delete this.tmpContextR;
+        delete this.tmpCanvasR;
+        delete this.tmpContextG;
+        delete this.tmpCanvasG;
+        delete this.tmpContextB;
+        delete this.tmpCanvasB;
+        this.worker = null;
+        this.tmpCanvas = null;
+        this.tmpContext = null;
+        this.tmpCanvasR = null;
+        this.tmpContextR = null;
+        this.tmpCanvasG = null;
+        this.tmpContextG = null;
+        this.tmpCanvasB = null;
+        this.tmpContextB = null;
+        this.progressing = false;
+    },
+    
+
+    /**
+     *  Helper function to dynamically create Web Workers.
+     */
+    createWorker: function(fn) {
+        var blob = new Blob(["self.onmessage = ", fn.toString()], {
+           type: "text/javascript"
+        });
+        var url = window.URL.createObjectURL(blob);
+        return new Worker(url);
+    },
+    
+    imageToData: function(image){
+        var width = image.naturalWidth;
+        var height= image.naturalHeight;
+
+        if(this.tmpContext !==null && this.tmpContext.width!== width){
+            delete this.tmpContext;
+            delete this.tmpCanvas;
+            delete this.tmpContextR;
+            delete this.tmpCanvasR;
+            delete this.tmpContextG;
+            delete this.tmpCanvasG;
+            delete this.tmpContextB;
+            delete this.tmpCanvasB;
+            this.tmpCanvas = null;
+            this.tmpContext = null;
+            this.tmpCanvasR = null;
+            this.tmpContextR = null;
+            this.tmpCanvasG = null;
+            this.tmpContextG = null;
+            this.tmpCanvasB = null;
+            this.tmpContextB = null;
+        }
+
+        // convert the HTMLImageElement to an ImageData object. Required for the WebWorker
+        //
+        if(this.tmpContext === null ) {
+            this.tmpCanvas = document.createElement('canvas');
+            this.tmpCanvas.width = width;
+            this.tmpCanvas.height = height;
+            this.tmpContext = this.tmpCanvas.getContext('2d');
+
+            this.tmpCanvasR = document.createElement('canvas');
+            this.tmpCanvasR.width = width;
+            this.tmpCanvasR.height = height;
+            this.tmpContextR = this.tmpCanvasR.getContext('2d');
+
+            this.tmpCanvasG = document.createElement('canvas');
+            this.tmpCanvasG.width = width;
+            this.tmpCanvasG.height = height;
+            this.tmpContextG = this.tmpCanvasG.getContext('2d');
+
+            this.tmpCanvasB = document.createElement('canvas');
+            this.tmpCanvasB.width = width;
+            this.tmpCanvasB.height = height;
+            this.tmpContextB = this.tmpCanvasB.getContext('2d');
+        }
+        this.tmpContext.drawImage(image, 0, 0, width, height);
+        return this.tmpContext.getImageData(0, 0, width, height);
+    }
+});

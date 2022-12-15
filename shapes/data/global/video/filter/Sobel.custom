@@ -1,0 +1,189 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+video_filter_Sobel = video_filter_Sobel.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.worker= null;
+        this.tmpCanvas = null;
+        this.tmpContext = null;
+        this.processing = false;
+        this.getInputPort("input_port1").setSemanticGroup("Image");
+        this.getOutputPort("output_port1").setSemanticGroup("Image");
+        this.attr({
+            resizeable:false
+        });
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        var img = this.getInputPort("input_port1").getValue();
+        if(img instanceof HTMLImageElement && this.worker!==null && this.processing===false){
+            var imageData = this.imageToData(img);
+            // Push it to the WebWorker with "Transferable Objects"
+            // Passing data by reference instead of structure clone
+            //
+            this.processing = true;
+            this.worker.postMessage(imageData, [imageData.data.buffer]);
+        }
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+        // the method which runs as WebWorker
+        //
+        var workerFunction = function(event){
+            var imageData = event.data;
+            var pixels    = imageData.data;
+            var w = imageData.width;
+            var h = imageData.height;
+
+            var kernelX   =[ -1, 0,  1,  
+                             -2, 0,  2,  
+                             -1, 0,  1 ];
+                             
+            var kernelY   =[ -1, -2, -1,  
+                              0,  0,  0,  
+                              1,  2,  1 ];
+                           
+            function convolut(weights, src, w, h){
+                var side     = Math.round(Math.sqrt(weights.length));
+                var halfSide = Math.floor(side/2);
+                var sw = w;
+                var sh = h;
+
+                var dst = new Uint8ClampedArray(w*h*4);
+
+                for (var y=0; y < h; y++) {
+                    for (var x=0; x < w; x++) {
+                        var sy = y;
+                        var sx = x;
+                        var dstOff = (y*w+x)*4;
+                        var r=0, g=0, b=0, a=0;
+                        for (var cy=0; cy<side; cy++) {
+                            for (var cx=0; cx<side; cx++) {
+                                var scy = Math.min(sh-1, Math.max(0, sy + cy - halfSide));
+                                var scx = Math.min(sw-1, Math.max(0, sx + cx - halfSide));
+                                var srcOff = (scy*sw+scx)*4;
+                                var wt = weights[cy*side+cx];
+                                r += src[srcOff] * wt;
+                                g += src[srcOff+1] * wt;
+                                b += src[srcOff+2] * wt;
+                            }
+                        }
+                        dst[dstOff]   = r;
+                        dst[dstOff+1] = g;
+                        dst[dstOff+2] = b;
+                        dst[dstOff+3] = src[dstOff+3];
+                    }
+                }
+                return dst;
+            }
+
+            var dstX = convolut(kernelX, pixels, w, h);
+            var dstY = convolut(kernelY, pixels, w, h);
+            for (var i=0; i < dstX.length; i++) {
+                var edgeX = dstX[i];
+                var edgeY = dstY[i]; 
+                dstX[i] = Math.min(255,Math.round(Math.sqrt(edgeX * edgeX + edgeY * edgeY)));
+            }
+            
+            imageData.data.set(dstX);
+            self.postMessage(imageData, [imageData.data.buffer]);
+        };
+        
+        // the method which receives the WebWorker result
+        //
+       var receiverFunction = (event) => {
+            var imageData = event.data;
+            this.tmpContext.putImageData(imageData,0,0);
+            var image = new Image();
+            image.onload = () => { 
+                this.getOutputPort("output_port1").setValue(image);
+                this.processing = false;
+            };
+            image.src = this.tmpCanvas.toDataURL();
+
+        };
+
+
+        // convert a js function to a WebWorker
+        //
+        this.worker = this.createWorker(workerFunction);
+        this.worker.onmessage = receiverFunction;
+        this.processing = false;
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+        if(this.worker) this.worker.terminate();
+        delete this.worker;
+        delete this.tmpContext;
+        delete this.tmpCanvas;
+        this.worker = null;
+        this.tmpCanvas = null;
+        this.tmpContext = null;
+        this.processing = false;
+    },
+    
+
+    /**
+     *  Helper function to dynamically create Web Workers.
+     */
+    createWorker: function(fn) {
+        var blob = new Blob(["self.onmessage = ", fn.toString()], {
+           type: "text/javascript"
+        });
+        var url = window.URL.createObjectURL(blob);
+        return new Worker(url);
+    },
+    
+    imageToData: function(image){
+        var width = image.naturalWidth;
+        var height= image.naturalHeight;
+
+        if(this.tmpContext !==null && this.tmpContext.width!== width){
+            delete this.tmpContext;
+            delete this.tmpCanvas;
+            this.tmpCanvas = null;
+            this.tmpContext = null;
+        }
+
+        // convert the HTMLImageElement to an ImageData object. Required for the WebWorker
+        //
+        if(this.tmpContext === null ) {
+            this.tmpCanvas = document.createElement('canvas');
+            this.tmpCanvas.width = width;
+            this.tmpCanvas.height = height;
+            this.tmpContext = this.tmpCanvas.getContext('2d');
+        }
+        this.tmpContext.drawImage(image, 0, 0, width, height);
+        return this.tmpContext.getImageData(0, 0, width, height);
+    }
+});

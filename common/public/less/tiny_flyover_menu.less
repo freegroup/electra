@@ -1,0 +1,31 @@
+
+.tinyFlyoverMenu {
+  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  border:1px solid lightgray;
+  position:absolute;
+  top:-15px;
+  right:20px;
+  background-color:white;
+  border-radius: 2px;
+  font-size:20px;
+  z-index:1;
+  padding: 5px;
+  div{
+    margin-left:3px;
+    margin-right:3px;
+    border:1px solid transparent;
+    &:hover{
+      border:1px solid lightgray;
+      cursor:pointer;
+    }
+  }
+}
+
+.activeSection {
+
+  .tinyFlyoverMenu {
+    position:sticky;
+    float:right;
+    top:10px;
+  }
+}

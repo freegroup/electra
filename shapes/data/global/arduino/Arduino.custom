@@ -1,0 +1,102 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+arduino_Arduino = arduino_Arduino.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+         this.attr({resizeable:false});
+         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+         
+
+         this.onChangeCallback = (emitter, event)=>{
+            this.layerAttr("led_d13",{fill: event.value?"#33DE09":"#f0f0f0"});
+         }
+
+         this.onConnectedCallback = (emitter, event)=>{
+            this.layerAttr("led_power",{fill: hardware.arduino.connected?"#FF3C00":"#f0f0f0"});
+         }
+    },
+    
+    calculate:function(){
+        this.propagate(2,  this.getPort("port_d2"));
+        this.propagate(3,  this.getPort("port_d3"));
+        this.propagate(4,  this.getPort("port_d4"));
+        this.propagate(5,  this.getPort("port_d5"));
+        this.propagate(6,  this.getPort("port_d6"));
+        this.propagate(7,  this.getPort("port_d7"));
+        this.propagate(8,  this.getPort("port_d8"));
+        this.propagate(9,  this.getPort("port_d9"));
+        this.propagate(10, this.getPort("port_d10"));
+        this.propagate(11, this.getPort("port_d11"));
+        this.propagate(12, this.getPort("port_d12"));
+        this.propagate(13, this.getPort("port_d13"));
+        this.propagate(14, this.getPort("port_a0"));
+    },
+
+    // eiter read or write....depends on the other side port of the connection
+    propagate: function(index, port){
+        if(!port.getConnections().isEmpty()){
+            var con = port.getConnections().first();
+            var other = con.getSource()===port?con.getTarget():con.getSource()
+            if(other instanceof draw2d.InputPort){
+                port.setValue(hardware.arduino.get(index))
+            }
+            else {
+                hardware.arduino.set(index,other.getBooleanValue())
+            }
+        }
+    },
+    
+   /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(){
+        this.getPort("port_d13").on("change:value", this.onChangeCallback);
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     **/
+    onStop:function(){
+        this.getPort("port_d13").off("change:value", this.onChangeCallback);
+    },
+    
+    setCanvas: function(canvas)
+    {
+        // deregister old listerener ...if exists
+        if(this.canvas !==null) {
+            hardware.arduino.off("connect", this.onConnectedCallback);
+            hardware.arduino.off("disconnect", this.onConnectedCallback);
+        }
+        
+        this._super(canvas);
+        
+        // register new listener...if requried
+        if(this.canvas !==null) {
+            hardware.arduino.on("connect", this.onConnectedCallback);
+            hardware.arduino.on("disconnect", this.onConnectedCallback);
+            
+            this.onConnectedCallback();
+            if(this.getPort("port_d13").getValue() && !this.getPort("port_d13").getConnections().isEmpty()) {
+                 this.onChangeCallback(this, {value:true})
+            }
+            else{
+                 this.onChangeCallback(this, {value:false})
+            }
+        }
+    },
+    
+    getRequiredHardware: function(){
+      return {
+        arduino: true
+      }
+    }
+    
+});

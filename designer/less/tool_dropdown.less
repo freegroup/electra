@@ -1,0 +1,42 @@
+
+#tool_shape {
+  &:hover {
+
+  }
+
+  &.open{
+    .dropdown-menu {
+      -webkit-transform: scale(1, 1);
+      opacity:1;
+      transform: scale(1, 1);
+    }
+  }
+
+  .dropdown-menu {
+    opacity:0.1;
+    animation-fill-mode: forwards;
+    transform: scale(1, 0);
+    transform-origin: 0 0 ;
+    display: block;
+    transition: all 0.2s ease;
+  }
+
+  .tool_shape_entry {
+    text-align: left;
+
+    img{
+      height:30px;
+      padding-right:20px;
+    }
+
+    .tool_label{
+      min-width:95px;
+      display:inline-block;
+    }
+
+    .tool_shortcut{
+      color:rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+

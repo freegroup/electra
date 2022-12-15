@@ -1,0 +1,1 @@
+cd ./permissions && ./start.sh

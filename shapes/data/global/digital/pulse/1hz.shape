@@ -1,0 +1,198 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "a62502cd-0a35-6f21-e7e3-b97974233a1e",
+      "x": 7985.83203125,
+      "y": 7994.30475,
+      "width": 30,
+      "height": 30,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.currentTimer=0;\n    },\n    \n    calculate:function(context)\n    {\n       // 2   ticks => 50Hz   \n       // 10  ticks => 10Hz \n       // 100 ticks => 1Hz\n       this.currentTimer = (this.currentTimer+1)%100; \n       if(this.currentTimer===0){\n           this.value = !this.value;\n           this.getOutputPort(0).setValue(this.value);\n       }\n    },\n    \n    onStart:function(context)\n    {\n         this.currentTimer=0;\n    },\n    \n    onStop:function(context)\n    {\n    }\n\n});",
+        "name": "Rectangle",
+        "markdown": "# Clock Signal\n\nIn electronics and especially synchronous digital circuits, \na clock signal is a particular type of signal that \noscillates between a `high` and a `low` state and is \nutilized like a metronome to coordinate actions \nof digital circuits.\n\nThe hertz (symbol `Hz`) is the unit of frequency in the \nInternational System of Units (SI) and is defined as \none cycle per second. \n\nIt is named for Heinrich Rudolf Hertz, the first person \nto provide conclusive proof of the existence of \nelectromagnetic waves.\n\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7985.83203125,
+          "y": 7994.30475
+        },
+        {
+          "x": 8015.83203125,
+          "y": 7994.30475
+        },
+        {
+          "x": 8015.83203125,
+          "y": 8024.30475
+        },
+        {
+          "x": 7985.83203125,
+          "y": 8024.30475
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "f174c11d-b796-fe45-2011-71e46b7a48a0",
+      "x": 7984.16796875,
+      "y": 7975.69525,
+      "width": 31.375,
+      "height": 21.15625,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "1Hz",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "f4d5683a-7c42-8771-5df4-e4e9da5b8b46",
+      "x": 8011.83203125,
+      "y": 8004.66135,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.currentTimer=0;\n    },\n    \n    calculate:function()\n    {\n       // 2  ticks => 50Hz   \n       // 10 ticks => 10Hz \n       this.currentTimer = (this.currentTimer+1)%10; \n       if(this.currentTimer===0){\n           this.value = !this.value;\n           this.getOutputPort(0).setValue(this.value);\n       }\n    },\n    \n    onStart:function()\n    {\n         this.currentTimer=0;\n    },\n    \n    onStop:function()\n    {\n    }\n\n});",
+        "name": "outputPort",
+        "markdown": "# Clock Signal\n\nIn electronics and especially synchronous digital circuits, \na clock signal is a particular type of signal that \noscillates between a `high` and a `low` state and is \nutilized like a metronome to coordinate actions \nof digital circuits.\n\nThe hertz (symbol `Hz`) is the unit of frequency in the \nInternational System of Units (SI) and is defined as \none cycle per second. \n\nIt is named for Heinrich Rudolf Hertz, the first person \nto provide conclusive proof of the existence of \nelectromagnetic waves.\n\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(28,155,171,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "927cebb7-405f-4e28-fb67-1762432650a1",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 1,
+      "color": "rgba(0,0,0,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 7987.56163125,
+          "y": 8016.93455
+        },
+        {
+          "x": 7994.743631249999,
+          "y": 8016.93455
+        },
+        {
+          "x": 7994.743631249999,
+          "y": 8006.67455
+        },
+        {
+          "x": 8006.23483125,
+          "y": 8006.67455
+        },
+        {
+          "x": 8006.23483125,
+          "y": 8016.524149999999
+        },
+        {
+          "x": 8012.80123125,
+          "y": 8016.524149999999
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": "",
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    }
+  ],
+  "image": "data:image/png;base64,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"
+}

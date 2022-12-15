@@ -1,0 +1,502 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <script src="https://accounts.google.com/gsi/client" defer></script>
+
+  <link rel="icon" type="./image/png"    href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="./image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="./image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="./image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+
+  <style>
+    .x.axis line {
+      shape-rendering: auto;
+    }
+    .line {
+      fill: none;
+      stroke: #000;
+      stroke-width: 1px;
+    }
+  </style>
+  <script type="text/javascript">
+    var app = null
+    var socket = null
+  </script>
+</head>
+
+<body class="mousetrap" >
+<div id="layout">
+
+  <ul class="nav nav-tabs" id="leftTabStrip">
+    <li id="editor_tab"  class="active">
+      <a href="#editor" class="leftTab editor" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_edit.svg"/>
+      </a>
+    </li>
+
+    <li id="files_tab">
+      <a href="#files" class="leftTab files" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+      </a>
+    </li>
+
+
+    <li id="index_tab">
+      <a href="#home" class="leftTab home" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_index.svg"/>
+      </a>
+    </li>
+  </ul>
+
+
+
+  <div class="tab-content">
+
+    <div class="tab-pane" id="home">
+    </div>
+
+
+    <div class="tab-pane" id="files">
+      <div class="row hidden-xs teaser">
+        <div class="col-sm-8 col-md-8">
+          <div class="title">
+            <img src="../common/images/navigation_file.svg"/>
+            <span>Circuit Library</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <header>
+          <div id="material-tabs">
+            <a id="userFilesTab" href="#userFiles" class="active">Your Circuits</a>
+            <a id="globalFilesTab" href="#globalFiles">Demo Circuits </a>
+            <span class="yellow-bar"></span>
+          </div>
+        </header>
+
+        <div class="material-tab-content">
+          <div id="userFiles">
+          </div>
+          <div id="globalFiles">
+          </div>
+        </div>
+      </div>
+
+
+      <div class="toolbar navbar-default">
+          <span class="group applicationSwitch">
+
+            <label class="userinfo_toggler dropdown" >
+              <span class="image-button" data-toggle="dropdown">
+                <img  src="../common/images/toolbar_user.svg"/>
+              </span>
+              <div class="dropdown-menu" role="menu" >
+              </div>
+            </label>
+          </span>
+      </div>
+
+    </div>
+
+    <div class="tab-pane active" id="editor">
+      <div class="workspace">
+
+        <div class="paletteContainer noselect">
+          <div id="paletteHeader">
+            <div class="paletteTitle">
+              <a href="https://github.com/thindexed/" target="_blank"><img src="../common/images/favicon_64x64.svg"/>
+              <div>
+                <h1>Circuit</h1>
+                <h2>Simulator</h2>
+              </div>
+              </a>
+            </div>
+            <div id="paletteFilter"></div>
+          </div>
+          <div id="paletteElementsScroll">
+            <div id="paletteElements" class="row">
+            </div>
+            <div id="paletteElementsOverlay"></div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <span class="group" id="editorgroup_fileoperations">
+              <span class="image-button" id="editorFileSave" >
+                <img title="Save circuit" src="../common/images/toolbar_save.svg"/>
+                <div>Save</div>
+              </span>
+          </span>
+
+           <span class="group">
+              <span class="image-button disabled"  id="editDelete">
+                <img  src="../common/images/toolbar_delete.svg"/>
+                <div>Delete</div>
+              </span>
+          </span>
+
+          <span class="group">
+              <span class="image-button disabled" id="editUndo">
+                <img src="../common/images/toolbar_undo.svg"/>
+                <div>Undo</div>
+              </span>
+              <span class="image-button disabled" id="editRedo">
+                <img src="../common/images/toolbar_redo.svg"/>
+                <div>Redo</div>
+              </span>
+          </span>
+
+          <span class="group editBase">
+              <label id="tool_shape" class="dropdown" >
+              <span class="image-button" id="editConnections" data-toggle="dropdown" >
+                <img src="./images/status_index.svg">
+                <div>Connection</div>
+              </span>
+
+                <ul class="dropdown-menu" role="menu" >
+                    <form class="form-horizontal" role="form" style="min-width:300px">
+
+                      <label class="statusIndicator" id="statusWebUSB" >
+                        <img src="./images/status_arduino.svg"/>
+                        <span>WebUSB</span>
+                        <span class="connected">connected</span>
+                        <span class="disconnected">disconnected</span>
+                        <span class="notSupported">Not Supported - <a class="help-link" href="#">why?</a></span>
+                      </label>
+                    </form>
+                </ul>
+              </label>
+          </span>
+
+
+          <span class="group" id="editorgroup_share">
+              <span class="image-button" id="editorFileShare" >
+                <img title="Share Document" src="../common/images/toolbar_share.svg"/>
+                <div>Share</div>
+              </span>
+          </span>
+
+          <span class="group simulationBase" style="display: none;">
+                <label>Simulation Speed</label>
+                <input id="simulationBaseTimer"
+                       type="text"
+                       value="100"
+                       data-slider-min="50"
+                       data-slider-max="500"
+                       data-slider-step="1"
+                       data-slider-value="100"
+                       data-slider-handle="round"
+                       data-slider-tooltip="hide"
+                       data-slider-id="simulationBaseTimerSlider"
+                       data-slider-orientation="horizontal">
+          </span>
+
+          <span class="group applicationSwitch">
+
+            <label class="userinfo_toggler dropdown" >
+              <span class="image-button" data-toggle="dropdown">
+                <img  src="../common/images/toolbar_user.svg"/>
+              </span>
+              <div class="dropdown-menu" role="menu" >
+              </div>
+            </label>
+
+          </span>
+
+          <div class="morph_btn play" id="simulationStartStop">
+            <span>
+              <span class="s1"></span>
+              <span class="s2"></span>
+              <span class="s3"></span>
+            </span>
+          </div>
+
+
+        </div>
+        <div class="content" id="draw2dCanvasWrapper">
+          <div class="canvas" id="draw2dCanvas" oncontextmenu="return false;">
+          </div>
+          <div id="canvas_zoom" class="btn-group">
+            <button type="button" id="canvas_zoom_in" class="btn highlight">&#8210;</button>
+            <button type="button" id="canvas_zoom_normal" class="btn highlight">100%</button>
+            <button type="button" id="canvas_zoom_out" class="btn highlight">&#xFF0B</button>
+          </div>
+        </div>
+        <div id='probe_window'>
+          <div id="probe_window_stick" class="ion-ios-eye-outline" title="Stick Window"><img id="probe_window_opener" src="./images/slideout_bottom.svg"/></div>
+          <div id="probe_hint"><span class="ion-ios-information-outline"></span>Right click on a connection to add a
+            probe signal to this logic analyzer window
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div><!-- /tab-content -->
+
+</div><!-- /container -->
+
+<script id="shapeTemplate" type="text/x-jsrender">
+{{#shapes}}
+    <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="mix palette_item">
+      <div>
+          <img data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+          <div>{{displayName}}</div>
+      </div>
+    </div>
+{{/shapes}}
+</script>
+
+
+<!--
+  # Updates List
+  #
+  #
+-->
+<script id="updateTemplate" type="text/x-jsrender">
+<div class="paragraph">
+  <h3>Current Shape files Version</h3>
+  You current version of the shape files are <b>{{current_version}}</b>
+
+  <h3>Available Updates</h3>
+  <b>{{update.tag_name}}</b> {{#update.assets}}
+      <span class="updateFile" >{{browser_download_url}}</span>
+      <button data-url="{{browser_download_url}}" class="btn btn-primary installButton">Install</button>
+  {{/update.assets}}
+</div>
+
+</script>
+
+<!--
+  # Template if nothing available for update....you are up to date
+  #
+  #
+-->
+<script id="uptodateTemplate" type="text/x-jsrender">
+<div class="paragraph">
+  <h3>Current Shape files Version</h3>
+  Your current version of the shape files are <b>{{current_version}}</b>
+  <br><br>
+  You're up to date!
+</div>
+</script>
+
+<!--
+  # New Dialog
+  #
+  #
+-->
+<div id="fileNewDialog" class="modal fade genericDialog" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="media-heading">Enter File Name</h4>
+      </div>
+      <div class="modal-body">
+        <div class="media">
+          <div class="media-left media-middle">
+            <a href="#">
+              <div class="media-object filePreview ion-ios-plus-outline"></div>
+            </a>
+          </div>
+          <div class="media-body">
+
+
+            <br>
+            <br>
+            <fieldset>
+              <div class="form-group">
+                <div class="col-lg-12">
+                  <input type="text"
+                         class="form-control floating-label githubFileName"
+                         value=""
+                  >
+                </div>
+              </div>
+            </fieldset>
+            <div class="row"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal">Abort</button>
+        <button class="btn btn-primary okButton"><span>Create</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+  Dialog with behaviour code preview of the shapes
+ -->
+<div id="codePreviewDialog" class="modal fade genericDialog" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="media-heading">Javascript Code of the Shape</h4>
+      </div>
+      <div class="modal-body">
+          <pre class="prettyprint">
+          </pre>
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group">
+          <button type="button" class="btn editButton ">Edit Code</button>
+          <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>  <!-- caret -->
+          </button>
+
+          <ul class="dropdown-menu" role="menu"> <!-- class dropdown-menu -->
+            <li><a href="#" class="btn editButtonGuided">..with guided tour</a></li>
+          </ul>
+        </div>
+
+        <button class="btn  btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+  Help file of a single shape element
+ -->
+<div id="markdownDialog" class="modal fade genericDialog " tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="media-heading">Shape Documentation <span class="version">0.0.0</span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="markdownRendering">
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="btn-group" >
+          <button type="button" class="btn editButton ">Edit Documentation</button>
+          <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>  <!-- caret -->
+          </button>
+
+          <ul class="dropdown-menu" role="menu"> <!-- class dropdown-menu -->
+            <li><a href="#" class="btn editButtonGuided">..with guided tour</a></li>
+          </ul>
+        </div>
+
+        <button class="btn  btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--
+  UpdateSuccess Dialog. Shown if the update of the shape files are done
+ -->
+<div id="updateSuccessDialog" class="modal fade genericDialog" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="media-heading">Shape files were updated</h4>
+      </div>
+      <div class="modal-body">
+        <div class="html">
+          Your system has been success upgraded to the latests shape files. Reload of the UI is required
+          to load them.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn reloadBtn" data-dismiss="modal">Reload Window</button>
+        <button class="btn  btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  Help file of a single shape element
+ -->
+<div id="webUSBHelpDialog" class="modal fade genericDialog" tabindex="-1">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="media-heading">Introduction to WebUSB</h4>
+      </div>
+      <div class="modal-body">
+        <div class="html">
+          <h4>To use the <a href="https://wicg.github.io/webusb/" target="_blank">WebUSB</a> feature some prerequisists
+            must be fullfilled</h4>
+          <ul>
+            <li>Technically WebUSB is an open standard. But <b>only Chrome</b> implements this specification at the moment,
+              so end-users may need to switch browser to use this feature.</li>
+            <li>
+              Because this API is a powerful new feature added to the Web, Chrome aims to make it available only to
+              secure contexts. This means you'll need to <b>use HTTPS</b> if you run <b>brainbox</b> on your own raspberry or desktop computer.
+            </li>
+            <li>During development you'll be able to interact with WebUSB through <b>http://localhost/...</b></li>
+          </ul>
+          <br>
+          Check if all of the conditions are fulfilled.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn  btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="loader">
+<div class="title">Loading the <i>Circuit Simulator</i>...</div>
+<div class="gooey">
+  <span class="dot"></span>
+  <div class="dots">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+</div>
+
+</body>
+
+
+<link href="../common/css/katex.min.css" rel="stylesheet" >
+<link href='../common/css/roboto.css' rel='stylesheet' type='text/css'>
+
+<script src="../common/js/tfjs/tf.js"> </script>
+<script src="../common/js/tfjs/coco-ssd.js"> </script>
+
+
+<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap-slider/slider.css' rel='stylesheet' type='text/css'>
+<link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
+
+<script src="../common/js/ASCIIMathTeXImg.js"></script>
+<script src="../common/js/jquery/jquery.js"></script>
+<script src="../common/js/jquery/jquery-ui.js"></script>
+
+<script src="../common/js/anno.js/anno.js"></script>
+<script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+<script src="../common/js/notify/bootstrap-notify.js"></script>
+<script src="../common/js/bootbox/bootbox.min.js"></script>
+<script src="../common/js/bootstrap-slider/bootstrap-slider.js"></script>
+<script src="../common/js/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+<script src="../common/js/shufflejs/jquery.shuffle.modernizr.min.js"></script>
+
+
+<script src="../common/js/draw2d.js"></script>
+<script src="../socket.io/socket.io.js"></script>
+
+<SCRIPT src="./js/webpack/bundle.js"></SCRIPT>
+
+</html>

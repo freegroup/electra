@@ -1,0 +1,89 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+math_Mean = math_Mean.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.total   = 0;    // the running total
+        this.average = 0;    // the average
+        this.readings = []; 
+        this.readIndex = 0;
+        this.numReadings =0;
+        
+        this.on("change:userData.numReadings",(emitter, event)=>{
+            this.numReadings = parseInt(event.value);
+            this.readings = []; 
+            this.total =0;
+            this.average = 0;
+            this.readings.length = this.numReadings;
+            this.pointer=0;
+            this.readIndex = 0;
+            this.readings.fill(0)
+        });
+        
+        this.attr({
+            resizeable:false,
+            "userData.numReadings":10
+        });
+
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        this.total = this.total - this.readings[this.readIndex];
+        this.readings[this.readIndex] = this.getInputPort(0).getValue() || 0;
+        this.total = this.total + this.readings[this.readIndex];
+        this.readIndex = (this.readIndex+1)%this.readings.length;
+        this.average = parseInt((this.total / this.readings.length)*1000)/1000;
+        this.getOutputPort(0).setValue(this.average);
+    },
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+    },
+    
+    getParameterSettings:function()
+    {
+        return [
+        {
+            name:"numReadings",
+            label:"Number of Readings for the average",
+            property:{
+                type: "integer",
+                min: 10,
+                max: 150,
+                increment:1
+        }
+        }];
+    }
+});

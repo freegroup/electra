@@ -1,0 +1,108 @@
+
+.sections {
+  list-style: none;
+  padding: 0;
+  margin: 10px;
+
+  .section {
+    margin-left:20px;
+    margin-right:20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding-left:3px;
+
+    &.error {
+      border:1px solid red;
+    }
+
+    &:hover{
+      background-color: rgba(0,0,0,0.01);
+      border: 1px solid rgba(0,0,0,0.1);
+      .sectionContent[data-type='spacer'] {
+        .material-button{
+          visibility:visible !important;
+        }
+      }
+    }
+
+    .sectionContent {
+      &[data-type='image']{
+        text-align: center;
+        max-width: 100%;
+
+        #editor-container {
+          display: initial;
+          &:hover {
+            box-shadow:0 0 45px rgba(0,0,0,0.1);
+            border:1px dot-dash black;
+          }
+          .drop-message{
+            margin: auto;
+          }
+          #image-preview {
+            margin-top: 20px;
+            .image-view {
+              display: inline-block;
+              position: relative;
+              margin-right: 13px;
+              margin-bottom: 13px;
+              img {
+                max-width: 90%;
+              }
+            }
+            .overlay {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              top: 0;
+              right: 0;
+              z-index: 2;
+              background: rgba(255, 255, 255, 0.5);
+            }
+          }
+        }
+      }
+
+      &[data-type='markdown']{
+        h1 {
+          font-weight: 400;
+          margin-bottom: 0;
+          color: @tintColor;
+          text-decoration: underline;
+        }
+
+        h2 {
+          font-weight: 300;
+          color: @tintColor;
+        }
+
+      }
+
+      &[data-type='brain']{
+        left: 50%;
+        position: relative;
+        transform: translateX(-50%);
+        max-width:100%;
+      }
+      &[data-type='spacer']{
+        position: relative;
+        height:36px;
+        text-align: center;
+        .material-button{
+          visibility:hidden;
+          &::before{
+            padding-right:5px;
+          }
+        }
+      }
+
+    }
+
+  }
+  .activeSection {
+    position:relative;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  }
+}
+
+

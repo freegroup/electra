@@ -1,0 +1,29 @@
+.paletteContainer {
+  border: 0;
+  background-color: @layerPaneBgColor;
+  text-align: center;
+  z-index: 1;
+  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+  border-right: 1px solid rgba(74, 74, 74, 0.5);
+  border-left: 1px solid rgba(74, 74, 74, 0.5);
+
+  .paletteItem{
+    text-align: left;
+    padding:10px;
+    cursor: pointer;
+    &:hover{
+      background-color:rgba(0,0,0,0.05)
+    }
+
+    .icon {
+      margin-right:10px;
+    }
+    &.selected{
+      background-color:rgba(0,0,0,0.03)
+    }
+
+    &.admin{
+      font-weight: bold;
+    }
+  }
+}

@@ -1,0 +1,134 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+video_source_WebCam = video_source_WebCam.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.TRANSPARENT_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+   
+        this.img = new draw2d.shape.basic.Image({
+            width: this.getWidth()-6, 
+            height: this.getHeight()/4*3 -6,
+            path: this.TRANSPARENT_PIXEL
+        });
+        this.img.hitTest = ()=>false
+        this.add(this.img, new draw2d.layout.locator.XYAbsPortLocator({x:3,y:3}));
+
+        
+        this.imageCapture = null;
+        this.track = null;
+        this.processing = false;
+        
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        this.getOutputPort("output_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        })
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        if(this.imageCapture===null && this.processing === false){
+            return
+        }
+        this.processing = true;
+        this.imageCapture.takePhoto()
+            .then((blob) =>{
+                var a = new FileReader();
+                a.onload = (e) => {
+                    this.img.attr("path", e.target.result)
+                    var image = new Image()
+                    image.onload = () => {
+                        this.getOutputPort("output_port1").setValue(image)
+                        this.processing = false;
+                    }
+                    image.src = e.target.result
+                }
+                a.readAsDataURL(blob);
+            }).catch((error) =>{
+                //console.log('takePhoto() error: ', error);
+            });
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+        try{
+            this.processing = false;
+            navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+               .then((stream) =>{
+                    this.track = stream.getVideoTracks()[0];
+                    this.imageCapture = new ImageCapture(this.track);
+                })
+                .catch((err) =>{
+                    console.log("no permission to use VideoCam");
+                })
+        }
+        catch(e){
+            console.log("didn't support mediaDevices")
+        }
+
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+        if(this.track !==null){
+            this.track.stop();
+            this.track = null;
+            this.imageCapture = null;
+        }
+        this.processing = false;
+    },
+    
+    getPersistentAttributes: function () 
+    {
+       let currentImage = this.img.attr("path");
+       this.img.attr("path", this.TRANSPARENT_PIXEL);
+    
+       let memento = this._super()
+    
+       this.img.attr("path", currentImage);
+
+       return memento
+    },
+    
+    setPersistentAttributes: function (memento) {
+        this._super(memento)
+        
+        this.img = this.getChildren().find( child => child instanceof draw2d.shape.basic.Image)
+        this.img.hitTest = ()=>false
+        
+        this.getOutputPort("output_port1").attr({
+            semanticGroup:"Image",
+            bgColor:"#ff0000",
+            diameter:15
+        })
+    }
+
+});

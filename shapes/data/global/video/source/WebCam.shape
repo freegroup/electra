@@ -1,0 +1,295 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "ea68019b-0785-24b0-f4c1-ba88f0028aeb",
+      "x": 7960,
+      "y": 7959.625,
+      "width": 80,
+      "height": 80,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.TRANSPARENT_PIXEL = \"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\";\n   \n        this.img = new draw2d.shape.basic.Image({\n            width: this.getWidth()-6, \n            height: this.getHeight()/4*3 -6,\n            path: this.TRANSPARENT_PIXEL\n        });\n        this.img.hitTest = ()=>false\n        this.add(this.img, new draw2d.layout.locator.XYAbsPortLocator({x:3,y:3}));\n\n        \n        this.imageCapture = null;\n        this.track = null;\n        this.processing = false;\n        \n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        this.getOutputPort(\"output_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        if(this.imageCapture===null && this.processing === false){\n            return\n        }\n        this.processing = true;\n        this.imageCapture.takePhoto()\n            .then((blob) =>{\n                var a = new FileReader();\n                a.onload = (e) => {\n                    this.img.attr(\"path\", e.target.result)\n                    var image = new Image()\n                    image.onload = () => {\n                        this.getOutputPort(\"output_port1\").setValue(image)\n                        this.processing = false;\n                    }\n                    image.src = e.target.result\n                }\n                a.readAsDataURL(blob);\n            }).catch((error) =>{\n                //console.log('takePhoto() error: ', error);\n            });\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n        try{\n            this.processing = false;\n            navigator.mediaDevices.getUserMedia({ audio: false, video: true })\n               .then((stream) =>{\n                    this.track = stream.getVideoTracks()[0];\n                    this.imageCapture = new ImageCapture(this.track);\n                })\n                .catch((err) =>{\n                    console.log(\"no permission to use VideoCam\");\n                })\n        }\n        catch(e){\n            console.log(\"didn't support mediaDevices\")\n        }\n\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n        if(this.track !==null){\n            this.track.stop();\n            this.track = null;\n            this.imageCapture = null;\n        }\n        this.processing = false;\n    },\n    \n    getPersistentAttributes: function () \n    {\n       let currentImage = this.img.attr(\"path\");\n       this.img.attr(\"path\", this.TRANSPARENT_PIXEL);\n    \n       let memento = this._super()\n    \n       this.img.attr(\"path\", currentImage);\n\n       return memento\n    },\n    \n    setPersistentAttributes: function (memento) {\n        this._super(memento)\n        \n        this.img = this.getChildren().find( child => child instanceof draw2d.shape.basic.Image)\n        this.img.hitTest = ()=>false\n        \n        this.getOutputPort(\"output_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n    }\n\n});",
+        "markdown": "## Full Adder\n\nFull adder is developed to overcome the drawback of \nHalf Adder circuit. It can add two one-bit numbers \nA and B, and carry c. The full adder is a three \ninput and two output combinational circuit.\n\n\n\n|  A    |    B    |  Cin     |    S    |    C   |\n|:-----:|:-------:|:--------:|:--------:|:-------|\n|   0   |    0    |     0    |     0    |     0  |\n|   0   |    0    |     1    |     1    |     0  |\n|   0   |    1    |     0    |     1    |     0  |\n|   0   |    1    |     1    |     0    |     1  |\n|   1   |    0    |     0    |     0    |     1  |\n|   1   |    0    |     1    |     0    |     1  |\n|   1   |    1    |     0    |     0    |     1  |\n|   1   |    1    |     1    |     0    |     1  |\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7960,
+          "y": 7959.625
+        },
+        {
+          "x": 8040,
+          "y": 7959.625
+        },
+        {
+          "x": 8040,
+          "y": 8039.625
+        },
+        {
+          "x": 7960,
+          "y": 8039.625
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "f153e2c9-2426-a021-7f8c-de4d897aaddd",
+      "x": 8037.1953125,
+      "y": 7994.125,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_port1",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "29bf5322-88f1-4125-62ce-4f291baca395",
+      "x": 7962.3046875,
+      "y": 8014.625,
+      "width": 49.5,
+      "height": 21.375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "WebCam",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 16,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "d99181e9-a34f-a85d-170a-c721567ac8cb",
+      "x": 7972.22705078125,
+      "y": 7977.625,
+      "width": 41,
+      "height": 28,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7972.22705078125,
+          "y": 7977.625
+        },
+        {
+          "x": 8013.22705078125,
+          "y": 7977.625
+        },
+        {
+          "x": 8013.22705078125,
+          "y": 8005.625
+        },
+        {
+          "x": 7972.22705078125,
+          "y": 8005.625
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "d4dc5221-e96d-7766-9406-5e4b6a72c2a9",
+      "x": 8012.916330781249,
+      "y": 7977.625,
+      "width": 12.31072000000131,
+      "height": 28,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 8013.178474781249,
+          "y": 7984.702888000007
+        },
+        {
+          "x": 8025.22705078125,
+          "y": 7977.625
+        },
+        {
+          "x": 8025.22705078125,
+          "y": 8005.625
+        },
+        {
+          "x": 8012.916330781249,
+          "y": 7998.809255999993
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyCircle",
+      "id": "010c21d9-30d3-6131-d7d2-a04644d554be",
+      "x": 8003.675311228644,
+      "y": 7979.125,
+      "width": 7.741019552604861,
+      "height": 7.741019552604861,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Circle"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(192,15,57,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    }
+  ]
+}

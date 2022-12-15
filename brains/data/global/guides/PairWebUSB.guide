@@ -1,0 +1,17 @@
+{
+  "screen": "#leftTabStrip .editor",
+  "waitFor": "#paletteElementsScroll",
+  "steps":[
+      {
+        "target": "#editConnections",
+        "position": "bottom",
+        "content": "Connect your Arduino first to allow browser USB access"
+      },
+       {
+        "target": "#simulationStartStop",
+        "position": "left",
+        "content": "Start the simulation and watch the buildin LED of the Arduino"
+      }
+    ]
+}
+

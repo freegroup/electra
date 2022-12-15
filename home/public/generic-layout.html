@@ -1,0 +1,209 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <title>Brainbox Login</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <link rel="icon" type="image/png" href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png" href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png" href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../common/images/favicon_16x16.png" sizes="16x16">
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+  <script src="../common/js/jquery/jquery.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, sans-serif;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 20;
+      height: 100vh;
+      padding-bottom: 20px;
+      background-color: #fff;
+      color: #333;
+      font-size: 30px;
+    }
+
+    .hero .teaser{
+      font-weight: 300;
+      font-size:calc(16px + 1vw);
+      line-height: 1.2;
+      width: 40%;
+      left: 10%;
+      position: relative;
+      top:20%;
+    }
+    .hero .slogan{
+      font-weight: 300;
+      line-height: 1.2;
+      font-size: calc(10px + 1vw);
+      position: relative;
+      margin-top: 43px;
+    }
+    .red_bg {
+      position: absolute;
+      height: 400vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #e13f4d, #d34657);
+    }
+
+    .pink_bg {
+      position: absolute;
+      top: 100vh;
+      height: 300vh;
+      width: 100%;
+      background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);
+    }
+
+    .orange_bg {
+      position: absolute;
+      top: 100vh;
+      height: 200vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);
+    }
+
+    .blue_bg {
+      position: absolute;
+      top: 100vh;
+      height: 100vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #242533, #2a3079);
+    }
+
+    .card {
+      position: sticky;
+      z-index: 1000;
+      width: 20%;
+      height: 50vh;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      padding-right: 20px;
+      padding-left: 20px;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);
+      top: 0;
+    }
+
+    .card_left {
+      left: 10%;
+      transform: translateY(50%);
+    }
+
+    .card_center {
+      left: 50%;
+      transform: translateY(50%) translateX(-50%);
+    }
+
+    .card_right {
+      left: 70%;
+      transform: translateY(50%);
+    }
+
+    .text {
+      position: absolute;
+      top: 90px;
+      width: 20%;
+      text-align: center;
+    }
+
+    .red_bg .text {
+      left: 10%;
+    }
+
+    .pink_bg .text {
+      left: 40%;
+    }
+
+    .orange_bg .text {
+      left: 70%;
+    }
+  </style>
+</head>
+
+<body>
+<div class="hero">
+  <div></div>
+  <div class="teaser">
+    Dive into the world of Logic Circuits for free!
+    <div class="slogan">From simple gates to complex sequential circuits, plot timing diagrams, automatic circuit generation, explore standard ICs, and much more</div>
+  </div>
+</div>
+<div class="red_bg">
+
+  <div class="text">
+    Text Text Text
+  </div>
+  <div class="card card_left">
+    left
+  </div>
+  <div class="pink_bg">
+    <div class="text">
+      Text Text Text
+    </div>
+    <div class="card card_center">
+      center
+    </div>
+
+    <div class="orange_bg">
+      <div class="text">
+        Text Text Text
+      </div>
+      <div class="card card_right">
+        right
+      </div>
+
+      <div class="blue_bg">
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+
+<script>
+
+  // simple text fade out for the card headers
+  //
+  function get() {
+    var el = $('.red_bg .text');
+    el.each((index, text) => {
+      text = $(text)
+      var offset = text.offset().top - $(window).scrollTop();
+      if (offset < 0) {
+        text.css("opacity", 0)
+        text.css("transform", "scale(1)")
+      } else if (offset < 50) {
+        text.css("opacity", (offset) / 200)
+        text.css("transform", "scale(" + (1 + (1 - (offset * 2) / 100)) + ")")
+      } else {
+        text.css("opacity", 1)
+        text.css("transform", "scale(1)")
+      }
+    })
+  }
+
+  get();
+  $(window).scroll(get);
+
+</script>
+
+</html>

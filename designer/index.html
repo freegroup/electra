@@ -1,0 +1,383 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title></title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <script src="https://accounts.google.com/gsi/client" defer></script>
+
+  <link rel="icon" type="image/png"    href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+
+  <script>
+  // global struct to serialize/deserialize JSON structs from/to draw2d shapes
+  var shape_designer = {
+    app: null,
+    figure: {},
+    filter: {}
+  }
+
+  var app = null
+  var socket = null
+</script>
+
+</head>
+
+<body id="container">
+
+<div id="layout">
+
+  <ul class="nav nav-tabs" id="leftTabStrip">
+    <li id="editor_tab"  class="active">
+      <a href="#editor" class="leftTab editor" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_edit.svg"/>
+      </a>
+    </li>
+
+    <li id="files_tab" class="">
+      <a href="#files" class="leftTab files" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+      </a>
+    </li>
+
+    <li id="index_tab">
+      <a href="#home" class="leftTab home" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_index.svg"/>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+     <div class="tab-pane active" id="editor">
+       <div class="workspace">
+          <div class="toolbar navbar-default">
+          </div>
+
+           <div id="layer" class="palette">
+             <div class="title">
+               <a href="../" ><img src="../common/images/favicon_64x64.svg"/>
+               <div>
+                 <h1>Component</h1>
+                 <h2>Editor</h2>
+               </div>
+               </a>
+             </div>
+             <div id="layer_header" class="panetitle">Layers</div>
+             <div id="layer_elements"></div>
+           </div>
+
+           <div class="content" id="draw2dCanvasWrapper">
+                <div id="canvas" class="" >
+                </div>
+           </div>
+
+           <div id="canvas_zoom" class="btn-group">
+             <button type="button" id="canvas_zoom_in"     class="btn highlight">&#8213;</button>
+             <button type="button" id="canvas_zoom_normal" class="btn highlight">100%</button>
+             <button type="button" id="canvas_zoom_out"    class="btn highlight">&#xFF0B</button>
+           </div>
+
+            <div class="btn-group dropdown">
+               <img id="canvas_config" src="./images/canvas_configure.svg" class="dropdown-toggle " data-toggle="dropdown"/>
+               <div class="dropdown-menu" id="canvas_config_items">
+                  <div class="">
+                    <label class="">Grid
+                        <input id="canvas_config_grid" type="checkbox" checked="checked" data-toggle="toggle" >
+                    </label>
+                  </div>
+               </div>
+            </div>
+
+           <div id="filter" class="navbar-default">
+               <div class="filter_actions" ></div>
+               <div class="highlight filter_header">Properties</div>
+               <div class="filter_toolbar" >
+                  <div class="btn-group dropup">
+                      <button id="add_filter_button" class="disabled btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                          <span class="glyphicon glyphicon-plus-sign"></span>
+                          Filter
+                      </button>
+                      <ul class="dropdown-menu" id="add_filter_action_menu">
+                      </ul>
+                  </div>
+               </div>
+           </div>
+       </div>
+      </div>
+
+
+
+      <div class="tab-pane" id="files">
+        <div class="row hidden-xs teaser">
+          <div class="col-sm-8 col-md-8">
+            <div class="title">
+              <img src="../common/images/navigation_file.svg"/>
+              <span>Component Library</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <header>
+            <div id="material-tabs">
+              <a id="userFilesTab" href="#userFiles" class="active">User Components</a>
+              <a id="globalFilesTab" href="#globalFiles">Build In Components</a>
+              <span class="yellow-bar"></span>
+            </div>
+          </header>
+
+          <div class="material-tab-content">
+            <div id="userFiles">
+            </div>
+            <div id="globalFiles">
+            </div>
+          </div>
+        </div>
+
+
+        <div class="toolbar navbar-default">
+         <span class="group applicationSwitch">
+
+            <label class="userinfo_toggler dropdown" >
+                  <span class="image-button" data-toggle="dropdown">
+                    <img  src="../common/images/toolbar_user.svg"/>
+                  </span>
+
+                  <div class="dropdown-menu" role="menu" >
+                  </div>
+            </label>
+         </span>
+        </div>
+
+      </div>
+
+
+      <div class="tab-pane active" id="home">
+      </div>
+
+
+
+  </div>
+</div>
+
+
+<!--
+# General shape settings
+#
+-->
+<div id="shapeSettingsDialog" class="modal fade" tabindex="-1">
+   <div class="modal-dialog ">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h4 class="media-heading">General Shape Settings</h4>
+           </div>
+           <div class="modal-body">
+
+
+               <fieldset class="form-group">
+               <label>Shape Base Class</label><br>
+               <div class="btn-group shapeBaseClass" data-toggle="buttons">
+                   <label class="btn btn-primary active">
+                       <input data-class="draw2d.SetFigure" type="radio" name="shapeBaseClass" > Basic Node
+                   </label>
+
+                   <label class="btn btn-primary">
+                       <input data-class="draw2d.shape.composite.Raft" type="radio" name="shapeBaseClass" > Raft
+                   </label>
+
+                   <label class="btn btn-primary">
+                       <input data-class="draw2d.shape.composite.Jailhouse" type="radio" name="shapeBaseClass"> Jail House
+                   </label>
+               </div>
+               </fieldset>
+
+           </div>
+           <div class="modal-footer">
+               <button class="btn" data-dismiss="modal">Abort</button>
+               <button class="btn btn-primary okButton"><span>Close</span></button>
+           </div>
+       </div>
+   </div>
+</div>
+
+
+<script id="welcomeTemplate" type="text/x-jsrender">
+
+  <div class="welcomeMessage">
+    <div class="teaser">
+      <h2>Component Editor</h2>
+      <p>
+        Create custom components for Thindexed.
+      </p>
+    </div>
+    <div class="description">
+      <p>
+      <i>Thindexed</i> can simulate wide variety of digital electronics and logical components to provide an 
+      easy and comfortable way to create circuits, documents and course material online. One of the coolest feature in 
+      Thindexed is, that user can define a new or custom component.
+      </p>
+      <button id="welcomeNewDocument">New Component</button> <button id="welcomeOpenExample">Open Example</button>
+    </div>
+    <img src="../common/images/app_designer.svg" width="200px">
+  </div>
+
+</script>
+
+<script id="shape-edit-template" type="text/js-template">
+/**
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+testShape = testShape.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+         // your special code here
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+    },
+
+    /**
+     * Get the simulator a hint which kind of hardware the shapes requires or supports
+     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost
+     * and your are running a circuit which needs this kind of hardware...
+     **/
+    getRequiredHardware: function(){
+      return {
+        arduino: false
+      }
+    }
+
+});
+</script>
+
+
+<script id="shape-base-template" type="text/js-template">
+// Generated Code for the Draw2D touch HTML5 lib.
+// File will be generated if you save the *.shape file.
+//
+// created with http://www.draw2d.org
+//
+//
+var {{{className}}} = CircuitFigure.extend({
+
+   NAME: "{{{className}}}",
+   VERSION: "${VERSION}",
+
+   init:function(attr, setter, getter)
+   {
+     var _this = this;
+
+     this._super( $.extend({stroke:0, bgColor:null, width:{{width}},height:{{height}}},attr), setter, getter);
+     var port;
+     {{#ports}}
+     // {{{name}}}
+     port = this.{{{method}}}({{{type}}}, new draw2d.layout.locator.XYRelPortLocator({x: {{x}}, y: {{y}} }));
+     port.setConnectionDirection({{direction}});
+     port.setBackgroundColor("{{color}}");
+     port.setName("{{name}}");
+     port.setMaxFanOut({{fanout}});
+     {{/ports}}
+   },
+
+   createShapeElement : function()
+   {
+      var shape = this._super();
+      this.originalWidth = {{width}};
+      this.originalHeight= {{height}};
+      return shape;
+   },
+
+   createSet: function()
+   {
+       this.canvas.paper.setStart();
+       var shape = null;
+       {{#figures}}
+       // {{{name}}}
+       shape = {{{constructor}}};
+       shape.attr({{{attr}}});
+       shape.data("name","{{{name}}}");
+       {{{extra}}}
+       {{/figures}}
+
+       return this.canvas.paper.setFinish();
+   }
+});
+</script>
+
+
+<div class="loader">
+  <div class="title">Loading the <i>Component Editor</i>...</div>
+  <div class="gooey">
+    <span class="dot"></span>
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
+
+<!-- Load TensorFlow.js. This is required to use coco-ssd model. -->
+<script src="//cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+<!-- Load the coco-ssd model. -->
+<script src="//cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+
+
+<!-- "include" files in a world of ES6 is not perfect. Unfortunately draw2d.js isn't complete
+     ES6 and therefore I run into some compatibility issues with jQuery and prerequisite
+-->
+<script src="../common/js/jquery/jquery.js"></script>
+<script src="../common/js/jquery/jquery-ui.js"></script>
+
+<script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+<script src="../common/js/bootbox/bootbox.min.js"></script>
+<script src="../common/js/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+
+<script src="../common/js/anno.js/anno.js"></script>
+<script src="../common/js/draw2d.js"></script>
+<script src="../common/js/ace-noconflict/ace.js"></script>
+<script src="../socket.io/socket.io.js"></script>
+<SCRIPT src="./js/webpack/bundle.js"></SCRIPT>
+
+</html>

@@ -1,0 +1,77 @@
+
+#addon{
+  box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+  padding:40px !important;
+  .branding{
+    color: @tintColor;
+  }
+
+  .btn{
+    border:0;
+    text-transform: uppercase;
+    background-color:transparent;
+    color:@tintColor;
+    transition: all 0.5s;
+
+    &:hover{
+      background-color: fadeout(@tintColor,96);
+      transition: all 0.5s;
+    }
+  }
+
+  .paragraph{
+    h3{
+      color: @tintColor;
+      padding-top:45px;
+    }
+    .block{
+      padding-bottom:30px;
+    }
+  }
+
+  overflow:auto;
+  background-size: cover;
+
+  .teaser {
+    margin-bottom:30px;
+    background-image:
+      linear-gradient(to bottom,rgba(255,255,255,0) 20%,rgba(255,255,255,.4) 70%,#fff 100%),
+      radial-gradient(ellipse at center,rgba(247,249,250,.7) 0%,rgba(247,249,250,0) 60%),
+      linear-gradient(to bottom,rgba(247,249,250,0) 0%,#f7f9fa 100%);
+
+    .title {
+      color: @tintColor;
+      font-weight: 200;
+      font-size: 4vw;
+      white-space: nowrap;
+      margin-bottom:10px;
+      img{
+        padding-right: 40px;
+        height: 100px;
+      }
+    }
+    .slogan {
+      font-size: 2vw;
+      font-weight: 200;
+      color: #34495e;
+    }
+  }
+
+
+  .introText{
+    font-size: 20px;
+    font-weight: 200;
+    color: #34495e;
+  }
+
+  footer{
+    text-align: center;
+    margin-top: 100px;
+    color:@tintColor;
+    a{
+      color: @tintColor;
+      text-decoration: underline;
+    }
+  }
+
+}

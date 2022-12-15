@@ -1,0 +1,92 @@
+#layout {
+  #leftTabStrip {
+    background-color: @leftMenubarBackground;
+    &:after {
+      content: "Admin";
+      -webkit-transform: rotate(-90deg) translate(-90px, -40px);
+      -moz-transform: rotate(-90deg) translate(-90px, -40px);
+      -ms-transform: rotate(-90deg) translate(-90px, -40px);
+      transform: rotate(-90deg) translate(-90px, -40px);
+      font-size: 55px;
+      white-space: nowrap;
+      color: @toolbarBackground;
+      font-weight: 200;
+      letter-spacing: 3px;
+    }
+
+    li {
+      &.active {
+        a {
+          &:hover {
+            background-color: white;
+          }
+        }
+        svg {
+          polyline[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          path[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          g[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          line[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          circle[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[fill]{
+            fill: @leftMenubarBackground !important;
+          }
+          circle[fill]{
+            fill: @leftMenubarBackground !important;
+          }
+        }
+      }
+
+      a {
+        &:hover{
+          background-color:rgba(0,0,0,0.1);
+        }
+        padding: 4px;
+        svg {
+          polyline[stroke] {
+            stroke: white !important;
+          }
+          path[stroke] {
+            stroke: white !important;
+          }
+          path[stroke] {
+            stroke: white !important;
+          }
+          line[stroke] {
+            stroke: white !important;
+          }
+          circle[stroke] {
+            stroke: white !important;
+          }
+          g[stroke] {
+            stroke: white !important;
+          }
+          rect[stroke] {
+            stroke: white !important;
+          }
+          rect[fill]{
+            fill: white !important;
+          }
+          circle[fill]{
+            fill: white !important;
+          }
+        }
+      }
+    }
+  }
+}

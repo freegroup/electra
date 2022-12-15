@@ -1,0 +1,536 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "e92ac7a1-d149-90c6-1281-23d32bf22f9d",
+      "x": 7960,
+      "y": 7960,
+      "width": 80,
+      "height": 80,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.worker= null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n        this.processing = false;\n        this.getInputPort(\"input_port1\").setSemanticGroup(\"Image\");\n        this.getOutputPort(\"output_port1\").setSemanticGroup(\"Image\");\n        this.attr({\n            resizeable:false\n        });\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        var img = this.getInputPort(\"input_port1\").getValue();\n        if(img instanceof HTMLImageElement && this.worker!==null && this.processing===false){\n            var imageData = this.imageToData(img);\n            // Push it to the WebWorker with \"Transferable Objects\"\n            // Passing data by reference instead of structure clone\n            //\n            this.processing = true;\n            this.worker.postMessage(imageData, [imageData.data.buffer]);\n        }\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n        // the method which runs as WebWorker\n        //\n        var workerFunction = function(event){\n            var imageData = event.data;\n            var pixels    = imageData.data;\n            var width     = imageData.width;\n            var height    = imageData.height;\n            var angles    = 360;\n            var rhoMax    = Math.sqrt(width*width + height*height);\n            var accum     = Array(angles);\n            var houghAccCalled=false;\n            \n            // Precalculate tables.\n            if(self.cosTable===undefined){\n                self.cosTable = new Float64Array(angles);\n                self.sinTable = new Float64Array(angles);\n                var theta = 0;\n                var piSteps = Math.PI / angles;\n                for (var i = 0; i < angles; i++) {\n                    self.cosTable[i] = Math.cos(theta);\n                    self.sinTable[i] = Math.sin(theta);\n                    theta += piSteps;\n                }\n            }\n           \n            function getAngle(line) {\n                if(!line) return null;\n                return 180-(Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI)|0;\n            }\n\n            function getFont() {\n                var ratio = 0.3;   // calc ratio\n                var size = width * ratio;   // get font size based on current width\n                return \"normal 100 \"+ (size|0) + \"px Verdana\"; // set font\n            }\n            \n            // Clipping helper\n            //\n            // bit code reflects the point position relative to the bbox:\n            //         left  mid  right\n            //    top  1001  1000  1010\n            //    mid  0001  0000  0010\n            // bottom  0101  0100  0110\n            function bitCode(p, bbox) {\n                var code = 0;\n            \n                if (p[0] < bbox[0]) code |= 1; // left\n                else if (p[0] > bbox[2]) code |= 2; // right\n            \n                if (p[1] < bbox[1]) code |= 4; // bottom\n                else if (p[1] > bbox[3]) code |= 8; // top\n            \n                return code;\n            }\n            \n            // intersect a segment against one of the 4 lines that make up the bbox\n            function intersect(a, b, edge, bbox) {\n                return edge & 8 ? [a[0] + (b[0] - a[0]) * (bbox[3] - a[1]) / (b[1] - a[1]), bbox[3]] : // top\n                    edge & 4 ? [a[0] + (b[0] - a[0]) * (bbox[1] - a[1]) / (b[1] - a[1]), bbox[1]] : // bottom\n                    edge & 2 ? [bbox[2], a[1] + (b[1] - a[1]) * (bbox[2] - a[0]) / (b[0] - a[0])] : // right\n                    edge & 1 ? [bbox[0], a[1] + (b[1] - a[1]) * (bbox[0] - a[0]) / (b[0] - a[0])] : null; // left\n            }\n            \n            // Sutherland-Hodgeman polygon clipping algorithm\n            function clipLine(line, w, h) {\n                if(!line) return null;\n                var offset = 10;\n                var points = [[line.x1, line.y1],[line.x2, line.y2]];\n                var bbox = [offset,offset, w-offset, h-offset];\n                var len = points.length,\n                    codeA = bitCode(points[0], bbox),\n                    part = [],\n                    i, a, b, codeB, lastCode,\n                    result = [];\n            \n                for (i = 1; i < len; i++) {\n                    a = points[i - 1];\n                    b = points[i];\n                    codeB = lastCode = bitCode(b, bbox);\n            \n                    while (true) {\n            \n                        if (!(codeA | codeB)) { // accept\n                            part.push(a);\n                            if (codeB !== lastCode) { // segment went outside\n                                part.push(b);\n                                if (i < len - 1) { // start a new line\n                                    result.push(part);\n                                    part = [];\n                                }\n                            } else if (i === len - 1) {\n                                part.push(b);\n                            }\n                            break;\n                        } else if (codeA & codeB) { // trivial reject\n                            break;\n                        } else if (codeA) { // a outside, intersect with clip edge\n                            a = intersect(a, b, codeA, bbox);\n                            codeA = bitCode(a, bbox);\n                        } else { // b outside\n                            b = intersect(a, b, codeB, bbox);\n                            codeB = bitCode(b, bbox);\n                        }\n                    }\n                    codeA = lastCode;\n                }\n            \n                if (part.length) result.push(part);\n            \n                if(result.length > 0){\n                    result = result[0]\n                    if(result.length === 2){\n                        p1 = result[0];\n                        p2 = result[1];\n                        return {x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1]}\n                    }\n                }\n                return null;\n            }\n\n            function findMaxInHough() {\n                var max = 0;\n                var bestRho = 0;\n                var bestTheta = 0;\n                for (var i = 0; i < angles; i++) {\n                    for (var j = 0; j < accum[i].length; j++) {\n                        if (accum[i][j] > max) {\n                            max = accum[i][j];\n                            bestRho = j;\n                            bestTheta = i;\n                        }\n                    }\n                }\n\n                if (max > height) {\n                    bestRho <<= 1; // accumulator is bitshifted\n                    bestRho -= rhoMax; /// accumulator has rhoMax added\n                    var a = self.cosTable[bestTheta];\n                    var b = self.sinTable[bestTheta];\n\n                    var x1 = (a * bestRho + 1000 * (-b))|0;\n                    var y1 = (b * bestRho + 1000 * ( a))|0;\n                    var x2 = (a * bestRho - 1000 * (-b))|0;\n                    var y2 = (b * bestRho - 1000 * ( a))|0;\n                    // return a line with P1(x1,y1) and P2(x2,y2)\n                    // startpoint is ALWAYS on the downside\n                    if(y1<y2){\n                        return {x1:x2 + width / 2,  y1:y2 + height / 2, x2:x1 + width / 2,  y2:y1 + height / 2 };\n                    }\n                    else{\n                        return {x1:x1 + width / 2,  y1:y1 + height / 2, x2:x2 + width / 2,  y2:y2 + height / 2 };\n                    }\n                }\n                return null;\n            }\n            \n            function houghAcc(x, y) {\n                houghAccCalled= true;\n                var rho;\n                x -= width  / 2;\n                y -= height / 2;\n                for (var index = 0; index < angles; index++) {\n                    rho = rhoMax + x * self.cosTable[index] + y * self.sinTable[index];\n                    rho >>= 1;\n                    if (accum[index] === undefined) accum[index] = [];\n                    if (accum[index][rho] === undefined) {\n                       accum[index][rho] = 1;\n                    } else {\n                       accum[index][rho]++;\n                    }\n                }\n            }\n            \n            for (var index=0; index<pixels.length; index+=4) {\n                // because we NEED a black/white image we can just use the RED part\n                // if the RGBA color\n                if(pixels[index]<80){\n                    var x = (index/4) % width;\n                    var y = (index/4) / width;\n                    houghAcc(x,y);\n                }\n            }\n\n            var line = houghAccCalled?findMaxInHough():null;\n            \n            var canvas = new OffscreenCanvas(width, height);\n            var ctx = canvas.getContext('2d');\n            ctx.fillStyle = 'rgba(255,255,255,1)';\n            ctx.beginPath();\n            ctx.fillRect(0,0, width, height);\n            ctx.closePath();\n            \n            line = clipLine(line,width, height)\n            angle = getAngle(line);\n            if(line){\n                var stroke = Math.max(2,(width/25)|0);\n                ctx.beginPath();\n                ctx.strokeStyle = 'rgba(255,0,0,1)';\n                ctx.lineWidth = stroke;\n                ctx.moveTo(line.x1, line.y1);\n                ctx.lineTo(line.x2, line.y2);\n                ctx.stroke();\n                ctx.closePath();\n                \n                ctx.beginPath();\n                ctx.arc(line.x1, line.y1, stroke/2+1, 0, 2 * Math.PI, false);\n                ctx.fillStyle = '#0000ff';\n                ctx.fill();\n                ctx.closePath();\n\n                ctx.beginPath();\n                ctx.arc(line.x2, line.y2, stroke/2+1, 0, 2 * Math.PI, false);\n                ctx.fillStyle = '#00FF00';\n                ctx.fill();\n                ctx.closePath();\n\n                ctx.font = getFont();\n                ctx.textBaseline = \"top\";\n                ctx.fillStyle = \"#d0d0d0\";\n                ctx.fillText(\"\"+angle+\"°\" , 0, 0);\n            }\n            imageData = ctx.getImageData(0, 0, width, height);\n            self.postMessage({imageData, angle}, [imageData.data.buffer]);\n        };\n        \n        // the method which receives the WebWorker result\n        //\n       var receiverFunction = (event) => {\n            var imageData = event.data.imageData;\n            var angle = event.data.angle;\n            // map the angle [0..180] to [0..5]\n            angle = 5/180*angle;\n            this.tmpContext.putImageData(imageData,0,0);\n            var image = new Image();\n            image.onload = () => { \n                console.log(angle);\n                this.getOutputPort(\"output_port1\").setValue(image);\n                this.getOutputPort(\"output_angle\").setValue(angle);\n                this.processing = false;\n            };\n            image.src = this.tmpCanvas.toDataURL();\n        };\n\n\n        // convert a js function to a WebWorker\n        //\n        this.worker = this.createWorker(workerFunction);\n        this.worker.onmessage = receiverFunction;\n        this.processing = false;\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n        if(this.worker) this.worker.terminate();\n        delete this.worker;\n        delete this.tmpContext;\n        delete this.tmpCanvas;\n        this.worker = null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n        this.processing = false;\n    },\n    \n\n    /**\n     *  Helper function to dynamically create Web Workers.\n     */\n    createWorker: function(fn) {\n        var blob = new Blob([\"self.onmessage = \", fn.toString()], {\n           type: \"text/javascript\"\n        });\n        var url = window.URL.createObjectURL(blob);\n        return new Worker(url);\n    },\n    \n    imageToData: function(image){\n        var width = image.naturalWidth;\n        var height= image.naturalHeight;\n       \n        if(this.tmpContext !==null && this.tmpContext.width!== width){\n            delete this.tmpContext;\n            delete this.tmpCanvas;\n            this.tmpCanvas = null;\n            this.tmpContext = null;\n        }\n\n        // convert the HTMLImageElement to an ImageData object. Required for the WebWorker\n        //\n        if(this.tmpContext === null ) {\n            this.tmpCanvas = document.createElement('canvas');\n            this.tmpCanvas.width = width;\n            this.tmpCanvas.height = height;\n            this.tmpContext = this.tmpCanvas.getContext('2d');\n        }\n        this.tmpContext.drawImage(image, 0, 0, width, height);\n        return this.tmpContext.getImageData(0, 0, width, height);\n    }\n});",
+        "markdown": "## Line Angle detector\n\nFinds the most prominent Line in the Image and returns the angle of the line.\n\nThis is done by a \"Hough Transformation\"\n\nYou can test it on [https://freegroup.github.io/hough-transform-visualizer/](https://freegroup.github.io/hough-transform-visualizer/)\nand inspect how the algorithm works.\n\nDraw on the left area a line. You can see on the right the **Hough Transformation**.\nPoint with the mouse on one hospot. This is the location of a line on the left.\n\n",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7960,
+          "y": 7960
+        },
+        {
+          "x": 8040,
+          "y": 7960
+        },
+        {
+          "x": 8040,
+          "y": 8040
+        },
+        {
+          "x": 7960,
+          "y": 8040
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "08ecbf02-d0c7-c225-b373-3d46a828f568",
+      "x": 7960.326603918229,
+      "y": 8016.044239424005,
+      "width": 58.59375,
+      "height": 21.375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Line Angle",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 14,
+      "fontColor": "rgba(0,0,0,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "509f0f7f-9c3d-3b54-d79c-877493488fa7",
+      "x": 7954.2288,
+      "y": 7994.9096,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_port1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": null
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "b832e06d-477d-4ffc-697b-d19504dc9aad",
+      "x": 8035.26005,
+      "y": 7994.9096,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_port1",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "ae22d42a-35d7-3857-958b-785089f32ff8",
+      "x": 8035,
+      "y": 8020,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_angle",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "67330ad1-a95f-151a-e910-9b17a569af3e",
+      "x": 7964.2288,
+      "y": 7964.044239424005,
+      "width": 71,
+      "height": 52,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "PictureFrame"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7964.2288,
+          "y": 7964.044239424005
+        },
+        {
+          "x": 8035.2288,
+          "y": 7964.044239424005
+        },
+        {
+          "x": 8035.2288,
+          "y": 8016.044239424005
+        },
+        {
+          "x": 7964.2288,
+          "y": 8016.044239424005
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyCircle",
+      "id": "5f767493-26e4-fad9-cef3-1901c554622d",
+      "x": 8009.295353918229,
+      "y": 7994.9096,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Head"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(0,0,0,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "bec688ec-db41-e932-92bd-a99977fa9862",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 2,
+      "color": "rgba(0,0,0,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 8001.897472000003,
+          "y": 7966.1092012120025
+        },
+        {
+          "x": 8000.062464000004,
+          "y": 7972.924945212004
+        },
+        {
+          "x": 7994.557440000002,
+          "y": 7988.391441212006
+        },
+        {
+          "x": 7991.411712000002,
+          "y": 8009.1008172120055
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": 9,
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "3bbb9b1e-5876-807c-87a9-f5bd504178e8",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 1,
+      "color": "rgba(0,0,0,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 7985.139520000011,
+          "y": 8008.333649211997
+        },
+        {
+          "x": 7988.547392000005,
+          "y": 7996.537169212001
+        },
+        {
+          "x": 7977.275200000005,
+          "y": 7977.924945212002
+        },
+        {
+          "x": 7969.410880000001,
+          "y": 7994.964305211998
+        },
+        {
+          "x": 7972.556608000004,
+          "y": 8007.809361212002
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": 9,
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "7da67d0d-4832-6a67-48db-4f41733c2e3e",
+      "x": 7978.566656000003,
+      "y": 7968.730641212006,
+      "width": 9.175040000000081,
+      "height": 12.058623999999327,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 2,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7978.566656000003,
+          "y": 7968.730641212006
+        },
+        {
+          "x": 7987.741696000003,
+          "y": 7980.789265212005
+        },
+        {
+          "x": 7978.566656000003,
+          "y": 7980.789265212005
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "3932527f-33c3-d460-9cbd-09d9f485e898",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 2,
+      "color": "rgba(255,15,31,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 8019.94731775999,
+          "y": 7986.990202171997
+        },
+        {
+          "x": 8002.037639679997,
+          "y": 7981.684407612006
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": "",
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.OpacityFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLine",
+      "id": "e8187275-290a-bdf3-07c5-3d617da27d5b",
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Line"
+      },
+      "cssClass": "shape_designer_figure_ExtLine",
+      "stroke": 2,
+      "color": "rgba(255,15,31,1)",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
+      "vertex": [
+        {
+          "x": 8003.619281919999,
+          "y": 7988.466986811999
+        },
+        {
+          "x": 7999.865379840004,
+          "y": 7981.032582972004
+        },
+        {
+          "x": 8006.513351680005,
+          "y": 7976.7858501720075
+        }
+      ],
+      "router": "draw2d.layout.connection.VertexRouter",
+      "radius": "",
+      "filters": [
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.OpacityFilter"
+        }
+      ]
+    }
+  ]
+}

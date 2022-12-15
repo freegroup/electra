@@ -1,0 +1,141 @@
+.paletteContainer {
+  border: 0;
+  background-color: @layerPaneBgColor;
+  text-align: center;
+  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3);
+  z-index: 1;
+  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+  border-right: 1px solid rgba(74, 74, 74, 0.5);
+  border-left: 1px solid rgba(74, 74, 74, 0.5);
+
+  .palette_item{
+    padding:0;
+    text-align:center;
+    width: unit( (@leftPaneWidth / 2) , px);
+    height: unit( (@leftPaneWidth / 2) , px);
+    border: 1px solid #f0f0f0;
+
+    >div{
+      width:100%;
+      height:100%;
+      text-align:center;
+      border:1px solid transparent;
+      img{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        left: 50%;
+        transform: translate(-50%,-10px);
+      }
+      div{
+        position: absolute;
+        padding-bottom: 2px;
+        width: 100%;
+        bottom: 0;
+        padding-top: 2px;
+        background-color:rgba(0,0,0,0.05);
+        cursor:default;
+      }
+    }
+    .glowBorder{
+      border: 1px solid @tintColor;
+    }
+  }
+  .draw2d_droppable{
+    cursor:move;
+    max-height:80px;
+  }
+  
+  #paletteHeader {
+    #paletteFilter {
+      .toc {
+        padding: 5px;
+        padding-top:0px;
+        margin-top:20px;
+        line-height:30px;
+      }
+    }
+  }
+
+  #paletteElementsScroll{
+    .pageElement{
+      padding:10px;
+      text-align: left;
+      cursor:pointer;
+      border-left:2px solid transparent;
+      position: relative;
+      padding-right: 45px;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+      &.selected{
+        background-color:#EFEFEF !important;
+        border-left: 2px solid @tintColor;
+      }
+      &:hover{
+        background-color: rgba(248, 248, 248, 0.6);
+        .page_action {
+          visibility: initial;
+        }
+      }
+      .fa{
+        padding:4px;
+        border-radius: 2px;
+        border:1px solid transparent;
+        &:hover{
+          border:1px solid rgba(0,0,0,0.4);
+          box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
+        }
+      }
+      .page_action {
+        position: absolute;
+        top: 10px;
+        visibility: hidden;
+      }
+      .page_delete{
+        right: 0px;
+      }
+      .page_edit_name{
+        right: 20px;
+      }
+    }
+  }
+}
+
+
+
+#paletteElementsOverlay{
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255,255,255,0.7);
+  display: none;
+}
+
+#paletteElementsScroll.pages {
+  position: absolute !important;
+  top: unit(@leftPaneTitleHeight, px) !important;
+}
+
+#paletteFilter.pages{
+  box-shadow: none !important;
+  top: 64px !important;
+  padding:0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  text-align: left !important;
+  position: relative !important;
+
+  #documentPageAdd {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+    min-width: auto;
+    line-height: initial;
+    margin-left: 16px;
+    float:right;
+  }
+}

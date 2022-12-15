@@ -1,0 +1,37 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+widget_HighLow = widget_HighLow.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.value = false;
+        this.on("click",()=>{            
+            this.value = !this.value;
+            this.layerShow("low" , !this.value, 100);
+            this.layerShow("high",  this.value, 100);
+            this.getOutputPort(0).setValue(this.value);
+        });
+
+        this.on("added",()=>{
+            this.layerShow("low" , !this.value);
+            this.layerShow("high",  this.value);
+            this.getOutputPort(0).setValue(this.value);
+        });
+    },
+    
+    calculate: function()
+    {
+        // do nothing per default;
+    }
+
+});

@@ -1,0 +1,22 @@
+{
+  "screen": "#leftTabStrip .editor",
+  "waitFor": "#paletteElementsScroll",
+  "steps":[
+
+              {
+                "target": "#simulationStartStop",
+                "position": "left",
+                "content": "Start the simulation of the circuit..."
+              },
+              {
+                "target": "#draw2dCanvasWrapper",
+                "position": "left",
+                "content": "Test Test.."
+              },
+              {
+                "target": "#probe_window_opener",
+                "position": "top",
+                "content": "...and open the probe window to inspect the signals"
+              }
+            ]
+}

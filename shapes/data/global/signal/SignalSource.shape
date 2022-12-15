@@ -1,0 +1,146 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "722d9720-c010-73b7-4026-b9e994a271b3",
+      "x": 7967.136399999998,
+      "y": 7989.234375,
+      "width": 65.72720000000481,
+      "height": 20.243800000000192,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        // calculate the outer frame/shape in the correct size in relation to the length of the text\n        //\n        var adjustWidth = ()=>{\n            var width = this.layerGet(\"label\").getBBox().width+15\n\n            this.setWidth(width+5);\n            this.layerAttr(\"BoundingBox\", { path: `M0 0 L${width} 0 L${width} 20 L0 20 Z`})\n            this.layerAttr(\"outline\",     { path: `M0 0 L${width-13} 0 L${width} 10 L${width-13} 20 L0 20 Z`})\n        }\n        this.on(\"change:userData.signalId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n            adjustWidth()\n        });\n        this.on(\"added\", ()=>{\n            var signalId = this.attr(\"userData.signalId\")\n            if(!signalId){\n                signalId = \"Signal_Id\"\n                this.attr(\"userData.signalId\", signalId)\n            }            \n            this.layerAttr(\"label\", {text: signalId})\n            adjustWidth()\n        })\n        \n        // override the \"getValue\" method of the port and delegate them to the related party (SourceTarget port)\n        this.originalGetValue = this.getOutputPort(0).getBooleanValue\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function(context)\n    {\n        var signalId = this.attr(\"userData.signalId\")\n        if(context.signalPorts && context.signalPorts[signalId]){\n            this.getOutputPort(0).getBooleanValue = function(){ \n                if(context.signalPorts[signalId] instanceof draw2d.Port){\n                    return context.signalPorts[signalId].getBooleanValue()\n                }\n                else {\n                    return false\n                }\n            }\n        }\n    },\n\n\n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"signalId\",\n            label:\"Signal Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    },\n    \n  /**\n   * @private\n   */\n  applyTransformation: function () {\n    let s =\n      // override the base implementation and do not scale the internal SVG elements....this let the arrow looks a like streche...we\n      // calculate the path in the event handler. A lot more code....but the result is much cleaner\n      //\"S\" + this.scaleX + \",\" + this.scaleY + \",0,0 \" +\n      \"R\" + this.rotationAngle + \",\" + ((this.getWidth() / 2) | 0) + \",\" + ((this.getHeight() / 2) | 0) +\n      \"T\" + this.getAbsoluteX() + \",\" + this.getAbsoluteY() +\n      \"\"\n    this.svgNodes.transform(s)\n    if (this.rotationAngle === 90 || this.rotationAngle === 270) {\n      let before = this.svgNodes.getBBox(true)\n      let ratio = before.height / before.width\n      let reverseRatio = before.width / before.height\n      let rs = \"...S\" + ratio + \",\" + reverseRatio + \",\" + (this.getAbsoluteX() + this.getWidth() / 2) + \",\" + (this.getAbsoluteY() + this.getHeight() / 2)\n      this.svgNodes.transform(rs)\n    }\n\n    return this\n  }\n\n\n});",
+        "name": "outline",
+        "markdown": "# Signal Source\n\nWhen you don’t want to route too many wires, how about trying `signal` elements.\n\n\nA `signal` shape is an electrical design primitive. It is used to make an electrical \nconnection between one schematic group and another group, or sheet symbol in a \ndesign. The name of the `signal` defines the connection. \n\nA `signal target` on a schematic sheet connects to `signals source`\nor sheet entries with the **same name** in the project.",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(0,120,242,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7967.136399999998,
+          "y": 7989.234375
+        },
+        {
+          "x": 8020.954579219902,
+          "y": 7989.234375
+        },
+        {
+          "x": 8032.863600000002,
+          "y": 7999.234375
+        },
+        {
+          "x": 8020.954579219902,
+          "y": 8009.234375
+        },
+        {
+          "x": 7967.3802,
+          "y": 8009.478175
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "2369ca87-43d5-837d-cc3e-448f9f9747e4",
+      "x": 7967.909450000003,
+      "y": 7989.234375,
+      "width": 51.375,
+      "height": 21.25,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Signal_ID",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 12,
+      "fontColor": "rgba(0,120,242,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "fd38272c-22f5-46fb-3f8d-2d70036a8113",
+      "x": 8026.863600000002,
+      "y": 7994.478175,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Port",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    }
+  ]
+}

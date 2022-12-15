@@ -1,0 +1,94 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_alu_FullAdder4Bit = digital_alu_FullAdder4Bit.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function()
+    {
+        var input = [];
+        var output = [];
+        
+        input.push(this.getInputPort("input_a1").getBooleanValue());
+        input.push(this.getInputPort("input_b1").getBooleanValue());
+        input.push(this.getInputPort("input_c1").getBooleanValue());
+        input.push(this.getInputPort("input_d1").getBooleanValue());
+        
+        input.push(this.getInputPort("input_a2").getBooleanValue());
+        input.push(this.getInputPort("input_b2").getBooleanValue());
+        input.push(this.getInputPort("input_c2").getBooleanValue());
+        input.push(this.getInputPort("input_d2").getBooleanValue());
+ 
+        input.push(this.getInputPort("input_cin").getBooleanValue());
+ 
+        var carry = input[8];
+       
+        for (var i=0; i<4 ; i++){
+            // calculate with the carry
+            if(carry){
+                if(input[i] && input[i+4]){
+                    output[i]=true;
+                }
+                else if(input[i] || input[i+4]){
+                    output[i]=false;
+                }
+                else{
+                    output[i]=true;
+                    carry=false;
+                }
+            }
+            else{
+                if(input[i] && input[i+4]){
+                    output[i]=false;
+                    carry = true;
+                }
+                else if(input[i] || input[i+4]){
+                    output[i]=true;
+                }
+                else{
+                    output[i]=false;
+                }
+            }
+        }
+        output[4]=carry;
+        
+        this.getOutputPort("output_as").setValue(output[0]);
+        this.getOutputPort("output_bs").setValue(output[1]);
+        this.getOutputPort("output_cs").setValue(output[2]);
+        this.getOutputPort("output_ds").setValue(output[3]);
+        this.getOutputPort("output_c").setValue(output[4]);
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function()
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function()
+    {
+    }
+});

@@ -1,0 +1,103 @@
+
+.vertical-text {
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  top: 200px;
+  left: 20px;
+  font-size: 50px;
+  color: white;
+}
+
+#layout {
+  #leftTabStrip {
+    background-color: @leftMenubarBackground;
+    &:after {
+      content: "Simulator";
+      -webkit-transform: rotate(-90deg) translate(-90px, -60px);
+      -moz-transform: rotate(-90deg) translate(-90px, -60px);
+      -ms-transform: rotate(-90deg) translate(-90px, -60px);
+      transform: rotate(-90deg) translate(-90px, -60px);
+      font-size: 50px;
+      color: @toolbarBackground;
+      white-space: nowrap;
+      font-weight: 200;
+      letter-spacing: 3px;
+    }
+
+    li {
+      &.active {
+        a {
+          &:hover {
+            background-color: white;
+          }
+        }
+        svg {
+          polyline[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          path[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          g[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          line[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          circle[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[stroke] {
+            stroke: @leftMenubarBackground !important;
+          }
+          rect[fill]{
+            fill: @leftMenubarBackground !important;
+          }
+          circle[fill]{
+            fill: @leftMenubarBackground !important;
+          }
+        }
+      }
+
+      a {
+        &:hover{
+          background-color:rgba(0,0,0,0.1);
+        }
+        padding: 4px;
+        svg {
+          polyline[stroke] {
+            stroke: white !important;
+          }
+          path[stroke] {
+            stroke: white !important;
+          }
+          path[stroke] {
+            stroke: white !important;
+          }
+          line[stroke] {
+            stroke: white !important;
+          }
+          circle[stroke] {
+            stroke: white !important;
+          }
+          g[stroke] {
+            stroke: white !important;
+          }
+          rect[stroke] {
+            stroke: white !important;
+          }
+          rect[fill]{
+            fill: white !important;
+          }
+          circle[fill]{
+            fill: white !important;
+          }
+        }
+      }
+
+    }
+  }
+}

@@ -1,0 +1,81 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+video_geometry_Scale = video_geometry_Scale.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.getInputPort("input_port1").setSemanticGroup("Image");
+        this.getOutputPort("output_port1").setSemanticGroup("Image");
+        
+        this.processing = false;
+        
+        this.attr({
+            resizeable:false
+        });
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        var img = this.getInputPort("input_port1").getValue();
+        if(img instanceof HTMLImageElement && this.processing ===false){
+            this.processing = true;
+            var factor = this.getInputPort("input_port2").getValue();
+
+            var w = img.naturalWidth;
+            var h = img.naturalHeight;
+            // map factor from 0-5 => 1-20
+            factor = 19/5*factor+1;
+
+            w = Math.max(10,parseInt(w/factor));
+            h = Math.max(parseInt(h/factor));
+            this.layerAttr("width_height", {"text": w+"x"+h});
+            var scaleCanvas = document.createElement("canvas");
+            scaleCanvas.height = h;
+            scaleCanvas.width = w;
+            var scaleCtx = scaleCanvas.getContext('2d');
+            scaleCtx.drawImage(img, 0, 0, w, h);
+            var scaledImage = document.createElement("img");
+            scaledImage.onload = () => {
+                this.getOutputPort("output_port1").setValue(scaledImage);
+            }
+            this.processing = false;
+	   	    scaledImage.src = scaleCanvas.toDataURL();
+        }
+    },
+
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+        this.processing = false;
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+        this.processing = false;
+    }
+});

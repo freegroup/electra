@@ -1,0 +1,547 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <title>Electra Academy</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <link rel="icon" type="image/png" href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png" href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png" href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../common/images/favicon_16x16.png" sizes="16x16">
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
+  <script src="../common/js/jquery/jquery.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, sans-serif;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+    }
+
+    .toolbar {
+      position: relative;
+      width: 100%;
+      color:white;
+      background-color:white;
+      height:45px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+
+    .toolbar img{
+      height:30px;
+      margin-left:30px;
+      margin-top:5px;
+    }
+    .toolbar .app_name {
+      font-weight: 200;
+      display: inline-block;
+      top: -6px;
+      position: relative;
+      left: 20px;
+      color:#C71D3D;
+    }
+    .toolbar .app_slogan {
+      font-weight: 200;
+      display: inline-block;
+      top: -6px;
+      position: relative;
+      left: 20px;
+      color:#C71D3D;
+      font-size:70%;
+    }
+    .launch_button {
+      margin-top:20px;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      font-size: calc(10px + 1vw);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+      text-decoration: none;
+      background-color:#C71D3D;
+      color:white;
+      font-weight: 300;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 20;
+      height: 100vh;
+      padding-bottom: 20px;
+      background-color: #fff;
+      color: #333;
+      font-size: 30px;
+      background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+      border-bottom:2px solid #C71D3D;
+      scroll-snap-align: start;
+     }
+
+    .hero .teaser{
+      font-weight: 500;
+      font-size: calc(26px + 1vw);
+      line-height: 1.2;
+      width: 40%;
+      left: 10%;
+      position: relative;
+      top: 40%;
+      transform: translateY(-50%);
+      color:#C71D3D
+    }
+    .hero .slogan{
+      font-weight: 300;
+      line-height: 1.2;
+      font-size: calc(10px + 1vw);
+      margin-top: 43px;
+      color:black;
+    }
+    .hero .header{
+      font-size: calc(20px + 1vw);
+      line-height: 1.2;
+      width: 90%;
+      top: 5vw;
+      padding:20px;
+      padding-left:50px;
+    }
+
+    .hero .launch_button {
+      position: relative;
+      left:0;
+    }
+    @media (max-height: 650px) { /* Breite beträgt mindestens 50em */
+      .hero .launch_button {
+        position: relative;
+        left: 100%;
+        transform: translateX(-50%);
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+      }
+    }
+
+
+     .hero .launch_button:hover {
+       box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+     }
+
+     .hero .image{
+       width: 40%;
+       left: 55%;
+       position: absolute;
+       overflow: hidden;
+       text-align: center;
+       top: 40%;
+       transform: translateY(-50%);
+     }
+
+     .hero .image img {
+       width: 60%;
+     }
+
+    .red_bg {
+      position: absolute;
+      height: 400vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #e13f4d, #d34657);
+    }
+
+    .pink_bg {
+      position: absolute;
+      top: 100vh;
+      height: 300vh;
+      width: 100%;
+      background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);
+    }
+
+    .orange_bg {
+      position: absolute;
+      top: 100vh;
+      height: 200vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);
+    }
+
+    .blue_bg {
+      position: absolute;
+      top: 100vh;
+      height: 100vh;
+      width: 100%;
+      background-image: linear-gradient(135deg, #242533, #2a3079);
+    }
+
+    .card {
+      position: sticky;
+      z-index: 1000;
+      width: 25%;
+      height: 50vh;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);
+      top: 0;
+    }
+    .card .media{
+      position: absolute;
+      top: 10px;
+      left:50%;
+      transform: translateX(-50%);
+    }
+
+    .card .content{
+      position: absolute;
+      top: 80px;
+      padding: 10px;
+    }
+    .card .content .header{
+      color:#C71D3D;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .card .launch_button{
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      border-radius: 4px;
+      font-size: 14px;
+      padding: 10px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .card_left {
+      left: 5%;
+      transform: translateY(50%);
+    }
+
+    .card_center {
+      left: 50%;
+      transform: translateY(50%) translateX(-50%);
+    }
+
+    .card_right {
+      left: 70%;
+      transform: translateY(50%);
+    }
+
+    .text {
+      position: absolute;
+      top: -40px;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: 100;
+      width: 100%;
+    }
+
+
+    .section_header {
+      color: white;
+      font-size: calc(16px + 2vw);
+      text-align: center;
+      font-weight: 100;
+      padding-top: 30px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .intro{
+      background-color: white;
+      background-image: none;
+      text-align: left;
+      position: relative;
+      z-index: 20;
+      height: 100vh;
+      padding-bottom: 20px;
+      color: #333;
+      font-size: 30px;
+    }
+
+    .intro .header{
+      font-size: calc(19px + 1vw);
+      line-height: 1.2;
+      top: 2vw;
+      padding-left: 50px;
+      color: #C71D3D;
+      position: absolute;
+      padding-top:30px;
+      background-color: rgba(255,255,255,0.8);
+    }
+
+    .intro .header div{
+      font-size: calc(6px + 1vw);
+      font-weight: 200;
+      color:black;
+      padding-top:30px;
+    }
+
+    .intro img {
+      width: 50%;
+      vertical-align: middle;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      left: 0;
+      right: 0;
+    }
+
+    .intro .launch_button {
+      position: absolute;
+      right:50px;
+      bottom:100px;
+    }
+    .intro .launch_button:hover {
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
+
+    .maker {
+      bottom: 10px;
+      position: absolute;
+      left: 40px;
+      text-align: center;
+      font-weight: 400;
+      font-size: 16px;
+    }
+    .maker img{
+      height:120px;
+    }
+
+    .teacher{
+      bottom: 10px;
+      position: absolute;
+      right: 40px;
+      text-align: center;
+      font-weight: 400;
+      font-size: 16px;
+    }
+
+    .teacher img{
+      height:120px;
+    }
+
+
+    .student{
+      bottom: 10px;
+      position: absolute;
+      left: 50%;
+      text-align: center;
+      font-weight: 400;
+      font-size: 16px;
+      transform: translateX(-50%);
+    }
+
+    .student img{
+      height:120px;
+    }
+
+    .arrow{
+      position: absolute;
+      bottom: 20px;
+      animation: mover 2s infinite  alternate;
+    }
+    .arrow i {
+      height: 20px;
+      width: 1px;
+      display: inline-block;
+      border-left: 2px solid #000;
+    }
+    .arrow i.left {
+      -webkit-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+    }
+    .arrow i.right {
+      -webkit-transform: rotate(45deg) translate(3px, -2px);
+      transform: rotate(45deg) translate(3px, -2px);
+    }
+
+    .arrow.left{
+      left:30%;
+    }
+    .arrow.right{
+      left:70%;
+    }
+
+    @keyframes mover {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+
+<body>
+<div class="hero">
+  <div class="toolbar">
+    <img src="../common/images/logo.svg">
+    <div class="app_name">Electra Academy</div>
+    <div class="app_slogan">makes electronics accessible for anyone</div>
+  </div>
+  <div class="teaser">
+    Dive into the world of Logic Circuits for free!
+    <div class="slogan">From simple gates to complex sequential circuits, plot timing diagrams, automatic circuit
+      generation, explore standard ICs, and much more.<br>
+      We've built it simple enough for Hobbyists, and robust enough for the Enterprise.
+    </div>
+    <a class="launch_button" href="../circuit">Launch the Simulator</a>
+  </div>
+  <img class="image" src="./images/connect.png">
+
+  <div class="student" >
+    <div>for students</div>
+    <img src="./images/students.svg">
+  </div>
+  <div class="teacher" >
+    <div>for teacher</div>
+    <img src="./images/teacher.svg">
+  </div>
+
+  <div class="maker" >
+    <div>for maker</div>
+    <img src="./images/maker.svg">
+  </div>
+
+  <div class="arrow left">
+    <i class="left"></i>
+    <i class="right"></i>
+  </div>
+
+  <div class="arrow right">
+    <i class="left"></i>
+    <i class="right"></i>
+  </div>
+
+
+</div>
+
+<div class="intro">
+  <img  src="./images/blink_annotated.gif">
+  <div class="header">
+    Building your very first circuit it's easy as 1..2..3
+    <div>Design circuits quickly and easily with a modern and intuitive user interface with drag-and-drop, copy/paste, zoom and more.</div>
+    <div>One function that makes the Internet of Things the Internet of Things is remote control of devices, being able
+      to trigger action from a remote location. With <b>Electra Academy</b> you can edit and run your digital circuit simulation
+      designs online within your browser and trigger any physical device.</div>
+
+  </div>
+  <a class="launch_button" href="../circuit/?global=guides/intro.brain" target="_blank">Open in Simulator</a>
+</div>
+
+
+<div class="red_bg">
+  <div class="section_header">Visual connect, control, and play with sensors and tools.</div>
+
+  <div class="card card_left">
+    <div class="text">Simulator</div>
+    <img class="media" src="../common/images/app_simulator.svg">
+    <div class="content">
+      <div class="header">Draw | Simulate | Share </div>
+      <div>
+        With <b>Electra Academy</b> you can edit and run your simulation designs and trigger any physical device
+      </div>
+    </div>
+    <a href="../circuit" target="circuit" class="launch_button">Launch</a>
+  </div>
+
+  <div class="pink_bg">
+    <div class="section_header">Designed to be very easy to use in classes</div>
+    <div class="card card_center">
+      <div class="text">Author</div>
+      <img class="media" src="../common/images/app_lessons.svg">
+      <div class="content">
+        <div class="header">Write | Assign | Solve </div>
+        <div>
+          <b>Electra Academy</b> has been designed to be very easy to use in classes.
+          The platform has features to assist teachers in class and assignments.
+        </div>
+        <div>
+          It is easy to write learning materials or lessons in the build in editor.
+        </div>
+      </div>
+      <a href="../author" target="author" class="launch_button">Launch</a>
+    </div>
+
+    <div class="orange_bg">
+      <div class="section_header">Build your own Components</div>
+      <div class="card card_right">
+        <div class="text"> Designer</div>
+        <img class="media" src="../common/images/app_designer.svg">
+        <div class="content">
+          <div class="header">Design | Code | Use </div>
+          <div>
+            Of course an own designer is also part of the total package. So you have the possibility
+            to draw your own shapes for the simulator and bring it to life with JS.
+
+          </div>
+        </div>
+        <a href="../designer" target="designer" class="launch_button">Launch</a>
+      </div>
+
+      <div class="blue_bg">
+        <div class="section_header">Welcome in the Universe of <b>Electra Academy</b></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<a href="https://github.com/thindexed" class="github-corner" aria-label="Download source on GitHub">
+  <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#64CEAA; color:#fff; position: fixed; z-index:10000; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+  </svg>
+</a>
+<style>
+  .github-corner:hover .octo-arm{
+    animation:octocat-wave 560ms ease-in-out
+  }
+  @keyframes octocat-wave{
+    0%,100%{
+      transform:rotate(0)
+    }
+    20%,60%{
+      transform:rotate(-25deg)
+    }
+    40%,80%{transform:rotate(10deg)
+    }
+  }
+  @media (max-width:500px){
+    .github-corner:hover .octo-arm{
+      animation:none
+    }
+    .github-corner .octo-arm{
+      animation:octocat-wave 560ms ease-in-out
+    }
+  }
+</style>
+
+</body>
+
+<script>
+
+  // simple text fade out for the card headers
+  //
+  function get() {
+    var el = $('.section_header');
+    el.each((index, text) => {
+      text = $(text)
+      var offset = text.offset().top - $(window).scrollTop();
+      if (offset > 200) {
+        text.css("opacity", 0)
+      } else if (offset > 100) {
+        text.css("opacity", (100-(offset-100)) / 100)
+      } else {
+        text.css("opacity",  1)
+      }
+    })
+    return true
+  }
+
+  get();
+  $(window).scroll(get);
+
+</script>
+
+</html>

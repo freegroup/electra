@@ -1,0 +1,144 @@
+#editor{
+
+  .form{
+    margin-top:40px;
+    margin-left:40px;
+    min-width: 450px;
+    position: relative;
+
+    input{
+      max-width: 250px;
+    }
+
+    #userEmail {
+      max-width: 300px;
+    }
+
+    .error{
+      color:red;
+    }
+
+    .role {
+      position: absolute;
+      right:20px;
+      top:20px;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      padding:20px;
+      border-radius: 3px;
+      h2{
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        text-align: center;
+      }
+      img{
+        height: 100px;
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+      }
+    }
+
+
+    i.fa{
+      padding: 3px;
+      border-radius: 2px;
+      margin-left: 10px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      }
+    }
+
+    .groupHeader{
+      h1{
+        color: @tintColor;
+        font-size: 2.25rem;
+        font-weight: 500;
+        line-height: 2.75rem;
+      }
+
+      h2{
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        .joinToken{
+          font-weight: 300;
+        }
+      }
+    }
+    .owner{
+      position: absolute;
+      top:220px;
+      h3{
+        min-width: 420px;
+        font-size: 1rem;
+        color: @tintColor;
+        span{
+          color: @darkTextColor;
+          font-weight:300;
+        }
+      }
+    }
+    .groupContent{
+      position: absolute;
+      top:280px;
+      h3{
+        min-width: 420px;
+        border-bottom: 1px solid @tintColor;
+        font-size: 1rem;
+        color: @tintColor;
+      }
+    }
+  }
+}
+
+
+@media (min-width: 1100px) {
+  #editor {
+
+    .form {
+      .role {
+        border-radius: 4px;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        text-align: center;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        padding:20px;
+        h2 {
+          font-size: 0.875rem;
+          line-height: 1.25rem;
+          font-weight: 400;
+          text-align: center;
+        }
+
+        img {
+          height: 200px;
+          transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+        }
+      }
+    }
+  }
+}
+
+
+
+@media (max-width: 800px) {
+  #editor {
+    .form {
+      .role {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+        img {
+          height: 50px;
+          transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+        }
+        h2{
+          display: none;
+        }
+
+      }
+    }
+  }
+}

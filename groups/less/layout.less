@@ -1,0 +1,160 @@
+/* ONLY layout information...no color border, or something else */
+#layout {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+
+  .nav-tabs {
+    float: left;
+    border-bottom: 0;
+
+    li {
+      float: none;
+      margin: 0;
+
+      a {
+        margin-right: 0;
+        border: 0;
+      }
+    }
+  }
+
+  #leftTabStrip {
+    height: 100%;
+    position: absolute;
+    width: @tabSize;
+    padding-top: @tabSize;
+    overflow: hidden;
+
+    .leftTab {
+      border-radius: 0 !important;
+      width: @tabSize;
+      height: @tabSize;
+    }
+  }
+  .tab-content {
+    position: relative;
+    margin-left: @tabSize;
+    height: 100%;
+
+    .tab-pane {
+      display: none;
+      padding: 0;
+      height: 100%;
+      position: relative;
+
+      .workspace {
+        .paletteContainer {
+          position:absolute;
+          height: 100%;
+          width: @leftPaneWidth;
+          padding: 0;
+
+          #paletteHeader {
+            position: relative;
+            display:block;
+            margin: 0;
+            padding: 0;
+            top: 0;
+            height: 110px;
+            .paletteTitle {
+              img {
+                padding-right:20px;
+                position: absolute;
+                left:10px;
+                top:10px;
+                height:40px;
+              }
+              div{
+                position: absolute;
+                left:60px;
+                top:10px;
+                h1{
+                  font-size: 15px;
+                  font-weight:200;
+                  line-height: 25px;
+                  margin:0;
+                  padding:0;
+                  text-align: left;
+                  letter-spacing: 3.5px;
+                }
+                h2{
+                  font-size: 10px;
+                  font-weight:600;
+                  margin:0;
+                  padding:0;
+                  text-align: left;
+                  letter-spacing: 4px;
+                  color: @tintColor;
+                }
+              }
+            }
+            #paletteFilter{
+              box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
+              padding: 10px;
+              overflow-x: hidden;
+              position: absolute;
+              top: 64px;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              overflow-y: scroll;
+              text-align:left;
+              &::-webkit-scrollbar {
+                width: 5px;
+              }
+
+              &::-webkit-scrollbar-thumb {
+                background: #666;
+              }
+            }
+          }
+          #paletteElementsScroll {
+            position: absolute;
+            width: @leftPaneWidth - 2px;
+            margin: 0;
+            padding: 0;
+            top: 100px;
+            bottom: 0;
+            overflow: auto;
+            box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
+            &::-webkit-scrollbar {
+              width: 5px;
+            }
+            &::-webkit-scrollbar-thumb {
+              background: #666;
+            }
+            #paletteElements {
+              position: absolute;
+              width: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              .mix {
+                height: @leftPaneWidth/2;
+                border: 1px solid #f0f0f0;
+                /* to avoid doubling the border of the grid */
+                margin: -1px 0 0 -1px;
+              }
+            }
+          }
+        }
+        .content {
+          position:absolute;
+          right: 0;
+          top:@toolbarHeight;
+          bottom:0;
+          left: @leftPaneWidth;
+          overflow: auto;
+          .form{
+            padding:10px;
+          }
+        }
+      }
+    }
+    .active {
+      display: block;
+    }
+  }
+}

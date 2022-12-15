@@ -1,0 +1,31 @@
+
+.ui-draggable-dragging{
+  z-index:10000;
+}
+
+.shadow{
+  border:1px solid @tintColor;
+  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+  background-color:white;
+}
+
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin-top: -15px;
+  margin-left: -15px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #07d;
+  animation: spinner .6s linear infinite;
+}
+
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+  border:0;
+}

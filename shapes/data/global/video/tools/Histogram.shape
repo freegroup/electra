@@ -1,0 +1,440 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "e92ac7a1-d149-90c6-1281-23d32bf22f9d",
+      "x": 7959.432475,
+      "y": 7959.0996737000005,
+      "width": 80,
+      "height": 80,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.worker= null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n        this.processing = false;\n        \n        this.TRANSPARENT_PIXEL = \"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\";\n        this.img = new draw2d.shape.basic.Image({\n            width: this.getWidth()-6, \n            height: this.getHeight()/4*3-6,\n            selectable: false,\n            deleteable: false,\n            resizeable:false,\n            draggable: false,\n            path: this.TRANSPARENT_PIXEL\n        });\n        this.img.hitTest = ()=>false;\n        this.add(this.img, new draw2d.layout.locator.XYAbsPortLocator({x:3, y:3}));\n\n        this.getInputPort(\"input_port1\").setSemanticGroup(\"Image\");\n        this.getOutputPort(\"output_port1\").setSemanticGroup(\"Image\");\n        this.attr({\n            resizeable:false\n        });\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        var img = this.getInputPort(\"input_port1\").getValue();\n        if(img instanceof HTMLImageElement && this.worker!==null && this.processing===false){\n            var imageData = this.imageToData(img);\n            // Push it to the WebWorker with \"Transferable Objects\"\n            // Passing data by reference instead of structure clone\n            //\n            this.processing = true;\n            this.worker.postMessage(imageData, [imageData.data.buffer]);\n        }\n        this.getOutputPort(\"output_port1\").setValue(img);\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n        // the method which runs as WebWorker\n        //\n        var workerFunction = function(event){\n            const  HISTOGRAM_SIZE = 256; // for 8-bit image\n            const  MAX_VALUE = 255;      // max value in 8-bit image\n\n            var imageData = event.data;\n            var pixels = imageData.data;\n            var width  = imageData.width;\n            var height = imageData.height;\n            var imageSize = width * height;\n            var histR  =  Array(HISTOGRAM_SIZE);\n            var histG  =  Array(HISTOGRAM_SIZE);\n            var histB  =  Array(HISTOGRAM_SIZE);\n            histR.fill(0);\n            histG.fill(0);\n            histB.fill(0);\n            \n            // collect the distribution of the RGB values \n            //\n            for (var index=0; index < pixels.length; index+=4) {\n                histR[pixels[index  ]]++; // red\n                histG[pixels[index+1]]++; // green\n                histB[pixels[index+2]]++; // blue\n            }\n\n            var canvas = new OffscreenCanvas(width, height);\n            var ctx = canvas.getContext('2d');\n\n            let max = Math.max.apply(null, histR.concat(histG, histB))\n\n            function drawColorGraph (vals, color) {\n                const graphX = 0;\n                const graphY = height;\n\n                ctx.fillStyle = color;\n                ctx.beginPath();\n                ctx.moveTo(graphX, height);\n                for (let i = 0; i < vals.length; i++) {\n                  let val = vals[i];\n                  let drawHeight = Math.round((val / max) * height);\n                  let drawX = graphX + (width / (vals.length - 1)) * i;\n                  ctx.lineTo(drawX, graphY - drawHeight);\n                }\n                ctx.lineTo(graphX + width, graphY);\n                ctx.closePath();\n                ctx.fill();\n            }\n            \n            ctx.fillStyle = 'rgba(0,0,0,1)';\n            ctx.beginPath();\n            ctx.fillRect(0,0, width, height);\n            ctx.closePath();\n \n            ctx.globalCompositeOperation = 'screen';\n    \n            drawColorGraph(histR, \"#FF0000\");\n            drawColorGraph(histG, \"#00FF00\");\n            drawColorGraph(histB, \"#0000FF\");\n            imageData = ctx.getImageData(0, 0, width, height);\n            self.postMessage(imageData, [imageData.data.buffer]);\n        };\n        \n        // the method which receives the WebWorker result\n        //\n       var receiverFunction = (event) => {\n           try{\n            var imageData = event.data;\n            this.tmpContext.putImageData(imageData,0,0);\n            this.img.attr(\"path\", this.tmpCanvas.toDataURL());\n            this.processing = false;\n           }\n           catch(exc){\n              console.log(exc);\n              this.processing = false;\n           }\n        };\n\n        // convert a js function to a WebWorker\n        //\n        this.worker = this.createWorker(workerFunction);\n        this.worker.onmessage = receiverFunction;\n        this.processing = false;\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n        if(this.worker) this.worker.terminate();\n        delete this.worker;\n        delete this.tmpContext;\n        delete this.tmpCanvas;\n        this.worker = null;\n        this.tmpCanvas = null;\n        this.tmpContext = null;\n        this.processing = false;\n    },\n    \n\n    /**\n     *  Helper function to dynamically create Web Workers.\n     */\n    createWorker: function(fn) {\n        var blob = new Blob([\"self.onmessage = \", fn.toString()], {\n           type: \"text/javascript\"\n        });\n        var url = window.URL.createObjectURL(blob);\n        return new Worker(url);\n    },\n    \n    imageToData: function(image){\n        var width = image.naturalWidth;\n        var height= image.naturalHeight;\n\n        if(this.tmpContext !==null && this.tmpContext.width!== width){\n            delete this.tmpContext;\n            delete this.tmpCanvas;\n            this.tmpCanvas = null;\n            this.tmpContext = null;\n        }\n\n        // convert the HTMLImageElement to an ImageData object. Required for the WebWorker\n        //\n        if(this.tmpContext === null ) {\n            this.tmpCanvas = document.createElement('canvas');\n            this.tmpCanvas.width = width;\n            this.tmpCanvas.height = height;\n            this.tmpContext = this.tmpCanvas.getContext('2d');\n        }\n        this.tmpContext.drawImage(image, 0, 0, width, height);\n        return this.tmpContext.getImageData(0, 0, width, height);\n    },\n    \n    setPersistentAttributes: function (memento) \n    {\n        this._super(memento);\n\n        this.img = this.getChildren().find( child => child instanceof draw2d.shape.basic.Image);\n        this.remove(this.img);\n        this.add(this.img, new draw2d.layout.locator.XYAbsPortLocator({x:3, y:3}));\n        this.img.hitTest = ()=>false;\n        \n        this.getInputPort(\"input_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n        this.getOutputPort(\"output_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n    }\n});",
+        "markdown": "# Image Histogram\nIn an image processing context, the histogram of an image normally \nrefers to a histogram of the pixel intensity values. This histogram \nis a graph showing the number of pixels in an image at each different \nintensity value found in that image. For an 8-bit grayscale image \nthere are 256 different possible intensities, and so the histogram \nwill graphically display 256 numbers showing the distribution of\npixels amongst those grayscale values. \n\n<img src=\"data:image/gif;base64,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\" alt=\"\" />\n\n\nHistograms can also be taken \nof color images --- either individual histograms of red, green and \nblue channels can be taken, or a 3-D histogram can be produced, \nwith the three axes representing the red, blue and green channels,\nand brightness at each point representing the pixel count. \nThe exact output from the operation depends upon the implementation\n--- it may simply be a picture of the required histogram in a\nsuitable image format, or it may be a data file of some sort \nrepresenting the histogram statistics.",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7959.432475,
+          "y": 7959.0996737000005
+        },
+        {
+          "x": 8039.432475,
+          "y": 7959.0996737000005
+        },
+        {
+          "x": 8039.432475,
+          "y": 8039.0996737000005
+        },
+        {
+          "x": 7959.432475,
+          "y": 8039.0996737000005
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "08ecbf02-d0c7-c225-b373-3d46a828f568",
+      "x": 7959.6612749999995,
+      "y": 8014.9784513,
+      "width": 84.15625,
+      "height": 21.375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Histogram",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 16,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "509f0f7f-9c3d-3b54-d79c-877493488fa7",
+      "x": 7953.6612749999995,
+      "y": 7994.0092737,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_port1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": null
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "b832e06d-477d-4ffc-697b-d19504dc9aad",
+      "x": 8034.6925249999995,
+      "y": 7994.0092737,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_port1",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "67330ad1-a95f-151a-e910-9b17a569af3e",
+      "x": 7963.747899000003,
+      "y": 7962.687514981772,
+      "width": 71,
+      "height": 52,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7963.747899000003,
+          "y": 7962.687514981772
+        },
+        {
+          "x": 8034.747899000003,
+          "y": 7962.687514981772
+        },
+        {
+          "x": 8034.747899000003,
+          "y": 8014.687514981772
+        },
+        {
+          "x": 7963.747899000003,
+          "y": 8014.687514981772
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "4c9ce3e0-db5f-0cf6-fdde-0a71d4a63c7a",
+      "x": 7963.747899000003,
+      "y": 7983.772202204054,
+      "width": 71,
+      "height": 29.9153127777181,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,5,5,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7990.196373999993,
+          "y": 8007.139939981783
+        },
+        {
+          "x": 7995.0504224375045,
+          "y": 8011.081772794275
+        },
+        {
+          "x": 8007.372960718751,
+          "y": 8010.186243888027
+        },
+        {
+          "x": 8011.258890357422,
+          "y": 7995.399710538414
+        },
+        {
+          "x": 8022.568148459841,
+          "y": 7983.772202204054
+        },
+        {
+          "x": 8034.747899000003,
+          "y": 8013.687514981772
+        },
+        {
+          "x": 7963.747899000003,
+          "y": 8013.687514981772
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.OpacityFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "b2a22a1b-8381-dac2-c36c-d98d6c4617c8",
+      "x": 7964.6612749999995,
+      "y": 7970.484943888023,
+      "width": 71,
+      "height": 43.40514218749922,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Blue"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(0,17,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7982.898549999985,
+          "y": 8007.855711075524
+        },
+        {
+          "x": 7987.752598437501,
+          "y": 7970.484943888023
+        },
+        {
+          "x": 8008.286336718747,
+          "y": 8010.388814981777
+        },
+        {
+          "x": 8014.738266357421,
+          "y": 7986.877881632169
+        },
+        {
+          "x": 8020.402324459838,
+          "y": 8008.3517732978025
+        },
+        {
+          "x": 8035.6612749999995,
+          "y": 8013.890086075522
+        },
+        {
+          "x": 7964.6612749999995,
+          "y": 8013.890086075522
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.OpacityFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "b023dfdf-cfa6-cd47-effd-bb6a5380724d",
+      "x": 7963.747899000003,
+      "y": 7995.5092737,
+      "width": 71,
+      "height": 18.287804443358255,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Green"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(0,181,78,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 4,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 8007.372960718751,
+          "y": 8010.295807049613
+        },
+        {
+          "x": 8011.258890357422,
+          "y": 7995.5092737
+        },
+        {
+          "x": 8019.488948459842,
+          "y": 8008.258765365639
+        },
+        {
+          "x": 8034.747899000003,
+          "y": 8013.797078143359
+        },
+        {
+          "x": 7963.747899000003,
+          "y": 8013.797078143359
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.OpacityFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    }
+  ]
+}

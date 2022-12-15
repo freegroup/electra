@@ -1,0 +1,127 @@
+
+.raspiConnection {
+  color: red !important;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+
+.drop {
+  display: block;
+  position: absolute;
+  background: #CCC;
+  border-radius: 100%;
+  -webkit-transform: scale(0);
+  transform: scale(0);
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.drop:before {
+  display: block;
+  position: absolute;
+  content: "";
+  background-color: #EEE;
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  -webkit-transform: scale(0);
+  transform: scale(0);
+}
+
+.slider-handle {
+  border-radius: 50%;
+  background-color: @tintColorHIGH;
+}
+
+
+#simulationBaseTimer{
+  width:200px;
+}
+
+.simulationBase{
+  label{
+    display:block;
+    opacity: 0.5;
+    font-size:10px;
+  }
+}
+
+.toolbar {
+  .group{
+    .form-horizontal {
+      min-width: 170px;
+      .statusIndicator {
+        margin: 20px;
+        img {
+          display: block;
+          cursor:pointer;
+          margin:auto;
+          &:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+          }
+        }
+        span {
+          font-size: .8em;
+          text-align: center;
+          width: 100%;
+          display: inline-block;
+          white-space: nowrap;
+        }
+        .notSupported{
+          display:none;
+          font-weight: bold;
+        }
+        .connected{
+          display: block;
+        }
+        .disconnected{
+          display: none;
+        }
+      }
+      .statusIndicator.disabled {
+        img {
+          opacity: 0.5;
+          cursor: not-allowed;
+          &:hover {
+            box-shadow: none;
+          }
+        }
+        span {
+          opacity: 0.5;
+        }
+        .notSupported{
+          display:block;
+        }
+        .connected{
+          display: none;
+        }
+        .disconnected{
+          display: none;
+        }
+      }
+      .statusIndicator.error:not(.disabled) {
+        img {
+        }
+        span {
+          color:red;
+          font-weight: bold;
+        }
+        .notSupported{
+          display:none;
+        }
+        .connected{
+          display: none;
+        }
+        .disconnected{
+          display: block;
+        }
+      }
+    }
+  }
+}

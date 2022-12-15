@@ -1,0 +1,519 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "76ffcb86-e5f1-e89a-46e3-43d4a7132980",
+      "x": 7940.5,
+      "y": 7960,
+      "width": 120,
+      "height": 80,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        \n        this.objectClass = \"person\"\n        this.on(\"change:userData.objectClass\",(emitter, event)=>{\n            this.layerAttr(\"objectClass\", {text: event.value})\n            this.objectClass = event.value;\n        });\n        this.on(\"added\",(emitter, event)=>{\n             this.layerAttr(\"objectClass\", {text: this.attr(\"userData.objectClass\")})\n        });\n        this.attr(\"userData.objectClass\",this.objectClass)\n\n\n        this.TRANSPARENT_PIXEL = \"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==\";\n        this.img = new draw2d.shape.basic.Image({\n            width: this.getWidth()/6*4-6, \n            height: this.getHeight()/4*3-6,\n            selectable: false,\n            deleteable: false,\n            resizeable:false,\n            draggable: false,\n            path: this.TRANSPARENT_PIXEL\n        });\n        this.img.hitTest = ()=>false;\n        this.add(this.img, new draw2d.layout.locator.XYAbsPortLocator({x:3, y:3}));\n\n\n        this.rectangleLocator =  new draw2d.layout.locator.XYAbsPortLocator({x:0, y:0});\n        this.rectangle = new draw2d.shape.basic.Rectangle({\n                        x: 0, y: 0,\n                        width: 20, height: 20,\n                        color: \"#ff0000\",\n                        bgColor: null,\n                        alpha  : 0.7,\n                        visible:false,\n                        radius: 5\n                });\n        this.add(this.rectangle, this.rectangleLocator)  ;\n        this.rectangle.setVisible(false);\n        this.rectangle.hitTest = ()=>false;\n        \n        this.model = null;\n        // Initialize the Image Classifier method with MobileNet\n        cocoSsd.load().then(model =>{\n            this.model = model;\n        });\n        \n        this.getInputPort(\"input_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n        \n        this.attr({\n            resizeable:false\n        });\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        if(this.model===null){\n            return;\n        }\n        \n        var image = this.getInputPort(\"input_port1\").getValue();\n        if (image instanceof HTMLImageElement) {\n            this.img.attr(\"path\", image.src);\n            this.model.detect(image, 1).then(predictions => {\n                if(predictions.length>0){\n                    let pre = predictions[0];\n                    if(pre.class === this.objectClass){\n                       var height = this.getHeight()/4*3;\n                       var width = this.getWidth()/6*4;\n                       this.rectangle.setVisible(true);\n                       let bbox = pre.bbox;\n                       let x_percent = 100/image.naturalWidth * bbox[0];\n                       let y_percent = 100/image.naturalHeight * bbox[1];\n                       let w_percent = 100/image.naturalWidth * bbox[2];\n                       let h_percent = 100/image.naturalHeight * bbox[3];\n                     \n                       this.rectangle.attr({width:width/100*w_percent, height:height/100*h_percent});\n                       this.rectangleLocator.setX(width/100*x_percent);\n                       this.rectangleLocator.setY(height/100*y_percent);\n                       this.rectangleLocator.relocate(0, this.rectangle);\n                       this.getOutputPort(\"output_port1\").setValue(5.0);\n                    }\n                    else{\n                        this.rectangle.setVisible(false);\n                        this.getOutputPort(\"output_port1\").setValue(0.0);\n                    }\n                }\n                else{\n                    this.rectangle.setVisible(false);\n                    this.getOutputPort(\"output_port1\").setValue(0.0);\n                }\n            });\n        }\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n    },\n    \n  \n    getPersistentAttributes: function () \n    {\n       let currentImage = this.img.attr(\"path\");\n       this.img.attr(\"path\", this.TRANSPARENT_PIXEL);\n    \n       let memento = this._super()\n    \n       this.img.attr(\"path\", currentImage);\n\n       return memento\n    },\n\n    setPersistentAttributes: function (memento) \n    {\n        this._super(memento);\n        this.rectangle = this.getChildren().find( child => child instanceof draw2d.shape.basic.Rectangle);\n        this.rectangle.setVisible(false);\n        this.rectangle.hitTest = ()=>false;\n \n        this.img = this.getChildren().find( child => child instanceof draw2d.shape.basic.Image);\n        this.img.hitTest = ()=>false;\n        \n        this.getInputPort(\"input_port1\").attr({\n            semanticGroup:\"Image\",\n            bgColor:\"#ff0000\",\n            diameter:15\n        })\n        \n        this.objectClass = this.attr(\"userData.objectClass\")\n    },\n    \n    \n    getParameterSettings: function () {\n        return [\n            {\n                name: \"objectClass\",\n                label: \"Type of Object to detect\",\n                property: {\n                    type: \"enum\",\n                    values: [\n\"person\",\n\"bicycle\",\n\"car\",\n\"motorcycle\",\n\"airplane\",\n\"bus\",\n\"train\",\n\"truck\",\n\"boat\",\n\"traffic light\",\n\"fire hydrant\",\n\"stop sign\",\n\"parking meter\",\n\"bench\",\n\"bird\",\n\"cat\",\n\"dog\",\n\"horse\",\n\"sheep\",\n\"cow\",\n\"elephant\",\n\"bear\",\n\"zebra\",\n\"giraffe\",\n\"backpack\",\n\"umbrella\",\n\"handbag\",\n\"tie\",\n\"suitcase\",\n\"frisbee\",\n\"skis\",\n\"snowboard\",\n\"sports ball\",\n\"kite\",\n\"baseball bat\",\n\"baseball glove\",\n\"skateboard\",\n\"surfboard\",\n\"tennis racket\",\n\"bottle\",\n\"wine glass\",\n\"cup\",\n\"fork\",\n\"knife\",\n\"spoon\",\n\"bowl\",\n\"banana\",\n\"apple\",\n\"sandwich\",\n\"orange\",\n\"broccoli\",\n\"carrot\",\n\"hot dog\",\n\"pizza\",\n\"donut\",\n\"cake\",\n\"chair\",\n\"couch\",\n\"potted plant\",\n\"bed\",\n\"dining table\",\n\"toilet\",\n\"tv\",\n\"laptop\",\n\"mouse\",\n\"remote\",\n\"keyboard\",\n\"cell phone\",\n\"microwave\",\n\"oven\",\n\"toaster\",\n\"sink\",\n\"refrigerator\",\n\"book\",\n\"clock\",\n\"vase\",\n\"scissors\",\n\"teddy bear\",\n\"hair drier\",\n\"toothbrush\"\n]\n                }\n\n            }];\n    }\n\n});",
+        "markdown": "## Object Detector\n\nObject detection model that aims to localize and identify a object in a single \nimage.\n\nIn the configuration dialog you can select one of 90 object types to detect.\n\nThis model detects objects defined in the **COCO** dataset, which is a large-scale \nobject detection, segmentation, and captioning dataset. You can find more \ninformation [here](http://cocodataset.org/#home). The model is capable of \ndetecting 90 classes of objects. \n\n**COCO - Common Objects in Context**",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 3,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7940.5,
+          "y": 7960
+        },
+        {
+          "x": 8060.5,
+          "y": 7960
+        },
+        {
+          "x": 8060.5,
+          "y": 8040
+        },
+        {
+          "x": 7940.5,
+          "y": 8040
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "aed420e8-7e2c-067e-cbb9-1e44941a1591",
+      "x": 7934,
+      "y": 7995,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_port1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": null
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "3548f6ee-a9b6-8668-ed35-73c74ee9ca5c",
+      "x": 8055.154976,
+      "y": 7995,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_port1",
+        "type": "Output",
+        "direction": 1,
+        "fanout": 20
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "496df3d2-e3d3-22a4-70a7-faca8187fafc",
+      "x": 7944,
+      "y": 7963.508584,
+      "width": 73,
+      "height": 52,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(240,243,243,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 2,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7944,
+          "y": 7963.508584
+        },
+        {
+          "x": 8017,
+          "y": 7963.508584
+        },
+        {
+          "x": 8017,
+          "y": 8015.508584
+        },
+        {
+          "x": 7944,
+          "y": 8015.508584
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "6cd97bb4-e30c-3c23-b0db-106d14602587",
+      "x": 7961.7,
+      "y": 7989.32852,
+      "width": 24.622380625916776,
+      "height": 19.167772159999913,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(199,29,61,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7961.7,
+          "y": 8008.49629216
+        },
+        {
+          "x": 7986.322380625917,
+          "y": 8008.41039281408
+        },
+        {
+          "x": 7982.748545078532,
+          "y": 7993.841247714121
+        },
+        {
+          "x": 7982.327095051947,
+          "y": 7992.92176425057
+        },
+        {
+          "x": 7981.638921283378,
+          "y": 7992.05903235089
+        },
+        {
+          "x": 7980.7049335845495,
+          "y": 7991.279265687284
+        },
+        {
+          "x": 7979.553510699071,
+          "y": 7990.606157075244
+        },
+        {
+          "x": 7978.219638028668,
+          "y": 7990.060158579345
+        },
+        {
+          "x": 7976.743844619459,
+          "y": 7989.6578600875855
+        },
+        {
+          "x": 7975.170971707395,
+          "y": 7989.411485236078
+        },
+        {
+          "x": 7973.548810239999,
+          "y": 7989.32852
+        },
+        {
+          "x": 7971.926648772602,
+          "y": 7989.411485236078
+        },
+        {
+          "x": 7970.353775860538,
+          "y": 7989.6578600875855
+        },
+        {
+          "x": 7968.877982451329,
+          "y": 7990.060158579345
+        },
+        {
+          "x": 7967.544109780926,
+          "y": 7990.606157075244
+        },
+        {
+          "x": 7966.392686895448,
+          "y": 7991.279265687284
+        },
+        {
+          "x": 7965.458699196619,
+          "y": 7992.05903235089
+        },
+        {
+          "x": 7964.77052542805,
+          "y": 7992.92176425057
+        },
+        {
+          "x": 7964.349075401466,
+          "y": 7993.841247714121
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyCircle",
+      "id": "27695d35-f2a6-0783-5ba2-cae5386922df",
+      "x": 7965.2,
+      "y": 7969.32852,
+      "width": 16,
+      "height": 17,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Circle"
+      },
+      "cssClass": "shape_designer_figure_PolyCircle",
+      "ports": [],
+      "bgColor": "rgba(199,29,61,1)",
+      "color": "rgba(255,0,76,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "9608ef86-9545-4b21-82d3-df446f85954e",
+      "x": 7958.7,
+      "y": 7968.45012,
+      "width": 29,
+      "height": 24,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(70,176,25,1)",
+      "stroke": 2,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7958.7,
+          "y": 7968.45012
+        },
+        {
+          "x": 7987.7,
+          "y": 7968.45012
+        },
+        {
+          "x": 7987.7,
+          "y": 7992.45012
+        },
+        {
+          "x": 7958.7,
+          "y": 7992.45012
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "d61ff7be-41b8-cd03-56d3-a35c2db13f50",
+      "x": 7939.5,
+      "y": 8015.508584,
+      "width": 45.953125,
+      "height": 21.1875,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Detect:",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 14,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "4730f278-5845-848e-c969-c22abe814ab1",
+      "x": 7985.5,
+      "y": 8014.961709,
+      "width": 38.59375,
+      "height": 21.375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "objectClass"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "person",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 14,
+      "fontColor": "rgba(199,29,61,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "0f363fff-1534-2d76-468e-f8273b9a35ea",
+      "x": 8023.5,
+      "y": 7989.32852,
+      "width": 33.03125,
+      "height": 21.21875,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "found",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    }
+  ]
+}

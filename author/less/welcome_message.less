@@ -1,0 +1,69 @@
+.welcomeMessage {
+
+  background: url(../images/background.png) no-repeat ;
+  background-position: center top;
+  background-size: 100% 50%;
+  min-height: 100%;
+  img{
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 0px;
+    width: 20vw;
+    position: absolute;
+    right: 20px;
+    top:110px;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  }
+  .description{
+    position: absolute;
+    top: 320px;
+    left: 59px;
+    font-size: 18px;
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    text-align: left;
+  }
+  .teaser {
+    background-color: white;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    display: inline-block;
+    top: 30px;
+    position: absolute;
+    left: 40px;
+    padding: 23px;
+    max-width: 40%;
+    border-radius: 5px;
+    h2 {
+      margin-top: 0;
+      font-weight: 300;
+      font-size: 2vw;
+      text-align: right;
+      color: @tintColor;
+    }
+    p {
+      text-align: right;
+    }
+
+  }
+  button{
+    background-color: @tintColor;
+    color: white;
+    border: 0;
+    border-radius: 2px;
+  }
+}
+
+@media (min-width: 1050px) { /* Breite beträgt mindestens 50em */
+  .welcomeMessage {
+    .description{
+      position: absolute;
+      top: 214px;
+      left: 59px;
+      font-size: 1.4vw;
+      transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+      text-align: left;
+      max-width:40%;
+    }
+  }
+}
+

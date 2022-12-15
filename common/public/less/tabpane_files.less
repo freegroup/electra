@@ -1,0 +1,176 @@
+
+#files{
+  overflow-y: scroll;
+  padding:30px !important;
+  box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+
+  .toolbar{
+    background-color:transparent;
+  }
+
+  .teaser {
+    margin-bottom:0;
+    background-image:
+      linear-gradient(to bottom,rgba(255,255,255,0) 20%,rgba(255,255,255,.4) 70%,#fff 100%),
+      radial-gradient(ellipse at center,rgba(247,249,250,.7) 0%,rgba(247,249,250,0) 60%),
+      linear-gradient(to bottom,rgba(247,249,250,0) 0%,#f7f9fa 100%);
+
+    .title {
+      color: @tintColor;
+      font-weight: 200;
+      font-size: 4vw;
+      white-space: nowrap;
+      margin-bottom:10px;
+      img{
+        padding-right: 40px;
+        height: 100px;
+      }
+    }
+    .slogan {
+      font-size: 2vw;
+      font-weight: 200;
+      color: #34495e;
+    }
+  }
+
+  .deleteIcon{
+    position: absolute;
+    right: 24px;
+    top: 18px;
+    cursor: pointer;
+    font-size: 25px;
+    padding: 4px;
+    border-radius: 2px;
+    &:hover{
+      background-color: rgba(0,0,0,0.03);
+    }
+  }
+
+  .list-group-item {
+    cursor: pointer;
+    .thumb {
+      .thumbnail {
+        cursor: pointer;
+      }
+
+      .media-body {
+        padding-top: 14px;
+        padding-left: 20px;
+      }
+
+      .filenameInplaceEdit {
+        font-size: 18px;
+        color: @tintColor;
+        margin-top: -5px;
+      }
+
+      h4 {
+        font-size: 18px;
+        color: @tintColor;
+        display: inline-block;
+      }
+      .editIcon{
+        padding-left:10px;
+        font-size:14px;
+        display: none;
+      }
+
+      &:hover{
+        h4 {
+          text-decoration: underline;
+        }
+        .editIcon{
+          display: inline-block;
+        }
+      }
+    }
+
+  }
+
+  .thumbAdd{
+    color: #0078f2;
+    border: 1px solid rgba(0, 120, 242, 0.33);
+    border-radius: 6px;
+    cursor:pointer;
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    div{
+      font-size: 160px;
+      text-align: center;
+    }
+    h4{
+      text-align: center;
+    }
+    &:hover{
+      border: 1px solid rgba(0, 120, 242, 1);
+      transition: all 1s;
+      -webkit-transition: all 1s;
+    }
+  }
+
+  .fileOperations {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 9px;
+    
+  }
+
+
+  .container{
+    width:100%;
+    #material-tabs {
+      position: relative;
+      display: block;
+      padding:0;
+      border-bottom: 1px solid #e0e0e0;
+
+      a {
+        position: relative;
+        display:inline-block;
+        text-decoration: none;
+        padding: 22px;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: 300;
+        color: #424f5a;
+        text-align: center;
+
+        &.active {
+          font-weight: 700;
+          outline:none;
+        }
+        
+      }
+    }
+    .material-tab-content {
+      &>div{
+        padding: 10px;
+        min-height:600px;
+        background-color: fade(@tintColor, 3%);
+      }
+    }
+  }
+
+  header {
+    position: relative;
+  }
+
+
+  #material-tabs>a:not(.active):hover {
+    background-color: inherit;
+    color: #7c848a;
+  }
+
+  .yellow-bar {
+    position: absolute;
+    z-index: 10;
+    bottom: 0;
+    height: 3px;
+    background: @tintColor;
+    display: block;
+    left: 0;
+    transition: left .2s ease;
+    -webkit-transition: left .2s ease;
+  }
+
+
+}

@@ -1,0 +1,95 @@
+
+.shadow{
+  border:1px solid @tintColor;
+  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+  background-color:white;
+}
+
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin-top: -15px;
+  margin-left: -15px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #07d;
+  animation: spinner .6s linear infinite;
+}
+
+.workspace {
+
+  .palette {
+    box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+    border-right: 1px solid rgba(74, 74, 74, 0.5);
+    border-left: 1px solid rgba(74, 74, 74, 0.5);
+
+    .title {
+      img {
+        padding-right:20px;
+        position: absolute;
+        left:10px;
+        top:10px;
+        height:40px;
+      }
+      div{
+        position: absolute;
+        left:60px;
+        top:10px;
+        h1{
+          font-size: 15px;
+          font-weight:200;
+          line-height: 25px;
+          margin:0;
+          padding:0;
+          text-align: left;
+          letter-spacing: 2px;
+        }
+        h2{
+          font-size: 10px;
+          font-weight:600;
+          margin:0;
+          padding:0;
+          text-align: left;
+          letter-spacing: 4px;
+          color:@tintColor;
+        }
+      }
+    }
+    .palette_item{
+      padding:0;
+      >div{
+        width:100%;
+        height:100%;
+        text-align:center;
+        border:1px solid transparent;
+        img{
+          position: absolute;
+          top: 0px;
+          bottom: 0;
+          margin: auto;
+          left: 50%;
+          transform: translate(-50%,-10px);
+        }
+        div{
+          position: absolute;
+          padding-bottom: 2px;
+          width: 100%;
+          bottom: 0;
+          padding-top: 2px;
+          background-color:rgba(0,0,0,0.05);
+          cursor:default;
+        }
+      }
+
+    }
+  }
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+  border:0;
+}
