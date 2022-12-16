@@ -5,26 +5,21 @@ const http = require('http').Server(app)
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 
-const globalApi = require("./data/global")
-const userApi = require("./data/user")
-const sharedApi = require("./data/shared")
-const conf = require("./configuration")
-
-console.log("serving data from :", conf.absoluteGlobalDataDirectory())
-
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
-const scriptPath = path.dirname(__filename);
-
-
 dotenv.config({ 
     debug: false,
     path: PROJECT_PATH+'/settings.ini' 
 })
 
-function die(msg){
-    console.log(msg)
-    process.exit(1)
-}
+
+const globalApi = require("./data/global")
+const userApi = require("./data/user")
+const sharedApi = require("./data/shared")
+const conf = require("./configuration")
+const die = require("./utils/die")
+
+console.log("serving data from :", conf.absoluteGlobalDataDirectory())
+
 
 const PORT = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
 

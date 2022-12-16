@@ -1,5 +1,7 @@
+const die = require("../utils/die")
 
-const AUTHOR_URL =  process.env.AUTHOR_URL || "http://localhost:3000"
+const BASE_URL =  process.env.BASE_URL || die("missing env variable BASE_URL")
+const AUTHOR_URL = BASE_URL+"/author"
 
 function nocache(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');

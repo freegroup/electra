@@ -4,9 +4,13 @@
     "main": "server/index.js",
     "license": "MIT",
     "dependencies": {
+        "body-parser": "^1.19.0",
+        "cookie-parser": "^1.4.5",
         "dotenv": "^16.0.3",
         "express": "^4.17.1",
-        "http-proxy-middleware": "^1.0.5",
+        "express-session": "^1.17.3",
+        "google-auth-library": "^7.0.2",
+        "http-proxy-middleware": "^2.0.6",
         "morgan": "^1.10.0",
         "socket.io": "^4.4.1"
     },

@@ -1,7 +1,7 @@
 {
-  "name": "thindexed-sheets",
+  "name": "electra-sheets",
   "version": "1.1.40",
-  "description": "Thindexed. A browser based circuit simulator which is able to run on a raspi with a node.js backend and has access to the GPIO pins.",
+  "description": "Electra. A browser based circuit simulator which is able to run on a raspi with a node.js backend and has access to the GPIO pins.",
   "main": "index.html",
   "scripts": {
     "build": "webpack --env dev && webpack --env build",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "body-parser": "1.18.3",
+    "body-parser": "1.20.1",
     "express": "^4.17.3",
     "fs-extra": "^10.0.1",
     "github-api": "^3.4.0",
@@ -30,5 +30,5 @@
     "puppeteer": "13.0.1",
     "truncate-utf8-bytes": "^1.0.2"
   },
-  "homepage": "https://github.com/thindexed/"
+  "homepage": "https://github.com/freegroup/electra/"
 }

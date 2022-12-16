@@ -42,7 +42,7 @@ module.exports = {
 
 
         app.get('/brains/global/share', nocache, (req, res) => {
-            github.hash(path.join(conf.absoluteGlobalDataDirectory(), req.query.filePath))
+            github.hash(path.join(conf.githubGlobalDataDirectory(), req.query.filePath))
             .then( sha => {
                 res.status(200).send({ filePath: sha})
             })

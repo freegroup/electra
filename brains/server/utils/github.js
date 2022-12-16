@@ -1,11 +1,12 @@
 const path = require('path')
 const Octokat = require('octokat')
+const die = require("./die")
 
 let octokat = null
 let repo = null
 
-const GITHUB_ORG = process.env.GITHUB_ORG || 'thindexed'
-const GITHUB_REPO = process.env.GITHUB_REPO || 'shapes'
+const GITHUB_ORG = process.env.GITHUB_ORG || die("Environment Varialbe GITHUB_ORG missing")
+const GITHUB_REPO = process.env.GITHUB_REPO ||  die("Environment Varialbe GITHUB_REPO missing")
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main'
 const TYPE = { BLOB: 'blob', TREE: 'tree' };

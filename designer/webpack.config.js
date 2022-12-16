@@ -1,18 +1,19 @@
 const path = require('path');
 
 const projectDir = path.resolve(__dirname)
+const contentDir = projectDir+"/public"
 
 module.exports = {
-  entry: projectDir + '/js/index.js',
+  entry: contentDir + '/js/index.js',
   devtool: 'source-map',
   mode: 'development',
   output: {
     libraryTarget: 'umd', // make the bundle export
-    path: projectDir + '/js/webpack',
+    path: contentDir + '/js/webpack',
     filename: "bundle.js"
   },
   resolve: {
-    modules: [projectDir + '/node_modules', projectDir + '/src/'],
+    modules: [projectDir + '/node_modules', contentDir + '/src/'],
     extensions: ['.json', '.js', '.css']
   },
   module: {
