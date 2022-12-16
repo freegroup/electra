@@ -11,7 +11,7 @@ import GeoDifferenceToolPolicy from "./policy/GeoDifferenceToolPolicy"
 import FigureCodeEdit from "./dialog/FigureCodeEdit"
 import FigureMarkdownEdit from "./dialog/FigureMarkdownEdit"
 import FigureTest from "./dialog/FigureTest"
-import toast from "../common/js/toast"
+import toast from "../../common/js/toast"
 
 export default class Toolbar {
 

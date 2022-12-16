@@ -1,4 +1,4 @@
-import inputPrompt from "../common/js/InputPrompt"
+import inputPrompt from "../../common/js/InputPrompt"
 
 import commandStack from "./commands/CommandStack"
 import State from "./commands/State";

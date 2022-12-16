@@ -1,4 +1,4 @@
-import textPrompt from "../common/js/TextPrompt"
+import textPrompt from "../../common/js/TextPrompt"
 import fileSelectDialog from "./FileSelectDialog"
 import axios from "axios"
 

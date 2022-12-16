@@ -1,5 +1,5 @@
-import AppSwitch from "../common/js/AppSwitch"
-import Userinfo from "../common/js/Userinfo"
+import AppSwitch from "../../common/js/AppSwitch"
+import Userinfo from "../../common/js/Userinfo"
 
 import Palette from "./Palette"
 import View from "./View"

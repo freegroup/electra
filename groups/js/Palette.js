@@ -1,5 +1,5 @@
 import Hogan from "hogan.js"
-import inputPrompt from "../common/js/InputPrompt"
+import inputPrompt from "../../common/js/InputPrompt"
 
 import recordStore from "./Records"
 

@@ -1,4 +1,4 @@
-import toast from "../common/js/toast"
+import toast from "../../common/js/toast"
 
 import recordStore from "./Records"
 

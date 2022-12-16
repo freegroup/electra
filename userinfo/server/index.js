@@ -1,30 +1,43 @@
-var http = require('http');
+const express = require('express');
+const path = require('path')
+const dotenv = require('dotenv')
 
-const PORT = 3000;
+const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+
+dotenv.config({ 
+    debug: false,
+    path: PROJECT_PATH+'/settings.ini' 
+})
+
+function die(msg){
+    console.log(msg)
+    process.exit(1)
+}
+
+
+const app = express();
 const HOST = "localhost";
+const PORT = process.env.PORT_USERINFO || die("missing env variable PORT_USERINFO");
 
-var app = http.createServer(function(req,res){
-    role = req.headers['x-role']   
+app.get('*', (req, res) => {
+  const role = req.headers['x-role'];
 
-    console.log(role)
-    if (role === "anonym" || role===undefined) {
-        res.statusCode = 403;
-        res.end('user not logged in');
-        return
-    }
- 
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
-        "id": req.headers['x-mail'],
-        "picture": req.headers['x-picture'],
-        "username": req.headers['x-name'],
-        "email": req.headers['x-mail'],
-        "displayName": req.headers['x-name'],
-        "role": role
-    }, null, 3));
+  console.log(role);
+  if (role === 'anonym' || role === undefined) {
+    res.status(403).send('user not logged in');
+    return;
+  }
+
+  res.json({
+    id: req.headers['x-mail'],
+    picture: req.headers['x-picture'],
+    username: req.headers['x-name'],
+    email: req.headers['x-mail'],
+    displayName: req.headers['x-name'],
+    role: role
+  });
 });
 
-// Start Proxy
-app.listen(PORT, HOST, () => {
-    console.log(`Starting Proxy at ${HOST}:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Starting server at port http://${HOST}:${PORT}`);
 });

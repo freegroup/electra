@@ -1,8 +1,8 @@
-import Files from "../common/js/FilesScreen"
-import Userinfo from "../common/js/Userinfo"
-import AuthorPage from "../common/js/AuthorPage"
-import AppSwitch from "../common/js/AppSwitch"
-import toast from "../common/js/toast"
+import Files from "../../common/js/FilesScreen"
+import Userinfo from "../../common/js/Userinfo"
+import AuthorPage from "../../common/js/AuthorPage"
+import AppSwitch from "../../common/js/AppSwitch"
+import toast from "../../common/js/toast"
 
 import View from "./View"
 import Toolbar from "./Toolbar"

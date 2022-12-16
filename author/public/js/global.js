@@ -1,6 +1,6 @@
-import inlineSVG from "../common/js/inlineSVG"
-import DecoratedInputPort from "../common/js/DecoratedInputPort"
-import DecoratedOutputPort from "../common/js/DecoratedOutputPort"
+import inlineSVG from "../../common/js/inlineSVG"
+import DecoratedInputPort from "../../common/js/DecoratedInputPort"
+import DecoratedOutputPort from "../../common/js/DecoratedOutputPort"
 
 import ConnectionSelectionFeedbackPolicy from "./editor/brain/ConnectionSelectionFeedbackPolicy"
 import Connection from "./editor/brain/figures/Connection"

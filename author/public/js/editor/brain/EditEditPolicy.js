@@ -1,4 +1,4 @@
-import MarkerFigure from "../../../common/js/MarkerFigure"
+import MarkerFigure from "../../../../common/js/MarkerFigure"
 import FigureConfigDialog from "./dialog/FigureConfigDialog"
 
 export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({

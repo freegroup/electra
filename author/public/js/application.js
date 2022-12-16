@@ -1,9 +1,9 @@
-import shareDialog from "../common/js/LinkShareDialog"
-import AuthorPage from "../common/js/AuthorPage"
-import Files from "../common/js/FilesScreen"
-import Userinfo from "../common/js/Userinfo"
-import AppSwitch from "../common/js/AppSwitch"
-import toast from "../common/js/toast"
+import shareDialog from "../../common/js/LinkShareDialog"
+import AuthorPage from "../../common/js/AuthorPage"
+import Files from "../../common/js/FilesScreen"
+import Userinfo from "../../common/js/Userinfo"
+import AppSwitch from "../../common/js/AppSwitch"
+import toast from "../../common/js/toast"
 
 import Toolbar from "./toolbar"
 import View from "./view"
@@ -12,7 +12,7 @@ import conf from "./configuration"
 import Document from "./model/document"
 import commandStack from "./commands/CommandStack"
 
-let storage = require('../common/js/BackendStorage').default(conf)
+let storage = require('../../common/js/BackendStorage').default(conf)
 
 class Application {
   /**

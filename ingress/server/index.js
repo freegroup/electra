@@ -32,6 +32,9 @@ const PORT_PERMISSIONS = process.env.PORT_PERMISSIONS || die("missing env variab
 const PORT_CIRCUIT = process.env.PORT_CIRCUIT || die("missing env variable PORT_CIRCUIT");
 const PORT_SHAPES = process.env.PORT_SHAPES || die("missing env variable PORT_SHAPES");
 const PORT_BRAINS = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
+const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable PORT_USERINFO");
+const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
+const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 
 const API_SERVICE_URL = "http://localhost";
 
@@ -42,12 +45,33 @@ const io = require('./websocket').connect(http, {path: '/socket.io'})
 // Logging
 app.use(morgan('dev'));
 
+app.get('/', function(req, res) {
+    res.redirect('/home');
+});
+
 app.use('/home', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
     changeOrigin: true,
     pathRewrite: {},
 }));
 
+app.use('/userinfo', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_USERINFO,
+    changeOrigin: true,
+    pathRewrite: {},
+}));
+
+app.use('/author', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_AUTHOR,
+    changeOrigin: true,
+    pathRewrite: {},
+}));
+
+app.use('/sheets', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_SHEETS,
+    changeOrigin: true,
+    pathRewrite: {},
+}));
 app.use('/brains', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_BRAINS,
     changeOrigin: true,
@@ -81,5 +105,5 @@ app.use('/permissions', createProxyMiddleware({
 
 // Start Proxy
 http.listen(PORT, () => {
-    console.log(`Starting Ingress at ${HOST}:${PORT}`);
+    console.log(`Starting Ingress at http://${HOST}:${PORT}`);
 });

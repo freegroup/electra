@@ -1,4 +1,4 @@
-import inlineSVG from "../common/js/inlineSVG"
+import inlineSVG from "../../common/js/inlineSVG"
 
 import '@fortawesome/fontawesome-free/js/fontawesome'
 import '@fortawesome/fontawesome-free/js/solid'

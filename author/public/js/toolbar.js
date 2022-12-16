@@ -1,7 +1,7 @@
 import commandStack from "./commands/CommandStack"
 
 import conf from "./configuration"
-let storage = require('../common/js/BackendStorage').default(conf)
+let storage = require('../../common/js/BackendStorage').default(conf)
 
 export default class Toolbar {
 
