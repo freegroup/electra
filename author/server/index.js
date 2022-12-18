@@ -4,11 +4,10 @@ const dotenv = require('dotenv')
 
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
 const scriptPath = path.dirname(__filename);
+const envFile = PROJECT_PATH+'/settings.ini' 
 
-dotenv.config({ 
-    debug: false,
-    path: PROJECT_PATH+'/settings.ini' 
-})
+console.log("loading envFile: "+envFile)
+dotenv.config({ debug: false,path: envFile })
 
 function die(msg){
     console.log(msg)

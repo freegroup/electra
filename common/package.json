@@ -1,15 +1,14 @@
 {
     "name": "electra-dev-proxy",
     "version": "1.0.0",
-    "main": "server/index.js",
-    "license": "MIT",
-    "dependencies": {
+    "author": "Andreas Herz <a.herz@freegroup.de>",
+    "scripts": {
+    },
+    "license": "ISC",
+      "dependencies": {
         "dotenv": "^16.0.3",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "http-proxy-middleware": "^1.0.5",
         "morgan": "^1.10.0"
-    },
-    "scripts": {
-        "start": "node server/index.js"
     }
 }

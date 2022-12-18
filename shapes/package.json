@@ -1,19 +1,12 @@
 {
-  "name": "thindexed-generator",
-  "version": "1.1.40",
-  "description": "Thindexed. A browser based circuit simulator which is able to run on a raspi with a node.js backend and has access to the GPIO pins.",
-  "main": "index.html",
+  "name": "electra-shapes",
+  "version": "1.0.0",
+  "author": "Andreas Herz <a.herz@freegroup.de>",
+  "license": "ISC",
   "scripts": {
     "build": "webpack --env dev && webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
     "dev:server": "nodemon --ignore sessions/ ./app/backend/index.js --storage single-user"
-  },
-  "repository": "git+https://github.com/thindexed",
-  "keywords": [],
-  "author": "Andreas Herz (FreeGroup)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/thindexed/generator/issues"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -29,6 +22,5 @@
     "path-browserify": "^1.0.1",
     "puppeteer": "13.0.1",
     "truncate-utf8-bytes": "^1.0.2"
-  },
-  "homepage": "https://github.com/thindexed/"
+  }
 }

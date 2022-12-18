@@ -6,10 +6,10 @@ const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
-dotenv.config({ 
-    debug: false,
-    path: PROJECT_PATH+'/settings.ini' 
-})
+const envFile = PROJECT_PATH+'/settings.ini' 
+
+console.log("loading envFile: "+envFile)
+dotenv.config({ debug: false,path: envFile })
 
 
 const globalApi = require("./data/global")

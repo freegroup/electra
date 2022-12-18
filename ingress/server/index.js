@@ -11,12 +11,11 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
 const oneDay = 1000 * 60 * 60 * 24;
+const envFile = PROJECT_PATH+'/settings.ini' 
 
+console.log("loading envFile: "+envFile)
+dotenv.config({ debug: false,path: envFile })
 
-dotenv.config({ 
-    debug: false,
-    path: PROJECT_PATH+'/settings.ini' 
-})
 
 function die(msg){
     console.log(msg)
