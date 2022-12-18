@@ -53,7 +53,11 @@ async function  runServer() {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
 
-  http.listen(PORT, function () {
+  // Start Server
+  // "localhost" => Service ist nicht von ausserhalb aufrufbar.
+  // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
+  // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
+  http.listen(PORT, "localhost", function () {
     console.log("============================================================================")
     console.log('| System is up and running on http://localhost:'+PORT+'/                    ');
     console.log("============================================================================")
