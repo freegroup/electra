@@ -10,10 +10,12 @@ const {OAuth2Client} = require('google-auth-library');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+const componentPath = path.resolve(__dirname+ "/..")
+const componentName = path.basename(componentPath)
 const oneDay = 1000 * 60 * 60 * 24;
 const envFile = PROJECT_PATH+'/settings.ini' 
 
-console.log("loading envFile: "+envFile)
+console.log(`Component '${componentName} is loading envFile '${envFile}'`)
 dotenv.config({ debug: false,path: envFile })
 
 

@@ -8,11 +8,12 @@ const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+const componentPath = path.resolve(__dirname+ "/..")
+const componentName = path.basename(componentPath)
+const envFile = PROJECT_PATH+'/settings.ini' 
 
-dotenv.config({ 
-    debug: false,
-    path: PROJECT_PATH+'/settings.ini' 
-})
+console.log(`Component '${componentName} is loading envFile '${envFile}'`)
+dotenv.config({  debug: false, path: envFile })
 
 
 const pdfApi = require("./handler/pdf")

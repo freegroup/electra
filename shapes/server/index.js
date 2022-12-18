@@ -7,22 +7,23 @@ const bodyParser = require('body-parser')
 const path = require("path")
 const dotenv = require('dotenv')
 
+const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+const componentPath = path.resolve(__dirname+ "/..")
+const componentName = path.basename(componentPath)
+const scriptPath = path.dirname(__filename);
+const envFile = PROJECT_PATH+'/settings.ini' 
+
+console.log(`Component '${componentName} is loading envFile '${envFile}'`)
+dotenv.config({ debug: false,path: envFile })
+
+
 const generator = require("./thumbnails")
 const conf = require("./configuration")
-
 const indexApi = require("./handler/index")
 const globalApi = require("./handler/global")
 const userApi = require("./handler/user")
 
 console.log("serving data from :", conf.absoluteGlobalDataDirectory())
-
-
-const PROJECT_PATH = path.resolve(__dirname+ "/../..")
-const scriptPath = path.dirname(__filename);
-const envFile = PROJECT_PATH+'/settings.ini' 
-
-console.log("loading envFile: "+envFile)
-dotenv.config({ debug: false,path: envFile })
 
 
 function die(msg){
@@ -57,9 +58,7 @@ async function  runServer() {
   // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
   // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
   http.listen(PORT, "localhost", function () {
-    console.log("============================================================================")
-    console.log('| System is up and running on http://localhost:'+PORT+'/                    ');
-    console.log("============================================================================")
+    console.log(`Starting /shapes at http://localhost:${PORT}/shapes`);
   });
 }
 
