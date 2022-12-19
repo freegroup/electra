@@ -1,0 +1,124 @@
+- name: My first play
+  hosts: electra
+  tasks:
+  - name: Creating users "electra" without admin access
+    user:
+      name: electra
+      password: ''
+
+  - name: "Add nodejs apt key"
+    apt_key:
+      url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+      state: present
+
+  - name: Install the nodejs LTS repos
+    apt_repository:
+      repo: "deb https://deb.nodesource.com/node_18.x focal main"
+      state: present
+      update_cache: yes
+
+  - name: Install NodeJS
+    tags: nodesjs, install
+    apt:
+      name: nodejs
+      state: latest
+
+  - name: Install PM2 NodeJS Process manager
+    npm: name=pm2 global=yes
+
+  - name: Git checkout electra
+    become: true
+    become_user: electra
+    ansible.builtin.git:
+      repo: 'https://github.com/freegroup/electra.git'
+      dest: /home/electra/server
+      force: true
+      update: true
+
+  - name: Install packages in /author
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/author
+
+  - name: Install packages in /brains
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/brains
+
+  - name: Install packages in /circuit
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/circuit
+
+  - name: Install packages in /common
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/common
+
+  - name: Install packages in /designer
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/designer
+
+  - name: Install packages in /home
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/home
+
+  - name: Install packages in /ingress
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/ingress
+
+  - name: Install packages in /permissions
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/permissions
+
+  - name: Install packages in /shapes
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/shapes
+
+  - name: Install packages in /sheets
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/sheets
+
+  - name: Install packages in /userinfo
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/userinfo
+
+  - name: Build /author
+    become: true
+    become_user: electra
+    command: npm run build
+    args:
+      chdir: /home/electra/server/author
+
+  - name: Build /circuit
+    become: true
+    become_user: electra
+    command: npm run build
+    args:
+      chdir: /home/electra/server/circuit
+
+  - name: Build /designer
+    become: true
+    become_user: electra
+    command: npm run build
+    args:
+      chdir: /home/electra/server/designer
+

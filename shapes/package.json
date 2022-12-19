@@ -4,9 +4,6 @@
   "author": "Andreas Herz <a.herz@freegroup.de>",
   "license": "ISC",
   "scripts": {
-    "build": "webpack --env dev && webpack --env build",
-    "dev": "webpack --progress --colors --watch --env dev",
-    "dev:server": "nodemon --ignore sessions/ ./app/backend/index.js --storage single-user"
   },
   "dependencies": {
     "dotenv": "^16.0.3",

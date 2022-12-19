@@ -4,7 +4,6 @@ set -x
 (cd ./author && npm run build )
 
 (cd ./brains && npm install)
-(cd ./brains && npm run build)
 
 (cd ./circuit && npm install)
 (cd ./circuit && npm run build)
@@ -21,10 +20,8 @@ set -x
 (cd ./permissions && npm install)
 
 (cd ./shapes && npm install)
-(cd ./shapes && npm run build)
 
 (cd ./sheets && npm install)
-(cd ./sheets && npm run build)
 
 (cd ./userinfo && npm install)
 
