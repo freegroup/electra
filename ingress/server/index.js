@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require("morgan");
 const path = require('path')
+const fs = require('fs');
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -33,7 +34,6 @@ var credentials = {key: privateKey, cert: certificate};
 const app = express();
 const http = require('http').Server(app)
 const https = require('https').Server(credentials, app);
-const fs = require('fs');
 
 
 // Configuration
