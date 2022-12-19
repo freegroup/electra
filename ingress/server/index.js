@@ -86,7 +86,7 @@ app.get('/', function(req, res) {
 
 // Required for the ACME-Challenge of LetsEncrypt
 //
-app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../well-known'));
+app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
 
 app.use('/home', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,

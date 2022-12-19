@@ -33,9 +33,6 @@
       jump: ACCEPT
     become: yes
 
-iptables -A INPUT -i lo -p tcp --dport 8080 -j ACCEPT
-iptables -A INPUT -p tcp --dport 8080 -j DROP
-
   - name: Creating users "electra" without admin access
     user:
       name: electra
