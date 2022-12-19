@@ -24,20 +24,17 @@
       jump: ACCEPT
     become: yes
 
-  - name: Block connections on multiple ports
-    ansible.builtin.iptables:
-      chain: INPUT
-      protocol: tcp
-      destination_ports:
-        - "8080:8095"
-      jump: ACCEPT
-    become: yes
+  - name: Create group
+    group:
+      name: "ssl_group"
+      state: present
 
   - name: Creating users "electra" without admin access
     user:
       name: electra
       password: ''
-
+      group: "ssl_group"
+      shell: /bin/bash
 
   - name: "Add nodejs apt key"
     apt_key:

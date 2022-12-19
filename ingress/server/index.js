@@ -26,14 +26,9 @@ function die(msg){
     process.exit(1)
 }
 
-var privateKey  = fs.readFileSync(process.env.SSL_KEY, 'utf8');
-var certificate = fs.readFileSync(process.env.SSL_CERT, 'utf8');
-var credentials = {key: privateKey, cert: certificate};
 
 // Create Express Server
 const app = express();
-const http = require('http').Server(app)
-const https = require('https').Server(credentials, app);
 
 
 // Configuration
@@ -201,11 +196,28 @@ app.use('/oauth/callback', async function(req, res) {
 
 
 // Start Proxy
-http.listen(PORT, () => {
-    console.log(`Starting Ingress at http://${HOST}:${PORT}`);
-});
+try {
+    const http = require('http').Server(app)
+    http.listen(PORT, () => {
+        console.log(`Starting Ingress at http://${HOST}:${PORT}`);
+    });
+}
+catch(exc){
+    console.log("failed to start 'http' server")
+    console.log(exc)
+}
 
 // Start Proxy
-https.listen(8443, () => {
-    console.log(`Starting Ingress at http://${HOST}:8443`);
-});
+try{
+    var privateKey  = fs.readFileSync(process.env.SSL_KEY, 'utf8');
+    var certificate = fs.readFileSync(process.env.SSL_CERT, 'utf8');
+    var credentials = {key: privateKey, cert: certificate};
+    const https = require('https').Server(credentials, app);
+    https.listen(8443, () => {
+        console.log(`Starting Ingress at http://${HOST}:8443`);
+    });
+}
+catch(exc){
+    console.log("failed to start https server")
+    console.log(exc)
+}

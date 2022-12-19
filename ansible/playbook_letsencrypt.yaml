@@ -1,17 +1,15 @@
 - hosts: electra 
-  vars_files:
-    - vars.yaml
 
   tasks:
   - name : Install Python Package
     apt: name=python3 update_cache=yes state=latest
 
-  - name : Install Let's Encrypt Package
-    apt: name={{ certbot_package }} update_cache=yes state=latest
+  - name: Create and Install Cert certbot
+    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d  www.electra.academy -m a.herz@freegroup.de --agree-tos --noninteractive --redirect"
 
-  - name: Create and Install Cert Using {{ certbot_plugin }} Plugin
-    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d  {{ certbot_site_names[inventory_hostname_short] }} -m {{ certbot_mail_address }} --agree-tos --noninteractive --redirect"
-
-  - name: Set Letsencrypt Cronjob for Certificate Auto Renewal
-    cron: name=letsencrypt_renewal special_time=monthly job="/usr/bin/certbot renew"
-    when: ansible_facts['os_family'] == "Debian"
+  - name: Recursively change ownership of a directory
+    ansible.builtin.file:
+      path: /etc/letsencrypt
+      state: directory
+      recurse: yes
+      group: ssl_group
