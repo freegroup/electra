@@ -12,6 +12,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
 const componentPath = path.resolve(__dirname+ "/..")
 const componentName = path.basename(componentPath)
+const scriptPath = path.dirname(__filename);
 const oneDay = 1000 * 60 * 60 * 24;
 const envFile = PROJECT_PATH+'/settings.ini' 
 
@@ -81,6 +82,11 @@ app.use(session({
 app.get('/', function(req, res) {
     res.redirect('/home');
 });
+
+
+// Required for the ACME-Challenge of LetsEncrypt
+//
+app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../well-known'));
 
 app.use('/home', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,

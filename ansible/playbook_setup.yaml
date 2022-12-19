@@ -1,10 +1,46 @@
 - name: My first play
   hosts: electra
   tasks:
+  - name: Forward port 80 to 8080
+    ansible.builtin.iptables:
+      table: nat
+      chain: PREROUTING
+      in_interface: eth0
+      protocol: tcp
+      match: tcp
+      destination_port: 80
+      jump: REDIRECT
+      to_ports: 8080
+      comment: Redirect web traffic to port 8080
+    become: yes
+
+  - name: Allow connections on multiple ports
+    ansible.builtin.iptables:
+      chain: INPUT
+      protocol: tcp
+      destination_ports:
+        - "80"
+        - "443"
+      jump: ACCEPT
+    become: yes
+
+  - name: Block connections on multiple ports
+    ansible.builtin.iptables:
+      chain: INPUT
+      protocol: tcp
+      destination_ports:
+        - "8080:8095"
+      jump: ACCEPT
+    become: yes
+
+iptables -A INPUT -i lo -p tcp --dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -j DROP
+
   - name: Creating users "electra" without admin access
     user:
       name: electra
       password: ''
+
 
   - name: "Add nodejs apt key"
     apt_key:
@@ -121,4 +157,18 @@
     command: npm run build
     args:
       chdir: /home/electra/server/designer
+
+  - name: Run the application
+    become: true
+    become_user: electra
+    command: pm2 restart ./ecosystem.config.js
+    args:
+      chdir: /home/electra/server/
+
+  - name: show the startus
+    become: true
+    become_user: electra
+    command: pm2 ls
+    args:
+      chdir: /home/electra/server/
 
