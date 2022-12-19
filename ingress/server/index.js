@@ -68,7 +68,6 @@ function onProxyReq(proxyReq, req, res){
         proxyReq.setHeader("x-role", "anonym");
     }
 }
-const io = require('./websocket').connect(http, {path: '/socket.io'})
 
 
 app.use(morgan('dev'));
@@ -198,6 +197,7 @@ app.use('/oauth/callback', async function(req, res) {
 // Start Proxy
 try {
     const http = require('http').Server(app)
+    const io = require('./websocket').connect(http, {path: '/socket.io'})
     http.listen(PORT, () => {
         console.log(`Starting Ingress at http://${HOST}:${PORT}`);
     });
@@ -213,6 +213,7 @@ try{
     var certificate = fs.readFileSync(process.env.SSL_CERT, 'utf8');
     var credentials = {key: privateKey, cert: certificate};
     const https = require('https').Server(credentials, app);
+    const io = require('./websocket').connect(https, {path: '/socket.io'})
     https.listen(8443, () => {
         console.log(`Starting Ingress at http://${HOST}:8443`);
     });
