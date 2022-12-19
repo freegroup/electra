@@ -10,7 +10,7 @@
     apt: name={{ certbot_package }} update_cache=yes state=latest
 
   - name: Create and Install Cert Using {{ certbot_plugin }} Plugin
-    command: "certbot --webroot -w /home/electra/server/ingress/well-known --{{ certbot_plugin }} -d  {{ certbot_site_names[inventory_hostname_short] }} -m {{ certbot_mail_address }} --agree-tos --noninteractive --redirect"
+    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d  {{ certbot_site_names[inventory_hostname_short] }} -m {{ certbot_mail_address }} --agree-tos --noninteractive --redirect"
 
   - name: Set Letsencrypt Cronjob for Certificate Auto Renewal
     cron: name=letsencrypt_renewal special_time=monthly job="/usr/bin/certbot renew"
