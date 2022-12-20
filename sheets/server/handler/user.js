@@ -83,7 +83,7 @@ module.exports = {
             }
         })
 
-        app.get('/sheets/user/share', nocache, (req, res) => {
+        app.get('/sheets/user/share', nocache, ensureLoggedIn, (req, res) => {
             github.hash(path.join(conf.githubUserDataDirectory(req), req.query.filePath))
             .then( sha => {
                 res.status(200).send({ filePath: sha})
