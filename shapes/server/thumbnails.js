@@ -20,7 +20,7 @@ const thisDir = path.normalize(__dirname)
 const version =  process.env.VERSION || "local-version"
 
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
-const DESIGNER_URL =  "http://localhost:"+PORT_DESIGNER
+const DESIGNER_URL =  `http://localhost:${PORT_DESIGNER}/designer`
 
 function fileToPackage(dataDirectory, file) {
   return file
