@@ -201,7 +201,7 @@ app.use('/oauth/callback/:componentUri', async function(req, res) {
     req.session.name = payload.name;
     req.session.familyName = payload.family_name;
     req.session.givenName = payload.given_name;
-    return res.redirect(302, `${process.env.BASE_URL}/${req.params.componentUri}/`);
+    return res.redirect(`${req.protocol}://${req.headers.host}/${req.params.componentUri}/`);
 });
 
 
