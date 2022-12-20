@@ -172,8 +172,8 @@ app.use('/permissions', createProxyMiddleware({
 }));
 
 // Google auth endpoints
-app.use('/oauth/callback', async function(req, res) {
-    console.log(req.cookies)
+app.use('/oauth/callback/:componentUri', async function(req, res) {
+    console.log(req.params.componentUri)
     const csrfTokenCookie = req.cookies['g_csrf_token'];
     if (!csrfTokenCookie) {
       return res.status(400).send('No CSRF token in Cookie.');
@@ -201,8 +201,7 @@ app.use('/oauth/callback', async function(req, res) {
     req.session.name = payload.name;
     req.session.familyName = payload.family_name;
     req.session.givenName = payload.given_name;
-    console.log(req.session);
-    return res.redirect(302, `${process.env.BASE_URL}/home/`);
+    return res.redirect(302, `${process.env.BASE_URL}/${req.params.componentUri}/`);
 });
 
 
