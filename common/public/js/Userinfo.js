@@ -28,15 +28,15 @@ export default class Userinfo {
           console.log({
             client_id: "1008700492445-0t7mlaamv1355pld1uh4gt9duqs7fg8l.apps.googleusercontent.com",
             //callback: onSignIn,
-            login_uri: "http://localhost:8080/oauth/callback",
-            //login_uri: "https://www.electra.academy/oauth/callback",
+            //login_uri: "http://localhost:8080/oauth/callback",
+            login_uri: "https://electra.academy/oauth/callback",
             ux_mode:"redirect"
           })
           google.accounts.id.initialize({
             client_id: "1008700492445-0t7mlaamv1355pld1uh4gt9duqs7fg8l.apps.googleusercontent.com",
             //callback: onSignIn,
-            login_uri: "http://localhost:8080/oauth/callback",
-            //login_uri: "https://www.electra.academy/oauth/callback",
+            //login_uri: "http://localhost:8080/oauth/callback",
+            login_uri: "https://electra.academy/oauth/callback",
             ux_mode:"redirect"
           });
           

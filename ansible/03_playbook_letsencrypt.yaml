@@ -3,9 +3,12 @@
   tasks:
   - name : Install Python Package
     apt: name=python3 update_cache=yes state=latest
-
+  
+  - name: ensure nginx is at the latest version
+    apt: name=nginx state=latest
+  
   - name: Create and Install Cert certbot
-    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d  www.electra.academy -m a.herz@freegroup.de --agree-tos --noninteractive --redirect"
+    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d  electra.academy -m a.herz@freegroup.de --agree-tos --noninteractive --redirect"
 
   - name: Recursively change ownership of a directory
     ansible.builtin.file:
@@ -13,3 +16,6 @@
       state: directory
       recurse: yes
       group: ssl_group
+      mode: g=rX
+
+
