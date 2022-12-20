@@ -103,7 +103,7 @@ module.exports = {
             "--disable-dev-shm-usage",
             "--disable-setuid-sandbox",
             "--no-sandbox",
-          ], executablePath:'chromium-browser'})
+          ]})
         // let browser = await puppeteer.launch( DEBUGGING ? { headless: false, devtools: true,slowMo: 250}: {})
   
         const page = await browser.newPage()
