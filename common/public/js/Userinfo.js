@@ -28,7 +28,7 @@ export default class Userinfo {
           // https://console.cloud.google.com/apis/credentials
           google.accounts.id.initialize({
             client_id: "1008700492445-0t7mlaamv1355pld1uh4gt9duqs7fg8l.apps.googleusercontent.com",
-            login_uri: `http://${window.location.host}/oauth/callback${window.location.pathname}`,
+            login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
             ux_mode:"redirect"
           });
           
