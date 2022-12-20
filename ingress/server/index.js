@@ -84,6 +84,18 @@ app.get('/', function(req, res) {
 });
 
 
+// redirect to a non-www domain
+// https://www.electra.academy => https://electra.academy
+//
+app.get ('/*', function (req, res, next){
+  if (req.headers.host.match(/^www\./) ) {
+    res.redirect( '//' + req.headers.host.substring(4) + req.url)
+  }
+  else {
+    next()
+  }
+});
+
 // Required for the ACME-Challenge of LetsEncrypt
 //
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
