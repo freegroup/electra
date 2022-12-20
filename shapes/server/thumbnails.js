@@ -4,14 +4,23 @@ const puppeteer = require('puppeteer')
 const path = require("path")
 const fs = require("fs")
 const glob = require("glob")
+const dotenv = require('dotenv')
 
-const conf = require("./configuration")
+const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+const componentPath = path.resolve(__dirname+ "/..")
+const componentName = path.basename(componentPath)
+const envFile = PROJECT_PATH+'/settings.ini' 
+
+console.log(`Component '${componentName} is loading envFile '${envFile}'`)
+dotenv.config({ debug: false,path: envFile })
+
 
 const thisDir = path.normalize(__dirname)
 
 const version =  process.env.VERSION || "local-version"
-const DESIGNER_URL =  process.env.DESIGNER_URL || "http://localhost:3000"
-const IN_K8S = process.env.KUBERNETES_SERVICE_HOST? true : false
+
+const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
+const DESIGNER_URL =  "http://localhost:"+PORT_DESIGNER
 
 function fileToPackage(dataDirectory, file) {
   return file
@@ -89,19 +98,13 @@ module.exports = {
           "let pkg='" + pkg + "';\n" +
           code;
 
-        let browser = null
-        if (IN_K8S) {
-          console.log("Running in K8S environment")
-          browser = await puppeteer.launch({ headless: true, args: [
+        let browser = await puppeteer.launch({ headless: true, args: [
             "--disable-gpu",
             "--disable-dev-shm-usage",
             "--disable-setuid-sandbox",
             "--no-sandbox",
           ], executablePath:'chromium-browser'})
-        }
-        else {
-          browser = await puppeteer.launch( DEBUGGING ? { headless: false, devtools: true,slowMo: 250}: {})
-        }
+        // let browser = await puppeteer.launch( DEBUGGING ? { headless: false, devtools: true,slowMo: 250}: {})
   
         const page = await browser.newPage()
        

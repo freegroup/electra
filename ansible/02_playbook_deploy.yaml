@@ -1,5 +1,9 @@
 - name: My first play
   hosts: electra
+
+  vars_files:
+    - secrets.yaml
+
   tasks:
 
   - name: Git checkout electra
@@ -98,7 +102,13 @@
     args:
       chdir: /home/electra/server/designer
 
-  - name: Run the application
+  - name: Ensure GITHUB_TOKEN variable in the sesstings.ini
+    ansible.builtin.lineinfile:
+      path: /home/electra/server/settings.ini
+      regexp: '^GITHUB_TOKEN='
+      line: GITHUB_TOKEN={{ GITHUB_TOKEN }}
+
+  - name: Run the application via PM2 edosystem configuration
     become: true
     become_user: electra
     command: pm2 restart ./ecosystem.config.js

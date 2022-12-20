@@ -25,10 +25,28 @@
       state: present
       update_cache: yes
 
-  - name: Install NodeJS
-    tags: nodesjs, install
+  - name: Install required packages
     apt:
-      name: nodejs
+      name: 
+        - nodejs
+        - chromium-browser
+        - libnss3
+        - libharfbuzz-bin
+        - libharfbuzz-dev
+        - ca-certificates
+        - fonts-freefont-ttf
+        - libatk1.0-0 
+        - libatk-bridge2.0-0 
+        - libcups2 
+        - libxkbcommon-x11-0 
+        - libxcomposite1 
+        - libxdamage1 
+        - libxfixes3 
+        - libxrandr2 
+        - libgbm1 
+        - libpango-1.0-0 
+        - libcairo2
+        - libasound2
       state: latest
 
   - name: Install PM2 NodeJS Process manager
