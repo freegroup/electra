@@ -43,8 +43,8 @@ module.exports = {
                 })
         })
 
-        app.get('/brains/user/share', nocache, (req, res) => {
-            github.hash(path.join(conf.absoluteUserDataDirectory(req), req.query.filePath))
+        app.get('/brains/user/share', nocache, ensureLoggedIn, (req, res) => {
+            github.hash(path.join(conf.githubUserDataDirectory(req), req.query.filePath))
             .then( sha => {
                 res.status(200).send({ filePath: sha})
             })

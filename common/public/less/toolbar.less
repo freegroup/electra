@@ -22,7 +22,7 @@
 
     .image-button{
       display: inline-block;
-      img{
+      img, svg{
         margin: 5px;
         margin-bottom:0;
         padding: 0;
@@ -34,7 +34,19 @@
         color:#777;
         font-size:45px;
         transition: all 0.5s;
+
+        circle[stroke], 
+        polyline[stroke], 
+        path[stroke], 
+        g[stroke] {
+          stroke: @toolbarButtonFontColor !important;
+        }
+        rect[fill],
+        circle[fill] {
+          fill: @toolbarButtonFontColor !important;
+        }
       }
+
       div{
         color:@toolbarButtonFontColor;
         text-align: center;
@@ -60,7 +72,7 @@
 
 
 @keyframes highlight {
-  0%   { color: @tintColor  }
-  50%  { color: rgba(0,0,0,0.4) }
-  100% { color: @tintColor  }
+  0%   { color: @tintColor;  }
+  50%  { color: rgba(0,0,0,0.4); }
+  100% { color: @tintColor;  }
 }

@@ -8,7 +8,7 @@ export default class AppSwitch {
             <label class="dropdown" >
 
                 <span class="image-button"  data-toggle="dropdown">
-                  <img  src="../common/images/toolbar_app_switch.svg"/>
+                  <img  src="../common/images/toolbar_app_switch.svg" class="svg"/>
                 </span>
 
                 <ul class="dropdown-menu" role="menu" >
