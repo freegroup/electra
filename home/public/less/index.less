@@ -1,0 +1,40 @@
+@import "../../common/less/variables";
+@import "variables";
+
+@import "../../common/less/common";
+@import "../../common/less/userinfo";
+@import "../../common/less/toolbar";
+@import "../../common/less/appSwitch";
+
+@import "toolbar";
+@import "hero";
+@import "intro";
+@import "slidedeck";
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, sans-serif;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+
+.launch_button {
+    margin-top: 20px;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: calc(10px + 1vw);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    text-decoration: none;
+    background-color: #C71D3D;
+    color: white;
+    font-weight: 300;
+}

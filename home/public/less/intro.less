@@ -1,0 +1,50 @@
+.intro {
+    background-color: white;
+    background-image: none;
+    text-align: left;
+    position: relative;
+    z-index: 20;
+    height: 100vh;
+    padding-bottom: 20px;
+    color: #333;
+    font-size: 30px;
+
+    .header {
+        font-size: calc(19px + 1vw);
+        line-height: 1.2;
+        top: 2vw;
+        padding-left: 50px;
+        color: #C71D3D;
+        position: absolute;
+        padding-top: 30px;
+        background-color: rgba(255, 255, 255, 0.8);
+        div {
+            font-size: calc(6px + 1vw);
+            font-weight: 200;
+            color: black;
+            padding-top: 30px;
+        }
+    }
+
+    img {
+        width: 50%;
+        vertical-align: middle;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        left: 0;
+        right: 0;
+    }
+
+    .launch_button {
+        position: absolute;
+        right: 50px;
+        bottom: 100px;
+
+        &:hover {
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+    }
+
+}

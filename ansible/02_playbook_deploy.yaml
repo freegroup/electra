@@ -81,6 +81,13 @@
     community.general.npm:
       path: /home/electra/server/userinfo
 
+  - name: Build /home
+    become: true
+    become_user: electra
+    command: npm run build
+    args:
+      chdir: /home/electra/server/home
+
   - name: Build /author
     become: true
     become_user: electra

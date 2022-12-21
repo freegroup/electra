@@ -1,0 +1,108 @@
+.slidedeck {
+    position: absolute;
+    height: 400vh;
+    width: 100%;
+    background-image: linear-gradient(135deg, #e13f4d, #d34657);
+
+    .pink_bg {
+        position: absolute;
+        top: 100vh;
+        height: 300vh;
+        width: 100%;
+        background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);
+    }
+
+    .orange_bg {
+        position: absolute;
+        top: 100vh;
+        height: 200vh;
+        width: 100%;
+        background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);
+    }
+
+    .blue_bg {
+        position: absolute;
+        top: 100vh;
+        height: 100vh;
+        width: 100%;
+        background-image: linear-gradient(135deg, #242533, #2a3079);
+    }
+
+
+    .section_header {
+        color: white;
+        font-size: calc(16px + 2vw);
+        text-align: center;
+        font-weight: 100;
+        padding-top: 30px;
+        position: sticky;
+        top: 20px;
+    }
+
+    .card {
+        position: sticky;
+        z-index: 1000;
+        width: 25%;
+        height: 50vh;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);
+        top: 0;
+
+        .text {
+            position: absolute;
+            top: -40px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 100;
+            width: 100%;
+        }
+    
+        .media {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .content {
+            position: absolute;
+            top: 80px;
+            padding: 10px;
+
+            .header {
+                color: #C71D3D;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+        }
+
+        .launch_button {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            border-radius: 4px;
+            font-size: 14px;
+            padding: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    
+        &.left {
+            left: 5%;
+            transform: translateY(50%);
+        }
+    
+        &.center {
+            left: 50%;
+            transform: translateY(50%) translateX(-50%);
+        }
+    
+        &.right {
+            left: 70%;
+            transform: translateY(50%);
+        }
+    }
+}
