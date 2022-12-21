@@ -1,9 +1,6 @@
-import designerDialog from "./DesignerDialog"
-
-
 export default class AppSwitch {
 
-  constructor(permissions, conf){
+  constructor(permissions){
     let appSwitchButtons = $(` 
             <label class="dropdown" >
 
@@ -52,7 +49,7 @@ export default class AppSwitch {
     $(".applicationSwitch").prepend(appSwitchButtons)
 
     $(".applicationSwitchDesigner").off("click").on("click", () => {
-      designerDialog.show(conf)
+      window.open("../designer", "designer")
     })
     $(".applicationSwitchAuthor").off("click").on("click", () => {
       window.open("../author", "author")

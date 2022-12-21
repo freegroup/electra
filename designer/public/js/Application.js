@@ -85,10 +85,10 @@ class Application {
     this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
     this.layer = new Layer(this, "layer_elements", this.view, permissions)
     this.filter = new FilterPane(this, "#filter .filter_actions", this.view, permissions)
-    this.userinfo = new Userinfo(permissions, conf)
+    this.userinfo = new Userinfo(permissions)
     this.filePane = new Files(this, conf, permissions.shapes)
     this.indexPane = new AuthorPage("#home", "readme/en/designer/Readme.sheet")
-    this.appSwitch = new AppSwitch(permissions, conf)
+    this.appSwitch = new AppSwitch(permissions)
 
     this.indexPane.render()
     this.view.installEditPolicy(new SelectionToolPolicy())

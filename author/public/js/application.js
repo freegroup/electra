@@ -37,8 +37,8 @@ class Application {
     this.filePane = new Files(this, conf, permissions.sheets)
     this.indexPane = new AuthorPage("#home", "/readme/en/author/README.sheet")
     this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
-    this.userinfo = new Userinfo(permissions, conf)
-    this.appSwitch = new AppSwitch(permissions, conf)
+    this.userinfo = new Userinfo(permissions)
+    this.appSwitch = new AppSwitch(permissions)
 
     commandStack.on("change", this)
 

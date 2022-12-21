@@ -1,4 +1,6 @@
+import axios from "axios"
 import "../less/index.less"
+import inlineSVG from "../../common/js/inlineSVG"
 
 // simple text fade out for the card headers
 //
@@ -18,5 +20,20 @@ el.each((index, text) => {
 return true
 }
 
+
 get();
 $(window).scroll(get);
+
+$(window).load(function () {
+
+    // Init the UI after we have receive the UI/UX permissions of this kind of installation
+    // (fake event from the socket.io mock )
+    //
+    axios.get("../permissions").then( (response) => {
+      let permissions = response.data
+        app = require("./Application").default
+        app.init(permissions)
+        inlineSVG.init()
+      })
+});
+  

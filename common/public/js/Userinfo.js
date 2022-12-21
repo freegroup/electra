@@ -4,7 +4,7 @@ import axios from "axios"
 export default class Userinfo {
 
 
-  constructor(permissions, conf){
+  constructor(permissions){
 
     if(permissions.featureset.authentication === false){
       $(".userinfo_toggler").remove()

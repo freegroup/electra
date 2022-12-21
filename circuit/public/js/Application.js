@@ -1,9 +1,3 @@
-/**
- *
- * The **GraphicalEditor** is responsible for layout and dialog handling.
- *
- * @author Andreas Herz
- */
 import Userinfo from "../../common/js/Userinfo"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
@@ -23,11 +17,6 @@ let storage = storageFactory(conf)
 
 class Application {
 
-  /**
-   * @constructor
-   *
-   * @param {String} canvasId the id of the DOM element to use as paint container
-   */
   constructor() {
   }
 
@@ -39,9 +28,9 @@ class Application {
     this.view = new View("draw2dCanvas", permissions)
     this.filePane = new Files(this, conf, permissions.brains)
 
-    this.userinfo = new Userinfo(permissions, conf)
+    this.userinfo = new Userinfo(permissions)
     this.indexPane = new AuthorPage("#home", "readme/en/circuit/Readme.sheet")
-    this.appSwitch = new AppSwitch(permissions, conf)
+    this.appSwitch = new AppSwitch(permissions)
 
     this.indexPane.render()
 
