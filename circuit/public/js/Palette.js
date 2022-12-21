@@ -126,7 +126,7 @@ export default class Palette {
         let $grid = $("#paletteElements")
 
         $grid.shuffle('shuffle', function ($el, shuffle) {
-          return $el.data("dir").trim().toLowerCase()===path
+          return $el.data("dir").trim().toLowerCase().startsWith(path)
         })
 
         return false
