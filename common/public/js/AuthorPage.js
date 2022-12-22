@@ -51,6 +51,5 @@ export default class AuthorPage {
   renderBrain(container, section){
     container.append(`<div class="imageRendering"><img src="${section.content.image}"></div>` )
   }
-
 }
 

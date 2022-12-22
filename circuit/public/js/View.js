@@ -330,10 +330,10 @@ export default draw2d.Canvas.extend({
                 }
                 break
               case "design":
-                designerDialog.show(conf, figure)
+                designerDialog.show(figure)
                 break
               case "help":
-                markdownDialog.show(conf, figure)
+                markdownDialog.show(figure)
                 break
               case "delete":
                 this.getCommandStack().execute(new draw2d.command.CommandDelete(figure))

@@ -1,9 +1,6 @@
 class Dialog {
 
-  /**
-   * @constructor
-   *
-   */
+
   constructor() {
     $("body").append(`
             <div id="inputPromptDialog" class="modal fade genericDialog" tabindex="-1">

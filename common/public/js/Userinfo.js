@@ -1,8 +1,6 @@
 import axios from "axios"
 
-
 export default class Userinfo {
-
 
   constructor(permissions){
 

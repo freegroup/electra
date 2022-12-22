@@ -2,10 +2,6 @@ import axios from 'axios'
 
 class BackendStorage {
 
-  /**
-   * @constructor
-   *
-   */
   constructor(conf) {
     this.conf = conf
   }

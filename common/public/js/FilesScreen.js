@@ -13,7 +13,7 @@ export default class Files {
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
   constructor(app, conf, permissions) {
-    $("#files_tab a").on("click", this.onShow)
+    $("#files_tab a").on("click", this.onShow.bind(this))
 
     $("body").append(` 
         <script id="filesTemplate" type="text/x-jsrender">
@@ -70,25 +70,26 @@ export default class Files {
   }
 
   onShow() {
-    if($("#materialStyle").length)
-      return
+    this.onTabClick()
+  }
 
+  onTabClick() {
     setTimeout(()=>{
+      console.log("click")
       let w1= $("#userFilesTab").outerWidth()
       let w2= $("#globalFilesTab").outerWidth()
-      $("<style id='materialStyle'>")
-        .prop("type", "text/css")
-        .html(`
-        #userFilesTab.active ~ span.yellow-bar{
-          left: 0;
-          width: ${w1}px;
-        }
-        #globalFilesTab.active ~ span.yellow-bar{
-          left: ${w1}px;
-          width: ${w2}px;
-        })`
-        )
-        .appendTo("head")
+      if($("#userFilesTab.active").length===1){
+        $("span.yellow-bar").css({
+          "left": `0`,
+          "width": `${w1}px`
+        })
+      }
+      else{
+        $("span.yellow-bar").css({
+          "left": `${w1}px`,
+          "width": `${w2}px`
+        })
+      }
     },100)
   }
 
@@ -149,6 +150,7 @@ export default class Files {
   }
 
   initTabs(permissions) {
+    let fileScreen = this;
     // user can see private files and the demo files
     //
     if(permissions.list===true && permissions.global.list===true) {
@@ -172,6 +174,7 @@ export default class Files {
           $content.css('display', 'inline-block') // jQuery show adds "display:block" which do not work for me
 
           e.preventDefault()
+          fileScreen.onTabClick()
         })
       })
     }

@@ -121,31 +121,35 @@
       position: relative;
       display: block;
       padding:0;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid @filesTabContainerBorderColor;
 
       a {
         position: relative;
         display:inline-block;
         text-decoration: none;
-        padding: 22px;
+        padding-bottom: 15px;
+        padding-left:20px;
+        padding-right:20px;
+        padding-top:5px;
         text-transform: uppercase;
         font-size: 14px;
         font-weight: 300;
         color: #424f5a;
         text-align: center;
-
+        transition: all 0.3s ease;
+        outline:none;
+        z-index: 2001;
         &.active {
-          font-weight: 700;
-          outline:none;
-        }
-        
+          font-weight: 400;
+          transition: all 0.3s ease;
+        }        
       }
     }
     .material-tab-content {
       &>div{
         padding: 10px;
         min-height:600px;
-        background-color: fade(@tintColor, 3%);
+        background-color: @filesTabPaneColor;
       }
     }
   }
@@ -157,20 +161,22 @@
 
   #material-tabs>a:not(.active):hover {
     background-color: inherit;
-    color: #7c848a;
+    color: @tintColor;
   }
 
   .yellow-bar {
     position: absolute;
-    z-index: 10;
-    bottom: 0;
-    height: 3px;
-    background: @tintColor;
+    z-index: 2000;
+    bottom: -2px;
+    height: 50px;
+    background: @filesTabPaneColor;
     display: block;
     left: 0;
-    transition: left .2s ease;
-    -webkit-transition: left .2s ease;
+    transition: all 0.3s ease;
+    border-radius: 10px 10px 0 0;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: @filesTabContainerBorderColor;
   }
-
 
 }
