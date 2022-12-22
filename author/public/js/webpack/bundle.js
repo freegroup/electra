@@ -7,7 +7,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(self, function() {
+})(self, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -140,2168 +140,6 @@ module.exports = Converter;
 
 /***/ }),
 
-/***/ "./node_modules/axios/index.js":
-/*!*************************************!*\
-  !*** ./node_modules/axios/index.js ***!
-  \*************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/lib/axios.js");
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/adapters/xhr.js":
-/*!************************************************!*\
-  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
-  \************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
-var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
-var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
-var buildFullPath = __webpack_require__(/*! ../core/buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
-var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
-var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
-var createError = __webpack_require__(/*! ../core/createError */ "./node_modules/axios/lib/core/createError.js");
-var transitionalDefaults = __webpack_require__(/*! ../defaults/transitional */ "./node_modules/axios/lib/defaults/transitional.js");
-var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
-
-module.exports = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-    var responseType = config.responseType;
-    var onCanceled;
-    function done() {
-      if (config.cancelToken) {
-        config.cancelToken.unsubscribe(onCanceled);
-      }
-
-      if (config.signal) {
-        config.signal.removeEventListener('abort', onCanceled);
-      }
-    }
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    var fullPath = buildFullPath(config.baseURL, config.url);
-    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    function onloadend() {
-      if (!request) {
-        return;
-      }
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !responseType || responseType === 'text' ||  responseType === 'json' ?
-        request.responseText : request.response;
-      var response = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(function _resolve(value) {
-        resolve(value);
-        done();
-      }, function _reject(err) {
-        reject(err);
-        done();
-      }, response);
-
-      // Clean up request
-      request = null;
-    }
-
-    if ('onloadend' in request) {
-      // Use onloadend if available
-      request.onloadend = onloadend;
-    } else {
-      // Listen for ready state to emulate onloadend
-      request.onreadystatechange = function handleLoad() {
-        if (!request || request.readyState !== 4) {
-          return;
-        }
-
-        // The request errored out and we didn't get a response, this will be
-        // handled by onerror instead
-        // With one exception: request that using file: protocol, most browsers
-        // will return status as 0 even though it's a successful request
-        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-          return;
-        }
-        // readystate handler is calling before onerror or ontimeout handlers,
-        // so we should call onloadend on the next 'tick'
-        setTimeout(onloadend);
-      };
-    }
-
-    // Handle browser request cancellation (as opposed to a manual cancellation)
-    request.onabort = function handleAbort() {
-      if (!request) {
-        return;
-      }
-
-      reject(createError('Request aborted', config, 'ECONNABORTED', request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config, null, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      var timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
-      var transitional = config.transitional || transitionalDefaults;
-      if (config.timeoutErrorMessage) {
-        timeoutErrorMessage = config.timeoutErrorMessage;
-      }
-      reject(createError(
-        timeoutErrorMessage,
-        config,
-        transitional.clarifyTimeoutError ? 'ETIMEDOUT' : 'ECONNABORTED',
-        request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
-        cookies.read(config.xsrfCookieName) :
-        undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (!utils.isUndefined(config.withCredentials)) {
-      request.withCredentials = !!config.withCredentials;
-    }
-
-    // Add responseType to request if needed
-    if (responseType && responseType !== 'json') {
-      request.responseType = config.responseType;
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken || config.signal) {
-      // Handle cancellation
-      // eslint-disable-next-line func-names
-      onCanceled = function(cancel) {
-        if (!request) {
-          return;
-        }
-        reject(!cancel || (cancel && cancel.type) ? new Cancel('canceled') : cancel);
-        request.abort();
-        request = null;
-      };
-
-      config.cancelToken && config.cancelToken.subscribe(onCanceled);
-      if (config.signal) {
-        config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
-      }
-    }
-
-    if (!requestData) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/axios.js":
-/*!*****************************************!*\
-  !*** ./node_modules/axios/lib/axios.js ***!
-  \*****************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
-var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
-var Axios = __webpack_require__(/*! ./core/Axios */ "./node_modules/axios/lib/core/Axios.js");
-var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
-var defaults = __webpack_require__(/*! ./defaults */ "./node_modules/axios/lib/defaults/index.js");
-
-/**
- * Create an instance of Axios
- *
- * @param {Object} defaultConfig The default config for the instance
- * @return {Axios} A new instance of Axios
- */
-function createInstance(defaultConfig) {
-  var context = new Axios(defaultConfig);
-  var instance = bind(Axios.prototype.request, context);
-
-  // Copy axios.prototype to instance
-  utils.extend(instance, Axios.prototype, context);
-
-  // Copy context to instance
-  utils.extend(instance, context);
-
-  // Factory for creating new instances
-  instance.create = function create(instanceConfig) {
-    return createInstance(mergeConfig(defaultConfig, instanceConfig));
-  };
-
-  return instance;
-}
-
-// Create the default instance to be exported
-var axios = createInstance(defaults);
-
-// Expose Axios class to allow class inheritance
-axios.Axios = Axios;
-
-// Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
-axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./node_modules/axios/lib/cancel/CancelToken.js");
-axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
-axios.VERSION = (__webpack_require__(/*! ./env/data */ "./node_modules/axios/lib/env/data.js").version);
-
-// Expose all/spread
-axios.all = function all(promises) {
-  return Promise.all(promises);
-};
-axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js");
-
-// Expose isAxiosError
-axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./node_modules/axios/lib/helpers/isAxiosError.js");
-
-module.exports = axios;
-
-// Allow use of default import syntax in TypeScript
-module.exports["default"] = axios;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/cancel/Cancel.js":
-/*!*************************************************!*\
-  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
-  \*************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * A `Cancel` is an object that is thrown when an operation is canceled.
- *
- * @class
- * @param {string=} message The message.
- */
-function Cancel(message) {
-  this.message = message;
-}
-
-Cancel.prototype.toString = function toString() {
-  return 'Cancel' + (this.message ? ': ' + this.message : '');
-};
-
-Cancel.prototype.__CANCEL__ = true;
-
-module.exports = Cancel;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
-/*!******************************************************!*\
-  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
-  \******************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var Cancel = __webpack_require__(/*! ./Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
-
-/**
- * A `CancelToken` is an object that can be used to request cancellation of an operation.
- *
- * @class
- * @param {Function} executor The executor function.
- */
-function CancelToken(executor) {
-  if (typeof executor !== 'function') {
-    throw new TypeError('executor must be a function.');
-  }
-
-  var resolvePromise;
-
-  this.promise = new Promise(function promiseExecutor(resolve) {
-    resolvePromise = resolve;
-  });
-
-  var token = this;
-
-  // eslint-disable-next-line func-names
-  this.promise.then(function(cancel) {
-    if (!token._listeners) return;
-
-    var i;
-    var l = token._listeners.length;
-
-    for (i = 0; i < l; i++) {
-      token._listeners[i](cancel);
-    }
-    token._listeners = null;
-  });
-
-  // eslint-disable-next-line func-names
-  this.promise.then = function(onfulfilled) {
-    var _resolve;
-    // eslint-disable-next-line func-names
-    var promise = new Promise(function(resolve) {
-      token.subscribe(resolve);
-      _resolve = resolve;
-    }).then(onfulfilled);
-
-    promise.cancel = function reject() {
-      token.unsubscribe(_resolve);
-    };
-
-    return promise;
-  };
-
-  executor(function cancel(message) {
-    if (token.reason) {
-      // Cancellation has already been requested
-      return;
-    }
-
-    token.reason = new Cancel(message);
-    resolvePromise(token.reason);
-  });
-}
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-CancelToken.prototype.throwIfRequested = function throwIfRequested() {
-  if (this.reason) {
-    throw this.reason;
-  }
-};
-
-/**
- * Subscribe to the cancel signal
- */
-
-CancelToken.prototype.subscribe = function subscribe(listener) {
-  if (this.reason) {
-    listener(this.reason);
-    return;
-  }
-
-  if (this._listeners) {
-    this._listeners.push(listener);
-  } else {
-    this._listeners = [listener];
-  }
-};
-
-/**
- * Unsubscribe from the cancel signal
- */
-
-CancelToken.prototype.unsubscribe = function unsubscribe(listener) {
-  if (!this._listeners) {
-    return;
-  }
-  var index = this._listeners.indexOf(listener);
-  if (index !== -1) {
-    this._listeners.splice(index, 1);
-  }
-};
-
-/**
- * Returns an object that contains a new `CancelToken` and a function that, when called,
- * cancels the `CancelToken`.
- */
-CancelToken.source = function source() {
-  var cancel;
-  var token = new CancelToken(function executor(c) {
-    cancel = c;
-  });
-  return {
-    token: token,
-    cancel: cancel
-  };
-};
-
-module.exports = CancelToken;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/cancel/isCancel.js":
-/*!***************************************************!*\
-  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
-  \***************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/Axios.js":
-/*!**********************************************!*\
-  !*** ./node_modules/axios/lib/core/Axios.js ***!
-  \**********************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-var buildURL = __webpack_require__(/*! ../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
-var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
-var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
-var mergeConfig = __webpack_require__(/*! ./mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
-var validator = __webpack_require__(/*! ../helpers/validator */ "./node_modules/axios/lib/helpers/validator.js");
-
-var validators = validator.validators;
-/**
- * Create a new instance of Axios
- *
- * @param {Object} instanceConfig The default config for the instance
- */
-function Axios(instanceConfig) {
-  this.defaults = instanceConfig;
-  this.interceptors = {
-    request: new InterceptorManager(),
-    response: new InterceptorManager()
-  };
-}
-
-/**
- * Dispatch a request
- *
- * @param {Object} config The config specific for this request (merged with this.defaults)
- */
-Axios.prototype.request = function request(configOrUrl, config) {
-  /*eslint no-param-reassign:0*/
-  // Allow for axios('example/url'[, config]) a la fetch API
-  if (typeof configOrUrl === 'string') {
-    config = config || {};
-    config.url = configOrUrl;
-  } else {
-    config = configOrUrl || {};
-  }
-
-  config = mergeConfig(this.defaults, config);
-
-  // Set config.method
-  if (config.method) {
-    config.method = config.method.toLowerCase();
-  } else if (this.defaults.method) {
-    config.method = this.defaults.method.toLowerCase();
-  } else {
-    config.method = 'get';
-  }
-
-  var transitional = config.transitional;
-
-  if (transitional !== undefined) {
-    validator.assertOptions(transitional, {
-      silentJSONParsing: validators.transitional(validators.boolean),
-      forcedJSONParsing: validators.transitional(validators.boolean),
-      clarifyTimeoutError: validators.transitional(validators.boolean)
-    }, false);
-  }
-
-  // filter out skipped interceptors
-  var requestInterceptorChain = [];
-  var synchronousRequestInterceptors = true;
-  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-    if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
-      return;
-    }
-
-    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
-
-    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  var responseInterceptorChain = [];
-  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
-    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
-  });
-
-  var promise;
-
-  if (!synchronousRequestInterceptors) {
-    var chain = [dispatchRequest, undefined];
-
-    Array.prototype.unshift.apply(chain, requestInterceptorChain);
-    chain = chain.concat(responseInterceptorChain);
-
-    promise = Promise.resolve(config);
-    while (chain.length) {
-      promise = promise.then(chain.shift(), chain.shift());
-    }
-
-    return promise;
-  }
-
-
-  var newConfig = config;
-  while (requestInterceptorChain.length) {
-    var onFulfilled = requestInterceptorChain.shift();
-    var onRejected = requestInterceptorChain.shift();
-    try {
-      newConfig = onFulfilled(newConfig);
-    } catch (error) {
-      onRejected(error);
-      break;
-    }
-  }
-
-  try {
-    promise = dispatchRequest(newConfig);
-  } catch (error) {
-    return Promise.reject(error);
-  }
-
-  while (responseInterceptorChain.length) {
-    promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
-  }
-
-  return promise;
-};
-
-Axios.prototype.getUri = function getUri(config) {
-  config = mergeConfig(this.defaults, config);
-  return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
-};
-
-// Provide aliases for supported request methods
-utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, config) {
-    return this.request(mergeConfig(config || {}, {
-      method: method,
-      url: url,
-      data: (config || {}).data
-    }));
-  };
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, data, config) {
-    return this.request(mergeConfig(config || {}, {
-      method: method,
-      url: url,
-      data: data
-    }));
-  };
-});
-
-module.exports = Axios;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
-  \***********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-function InterceptorManager() {
-  this.handlers = [];
-}
-
-/**
- * Add a new interceptor to the stack
- *
- * @param {Function} fulfilled The function to handle `then` for a `Promise`
- * @param {Function} rejected The function to handle `reject` for a `Promise`
- *
- * @return {Number} An ID used to remove interceptor later
- */
-InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
-  this.handlers.push({
-    fulfilled: fulfilled,
-    rejected: rejected,
-    synchronous: options ? options.synchronous : false,
-    runWhen: options ? options.runWhen : null
-  });
-  return this.handlers.length - 1;
-};
-
-/**
- * Remove an interceptor from the stack
- *
- * @param {Number} id The ID that was returned by `use`
- */
-InterceptorManager.prototype.eject = function eject(id) {
-  if (this.handlers[id]) {
-    this.handlers[id] = null;
-  }
-};
-
-/**
- * Iterate over all the registered interceptors
- *
- * This method is particularly useful for skipping over any
- * interceptors that may have become `null` calling `eject`.
- *
- * @param {Function} fn The function to call for each interceptor
- */
-InterceptorManager.prototype.forEach = function forEach(fn) {
-  utils.forEach(this.handlers, function forEachHandler(h) {
-    if (h !== null) {
-      fn(h);
-    }
-  });
-};
-
-module.exports = InterceptorManager;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/buildFullPath.js":
-/*!******************************************************!*\
-  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
-  \******************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var isAbsoluteURL = __webpack_require__(/*! ../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
-var combineURLs = __webpack_require__(/*! ../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
-
-/**
- * Creates a new URL by combining the baseURL with the requestedURL,
- * only when the requestedURL is not already an absolute URL.
- * If the requestURL is absolute, this function returns the requestedURL untouched.
- *
- * @param {string} baseURL The base URL
- * @param {string} requestedURL Absolute or relative URL to combine
- * @returns {string} The combined full path
- */
-module.exports = function buildFullPath(baseURL, requestedURL) {
-  if (baseURL && !isAbsoluteURL(requestedURL)) {
-    return combineURLs(baseURL, requestedURL);
-  }
-  return requestedURL;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/createError.js":
-/*!****************************************************!*\
-  !*** ./node_modules/axios/lib/core/createError.js ***!
-  \****************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var enhanceError = __webpack_require__(/*! ./enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
-
-/**
- * Create an Error with the specified message, config, error code, request and response.
- *
- * @param {string} message The error message.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- * @param {Object} [request] The request.
- * @param {Object} [response] The response.
- * @returns {Error} The created error.
- */
-module.exports = function createError(message, config, code, request, response) {
-  var error = new Error(message);
-  return enhanceError(error, config, code, request, response);
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
-/*!********************************************************!*\
-  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
-  \********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
-var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
-var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults/index.js");
-var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./node_modules/axios/lib/cancel/Cancel.js");
-
-/**
- * Throws a `Cancel` if cancellation has been requested.
- */
-function throwIfCancellationRequested(config) {
-  if (config.cancelToken) {
-    config.cancelToken.throwIfRequested();
-  }
-
-  if (config.signal && config.signal.aborted) {
-    throw new Cancel('canceled');
-  }
-}
-
-/**
- * Dispatch a request to the server using the configured adapter.
- *
- * @param {object} config The config that is to be used for the request
- * @returns {Promise} The Promise to be fulfilled
- */
-module.exports = function dispatchRequest(config) {
-  throwIfCancellationRequested(config);
-
-  // Ensure headers exist
-  config.headers = config.headers || {};
-
-  // Transform request data
-  config.data = transformData.call(
-    config,
-    config.data,
-    config.headers,
-    config.transformRequest
-  );
-
-  // Flatten headers
-  config.headers = utils.merge(
-    config.headers.common || {},
-    config.headers[config.method] || {},
-    config.headers
-  );
-
-  utils.forEach(
-    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-    function cleanHeaderConfig(method) {
-      delete config.headers[method];
-    }
-  );
-
-  var adapter = config.adapter || defaults.adapter;
-
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData.call(
-      config,
-      response.data,
-      response.headers,
-      config.transformResponse
-    );
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
-      throwIfCancellationRequested(config);
-
-      // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData.call(
-          config,
-          reason.response.data,
-          reason.response.headers,
-          config.transformResponse
-        );
-      }
-    }
-
-    return Promise.reject(reason);
-  });
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/enhanceError.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
-  \*****************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * Update an Error with the specified config, error code, and response.
- *
- * @param {Error} error The error to update.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- * @param {Object} [request] The request.
- * @param {Object} [response] The response.
- * @returns {Error} The error.
- */
-module.exports = function enhanceError(error, config, code, request, response) {
-  error.config = config;
-  if (code) {
-    error.code = code;
-  }
-
-  error.request = request;
-  error.response = response;
-  error.isAxiosError = true;
-
-  error.toJSON = function toJSON() {
-    return {
-      // Standard
-      message: this.message,
-      name: this.name,
-      // Microsoft
-      description: this.description,
-      number: this.number,
-      // Mozilla
-      fileName: this.fileName,
-      lineNumber: this.lineNumber,
-      columnNumber: this.columnNumber,
-      stack: this.stack,
-      // Axios
-      config: this.config,
-      code: this.code,
-      status: this.response && this.response.status ? this.response.status : null
-    };
-  };
-  return error;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/mergeConfig.js":
-/*!****************************************************!*\
-  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
-  \****************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
-
-/**
- * Config-specific merge-function which creates a new config-object
- * by merging two configuration objects together.
- *
- * @param {Object} config1
- * @param {Object} config2
- * @returns {Object} New object resulting from merging config2 to config1
- */
-module.exports = function mergeConfig(config1, config2) {
-  // eslint-disable-next-line no-param-reassign
-  config2 = config2 || {};
-  var config = {};
-
-  function getMergedValue(target, source) {
-    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
-      return utils.merge(target, source);
-    } else if (utils.isPlainObject(source)) {
-      return utils.merge({}, source);
-    } else if (utils.isArray(source)) {
-      return source.slice();
-    }
-    return source;
-  }
-
-  // eslint-disable-next-line consistent-return
-  function mergeDeepProperties(prop) {
-    if (!utils.isUndefined(config2[prop])) {
-      return getMergedValue(config1[prop], config2[prop]);
-    } else if (!utils.isUndefined(config1[prop])) {
-      return getMergedValue(undefined, config1[prop]);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function valueFromConfig2(prop) {
-    if (!utils.isUndefined(config2[prop])) {
-      return getMergedValue(undefined, config2[prop]);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function defaultToConfig2(prop) {
-    if (!utils.isUndefined(config2[prop])) {
-      return getMergedValue(undefined, config2[prop]);
-    } else if (!utils.isUndefined(config1[prop])) {
-      return getMergedValue(undefined, config1[prop]);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function mergeDirectKeys(prop) {
-    if (prop in config2) {
-      return getMergedValue(config1[prop], config2[prop]);
-    } else if (prop in config1) {
-      return getMergedValue(undefined, config1[prop]);
-    }
-  }
-
-  var mergeMap = {
-    'url': valueFromConfig2,
-    'method': valueFromConfig2,
-    'data': valueFromConfig2,
-    'baseURL': defaultToConfig2,
-    'transformRequest': defaultToConfig2,
-    'transformResponse': defaultToConfig2,
-    'paramsSerializer': defaultToConfig2,
-    'timeout': defaultToConfig2,
-    'timeoutMessage': defaultToConfig2,
-    'withCredentials': defaultToConfig2,
-    'adapter': defaultToConfig2,
-    'responseType': defaultToConfig2,
-    'xsrfCookieName': defaultToConfig2,
-    'xsrfHeaderName': defaultToConfig2,
-    'onUploadProgress': defaultToConfig2,
-    'onDownloadProgress': defaultToConfig2,
-    'decompress': defaultToConfig2,
-    'maxContentLength': defaultToConfig2,
-    'maxBodyLength': defaultToConfig2,
-    'transport': defaultToConfig2,
-    'httpAgent': defaultToConfig2,
-    'httpsAgent': defaultToConfig2,
-    'cancelToken': defaultToConfig2,
-    'socketPath': defaultToConfig2,
-    'responseEncoding': defaultToConfig2,
-    'validateStatus': mergeDirectKeys
-  };
-
-  utils.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
-    var merge = mergeMap[prop] || mergeDeepProperties;
-    var configValue = merge(prop);
-    (utils.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
-  });
-
-  return config;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/settle.js":
-/*!***********************************************!*\
-  !*** ./node_modules/axios/lib/core/settle.js ***!
-  \***********************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var createError = __webpack_require__(/*! ./createError */ "./node_modules/axios/lib/core/createError.js");
-
-/**
- * Resolve or reject a Promise based on response status.
- *
- * @param {Function} resolve A function that resolves the promise.
- * @param {Function} reject A function that rejects the promise.
- * @param {object} response The response.
- */
-module.exports = function settle(resolve, reject, response) {
-  var validateStatus = response.config.validateStatus;
-  if (!response.status || !validateStatus || validateStatus(response.status)) {
-    resolve(response);
-  } else {
-    reject(createError(
-      'Request failed with status code ' + response.status,
-      response.config,
-      null,
-      response.request,
-      response
-    ));
-  }
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/core/transformData.js":
-/*!******************************************************!*\
-  !*** ./node_modules/axios/lib/core/transformData.js ***!
-  \******************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults/index.js");
-
-/**
- * Transform the data for a request or a response
- *
- * @param {Object|String} data The data to be transformed
- * @param {Array} headers The headers for the request or response
- * @param {Array|Function} fns A single function or Array of functions
- * @returns {*} The resulting transformed data
- */
-module.exports = function transformData(data, headers, fns) {
-  var context = this || defaults;
-  /*eslint no-param-reassign:0*/
-  utils.forEach(fns, function transform(fn) {
-    data = fn.call(context, data, headers);
-  });
-
-  return data;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/defaults/index.js":
-/*!**************************************************!*\
-  !*** ./node_modules/axios/lib/defaults/index.js ***!
-  \**************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
-var normalizeHeaderName = __webpack_require__(/*! ../helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
-var enhanceError = __webpack_require__(/*! ../core/enhanceError */ "./node_modules/axios/lib/core/enhanceError.js");
-var transitionalDefaults = __webpack_require__(/*! ./transitional */ "./node_modules/axios/lib/defaults/transitional.js");
-
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = __webpack_require__(/*! ../adapters/xhr */ "./node_modules/axios/lib/adapters/xhr.js");
-  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
-    // For node use HTTP adapter
-    adapter = __webpack_require__(/*! ../adapters/http */ "./node_modules/axios/lib/adapters/xhr.js");
-  }
-  return adapter;
-}
-
-function stringifySafely(rawValue, parser, encoder) {
-  if (utils.isString(rawValue)) {
-    try {
-      (parser || JSON.parse)(rawValue);
-      return utils.trim(rawValue);
-    } catch (e) {
-      if (e.name !== 'SyntaxError') {
-        throw e;
-      }
-    }
-  }
-
-  return (encoder || JSON.stringify)(rawValue);
-}
-
-var defaults = {
-
-  transitional: transitionalDefaults,
-
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Accept');
-    normalizeHeaderName(headers, 'Content-Type');
-
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data) || (headers && headers['Content-Type'] === 'application/json')) {
-      setContentTypeIfUnset(headers, 'application/json');
-      return stringifySafely(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    var transitional = this.transitional || defaults.transitional;
-    var silentJSONParsing = transitional && transitional.silentJSONParsing;
-    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
-
-    if (strictJSONParsing || (forcedJSONParsing && utils.isString(data) && data.length)) {
-      try {
-        return JSON.parse(data);
-      } catch (e) {
-        if (strictJSONParsing) {
-          if (e.name === 'SyntaxError') {
-            throw enhanceError(e, this, 'E_JSON_PARSE');
-          }
-          throw e;
-        }
-      }
-    }
-
-    return data;
-  }],
-
-  /**
-   * A timeout in milliseconds to abort a request. If set to 0 (default) a
-   * timeout is not created.
-   */
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-  maxBodyLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  },
-
-  headers: {
-    common: {
-      'Accept': 'application/json, text/plain, */*'
-    }
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/defaults/transitional.js":
-/*!*********************************************************!*\
-  !*** ./node_modules/axios/lib/defaults/transitional.js ***!
-  \*********************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = {
-  silentJSONParsing: true,
-  forcedJSONParsing: true,
-  clarifyTimeoutError: false
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/env/data.js":
-/*!********************************************!*\
-  !*** ./node_modules/axios/lib/env/data.js ***!
-  \********************************************/
-/***/ ((module) => {
-
-module.exports = {
-  "version": "0.26.1"
-};
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/bind.js":
-/*!************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/bind.js ***!
-  \************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/buildURL.js":
-/*!****************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
-  \****************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
-}
-
-/**
- * Build a URL by appending params to the end
- *
- * @param {string} url The base of the url (e.g., http://www.google.com)
- * @param {object} [params] The params to be appended
- * @returns {string} The formatted url
- */
-module.exports = function buildURL(url, params, paramsSerializer) {
-  /*eslint no-param-reassign:0*/
-  if (!params) {
-    return url;
-  }
-
-  var serializedParams;
-  if (paramsSerializer) {
-    serializedParams = paramsSerializer(params);
-  } else if (utils.isURLSearchParams(params)) {
-    serializedParams = params.toString();
-  } else {
-    var parts = [];
-
-    utils.forEach(params, function serialize(val, key) {
-      if (val === null || typeof val === 'undefined') {
-        return;
-      }
-
-      if (utils.isArray(val)) {
-        key = key + '[]';
-      } else {
-        val = [val];
-      }
-
-      utils.forEach(val, function parseValue(v) {
-        if (utils.isDate(v)) {
-          v = v.toISOString();
-        } else if (utils.isObject(v)) {
-          v = JSON.stringify(v);
-        }
-        parts.push(encode(key) + '=' + encode(v));
-      });
-    });
-
-    serializedParams = parts.join('&');
-  }
-
-  if (serializedParams) {
-    var hashmarkIndex = url.indexOf('#');
-    if (hashmarkIndex !== -1) {
-      url = url.slice(0, hashmarkIndex);
-    }
-
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
-  }
-
-  return url;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
-  \*******************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * Creates a new URL by combining the specified URLs
- *
- * @param {string} baseURL The base URL
- * @param {string} relativeURL The relative URL
- * @returns {string} The combined URL
- */
-module.exports = function combineURLs(baseURL, relativeURL) {
-  return relativeURL
-    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
-    : baseURL;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/cookies.js":
-/*!***************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
-  \***************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs support document.cookie
-    (function standardBrowserEnv() {
-      return {
-        write: function write(name, value, expires, path, domain, secure) {
-          var cookie = [];
-          cookie.push(name + '=' + encodeURIComponent(value));
-
-          if (utils.isNumber(expires)) {
-            cookie.push('expires=' + new Date(expires).toGMTString());
-          }
-
-          if (utils.isString(path)) {
-            cookie.push('path=' + path);
-          }
-
-          if (utils.isString(domain)) {
-            cookie.push('domain=' + domain);
-          }
-
-          if (secure === true) {
-            cookie.push('secure');
-          }
-
-          document.cookie = cookie.join('; ');
-        },
-
-        read: function read(name) {
-          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-          return (match ? decodeURIComponent(match[3]) : null);
-        },
-
-        remove: function remove(name) {
-          this.write(name, '', Date.now() - 86400000);
-        }
-      };
-    })() :
-
-  // Non standard browser env (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return {
-        write: function write() {},
-        read: function read() { return null; },
-        remove: function remove() {}
-      };
-    })()
-);
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
-/*!*********************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
-  \*********************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * Determines whether the specified URL is absolute
- *
- * @param {string} url The URL to test
- * @returns {boolean} True if the specified URL is absolute, otherwise false
- */
-module.exports = function isAbsoluteURL(url) {
-  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
-  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
-  // by any combination of letters, digits, plus, period, or hyphen.
-  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
-/*!********************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
-  \********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-/**
- * Determines whether the payload is an error thrown by Axios
- *
- * @param {*} payload The value to test
- * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
- */
-module.exports = function isAxiosError(payload) {
-  return utils.isObject(payload) && (payload.isAxiosError === true);
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
-  \***********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-module.exports = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs have full support of the APIs needed to test
-  // whether the request URL is of the same origin as current location.
-    (function standardBrowserEnv() {
-      var msie = /(msie|trident)/i.test(navigator.userAgent);
-      var urlParsingNode = document.createElement('a');
-      var originURL;
-
-      /**
-    * Parse a URL to discover it's components
-    *
-    * @param {String} url The URL to be parsed
-    * @returns {Object}
-    */
-      function resolveURL(url) {
-        var href = url;
-
-        if (msie) {
-        // IE needs attribute set twice to normalize properties
-          urlParsingNode.setAttribute('href', href);
-          href = urlParsingNode.href;
-        }
-
-        urlParsingNode.setAttribute('href', href);
-
-        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-        return {
-          href: urlParsingNode.href,
-          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-          host: urlParsingNode.host,
-          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-          hostname: urlParsingNode.hostname,
-          port: urlParsingNode.port,
-          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-            urlParsingNode.pathname :
-            '/' + urlParsingNode.pathname
-        };
-      }
-
-      originURL = resolveURL(window.location.href);
-
-      /**
-    * Determine if a URL shares the same origin as the current location
-    *
-    * @param {String} requestURL The URL to test
-    * @returns {boolean} True if URL shares the same origin, otherwise false
-    */
-      return function isURLSameOrigin(requestURL) {
-        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-        return (parsed.protocol === originURL.protocol &&
-            parsed.host === originURL.host);
-      };
-    })() :
-
-  // Non standard browser envs (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return function isURLSameOrigin() {
-        return true;
-      };
-    })()
-);
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/normalizeHeaderName.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
-  \***************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
-
-module.exports = function normalizeHeaderName(headers, normalizedName) {
-  utils.forEach(headers, function processHeader(value, name) {
-    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
-      headers[normalizedName] = value;
-      delete headers[name];
-    }
-  });
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
-/*!********************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
-  \********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
-
-// Headers whose duplicates are ignored by node
-// c.f. https://nodejs.org/api/http.html#http_message_headers
-var ignoreDuplicateOf = [
-  'age', 'authorization', 'content-length', 'content-type', 'etag',
-  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
-  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
-  'referer', 'retry-after', 'user-agent'
-];
-
-/**
- * Parse headers into an object
- *
- * ```
- * Date: Wed, 27 Aug 2014 08:58:49 GMT
- * Content-Type: application/json
- * Connection: keep-alive
- * Transfer-Encoding: chunked
- * ```
- *
- * @param {String} headers Headers needing to be parsed
- * @returns {Object} Headers parsed into an object
- */
-module.exports = function parseHeaders(headers) {
-  var parsed = {};
-  var key;
-  var val;
-  var i;
-
-  if (!headers) { return parsed; }
-
-  utils.forEach(headers.split('\n'), function parser(line) {
-    i = line.indexOf(':');
-    key = utils.trim(line.substr(0, i)).toLowerCase();
-    val = utils.trim(line.substr(i + 1));
-
-    if (key) {
-      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
-        return;
-      }
-      if (key === 'set-cookie') {
-        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
-      } else {
-        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-      }
-    }
-  });
-
-  return parsed;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/spread.js":
-/*!**************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/spread.js ***!
-  \**************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * Syntactic sugar for invoking a function and expanding an array for arguments.
- *
- * Common use case would be to use `Function.prototype.apply`.
- *
- *  ```js
- *  function f(x, y, z) {}
- *  var args = [1, 2, 3];
- *  f.apply(null, args);
- *  ```
- *
- * With `spread` this example can be re-written.
- *
- *  ```js
- *  spread(function(x, y, z) {})([1, 2, 3]);
- *  ```
- *
- * @param {Function} callback
- * @returns {Function}
- */
-module.exports = function spread(callback) {
-  return function wrap(arr) {
-    return callback.apply(null, arr);
-  };
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/helpers/validator.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/axios/lib/helpers/validator.js ***!
-  \*****************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var VERSION = (__webpack_require__(/*! ../env/data */ "./node_modules/axios/lib/env/data.js").version);
-
-var validators = {};
-
-// eslint-disable-next-line func-names
-['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach(function(type, i) {
-  validators[type] = function validator(thing) {
-    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
-  };
-});
-
-var deprecatedWarnings = {};
-
-/**
- * Transitional option validator
- * @param {function|boolean?} validator - set to false if the transitional option has been removed
- * @param {string?} version - deprecated version / removed since version
- * @param {string?} message - some message with additional info
- * @returns {function}
- */
-validators.transitional = function transitional(validator, version, message) {
-  function formatMessage(opt, desc) {
-    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
-  }
-
-  // eslint-disable-next-line func-names
-  return function(value, opt, opts) {
-    if (validator === false) {
-      throw new Error(formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')));
-    }
-
-    if (version && !deprecatedWarnings[opt]) {
-      deprecatedWarnings[opt] = true;
-      // eslint-disable-next-line no-console
-      console.warn(
-        formatMessage(
-          opt,
-          ' has been deprecated since v' + version + ' and will be removed in the near future'
-        )
-      );
-    }
-
-    return validator ? validator(value, opt, opts) : true;
-  };
-};
-
-/**
- * Assert object's properties type
- * @param {object} options
- * @param {object} schema
- * @param {boolean?} allowUnknown
- */
-
-function assertOptions(options, schema, allowUnknown) {
-  if (typeof options !== 'object') {
-    throw new TypeError('options must be an object');
-  }
-  var keys = Object.keys(options);
-  var i = keys.length;
-  while (i-- > 0) {
-    var opt = keys[i];
-    var validator = schema[opt];
-    if (validator) {
-      var value = options[opt];
-      var result = value === undefined || validator(value, opt, options);
-      if (result !== true) {
-        throw new TypeError('option ' + opt + ' must be ' + result);
-      }
-      continue;
-    }
-    if (allowUnknown !== true) {
-      throw Error('Unknown option ' + opt);
-    }
-  }
-}
-
-module.exports = {
-  assertOptions: assertOptions,
-  validators: validators
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/axios/lib/utils.js":
-/*!*****************************************!*\
-  !*** ./node_modules/axios/lib/utils.js ***!
-  \*****************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
-
-// utils is a library of generic helper functions non-specific to axios
-
-var toString = Object.prototype.toString;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Array, otherwise false
- */
-function isArray(val) {
-  return Array.isArray(val);
-}
-
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
-}
-
-/**
- * Determine if a value is a Buffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Buffer, otherwise false
- */
-function isBuffer(val) {
-  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
-}
-
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-function isArrayBuffer(val) {
-  return toString.call(val) === '[object ArrayBuffer]';
-}
-
-/**
- * Determine if a value is a FormData
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-function isFormData(val) {
-  return toString.call(val) === '[object FormData]';
-}
-
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  var result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
-  } else {
-    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
-  }
-  return result;
-}
-
-/**
- * Determine if a value is a String
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a String, otherwise false
- */
-function isString(val) {
-  return typeof val === 'string';
-}
-
-/**
- * Determine if a value is a Number
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Number, otherwise false
- */
-function isNumber(val) {
-  return typeof val === 'number';
-}
-
-/**
- * Determine if a value is an Object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Object, otherwise false
- */
-function isObject(val) {
-  return val !== null && typeof val === 'object';
-}
-
-/**
- * Determine if a value is a plain Object
- *
- * @param {Object} val The value to test
- * @return {boolean} True if value is a plain Object, otherwise false
- */
-function isPlainObject(val) {
-  if (toString.call(val) !== '[object Object]') {
-    return false;
-  }
-
-  var prototype = Object.getPrototypeOf(val);
-  return prototype === null || prototype === Object.prototype;
-}
-
-/**
- * Determine if a value is a Date
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Date, otherwise false
- */
-function isDate(val) {
-  return toString.call(val) === '[object Date]';
-}
-
-/**
- * Determine if a value is a File
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a File, otherwise false
- */
-function isFile(val) {
-  return toString.call(val) === '[object File]';
-}
-
-/**
- * Determine if a value is a Blob
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-function isBlob(val) {
-  return toString.call(val) === '[object Blob]';
-}
-
-/**
- * Determine if a value is a Function
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-function isFunction(val) {
-  return toString.call(val) === '[object Function]';
-}
-
-/**
- * Determine if a value is a Stream
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-function isStream(val) {
-  return isObject(val) && isFunction(val.pipe);
-}
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-function isURLSearchParams(val) {
-  return toString.call(val) === '[object URLSearchParams]';
-}
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- * @returns {String} The String freed of excess whitespace
- */
-function trim(str) {
-  return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
-}
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  navigator.product -> 'ReactNative'
- * nativescript
- *  navigator.product -> 'NativeScript' or 'NS'
- */
-function isStandardBrowserEnv() {
-  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
-                                           navigator.product === 'NativeScript' ||
-                                           navigator.product === 'NS')) {
-    return false;
-  }
-  return (
-    typeof window !== 'undefined' &&
-    typeof document !== 'undefined'
-  );
-}
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- */
-function forEach(obj, fn) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object') {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
-  } else {
-    // Iterate over object keys
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        fn.call(null, obj[key], key, obj);
-      }
-    }
-  }
-}
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (isPlainObject(result[key]) && isPlainObject(val)) {
-      result[key] = merge(result[key], val);
-    } else if (isPlainObject(val)) {
-      result[key] = merge({}, val);
-    } else if (isArray(val)) {
-      result[key] = val.slice();
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- * @return {Object} The resulting value of object a
- */
-function extend(a, b, thisArg) {
-  forEach(b, function assignValue(val, key) {
-    if (thisArg && typeof val === 'function') {
-      a[key] = bind(val, thisArg);
-    } else {
-      a[key] = val;
-    }
-  });
-  return a;
-}
-
-/**
- * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
- *
- * @param {string} content with BOM
- * @return {string} content value without BOM
- */
-function stripBOM(content) {
-  if (content.charCodeAt(0) === 0xFEFF) {
-    content = content.slice(1);
-  }
-  return content;
-}
-
-module.exports = {
-  isArray: isArray,
-  isArrayBuffer: isArrayBuffer,
-  isBuffer: isBuffer,
-  isFormData: isFormData,
-  isArrayBufferView: isArrayBufferView,
-  isString: isString,
-  isNumber: isNumber,
-  isObject: isObject,
-  isPlainObject: isPlainObject,
-  isUndefined: isUndefined,
-  isDate: isDate,
-  isFile: isFile,
-  isBlob: isBlob,
-  isFunction: isFunction,
-  isStream: isStream,
-  isURLSearchParams: isURLSearchParams,
-  isStandardBrowserEnv: isStandardBrowserEnv,
-  forEach: forEach,
-  merge: merge,
-  extend: extend,
-  trim: trim,
-  stripBOM: stripBOM
-};
-
-
-/***/ }),
-
 /***/ "./public/js/application.js":
 /*!**********************************!*\
   !*** ./public/js/application.js ***!
@@ -2325,13 +163,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
 /* harmony import */ var _model_document__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./model/document */ "./public/js/model/document.js");
 /* harmony import */ var _commands_CommandStack__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./commands/CommandStack */ "./public/js/commands/CommandStack.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
@@ -2345,7 +182,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var storage = (__webpack_require__(/*! ../../common/js/BackendStorage */ "../common/public/js/BackendStorage.js")["default"])(_configuration__WEBPACK_IMPORTED_MODULE_9__["default"]);
-
 var Application = /*#__PURE__*/function () {
   /**
    * @constructor
@@ -2355,12 +191,10 @@ var Application = /*#__PURE__*/function () {
   function Application() {
     _classCallCheck(this, Application);
   }
-
   _createClass(Application, [{
     key: "init",
     value: function init(permissions) {
       var _this = this;
-
       $("body").on("focus", ".mousetrap-pause", Mousetrap.pause).on("blur", ".mousetrap-pause", Mousetrap.unpause);
       this.hasUnsavedChanges = false;
       this.permissions = permissions;
@@ -2377,30 +211,30 @@ var Application = /*#__PURE__*/function () {
       this.userinfo = new _common_js_Userinfo__WEBPACK_IMPORTED_MODULE_3__["default"](permissions);
       this.appSwitch = new _common_js_AppSwitch__WEBPACK_IMPORTED_MODULE_4__["default"](permissions);
       _commands_CommandStack__WEBPACK_IMPORTED_MODULE_11__["default"].on("change", this);
-      this.indexPane.render(); // Show the user an alert if there are unsaved changes
-      //
+      this.indexPane.render();
 
+      // Show the user an alert if there are unsaved changes
+      //
       window.onbeforeunload = function () {
         return _this.hasUnsavedChanges ? "The changes you made will be lost if you navigate away from this page" : undefined;
       };
-
       var user = this.getParam("user");
       var global = this.getParam("global");
       var shared = this.getParam("shared");
-
       if (user) {
         this.load(user, "user");
-      } // check if the user has added a "file" parameter. In this case we load the shape from
+      }
+      // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
       //
       else if (global) {
         this.load(global, "global");
       } else if (shared) {
         this.load(shared, "shared");
-      } // listen on the history object to load files
+      }
+
+      // listen on the history object to load files
       //
-
-
       window.addEventListener('popstate', function (event) {
         if (event.state && event.state.id === 'editor') {
           // Render new content for the homepage
@@ -2414,28 +248,25 @@ var Application = /*#__PURE__*/function () {
       name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
       var regexS = "[\\?&]" + name + "=([^&#]*)";
       var regex = new RegExp(regexS);
-      var results = regex.exec(window.location.href); // the param isn't part of the normal URL pattern...
+      var results = regex.exec(window.location.href);
+      // the param isn't part of the normal URL pattern...
       //
-
       if (results === null) {
         // maybe it is part in the hash.
         //
         regexS = "[\\#]" + name + "=([^&#]*)";
         regex = new RegExp(regexS);
         results = regex.exec(window.location.hash);
-
         if (results === null) {
           return null;
         }
       }
-
       return results[1];
     }
   }, {
     key: "fileSave",
     value: function fileSave() {
       var _this2 = this;
-
       var description = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
       return new Promise(function (resolve, reject) {
         // if the user didn't has the access to write "global" files, the scope of the file is changed
@@ -2444,9 +275,7 @@ var Application = /*#__PURE__*/function () {
         if (_this2.permissions.sheets.global.update === false) {
           _this2.currentFile.scope = "user";
         }
-
         _this2.view.onCommitEdit();
-
         if (_this2.permissions.sheets.create && _this2.permissions.sheets.update) {
           // allow the user to enter/change the file name....
           _dialog_FileSave__WEBPACK_IMPORTED_MODULE_8__["default"].show(_this2.currentFile, _this2.storage, _this2.document, description).then(resolve)["catch"](reject);
@@ -2460,7 +289,6 @@ var Application = /*#__PURE__*/function () {
         _this2.hasUnsavedChanges = false;
         (0,_common_js_toast__WEBPACK_IMPORTED_MODULE_5__["default"])("Saved");
         $("#editorFileSave div").removeClass("highlight");
-
         _this2.filePane.refresh(_configuration__WEBPACK_IMPORTED_MODULE_9__["default"], _this2.permissions.sheets, _this2.currentFile);
       });
     }
@@ -2492,7 +320,6 @@ var Application = /*#__PURE__*/function () {
     key: "load",
     value: function load(name, scope) {
       var _this3 = this;
-
       var url = _configuration__WEBPACK_IMPORTED_MODULE_9__["default"].backend[scope].get(name);
       $("#leftTabStrip .editor").click();
       return this.storage.loadUrl(url).then(function (content) {
@@ -2500,9 +327,7 @@ var Application = /*#__PURE__*/function () {
           name: name,
           scope: scope
         };
-
         _this3.setDocument(new _model_document__WEBPACK_IMPORTED_MODULE_10__["default"](content), 0);
-
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_11__["default"].markSaveLocation();
         return content;
       });
@@ -2510,10 +335,10 @@ var Application = /*#__PURE__*/function () {
   }, {
     key: "setDocument",
     value: function setDocument(document, pageIndex) {
-      this.document = document; // the "setDocument" is used by the CommandStack for undo/redo
+      this.document = document;
+      // the "setDocument" is used by the CommandStack for undo/redo
       // therefore a "markSaveLocation" is a bad idea in this method
       // commandStack.markSaveLocation()
-
       this.view.onCancelEdit();
       this.view.setPage(this.document.get(pageIndex || 0));
     }
@@ -2538,10 +363,8 @@ var Application = /*#__PURE__*/function () {
       return document !== null && (scope === "global" && (this.permissions.sheets.global.update || this.permissions.sheets.global.create) || scope === "user" && (this.permissions.sheets.update || this.permissions.sheets.create));
     }
   }]);
-
   return Application;
 }();
-
 var app = new Application();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (app);
 
@@ -2558,12 +381,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 /**
  *
  */
@@ -2574,12 +397,12 @@ var CommandStack = /*#__PURE__*/function () {
    */
   function CommandStack() {
     _classCallCheck(this, CommandStack);
-
     this.undostack = [];
     this.redostack = [];
     this.maxundo = 50;
     this.eventListeners = [];
   }
+
   /**
    *
    * Remove the undo / redo history. This is useful if the user has been save the
@@ -2587,104 +410,102 @@ var CommandStack = /*#__PURE__*/function () {
    *
    * @returns {this}
    **/
-
-
   _createClass(CommandStack, [{
     key: "markSaveLocation",
     value: function markSaveLocation() {
       this.undostack = [];
-      this.redostack = []; // fire an empty state to inform all listener that the stack has been changed
+      this.redostack = [];
 
+      // fire an empty state to inform all listener that the stack has been changed
       this.notifyListeners();
       return this;
     }
+
     /**
      **/
-
   }, {
     key: "push",
     value: function push(state) {
-      if (typeof state === "undefined") throw "Missing parameter [state] for method call CommandStack.execute"; // nothing to do
+      if (typeof state === "undefined") throw "Missing parameter [state] for method call CommandStack.execute";
 
+      // nothing to do
       if (state === null) return this; //silently
 
-      this.undostack.push(state); // cleanup the redo stack if the user execute a new state.
+      this.undostack.push(state);
+
+      // cleanup the redo stack if the user execute a new state.
       // I think this will create a "clean" behaviour of the unde/redo mechanism.
       //
+      this.redostack = [];
 
-      this.redostack = []; // monitor only the max. undo stack size
+      // monitor only the max. undo stack size
       //
-
       if (this.undostack.length > this.maxundo) {
         this.undostack = this.undostack.slice(this.undostack.length - this.maxundo);
       }
-
       this.notifyListeners(state);
       return this;
     }
+
     /**
      *
      * Undo on state from the stack and store them on the redo state stack.
      * @returns {this}
      **/
-
   }, {
     key: "undo",
     value: function undo() {
       var state = this.undostack.pop();
-
       if (state) {
         this.redostack.push(state);
         state.undo();
         this.notifyListeners(state);
       }
-
       return this;
     }
+
     /**
      *
      * Redo a state after the user has undo a state
      *
      * @returns {this}
      **/
-
   }, {
     key: "redo",
     value: function redo() {
       var state = this.redostack.pop();
-
       if (state) {
         this.undostack.push(state);
         state.redo();
         this.notifyListeners(state);
       }
-
       return this;
     }
+
     /**
      *
      * Indicates whenever a REDO is possible.
      *
      * @returns {Boolean} <code>true</code> if it is appropriate to call {@link #redo()}.
      */
-
   }, {
     key: "canRedo",
     value: function canRedo() {
       return this.redostack.length > 0;
     }
+
     /**
      *
      * indicator whenever a undo is possible.
      *
      * @returns {Boolean} <code>true</code> if {@link #undo()} can be called
      **/
-
   }, {
     key: "canUndo",
     value: function canUndo() {
       return this.undostack.length > 0;
     }
+
     /**
      * Adds a listener to the state stack, which will be notified whenever a state has been processed on the stack.
      *
@@ -2692,12 +513,10 @@ var CommandStack = /*#__PURE__*/function () {
      * @param func
      * @returns {this}
      */
-
   }, {
     key: "on",
     value: function on(event, listener) {
       if (event !== "change") throw "only event of kind 'change' is supported";
-
       if (typeof listener.stackChanged === "function") {
         this.eventListeners.push(listener);
       } else if (typeof listener === "function") {
@@ -2707,15 +526,14 @@ var CommandStack = /*#__PURE__*/function () {
       } else {
         throw "Object doesn't implement required callback interface [draw2d.state.CommandStackListener]";
       }
-
       return this;
     }
+
     /**
      *
      * @param listener
      * @returns {this}
      */
-
   }, {
     key: "off",
     value: function off(listener) {
@@ -2724,6 +542,7 @@ var CommandStack = /*#__PURE__*/function () {
       });
       return this;
     }
+
     /**
      *
      * Notifies state stack event listeners that the state stack has changed to the
@@ -2733,12 +552,10 @@ var CommandStack = /*#__PURE__*/function () {
      * @param {Number} state the current stack state
      * @private
      **/
-
   }, {
     key: "notifyListeners",
     value: function notifyListeners(state) {
       var _this = this;
-
       this.eventListeners.forEach(function (listener) {
         listener.stackChanged({
           state: state,
@@ -2749,10 +566,8 @@ var CommandStack = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return CommandStack;
 }();
-
 var stack = new CommandStack();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (stack);
 
@@ -2769,23 +584,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ State)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var State = /*#__PURE__*/function () {
   function State(app) {
     _classCallCheck(this, State);
-
     // the data BEFORE any changes happens
     this.documentBefore = app.getDocument().clone();
     this.documentAfter = null;
     this.pageIndex = this.documentBefore.index(app.view.getPage());
     this.app = app;
   }
-
   _createClass(State, [{
     key: "undo",
     value: function undo() {
@@ -2798,10 +611,8 @@ var State = /*#__PURE__*/function () {
       this.app.setDocument(this.documentAfter, this.pageIndex);
     }
   }]);
-
   return State;
 }();
-
 
 
 /***/ }),
@@ -2905,13 +716,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../configuration */ "./public/js/configuration.js");
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! path */ "./node_modules/path/path.js");
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_1__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 var Dialog = /*#__PURE__*/function () {
@@ -2921,9 +731,9 @@ var Dialog = /*#__PURE__*/function () {
    */
   function Dialog() {
     _classCallCheck(this, Dialog);
-
     $("body").append(" \n          <div id=\"fileSaveDialog\" class=\"modal fade genericDialog\" tabindex=\"-1\">\n            <div class=\"modal-dialog \">\n                <div class=\"modal-content\">\n                    <div class=\"modal-header\">\n                        <h4 class=\"media-heading\">Save Document</h4>\n                    </div>\n                    <div class=\"modal-body\">\n                        <div class=\"description\"></div>\n                        <div class=\"media\">\n                            <div class=\"media-left media-middle\">\n                                <a href=\"#\">\n                                    <img class=\"media-object filePreview\" src=\"\">\n                                </a>\n                            </div>\n                            <div class=\"media-body\">\n        \n                                <div class=\"form-horizontal\">\n                                    <br>\n                                    Filename:\n                                    <fieldset>\n                                        <div class=\"form-group\">\n                                            <div class=\"col-lg-12\">\n                                                <input type=\"text\"\n                                                       class=\"form-control floating-label fileName\"\n                                                       value=\"\"\n                                                        >\n                                            </div>\n                                        </div>\n        \n                                    </fieldset>\n\n                                    <div class=\"row\"></div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"modal-footer\">\n                        <button class=\"btn\" data-dismiss=\"modal\">Abort</button>\n                        <button class=\"btn btn-primary okButton\"><span>Save</span></button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    ");
   }
+
   /**
    * @method
    *
@@ -2934,13 +744,10 @@ var Dialog = /*#__PURE__*/function () {
    *
    * @since 4.0.0
    */
-
-
   _createClass(Dialog, [{
     key: "show",
     value: function show(currentFile, storage, document) {
       var _this = this;
-
       var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
       return new Promise(function (resolve, reject) {
         $("#fileSaveDialog .description").html(description);
@@ -2952,21 +759,19 @@ var Dialog = /*#__PURE__*/function () {
         Mousetrap.pause();
         $('#fileSaveDialog .fileName').on('keypress', function (e) {
           var key = e.charCode || e.keyCode || 0;
-
           if (key === 13) {
             $("#fileSaveDialog .okButton").click();
           }
-        }); // Save Button
-        //
+        });
 
+        // Save Button
+        //
         $("#fileSaveDialog .okButton").off('click').on("click", function () {
           Mousetrap.unpause();
           var name = $("#fileSaveDialog .fileName").val();
           name = name.replace(_configuration__WEBPACK_IMPORTED_MODULE_0__["default"].fileSuffix, "");
           name = path__WEBPACK_IMPORTED_MODULE_1___default().basename(name); // remove any directories
-
           currentFile.name = path__WEBPACK_IMPORTED_MODULE_1___default().join(path__WEBPACK_IMPORTED_MODULE_1___default().dirname(currentFile.name), name + _configuration__WEBPACK_IMPORTED_MODULE_0__["default"].fileSuffix);
-
           _this.save(currentFile, storage, document).then(function () {
             $('#fileSaveDialog').modal('hide');
             resolve();
@@ -2990,10 +795,8 @@ var Dialog = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return Dialog;
 }();
-
 var dialog = new Dialog();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dialog);
 
@@ -3014,7 +817,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.layout.connection.InteractiveManhattanConnectionRouter.extend({
   NAME: "ConnectionRouter",
-
   /**
    * @constructor
    * Creates a new Router object.
@@ -3022,16 +824,13 @@ __webpack_require__.r(__webpack_exports__);
    */
   init: function init() {
     this._super();
-
     this.setBridgeRadius(4);
     this.setVertexRadius(3);
   },
   onInstall: function onInstall(conn) {
     this._super.apply(this, arguments);
-
     conn.installEditPolicy(new _ConnectionSelectionFeedbackPolicy__WEBPACK_IMPORTED_MODULE_0__["default"]());
   },
-
   /**
    * @method
    * Set the radius of the vertex circle.
@@ -3042,7 +841,6 @@ __webpack_require__.r(__webpack_exports__);
     this.vertexRadius = radius;
     return this;
   },
-
   /**
    * @method
    * Set the radius or span of the bridge. A bridge will be drawn if two connections are crossing and didn't have any
@@ -3056,35 +854,33 @@ __webpack_require__.r(__webpack_exports__);
     this.bridge_RL = [" r", -0.5, -0.5, -(radius - radius / 2), -(radius - radius / 4), -radius, -radius, -(radius + radius / 2), -(radius - radius / 4), -radius * 2, "0 "].join(" ");
     return this;
   },
-
   /**
    * @inheritdoc
    */
   x_paint: function x_paint(conn) {
-    var _this = this; // get the intersections to the other connections
+    var _this = this;
+    // get the intersections to the other connections
     //
-
-
     var intersectionsASC = conn.getCanvas().getIntersection(conn).sort("x");
     var intersectionsDESC = intersectionsASC.clone().reverse();
-    var intersectionForCalc = intersectionsASC; // add a ArrayList of all added vertex nodes to the connection
-    //
+    var intersectionForCalc = intersectionsASC;
 
+    // add a ArrayList of all added vertex nodes to the connection
+    //
     if (typeof conn.vertexNodes !== "undefined" && conn.vertexNodes !== null) {
       conn.vertexNodes.remove();
     }
+    conn.vertexNodes = conn.canvas.paper.set();
 
-    conn.vertexNodes = conn.canvas.paper.set(); // ATTENTION: we cast all x/y coordinates to integer and add 0.5 to avoid subpixel rendering of
+    // ATTENTION: we cast all x/y coordinates to integer and add 0.5 to avoid subpixel rendering of
     //            the connection. The 1px or 2px lines look much clearer than before.
     //
-
     var ps = conn.getVertices();
     var p = ps.get(0);
     var path = ["M", p.x, " ", p.y];
     var oldP = p;
     var bridgeWidth = this.bridgeRadius;
     var bridgeCode = null;
-
     var calc = function calc(ii, interP) {
       if (draw2d.shape.basic.Line.hit(5, oldP.x, oldP.y, p.x, p.y, interP.x, interP.y) === true) {
         // It is a vertex node..
@@ -3093,14 +889,14 @@ __webpack_require__.r(__webpack_exports__);
           var other = interP.other;
           var otherZ = other.getZOrder();
           var connZ = conn.getZOrder();
-
           if (connZ < otherZ) {
             var vertexNode = conn.canvas.paper.ellipse(interP.x, interP.y, _this.vertexRadius, _this.vertexRadius).attr({
               fill: conn.lineColor.hash()
             });
             conn.vertexNodes.push(vertexNode);
           }
-        } // ..or a bridge. We draw only horizontal bridges. Just a design decision
+        }
+        // ..or a bridge. We draw only horizontal bridges. Just a design decision
         //
         else if ((p.y | 0) === (interP.y | 0)) {
           path.push(" L", interP.x - bridgeWidth, " ", interP.y);
@@ -3108,29 +904,29 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     };
-
     for (var i = 1; i < ps.getSize(); i++) {
-      p = ps.get(i); // line goes from right->left.
+      p = ps.get(i);
 
+      // line goes from right->left.
       if (oldP.x > p.x) {
         intersectionForCalc = intersectionsDESC;
         bridgeCode = this.bridge_RL;
         bridgeWidth = -this.bridgeRadius;
-      } // line goes from left->right
+      }
+      // line goes from left->right
       else {
         intersectionForCalc = intersectionsASC;
         bridgeCode = this.bridge_LR;
         bridgeWidth = this.bridgeRadius;
-      } // bridge   => the connections didn't have a common port
+      }
+
+      // bridge   => the connections didn't have a common port
       // vertex => the connections did have a common source or target port
       //
-
-
       intersectionForCalc.each(calc);
       path.push(" L", p.x, " ", p.y);
       oldP = p;
     }
-
     conn.svgPathString = path.join("");
   }
 }));
@@ -3152,7 +948,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
   NAME: "ConnectionSelectionFeedbackPolicy",
-
   /**
    * @constructor
    * Creates a new Router object.
@@ -3163,33 +958,33 @@ __webpack_require__.r(__webpack_exports__);
   },
   onRightMouseDown: function onRightMouseDown(conn, x, y, shiftKey, ctrlKey) {
     var segment = conn.hitSegment(x, y);
-
     if (segment === null) {
       return;
-    } // standard menu entry "split". It is always possible to split a connection
+    }
+
+    // standard menu entry "split". It is always possible to split a connection
     //
+    var items = {};
 
-
-    var items = {}; // add/remove of connection segments is only possible in the edit mode
+    // add/remove of connection segments is only possible in the edit mode
     //
-
     if (conn.getCanvas().isSimulationRunning() === false) {
       items.split = {
         name: draw2d.Configuration.i18n.menu.addSegment
-      }; // "remove" a segment isn't always possible. depends from the router algorithm
-      //
+      };
 
+      // "remove" a segment isn't always possible. depends from the router algorithm
+      //
       if (conn.getRouter().canRemoveSegmentAt(conn, segment.index)) {
         items.remove = {
           name: draw2d.Configuration.i18n.menu.deleteSegment
         };
       }
-    } // add a probe label is always possible
+    }
+
+    // add a probe label is always possible
     //
-
-
     var probeFigure = conn.getProbeFigure();
-
     if (probeFigure === null) {
       items.probe = {
         name: "Add Probe"
@@ -3199,7 +994,6 @@ __webpack_require__.r(__webpack_exports__);
         name: "Remove Probe"
       };
     }
-
     $.contextMenu({
       selector: 'body',
       events: {
@@ -3209,7 +1003,6 @@ __webpack_require__.r(__webpack_exports__);
       },
       callback: $.proxy(function (key, options) {
         var originalVertices, newVertices;
-
         switch (key) {
           case "remove":
             // deep copy of the vertices of the connection for the command stack to avoid side effects
@@ -3218,7 +1011,6 @@ __webpack_require__.r(__webpack_exports__);
             newVertices = conn.getVertices().clone(true);
             conn.getCanvas().getCommandStack().execute(new draw2d.command.CommandReplaceVertices(conn, originalVertices, newVertices));
             break;
-
           case "split":
             // deep copy of the vertices of the connection for the command stack to avoid side effects
             originalVertices = conn.getVertices().clone(true);
@@ -3226,10 +1018,8 @@ __webpack_require__.r(__webpack_exports__);
             newVertices = conn.getVertices().clone(true);
             conn.getCanvas().getCommandStack().execute(new draw2d.command.CommandReplaceVertices(conn, originalVertices, newVertices));
             break;
-
           case "probe":
             var text = prompt("Probe Signal Label");
-
             if (text) {
               var label = new _figures_ProbeFigure__WEBPACK_IMPORTED_MODULE_0__["default"]({
                 text: text,
@@ -3241,13 +1031,10 @@ __webpack_require__.r(__webpack_exports__);
               label.installEditor(new draw2d.ui.LabelInplaceEditor());
               conn.add(label, locator);
             }
-
             break;
-
           case "unprobe":
             conn.remove(conn.getProbeFigure());
             break;
-
           default:
             break;
         }
@@ -3274,7 +1061,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.policy.canvas.DropInterceptorPolicy.extend({
   NAME: "draw2d.policy.canvas.DropInterceptorPolicy",
-
   /**
    * @constructor
    *
@@ -3282,7 +1068,6 @@ __webpack_require__.r(__webpack_exports__);
   init: function init(attr, setter, getter) {
     this._super(attr, setter, getter);
   },
-
   /**
    * @method
    * Called if the user want connect a port with any kind draw2d.Figure.<br>
@@ -3305,51 +1090,52 @@ __webpack_require__.r(__webpack_exports__);
       if (connectInquirer.getInputPorts().getSize() > 0 && connectInquirer.getOutputPorts().getSize() > 0) {
         return connectIntent;
       }
-    } // a composite accept any kind of figures exceptional ports
+    }
+
+    // a composite accept any kind of figures exceptional ports
     //
-
-
     if (!(connectInquirer instanceof draw2d.Port) && connectIntent instanceof draw2d.shape.composite.StrongComposite) {
       return connectIntent;
-    } // Ports accepts only Ports as DropTarget
+    }
+
+    // Ports accepts only Ports as DropTarget
     //
-
-
     if (!(connectIntent instanceof draw2d.Port) || !(connectInquirer instanceof draw2d.Port)) {
       return null;
-    } // consider the max possible connections for this port
+    }
+
+    // consider the max possible connections for this port
     //
-
-
     if (connectIntent.getConnections().getSize() >= connectIntent.getMaxFanOut()) {
       return null;
-    } // It is not allowed to connect two output ports
+    }
 
-
+    // It is not allowed to connect two output ports
     if (connectInquirer instanceof draw2d.OutputPort && connectIntent instanceof draw2d.OutputPort) {
       return null;
-    } // It is not allowed to connect two input ports
+    }
 
-
+    // It is not allowed to connect two input ports
     if (connectInquirer instanceof draw2d.InputPort && connectIntent instanceof draw2d.InputPort) {
       return null;
-    } // It is not possible to create a loop back connection at the moment.
+    }
+
+    // It is not possible to create a loop back connection at the moment.
     // Reason: no connection router implemented for this case
-
-
-    if (connectInquirer instanceof draw2d.Port && connectIntent instanceof draw2d.Port) {//    if(connectInquirer === connectIntent){
+    if (connectInquirer instanceof draw2d.Port && connectIntent instanceof draw2d.Port) {
+      //    if(connectInquirer === connectIntent){
       //       return null;
       // }
-    } // redirect the dragEnter handling to the hybrid port
+    }
+
+    // redirect the dragEnter handling to the hybrid port
     //
-
-
     if (connectInquirer instanceof draw2d.Port && connectIntent instanceof draw2d.shape.node.Hub) {
       return connectIntent.getHybridPort(0);
-    } // return the connectTarget determined by the framework or delegate it to another
+    }
+
+    // return the connectTarget determined by the framework or delegate it to another
     // figure.
-
-
     return connectIntent;
   }
 }));
@@ -3374,11 +1160,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
   init: function init() {
     this._super();
-
     this.mouseMoveProxy = this._onMouseMoveCallback.bind(this);
     this.configIcon = null;
   },
-
   /**
    * @method
    * Called by the canvas if the user click on a figure.
@@ -3400,15 +1184,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   onInstall: function onInstall(canvas) {
-    this._super(canvas); // provide configuration menu if the mouse is close to a shape
+    this._super(canvas);
+
+    // provide configuration menu if the mouse is close to a shape
     //
-
-
     canvas.on("mousemove", this.mouseMoveProxy);
   },
   onUninstall: function onUninstall(canvas) {
     this._super(canvas);
-
     canvas.off(this.mouseMoveProxy);
   },
   onMouseUp: function onMouseUp(canvas, x, y, shiftKey, ctrlKey) {
@@ -3436,7 +1219,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   _onMouseMoveCallback: function _onMouseMoveCallback(emitter, event) {
     var _this = this;
-
     // there is no benefit to show decorations during Drag&Drop of an shape
     //
     if (this.mouseMovedDuringMouseDown === true) {
@@ -3444,10 +1226,8 @@ __webpack_require__.r(__webpack_exports__);
         this.configIcon.remove();
         this.configIcon = null;
       }
-
       return;
     }
-
     var hit = null;
     emitter.getFigures().each(function (index, figure) {
       if (figure.hitTest(event.x, event.y, 40)) {
@@ -3455,27 +1235,22 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
     });
-
     if (hit !== null && hit.getParameterSettings && hit.getParameterSettings().length > 0) {
       var pos = hit.getBoundingBox().getTopLeft();
       pos = emitter.fromCanvasToDocumentCoordinate(pos.x, pos.y);
       pos.y -= 30;
-
       if (this.configIcon === null) {
         this.configIcon = $("<div class='fa fa-cog' id='configMenuIcon'></div>");
         $("body").append(this.configIcon);
         this.configIcon.on("click", function () {
           _dialog_FigureConfigDialog__WEBPACK_IMPORTED_MODULE_1__["default"].show(hit, pos);
           _this.configFigure = hit;
-
           if (_this.configIcon !== null) {
             _this.configIcon.remove();
-
             _this.configIcon = null;
           }
         });
       }
-
       this.configIcon.css({
         top: pos.y,
         left: pos.x,
@@ -3508,7 +1283,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.ui.LabelInplaceEditor.extend({
   NAME: "LabelInplaceEditor",
-
   /**
    * @constructor
    *
@@ -3544,7 +1318,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.policy.canvas.ReadOnlySelectionPolicy.extend({
   init: function init() {
     this._super();
-
     this.mouseDownElement = null;
   },
   onInstall: function onInstall(canvas) {
@@ -3557,7 +1330,6 @@ __webpack_require__.r(__webpack_exports__);
       shape.onStop();
     });
   },
-
   /**
    * @method
    *
@@ -3568,27 +1340,25 @@ __webpack_require__.r(__webpack_exports__);
    * @param {Boolean} ctrlKey true if the ctrl key has been pressed during the event
    */
   onMouseDown: function onMouseDown(canvas, x, y, shiftKey, ctrlKey) {
-    var figure = canvas.getBestFigure(x, y); // may the figure is assigned to a composite. In this case the composite can
-    // override the event receiver
+    var figure = canvas.getBestFigure(x, y);
 
+    // may the figure is assigned to a composite. In this case the composite can
+    // override the event receiver
     while (figure !== null) {
       var delegated = figure.getSelectionAdapter()();
-
       if (delegated === figure) {
         break;
       }
-
       figure = delegated;
-    } // ignore ports since version 6.1.0. This is handled by the ConnectionCreatePolicy
+    }
+
+    // ignore ports since version 6.1.0. This is handled by the ConnectionCreatePolicy
     //
-
-
     if (figure instanceof draw2d.Port) {
       return; // silently
     }
 
     this.mouseDownElement = figure;
-
     if (this.mouseDownElement !== null) {
       this.mouseDownElement.fireEvent("mousedown", {
         x: x,
@@ -3598,7 +1368,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   },
-
   /**
    * @method
    *
@@ -3617,10 +1386,8 @@ __webpack_require__.r(__webpack_exports__);
         ctrlKey: ctrlKey
       });
     }
-
     this.mouseDownElement = null;
   },
-
   /**
    * @method
    * Called by the canvas if the user click on a figure.
@@ -3664,28 +1431,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var hogan_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hogan.js */ "./node_modules/hogan.js/lib/hogan.js");
 /* harmony import */ var hogan_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(hogan_js__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 //"private" variables
 
 var currentFigure = null;
-
 var Dialog = /*#__PURE__*/function () {
   function Dialog() {
     _classCallCheck(this, Dialog);
-
     $("body").append("\n          <div id=\"figureConfigDialog\">\n             Please configure me\n          </div>\n      ");
   }
-
   _createClass(Dialog, [{
     key: "show",
     value: function show(figure, pos) {
       var _this = this;
-
       Mousetrap.pause();
       currentFigure = figure;
       var settings = figure.getParameterSettings().slice(0);
@@ -3721,7 +1484,6 @@ var Dialog = /*#__PURE__*/function () {
     key: "hide",
     value: function hide() {
       Mousetrap.unpause();
-
       if (currentFigure !== null) {
         $("#figureConfigDialog textarea, #figureConfigDialog input, #figureConfigDialog select").each(function (i, element) {
           element = $(element);
@@ -3730,16 +1492,13 @@ var Dialog = /*#__PURE__*/function () {
           currentFigure.attr("userData." + name, value);
         });
       }
-
       $("#figureConfigDialog").hide();
       $("#figureConfigDialog").html("");
       currentFigure = null;
     }
   }]);
-
   return Dialog;
 }();
-
 var dialog = new Dialog();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dialog);
 
@@ -3761,13 +1520,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _io_writer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./io/writer */ "./public/js/editor/brain/io/writer.js");
 /* harmony import */ var _view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view */ "./public/js/editor/brain/view.js");
 /* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./palette */ "./public/js/editor/brain/palette.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
@@ -3777,12 +1535,10 @@ var Editor = /*#__PURE__*/function () {
   function Editor() {
     _classCallCheck(this, Editor);
   }
-
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       var _this = this;
-
       this.section = section;
       var menu = $(".activeSection .tinyFlyoverMenu");
       $(".workspace").append("\n          <div class=\"content editorContainerSelector\" \" id=\"draw2dCanvasWrapper\">\n               <div class=\"canvas\" id=\"draw2dCanvas\" oncontextmenu=\"return false;\">\n          </div>\n       ");
@@ -3808,15 +1564,12 @@ var Editor = /*#__PURE__*/function () {
     key: "commit",
     value: function commit() {
       var _this2 = this;
-
       this.view.simulationStop();
       return new Promise(function (resolve, reject) {
         _this2._resetDOM();
-
         _this2.view.getSelection().each(function (index, item) {
           item.unselect();
         });
-
         _io_writer__WEBPACK_IMPORTED_MODULE_2__["default"].marshal(_this2.view, function (content) {
           _this2.section.content = content;
           resolve(_this2.section);
@@ -3827,11 +1580,9 @@ var Editor = /*#__PURE__*/function () {
     key: "cancel",
     value: function cancel() {
       var _this3 = this;
-
       this.view.simulationStop();
       return new Promise(function (resolve, reject) {
         _this3._resetDOM();
-
         resolve(_this3.section);
       });
     }
@@ -3845,10 +1596,8 @@ var Editor = /*#__PURE__*/function () {
       $("#paletteFilter").html("");
     }
   }]);
-
   return Editor;
 }();
-
 
 
 /***/ }),
@@ -3869,16 +1618,12 @@ __webpack_require__.r(__webpack_exports__);
   init: function init(attr, setter, getter) {
     this.tooltip = null;
     this.tooltipTimer = -1;
-
     this._super(attr, setter, getter);
-
     this.persistPorts = false;
   },
   setCanvas: function setCanvas(canvas) {
     if (this.canvas !== null) this.canvas.off(this.zoomCallback);
-
     this._super(canvas);
-
     if (this.canvas !== null) this.canvas.on("zoom", this.zoomCallback);
   },
   applyAlpha: function applyAlpha() {},
@@ -3893,10 +1638,11 @@ __webpack_require__.r(__webpack_exports__);
     return found;
   },
   layerAttr: function layerAttr(name, attributes) {
-    if (this.svgNodes === null) return; // rewrite pure RED to the brainbox "HIGH" color
+    if (this.svgNodes === null) return;
+
+    // rewrite pure RED to the brainbox "HIGH" color
     // rewrite pure BLUE to the brainbox "LOW" color
     // without affecting the original JSON Object
-
     this.svgNodes.forEach(function (shape) {
       if (shape.data("name") === name) {
         shape.attr(attributes);
@@ -3905,7 +1651,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   layerShow: function layerShow(name, flag, duration) {
     if (this.svgNodes === null) return;
-
     if (duration) {
       this.svgNodes.forEach(function (node) {
         if (node.data("name") === name) {
@@ -3948,9 +1693,9 @@ __webpack_require__.r(__webpack_exports__);
       arduino: false
     };
   },
-  onDrop: function onDrop(dropTarget, x, y, shiftKey, ctrlKey) {// Activate a "smart insert" If the user drop this figure on connection
+  onDrop: function onDrop(dropTarget, x, y, shiftKey, ctrlKey) {
+    // Activate a "smart insert" If the user drop this figure on connection
     //
-
     /*
     if (dropTarget instanceof draw2d.Connection) {
       let additionalConnection = dropTarget.getCanvas().createConnection()
@@ -3970,7 +1715,6 @@ __webpack_require__.r(__webpack_exports__);
     }
     */
   },
-
   /**
    * @method
    * Return an objects with all important attributes for XML or JSON serialization
@@ -3979,10 +1723,10 @@ __webpack_require__.r(__webpack_exports__);
    */
   getPersistentAttributes: function getPersistentAttributes() {
     var memento = this._super();
+    memento.value = this.value;
 
-    memento.value = this.value; // add all decorations to the memento
+    // add all decorations to the memento
     //
-
     memento.labels = [];
     this.children.each(function (i, e) {
       var labelJSON = e.figure.getPersistentAttributes();
@@ -3991,7 +1735,6 @@ __webpack_require__.r(__webpack_exports__);
     });
     return memento;
   },
-
   /**
    * @method
    * Read all attributes from the serialized properties and transfer them into the shape.
@@ -4001,24 +1744,27 @@ __webpack_require__.r(__webpack_exports__);
    */
   setPersistentAttributes: function setPersistentAttributes(memento) {
     this._super(memento);
-
     if (typeof memento.value !== "undefined") {
       this.value = memento.value;
-    } // remove all decorations created in the constructor of this element
+    }
+
+    // remove all decorations created in the constructor of this element
     //
+    this.resetChildren();
 
-
-    this.resetChildren(); // and add all children of the JSON document.
+    // and add all children of the JSON document.
     //
-
     $.each(memento.labels, $.proxy(function (i, json) {
       // create the figure stored in the JSON
-      var figure = eval("new " + json.type + "()"); // apply all attributes
+      var figure = eval("new " + json.type + "()");
 
-      figure.attr(json); // instantiate the locator
+      // apply all attributes
+      figure.attr(json);
 
-      var locator = eval("new " + json.locator + "()"); // add the new figure as child to this figure
+      // instantiate the locator
+      var locator = eval("new " + json.locator + "()");
 
+      // add the new figure as child to this figure
       this.add(figure, locator);
     }, this));
   }
@@ -4044,11 +1790,10 @@ __webpack_require__.r(__webpack_exports__);
   NAME: "Connection",
   init: function init(attr, setter, getter) {
     var _this = this;
+    this._super(attr, setter, getter);
 
-    this._super(attr, setter, getter); // since version 3.5.6
+    // since version 3.5.6
     //
-
-
     this.on("dragEnter", function (emitter, event) {
       _this.attr({
         outlineStroke: 2,
@@ -4065,7 +1810,6 @@ __webpack_require__.r(__webpack_exports__);
   getValue: function getValue() {
     return this.getSource().getValue();
   },
-
   /**
    * Return the ProbeFigure if the connection has any or NULL
    *
@@ -4078,12 +1822,12 @@ __webpack_require__.r(__webpack_exports__);
     return entry !== null ? entry.figure : null;
   },
   disconnect: function disconnect() {
-    this._super(); // remove some decorations of the router.
+    this._super();
+
+    // remove some decorations of the router.
     // This is a design flaw. the router creates the decoration and the connection must remove them :-/
     // Unfortunately the Router didn't have a callback when a connection is removed from the canvas.
     //
-
-
     if (typeof this.vertexNodes !== "undefined" && this.vertexNodes !== null) {
       this.vertexNodes.remove();
       delete this.vertexNodes;
@@ -4091,7 +1835,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   add: function add(figure) {
     this._super.apply(this, arguments);
-
     if (figure instanceof _ProbeFigure__WEBPACK_IMPORTED_MODULE_0__["default"] && this.canvas !== null) {
       this.canvas.fireEvent("probe:add", {
         figure: figure
@@ -4100,14 +1843,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   remove: function remove(figure) {
     this._super.apply(this, arguments);
-
     if (figure instanceof _ProbeFigure__WEBPACK_IMPORTED_MODULE_0__["default"] && this.canvas !== null) {
       this.canvas.fireEvent("probe:remove", {
         figure: figure
       });
     }
   },
-
   /**
    * @method
    * Return an objects with all important attributes for XML or JSON serialization
@@ -4115,10 +1856,10 @@ __webpack_require__.r(__webpack_exports__);
    * @returns {Object}
    */
   getPersistentAttributes: function getPersistentAttributes() {
-    var memento = this._super(); // add all decorations to the memento
+    var memento = this._super();
+
+    // add all decorations to the memento
     //
-
-
     memento.labels = [];
     this.children.each(function (i, e) {
       var labelJSON = e.figure.getPersistentAttributes();
@@ -4127,7 +1868,6 @@ __webpack_require__.r(__webpack_exports__);
     });
     return memento;
   },
-
   /**
    * @method
    * Read all attributes from the serialized properties and transfer them into the shape.
@@ -4139,23 +1879,26 @@ __webpack_require__.r(__webpack_exports__);
     // patch the router from some legacy data
     //
     memento.router = "ConnectionRouter";
+    this._super(memento);
 
-    this._super(memento); // remove all decorations created in the constructor of this element
+    // remove all decorations created in the constructor of this element
     //
+    this.resetChildren();
 
-
-    this.resetChildren(); // and add all children of the JSON document.
+    // and add all children of the JSON document.
     //
-
     if (memento.labels) {
       $.each(memento.labels, $.proxy(function (i, json) {
         // create the figure stored in the JSON
-        var figure = eval("new " + json.type + "()"); // apply all attributes
+        var figure = eval("new " + json.type + "()");
 
-        figure.setPersistentAttributes(json); // instantiate the locator
+        // apply all attributes
+        figure.setPersistentAttributes(json);
 
-        var locator = eval("new " + json.locator + "()"); // add the new figure as child to this figure
+        // instantiate the locator
+        var locator = eval("new " + json.locator + "()");
 
+        // add the new figure as child to this figure
         this.add(figure, locator);
       }, this));
     }
@@ -4177,7 +1920,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.shape.basic.Label.extend({
   NAME: "ProbeFigure",
-
   /**
    * @param attr
    */
@@ -4193,10 +1935,10 @@ __webpack_require__.r(__webpack_exports__);
       stroke: 0,
       color: "#000000",
       fontSize: 8
-    }, attr), setter, getter); // the sort index in the probe window
+    }, attr), setter, getter);
+
+    // the sort index in the probe window
     //
-
-
     this.index = 0;
   },
   getValue: function getValue() {
@@ -4209,7 +1951,6 @@ __webpack_require__.r(__webpack_exports__);
     this.index = index;
     return this;
   },
-
   /**
    * @method
    * Return an objects with all important attributes for XML or JSON serialization
@@ -4218,11 +1959,9 @@ __webpack_require__.r(__webpack_exports__);
    */
   getPersistentAttributes: function getPersistentAttributes() {
     var memento = this._super();
-
     memento.index = this.index;
     return memento;
   },
-
   /**
    * @method
    * Read all attributes from the serialized properties and transfer them into the shape.
@@ -4232,7 +1971,6 @@ __webpack_require__.r(__webpack_exports__);
    */
   setPersistentAttributes: function setPersistentAttributes(memento) {
     this._super(memento);
-
     if (typeof memento.index !== "undefined") {
       this.index = parseInt(memento.index);
     }
@@ -4263,19 +2001,17 @@ __webpack_require__.r(__webpack_exports__);
   toBack: function toBack(figure) {
     if (this.canvas.getFigures().getSize() === 1) {
       return; // silently
-    } // unfortunately the shape goes behind the "canvas decoration" which could be the grid or dots.
+    }
+
+    // unfortunately the shape goes behind the "canvas decoration" which could be the grid or dots.
     // this is sad and unwanted. In this case we select the first figure in th canvas and set the Raft behind of them
     // instead of "behind of ALL shapes"
-
-
     var first = this.canvas.getFigures().first();
-
     this._super(first);
   },
   getParameterSettings: function getParameterSettings() {
     return [];
   },
-
   /**
    * @method
    * Return an objects with all important attributes for XML or JSON serialization
@@ -4283,10 +2019,10 @@ __webpack_require__.r(__webpack_exports__);
    * @returns {Object}
    */
   getPersistentAttributes: function getPersistentAttributes() {
-    var memento = this._super(); // add all decorations to the memento
+    var memento = this._super();
+
+    // add all decorations to the memento
     //
-
-
     memento.labels = [];
     this.children.each(function (i, e) {
       var labelJSON = e.figure.getPersistentAttributes();
@@ -4295,7 +2031,6 @@ __webpack_require__.r(__webpack_exports__);
     });
     return memento;
   },
-
   /**
    * @method
    * Read all attributes from the serialized properties and transfer them into the shape.
@@ -4304,21 +2039,25 @@ __webpack_require__.r(__webpack_exports__);
    * @returns
    */
   setPersistentAttributes: function setPersistentAttributes(memento) {
-    this._super(memento); // remove all decorations created in the constructor of this element
+    this._super(memento);
+
+    // remove all decorations created in the constructor of this element
     //
+    this.resetChildren();
 
-
-    this.resetChildren(); // and add all children of the JSON document.
+    // and add all children of the JSON document.
     //
-
     $.each(memento.labels, $.proxy(function (i, json) {
       // create the figure stored in the JSON
-      var figure = eval("new " + json.type + "()"); // apply all attributes
+      var figure = eval("new " + json.type + "()");
 
-      figure.attr(json); // instantiate the locator
+      // apply all attributes
+      figure.attr(json);
 
-      var locator = eval("new " + json.locator + "()"); // add the new figure as child to this figure
+      // instantiate the locator
+      var locator = eval("new " + json.locator + "()");
 
+      // add the new figure as child to this figure
       this.add(figure, locator);
     }, this));
   }
@@ -4344,9 +2083,8 @@ var Reader = draw2d.io.json.Reader.extend({
   unmarshal: function unmarshal(view, fileData) {
     if (fileData === null) {
       return; // silently
-    } // new JSON format with draw2d&image content
-
-
+    }
+    // new JSON format with draw2d&image content
     this._super(view, fileData.draw2d);
   },
   createFigureFromType: function createFigureFromType(type) {
@@ -4354,7 +2092,6 @@ var Reader = draw2d.io.json.Reader.extend({
     if (type === "draw2d.Connection") {
       type = "Connection";
     }
-
     return this._super(type);
   }
 });
@@ -4417,11 +2154,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var hogan_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(hogan_js__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var js_treeview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! js-treeview */ "./node_modules/js-treeview/index.js");
 /* harmony import */ var js_treeview__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(js_treeview__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
@@ -4432,7 +2170,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  *
  * @author Andreas Herz
  */
-
 var Palette = /*#__PURE__*/function () {
   /**
    * @constructor
@@ -4441,9 +2178,7 @@ var Palette = /*#__PURE__*/function () {
    */
   function Palette(view, id, permissions) {
     var _this = this;
-
     _classCallCheck(this, Palette);
-
     // remove all classes from the other editors
     $("#paletteElementsScroll, #paletteFilter").removeClass("pages");
     this.view = view;
@@ -4457,19 +2192,16 @@ var Palette = /*#__PURE__*/function () {
         shapes: data
       });
       $(id).html(html);
+      _this.buildTree(data);
 
-      _this.buildTree(data); // Create the jQuery-Draggable for the palette -> canvas drag&drop interaction
+      // Create the jQuery-Draggable for the palette -> canvas drag&drop interaction
       //
-
-
       $(".draw2d_droppable").draggable({
         appendTo: "body",
         helper: "clone",
         drag: function drag(event, ui) {
           event = _this.view._getEvent(event);
-
           var pos = _this.view.fromDocumentToCanvasCoordinate(event.clientX, event.clientY);
-
           _this.view.onDrag(ui.draggable, pos.getX(), pos.getY(), event.shiftKey, event.ctrlKey);
         },
         stop: function stop(e, ui) {},
@@ -4484,7 +2216,6 @@ var Palette = /*#__PURE__*/function () {
       });
     });
   }
-
   _createClass(Palette, [{
     key: "buildTree",
     value: function buildTree(data) {
@@ -4492,20 +2223,16 @@ var Palette = /*#__PURE__*/function () {
       data.forEach(function (element) {
         tree.push(element.basedir.split("/"));
       });
-
       function arrangeIntoTree(paths) {
         var tree = [];
-
         for (var i = 0; i < paths.length; i++) {
           var path = paths[i];
           var currentLevel = tree;
           var rootPath = null;
-
           for (var j = 0; j < path.length; j++) {
             var part = path[j];
             var existingPath = findWhere(currentLevel, 'name', part);
             rootPath = rootPath ? rootPath + "/" + part : part;
-
             if (existingPath) {
               currentLevel = existingPath.children;
             } else {
@@ -4519,16 +2246,12 @@ var Palette = /*#__PURE__*/function () {
             }
           }
         }
-
         return tree;
-
         function findWhere(array, key, value) {
           var t = 0;
-
           while (t < array.length && array[t][key] !== value) {
             t++;
           }
-
           if (t < array.length) {
             return array[t];
           } else {
@@ -4536,8 +2259,8 @@ var Palette = /*#__PURE__*/function () {
           }
         }
       }
-
-      tree = arrangeIntoTree(tree); //
+      tree = arrangeIntoTree(tree);
+      //
       // Create tree
       //
 
@@ -4560,10 +2283,8 @@ var Palette = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return Palette;
 }();
-
 
 
 /***/ }),
@@ -4600,28 +2321,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.Canvas.extend({
   init: function init(id, permissions) {
     var _this2 = this;
-
     var _this = this;
-
     this._super(id, 6000, 6000);
-
     this.permissions = permissions;
     this.simulate = false;
     this.animationFrameFunc = this._calculate.bind(this);
     this.timerBase = 10; // ms calculate every 10ms all elements
+
     // global context where objects can store data during different simulation steps.
     // OTHER object can read them. Useful for signal handover
-
     this.simulationContext = {};
-    this.setScrollArea("#draw2dCanvasWrapper"); // register this class as event listener for the canvas
+    this.setScrollArea("#draw2dCanvasWrapper");
+
+    // register this class as event listener for the canvas
     // CommandStack. This is required to update the state of
     // the Undo/Redo Buttons.
     //
-
     this.getCommandStack().addEventListener(this);
     var router = new _ConnectionRouter__WEBPACK_IMPORTED_MODULE_0__["default"]();
     router.abortRoutingOnFirstVertexNode = false;
-
     var createConnection = this.createConnection = function (sourcePort, targetPort) {
       var c = new _figures_Connection__WEBPACK_IMPORTED_MODULE_4__["default"]({
         color: "#000000",
@@ -4629,55 +2347,55 @@ __webpack_require__.r(__webpack_exports__);
         stroke: 1.5,
         radius: 2
       });
-
       if (sourcePort) {
         c.setSource(sourcePort);
         c.setTarget(targetPort);
       }
-
       return c;
     };
+    this.installEditPolicy(new _DropInterceptorPolicy__WEBPACK_IMPORTED_MODULE_1__["default"]());
 
-    this.installEditPolicy(new _DropInterceptorPolicy__WEBPACK_IMPORTED_MODULE_1__["default"]()); // install a Connection create policy which matches to a "circuit like"
+    // install a Connection create policy which matches to a "circuit like"
     // connections
     //
-
-    this.connectionPolicy = new draw2d.policy.connection.ComposedConnectionCreatePolicy([// create a connection via Drag&Drop of ports
+    this.connectionPolicy = new draw2d.policy.connection.ComposedConnectionCreatePolicy([
+    // create a connection via Drag&Drop of ports
     //
     new draw2d.policy.connection.DragConnectionCreatePolicy({
       createConnection: createConnection
-    }), // or via click and point
+    }),
+    // or via click and point
     //
     new draw2d.policy.connection.OrthogonalConnectionCreatePolicy({
       createConnection: createConnection
     })]);
-    this.installEditPolicy(this.connectionPolicy); // show the ports of the elements only if the mouse cursor is close to the shape.
-    //
+    this.installEditPolicy(this.connectionPolicy);
 
+    // show the ports of the elements only if the mouse cursor is close to the shape.
+    //
     this.coronaFeedback = new draw2d.policy.canvas.CoronaDecorationPolicy({
       diameterToBeVisible: 50
     });
-    this.installEditPolicy(this.coronaFeedback); // add some SnapTo policy for better shape/figure alignment
-    //
+    this.installEditPolicy(this.coronaFeedback);
 
+    // add some SnapTo policy for better shape/figure alignment
+    //
     this.installEditPolicy(new draw2d.policy.canvas.SnapToGeometryEditPolicy());
     this.installEditPolicy(new draw2d.policy.canvas.SnapToCenterEditPolicy());
     this.installEditPolicy(new draw2d.policy.canvas.SnapToInBetweenEditPolicy());
     this.installEditPolicy(new draw2d.policy.canvas.ShowGridEditPolicy());
-    this.installEditPolicy(new _EditEditPolicy__WEBPACK_IMPORTED_MODULE_2__["default"]()); // Enable Copy&Paste for figures
-    //
+    this.installEditPolicy(new _EditEditPolicy__WEBPACK_IMPORTED_MODULE_2__["default"]());
 
+    // Enable Copy&Paste for figures
+    //
     Mousetrap.bindGlobal(['ctrl+c', 'command+c'], function () {
       var primarySelection = _this2.getSelection().getPrimary();
-
       if (primarySelection !== null) {
         _this2.clippboardFigure = primarySelection.clone({
           excludePorts: true
         });
-
         _this2.clippboardFigure.translate(5, 5);
       }
-
       return false;
     });
     Mousetrap.bindGlobal(['ctrl+v', 'command+v'], function () {
@@ -4685,58 +2403,43 @@ __webpack_require__.r(__webpack_exports__);
         var cloneToAdd = _this2.clippboardFigure.clone({
           excludePorts: true
         });
-
         var command = new draw2d.command.CommandAdd(_this2, cloneToAdd, cloneToAdd.getPosition());
-
         _this2.getCommandStack().execute(command);
-
         _this2.setCurrentSelection(cloneToAdd);
       }
-
       return false;
     });
     Mousetrap.bindGlobal(['left'], function (event) {
       var diff = _this2.getZoom() < 0.5 ? 0.5 : 1;
-
       _this2.getSelection().each(function (i, f) {
         f.translate(-diff, 0);
       });
-
       return false;
     });
     Mousetrap.bindGlobal(['up'], function (event) {
       var diff = _this2.getZoom() < 0.5 ? 0.5 : 1;
-
       _this2.getSelection().each(function (i, f) {
         f.translate(0, -diff);
       });
-
       return false;
     });
     Mousetrap.bindGlobal(['right'], function (event) {
       var diff = _this2.getZoom() < 0.5 ? 0.5 : 1;
-
       _this2.getSelection().each(function (i, f) {
         f.translate(diff, 0);
       });
-
       return false;
     });
     Mousetrap.bindGlobal(['down'], function (event) {
       var diff = _this2.getZoom(8) < 0.5 ? 0.5 : 1;
-
       _this2.getSelection().each(function (i, f) {
         f.translate(0, diff);
       });
-
       return false;
     });
-
     this.deleteSelectionCallback = function () {
       var selection = _this2.getSelection();
-
       _this2.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape);
-
       selection.each(function (index, figure) {
         // Don't delete the connection if the source or target node part of the
         // selection. In this case the nodes deletes all connections by itself.
@@ -4746,32 +2449,27 @@ __webpack_require__.r(__webpack_exports__);
             return;
           }
         }
-
         var cmd = figure.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.DELETE));
-
         if (cmd !== null) {
           _this2.getCommandStack().execute(cmd);
         }
-      }); // execute all single commands at once.
-
+      });
+      // execute all single commands at once.
       _this2.getCommandStack().commitTransaction();
     };
-
     Mousetrap.bindGlobal(['del', 'backspace'], this.deleteSelectionCallback);
     this.on("contextmenu", function (emitter, event) {
-      var figure = _this.getBestFigure(event.x, event.y); // a connection provides its own context menu
+      var figure = _this.getBestFigure(event.x, event.y);
+
+      // a connection provides its own context menu
       //
-
-
       if (figure instanceof draw2d.Connection) {
         return;
       }
-
       if (figure !== null) {
         var x = event.x;
         var y = event.y;
         var items = {};
-
         if (figure instanceof CircuitFigure) {
           items = {
             "label": {
@@ -4804,7 +2502,6 @@ __webpack_require__.r(__webpack_exports__);
             }
           };
         }
-
         $.contextMenu({
           selector: 'body',
           events: {
@@ -4816,7 +2513,6 @@ __webpack_require__.r(__webpack_exports__);
             switch (key) {
               case "label":
                 var text = prompt("Label");
-
                 if (text) {
                   var label = new draw2d.shape.basic.Label({
                     text: text,
@@ -4832,14 +2528,10 @@ __webpack_require__.r(__webpack_exports__);
                     writable: false
                   });
                 }
-
                 break;
-
               case "delete":
                 _this.getCommandStack().execute(new draw2d.command.CommandDelete(figure));
-
                 break;
-
               default:
                 break;
             }
@@ -4849,9 +2541,10 @@ __webpack_require__.r(__webpack_exports__);
           items: items
         });
       }
-    }); // hide the figure configuration dialog if the user clicks inside the canvas
-    //
+    });
 
+    // hide the figure configuration dialog if the user clicks inside the canvas
+    //
     this.on("click", function () {
       $("#figureConfigDialog").hide();
     });
@@ -4859,7 +2552,6 @@ __webpack_require__.r(__webpack_exports__);
   isSimulationRunning: function isSimulationRunning() {
     return this.simulate;
   },
-
   /**
    * @method
    * Clear the canvas and stop the simulation. Be ready for the next clean circuit
@@ -4867,12 +2559,9 @@ __webpack_require__.r(__webpack_exports__);
    */
   clear: function clear() {
     this.simulationStop();
-
     this._super();
-
     this.centerDocument();
   },
-
   /**
    * Disable snapTo GRID if we have select more than one element
    * @param figure
@@ -4882,10 +2571,8 @@ __webpack_require__.r(__webpack_exports__);
     if (this.getSelection().getSize() > 1) {
       return pos;
     }
-
     return this._super(figure, pos);
   },
-
   /**
    * @method
    * Called if the user drop the droppedDomNode onto the canvas.<br>
@@ -4907,18 +2594,16 @@ __webpack_require__.r(__webpack_exports__);
       text: "Unable to load shape '".concat(type, "'"),
       color: "#ff0000"
     });
-
     try {
       figure = eval("new " + type + "();"); // jshint ignore:line
       // required to calculate the filepath for markdown/js/shape
       //
-
       figure.attr("userData.file", file);
     } catch (exc) {
       console.log(exc);
-    } // create a command for the undo/redo support
+    }
 
-
+    // create a command for the undo/redo support
     var command = new draw2d.command.CommandAdd(this, figure, x, y);
     this.getCommandStack().execute(command);
   },
@@ -4931,7 +2616,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   simulationStart: function simulationStart() {
     var _this3 = this;
-
     if (this.simulate === true) {
       return; // silently
     }
@@ -4946,15 +2630,12 @@ __webpack_require__.r(__webpack_exports__);
     this.getFigures().each(function (index, shape) {
       shape.onStart(_this3.simulationContext);
     });
-
     this._calculate();
-
     $("#simulationStartStop").addClass("pause").removeClass("play");
     $("#paletteElementsOverlay").fadeIn("fast").height($("#paletteElements").height());
   },
   simulationStop: function simulationStop() {
     var _this4 = this;
-
     this.simulate = false;
     this.commonPorts.each(function (i, p) {
       p.setVisible(true);
@@ -4970,27 +2651,25 @@ __webpack_require__.r(__webpack_exports__);
   },
   _calculate: function _calculate() {
     var _this5 = this;
-
     // call the "calculate" method if given to calculate the output-port values
     //
     this.getFigures().each(function (i, figure) {
       figure.calculate(_this5.simulationContext);
-    }); // transport the value from outputPort to inputPort
-    //
+    });
 
+    // transport the value from outputPort to inputPort
+    //
     this.getLines().each(function (i, line) {
       var outPort = line.getSource();
       var inPort = line.getTarget();
       inPort.setValue(outPort.getValue());
       line.setColor(outPort.getValue() ? _configuration__WEBPACK_IMPORTED_MODULE_3__["default"].color.high : _configuration__WEBPACK_IMPORTED_MODULE_3__["default"].color.low);
     });
-
     if (this.simulate === true) {
       //     setImmediate(this.animationFrameFunc);
       setTimeout(this.animationFrameFunc, this.timerBase);
     }
   },
-
   /**
    * @method
    * Sent when an event occurs on the command stack. draw2d.command.CommandStackEvent.getDetail()
@@ -5005,6 +2684,7 @@ __webpack_require__.r(__webpack_exports__);
       return; // silently
     }
   },
+
   getBoundingBox: function getBoundingBox() {
     var xCoords = [];
     var yCoords = [];
@@ -5027,7 +2707,6 @@ __webpack_require__.r(__webpack_exports__);
   centerDocument: function centerDocument() {
     this.setZoom(1.0);
     var c = $("#draw2dCanvasWrapper");
-
     if (this.getFigures().getSize() > 0) {
       // get the bounding box of the document and translate the complete document
       // into the center of the canvas. Scroll to the top left corner after them
@@ -5042,7 +2721,6 @@ __webpack_require__.r(__webpack_exports__);
       this.scrollTo(_bb.y - c.height() / 2, _bb.x - c.width() / 2);
     }
   },
-
   /**
    * @method
    * Transforms a document coordinate to canvas coordinate.
@@ -5055,7 +2733,6 @@ __webpack_require__.r(__webpack_exports__);
   fromDocumentToCanvasCoordinate: function fromDocumentToCanvasCoordinate(x, y) {
     return new draw2d.geo.Point((x - this.getAbsoluteX()) * this.zoomFactor, (y - this.getAbsoluteY()) * this.zoomFactor);
   },
-
   /**
    * @method
    * Transforms a canvas coordinate to document coordinate.
@@ -5083,29 +2760,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Editor)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var Editor = /*#__PURE__*/function () {
   function Editor() {
     _classCallCheck(this, Editor);
   }
-
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       this.section = section;
       this.content = section.content || "";
-
       var _this = this;
-
       $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div class=\"drop-message\">\n                        Drag & Drop images or click to upload\n                  </div>\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\">\n                      <img src=\"".concat(this.content, "\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n              </div>\n                "));
       var dropRegion = document.getElementById("editor-container");
-      var imagePreviewRegion = document.getElementById("image-preview"); // open file selector when clicked on the drop region
+      var imagePreviewRegion = document.getElementById("image-preview");
 
+      // open file selector when clicked on the drop region
       var fakeInput = document.createElement("input");
       fakeInput.type = "file";
       fakeInput.accept = "image/*";
@@ -5116,119 +2791,105 @@ var Editor = /*#__PURE__*/function () {
       fakeInput.addEventListener("change", function () {
         handleFiles(fakeInput.files);
       });
-
       function preventDefault(e) {
         e.preventDefault();
         e.stopPropagation();
       }
-
       dropRegion.addEventListener('dragenter', preventDefault, false);
       dropRegion.addEventListener('dragleave', preventDefault, false);
       dropRegion.addEventListener('dragover', preventDefault, false);
       dropRegion.addEventListener('drop', preventDefault, false);
-
       function handleDrop(e) {
         var dt = e.dataTransfer;
-        var files = dt.files; // local file
+        var files = dt.files;
 
+        // local file
         if (files.length) {
           handleFiles(files);
-        } // file from a browser (image drag&drop)
+        }
+        // file from a browser (image drag&drop)
         else {
           // check for img
           var html = dt.getData('text/html');
           var match = html && /\bsrc="?([^"\s]+)"?\s*/.exec(html);
           var url = match && match[1];
-
           if (url) {
             var img = new Image();
             var c = document.createElement("canvas");
             var ctx = c.getContext("2d");
-
             img.onload = function () {
               c.width = this.naturalWidth; // update canvas size to match image
-
               c.height = this.naturalHeight;
               ctx.drawImage(this, 0, 0); // draw in image
-
               c.toBlob(function (blob) {
                 // get content as PNG blob
                 // call our main function
                 handleFiles([blob]);
               }, "image/png");
             };
-
             img.onerror = function () {
               alert("Error in uploading");
             };
-
             img.crossOrigin = ""; // if from different origin
-
             img.src = url;
             return;
           }
         }
       }
-
       dropRegion.addEventListener('drop', handleDrop, false);
-
       function handleFiles(files) {
-        for (var i = 0, len = files.length; i < len; i++) {
+        var _loop = function _loop() {
           if (validateImage(files[i])) {
-            (function () {
-              var image = files[i]; // container
+            var image = files[i];
+            // container
+            var imgView = document.createElement("div");
+            imgView.className = "image-view";
+            imagePreviewRegion.appendChild(imgView);
 
-              var imgView = document.createElement("div");
-              imgView.className = "image-view";
-              imagePreviewRegion.appendChild(imgView); // previewing image
+            // previewing image
+            var img = document.createElement("img");
+            imgView.appendChild(img);
 
-              var img = document.createElement("img");
-              imgView.appendChild(img); // progress overlay
+            // progress overlay
+            var overlay = document.createElement("div");
+            overlay.className = "overlay";
+            imgView.appendChild(overlay);
 
-              var overlay = document.createElement("div");
-              overlay.className = "overlay";
-              imgView.appendChild(overlay); // read the image...
-
-              var reader = new FileReader();
-
-              reader.onload = function (e) {
-                img.src = e.target.result;
-                _this.content = img.src;
-              };
-
-              reader.readAsDataURL(image);
-            })();
+            // read the image...
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              img.src = e.target.result;
+              _this.content = img.src;
+            };
+            reader.readAsDataURL(image);
           }
+        };
+        for (var i = 0, len = files.length; i < len; i++) {
+          _loop();
         }
       }
-
       function validateImage(image) {
         // check the type
         var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-
         if (validTypes.indexOf(image.type) === -1) {
           alert("Invalid File Type");
           return false;
-        } // check the size
+        }
 
-
+        // check the size
         var maxSizeInBytes = 10e6; // 10MB
-
         if (image.size > maxSizeInBytes) {
           alert("File too large");
           return false;
         }
-
         return true;
       }
-
       return this;
     }
   }, {
     key: "commit",
     value: function commit() {
       var _this2 = this;
-
       return new Promise(function (resolve, reject) {
         _this2.section.content = _this2.getValue();
         resolve(_this2.section);
@@ -5238,7 +2899,6 @@ var Editor = /*#__PURE__*/function () {
     key: "cancel",
     value: function cancel() {
       var _this3 = this;
-
       return new Promise(function (resolve, reject) {
         resolve(_this3.section);
       });
@@ -5249,10 +2909,8 @@ var Editor = /*#__PURE__*/function () {
       return this.content;
     }
   }]);
-
   return Editor;
 }();
-
 
 
 /***/ }),
@@ -5275,32 +2933,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! codemirror/addon/selection/active-line.js */ "./node_modules/codemirror/addon/selection/active-line.js");
 /* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
 
 var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
-
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 md.use(__webpack_require__(/*! markdown-it-container */ "./node_modules/markdown-it-container/index.js"), "info");
-
 var Editor = /*#__PURE__*/function () {
   function Editor() {
     _classCallCheck(this, Editor);
   }
-
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       var _this = this;
-
       this.section = section;
       var content = section.content;
       $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                <div class=\"left\">\n                  <textarea id=\"markdownEditor\"></textarea>\n                </div>\n                <div class=\"right\">\n                  <article class=\"markdown-body\" id=\"htmlPreview\"></article>\n                </div>\n              </div>\n                ");
@@ -5328,7 +2981,6 @@ var Editor = /*#__PURE__*/function () {
     key: "commit",
     value: function commit() {
       var _this2 = this;
-
       return new Promise(function (resolve, reject) {
         _this2.section.content = _this2.editor.getValue();
         resolve(_this2.section);
@@ -5338,7 +2990,6 @@ var Editor = /*#__PURE__*/function () {
     key: "cancel",
     value: function cancel() {
       var _this3 = this;
-
       return new Promise(function (resolve, reject) {
         resolve(_this3.section);
       });
@@ -5367,12 +3018,10 @@ var Editor = /*#__PURE__*/function () {
       return function () {
         var context = this;
         var args = arguments;
-
         var later = function later() {
           timeout = null;
           if (!immediate) func.apply(context, args);
         };
-
         var callNow = immediate && !timeout;
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
@@ -5380,10 +3029,8 @@ var Editor = /*#__PURE__*/function () {
       };
     }
   }]);
-
   return Editor;
 }();
-
 
 
 /***/ }),
@@ -5431,9 +3078,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 var markdown = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
-
 markdown.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   ConnectionSelectionFeedbackPolicy: _editor_brain_ConnectionSelectionFeedbackPolicy__WEBPACK_IMPORTED_MODULE_3__["default"],
@@ -5464,12 +3109,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 /**
  * Registry of all available devices (connected via RF24 adapter) and of the hub GPIO pins.
  * The hub could be an RaspberryPi or and Arduino.
@@ -5477,13 +3122,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * The "hub" is the receiver for the connected devices and expose its own
  * GPIO pins as well.
  */
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   init: function init(s) {},
   arduino: new ( /*#__PURE__*/function () {
     function _class() {
       _classCallCheck(this, _class);
     }
-
     _createClass(_class, [{
       key: "set",
       value: function set(pin, value) {}
@@ -5513,14 +3158,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return false;
       }
     }]);
-
     return _class;
   }())(),
   raspi: new ( /*#__PURE__*/function () {
     function _class2() {
       _classCallCheck(this, _class2);
     }
-
     _createClass(_class2, [{
       key: "on",
       value: function on() {}
@@ -5541,7 +3184,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         return false;
       }
     }]);
-
     return _class2;
   }())()
 });
@@ -5560,23 +3202,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Document)
 /* harmony export */ });
 /* harmony import */ var _page__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./page */ "./public/js/model/page.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 var Document = /*#__PURE__*/function () {
   function Document(content) {
     _classCallCheck(this, Document);
-
     this.pages = content ? content.pages.map(function (page) {
       return new _page__WEBPACK_IMPORTED_MODULE_0__["default"](page);
     }) : [new _page__WEBPACK_IMPORTED_MODULE_0__["default"]()];
   }
-
   _createClass(Document, [{
     key: "get",
     value: function get(index) {
@@ -5641,10 +3280,8 @@ var Document = /*#__PURE__*/function () {
       return this.pages.length;
     }
   }]);
-
   return Document;
 }();
-
 
 
 /***/ }),
@@ -5660,14 +3297,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Page)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var shortid = __webpack_require__(/*! short-uuid */ "./node_modules/short-uuid/index.js");
-
 var Page = /*#__PURE__*/function () {
   /**
    * @constructor
@@ -5675,7 +3311,6 @@ var Page = /*#__PURE__*/function () {
    */
   function Page(json) {
     _classCallCheck(this, Page);
-
     if (json) {
       this.sections = json.sections || [];
       this.name = json.name || "First Page";
@@ -5686,7 +3321,6 @@ var Page = /*#__PURE__*/function () {
       this.id = shortid.generate();
     }
   }
-
   _createClass(Page, [{
     key: "get",
     value: function get(id) {
@@ -5700,7 +3334,6 @@ var Page = /*#__PURE__*/function () {
       var index = this.sections.findIndex(function (obj) {
         return obj.id === section.id;
       });
-
       if (index >= 0) {
         this.sections[index] = section;
       } else {
@@ -5761,10 +3394,8 @@ var Page = /*#__PURE__*/function () {
       return new Page(JSON.parse(JSON.stringify(this.toJSON())));
     }
   }]);
-
   return Page;
 }();
-
 
 
 /***/ }),
@@ -5783,22 +3414,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_js_InputPrompt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../common/js/InputPrompt */ "../common/public/js/InputPrompt.js");
 /* harmony import */ var _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./commands/CommandStack */ "./public/js/commands/CommandStack.js");
 /* harmony import */ var _commands_State__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./commands/State */ "./public/js/commands/State.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
 var Palette = /*#__PURE__*/function () {
   function Palette(app, view, permissions, elementId) {
     var _this = this;
-
     _classCallCheck(this, Palette);
-
     this.html = $(elementId);
     this.app = app;
     this.view = view;
@@ -5808,37 +3436,27 @@ var Palette = /*#__PURE__*/function () {
       _this.app.view.addPage();
     }).off("click", ".pageElement .page_edit_name").on("click", ".pageElement .page_edit_name", function (event) {
       var page = _this.app.getDocument().getPage($(event.currentTarget).data("page"));
-
       _common_js_InputPrompt__WEBPACK_IMPORTED_MODULE_0__["default"].show("Rename Pager", "Page name", page.name, function (value) {
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this.app));
         page.name = value;
-
         _this.stackChanged(null);
       });
       return false;
     }).off("click", ".pageElement .page_delete").on("click", ".pageElement .page_delete", function (event) {
       _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this.app));
-
       var page = _this.app.getDocument().getPage($(event.currentTarget).data("page"));
-
       _this.view.removePage(page);
-
       _this.stackChanged(null);
-
       return false;
     }).off("click", ".pageElement").on("click", ".pageElement", function (event) {
       $(".pageElement").removeClass("selected");
       var element = $(event.target);
       var id = element.data("page");
-
       var page = _this.app.getDocument().getPage(id);
-
       _this.app.view.setPage(page);
-
       element.addClass("selected");
     });
   }
-
   _createClass(Palette, [{
     key: "render",
     value: function render() {
@@ -5847,6 +3465,7 @@ var Palette = /*#__PURE__*/function () {
       $("#paletteFilter").html("<div class='toc'>Chapters <span id=\"documentPageAdd\" class=\"material-button\">+</span></div>");
       this.stackChanged(null);
     }
+
     /**
      * @method
      * Sent when an event occurs on the command stack. draw2d.command.CommandStackEvent.getDetail()
@@ -5856,23 +3475,19 @@ var Palette = /*#__PURE__*/function () {
      *
      * @param {draw2d.command.CommandStackEvent} event
      **/
-
   }, {
     key: "stackChanged",
     value: function stackChanged(event) {
       var _this2 = this;
-
       if (this.sourceIsSortEvent) {
         return; // silently
       }
 
       this.html.html('');
       var document = this.app.getDocument();
-
       if (document !== null) {
         var pages = document.getPages();
         var currentPage = this.view.getPage();
-
         if (this.app.hasModifyPermissionForCurrentFile()) {
           $("#documentPageAdd").show();
           pages.forEach(function (page) {
@@ -5884,19 +3499,18 @@ var Palette = /*#__PURE__*/function () {
             _this2.html.append("\n          <div class=\"pageElement\"  data-page=\"".concat(page.id, "\"  id=\"layerElement_").concat(page.id, "\" >\n            ").concat(page.name, "\n          </div>"));
           }, true);
         }
+        $(".pageElement[data-page=".concat(currentPage.id, "]")).addClass("selected");
 
-        $(".pageElement[data-page=".concat(currentPage.id, "]")).addClass("selected"); // Allow only the drag&drop of the pages if the user has the permission
+        // Allow only the drag&drop of the pages if the user has the permission
         //
-
         if (this.app.hasModifyPermissionForCurrentFile()) {
           this.html.sortable({
             axis: "y",
             update: function update(event, dd) {
               _this2.sourceIsSortEvent = true;
-
               try {
-                _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this2.app)); // fetch the state of the new order
-
+                _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this2.app));
+                // fetch the state of the new order
                 var pageDivs = $(".pageElement").toArray();
                 var newPageOrder = [];
                 pageDivs.forEach(function (page) {
@@ -5915,10 +3529,8 @@ var Palette = /*#__PURE__*/function () {
       }
     }
   }]);
-
   return Palette;
 }();
-
 
 
 /***/ }),
@@ -5936,23 +3548,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _commands_CommandStack__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./commands/CommandStack */ "./public/js/commands/CommandStack.js");
 /* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 var storage = (__webpack_require__(/*! ../../common/js/BackendStorage */ "../common/public/js/BackendStorage.js")["default"])(_configuration__WEBPACK_IMPORTED_MODULE_1__["default"]);
-
 var Toolbar = /*#__PURE__*/function () {
   function Toolbar(app, view, elementId, permissions) {
     var _this = this;
-
     _classCallCheck(this, Toolbar);
-
     this.html = $(elementId);
     this.app = app;
     this.view = view;
@@ -5961,13 +3569,11 @@ var Toolbar = /*#__PURE__*/function () {
     this.saveButton = $("#editorFileSave");
     this.saveButton.off("click").on("click", function () {
       _this.saveButton.tooltip("hide");
-
       app.fileSave();
     });
     this.shareButton = $("#editorFileShare");
     this.shareButton.off("click").on("click", function () {
       _this.shareButton.tooltip("hide");
-
       if (_this.app.hasUnsavedChanges) {
         // File must be saved before sharing
         app.fileSave("File must be saved before you can share it").then(function () {
@@ -5978,11 +3584,9 @@ var Toolbar = /*#__PURE__*/function () {
       }
     });
     this.pdfButton = $("#editorFileToPDF");
-
     if (permissions.sheets.pdf || permissions.sheets.global.pdf) {
       this.pdfButton.off("click").on("click", function () {
         var file = app.currentFile;
-
         if (_this.app.hasUnsavedChanges && (file.scope === "global" && permissions.sheets.global.update === true || file.scope === "user" && permissions.sheets.update === true)) {
           // File must be save before sharing
           app.fileSave("File must be saved before you can export it to PDF").then(function () {
@@ -6000,10 +3604,10 @@ var Toolbar = /*#__PURE__*/function () {
       });
     } else {
       this.pdfButton.hide();
-    } // enable the tooltip for all buttons
+    }
+
+    // enable the tooltip for all buttons
     //
-
-
     $('*[data-toggle="tooltip"]').tooltip({
       placement: "bottom",
       container: "body",
@@ -6012,8 +3616,9 @@ var Toolbar = /*#__PURE__*/function () {
         hide: 10
       },
       html: true
-    }); // must delegate event from parent DOM because of the dynamic property of the CSS selector
+    });
 
+    // must delegate event from parent DOM because of the dynamic property of the CSS selector
     $(".toolbar").off("#editUndo").delegate("#editUndo:not(.disabled)", "click", function () {
       _commands_CommandStack__WEBPACK_IMPORTED_MODULE_0__["default"].undo();
     }).off('#editRedo').delegate("#editRedo:not(.disabled)", "click", function () {
@@ -6021,13 +3626,13 @@ var Toolbar = /*#__PURE__*/function () {
     });
     this.stackChanged();
   }
-
   _createClass(Toolbar, [{
     key: "stackChanged",
     value: function stackChanged(event) {
       this.pdfButton.hide();
-      this.shareButton.hide(); // check the permission if the current file is "user" scope
+      this.shareButton.hide();
 
+      // check the permission if the current file is "user" scope
       if (this.app.getDocument() !== null) {
         if (this.app.currentFile.scope === "user") {
           if (this.permissions.sheets.pdf === true) {
@@ -6038,12 +3643,10 @@ var Toolbar = /*#__PURE__*/function () {
             this.pdfButton.show();
           }
         }
-
         if (this.permissions.featureset.share) {
           this.shareButton.show();
         }
       }
-
       if (this.app.hasModifyPermissionForCurrentFile()) {
         $("#editUndo, #editRedo").show();
         this.pdfButton.show();
@@ -6055,10 +3658,8 @@ var Toolbar = /*#__PURE__*/function () {
       }
     }
   }]);
-
   return Toolbar;
 }();
-
 
 
 /***/ }),
@@ -6077,41 +3678,31 @@ var Toolbar = /*#__PURE__*/function () {
  * usage:
  * Mousetrap.bindGlobal('ctrl+s', _saveChanges);
  */
-
 /* global Mousetrap:true */
 (function (Mousetrap) {
   var _globalCallbacks = {};
   var _originalStopCallback = Mousetrap.prototype.stopCallback;
-
   Mousetrap.prototype.stopCallback = function (e, element, combo, sequence) {
     var self = this;
-
     if (self.paused) {
       return true;
     }
-
     if (_globalCallbacks[combo] || _globalCallbacks[sequence]) {
       return false;
     }
-
     return _originalStopCallback.call(self, e, element, combo);
   };
-
   Mousetrap.prototype.bindGlobal = function (keys, callback, action) {
     var self = this;
     self.bind(keys, callback, action);
-
     if (keys instanceof Array) {
       for (var i = 0; i < keys.length; i++) {
         _globalCallbacks[keys[i]] = true;
       }
-
       return;
     }
-
     _globalCallbacks[keys] = true;
   };
-
   Mousetrap.init();
 })(Mousetrap);
 
@@ -6128,31 +3719,24 @@ var Toolbar = /*#__PURE__*/function () {
  * this allows you to enable or disable keyboard shortcuts
  * without having to reset Mousetrap and rebind everything
  */
-
 /* global Mousetrap:true */
 (function (Mousetrap) {
   var _originalStopCallback = Mousetrap.prototype.stopCallback;
-
   Mousetrap.prototype.stopCallback = function (e, element, combo) {
     var self = this;
-
     if (self.paused) {
       return true;
     }
-
     return _originalStopCallback.call(self, e, element, combo);
   };
-
   Mousetrap.prototype.pause = function () {
     var self = this;
     self.paused = true;
   };
-
   Mousetrap.prototype.unpause = function () {
     var self = this;
     self.paused = false;
   };
-
   Mousetrap.init();
 })(Mousetrap);
 
@@ -6173,29 +3757,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./commands/CommandStack */ "./public/js/commands/CommandStack.js");
 /* harmony import */ var _commands_State__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./commands/State */ "./public/js/commands/State.js");
 /* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
 
 var shortid = __webpack_require__(/*! short-uuid */ "./node_modules/short-uuid/index.js");
-
 var Page = (__webpack_require__(/*! ./model/page */ "./public/js/model/page.js")["default"]);
-
 var MarkdownEditor = (__webpack_require__(/*! ./editor/markdown/editor */ "./public/js/editor/markdown/editor.js")["default"]);
-
 var BrainEditor = (__webpack_require__(/*! ./editor/brain/editor */ "./public/js/editor/brain/editor.js")["default"]);
-
 var ImageEditor = (__webpack_require__(/*! ./editor/image/editor */ "./public/js/editor/image/editor.js")["default"]);
-
 var Palette = (__webpack_require__(/*! ./palette */ "./public/js/palette.js")["default"]);
-
 var View = /*#__PURE__*/function () {
   /**
    * @constructor
@@ -6203,9 +3780,7 @@ var View = /*#__PURE__*/function () {
    */
   function View(app, id, permissions) {
     var _this = this;
-
     _classCallCheck(this, View);
-
     this.app = app;
     this.markdownEditor = new MarkdownEditor();
     this.brainEditor = new BrainEditor();
@@ -6222,109 +3797,79 @@ var View = /*#__PURE__*/function () {
       _this.onUnselect();
     }).on("click", ".sections .section", function (event) {
       var section = _this.page.get($(event.target).closest(".section").data("id"));
-
       if (section) {
         _this.onSelect(section);
       }
-
       return false;
     }).on("click", "#sectionMenuUp", function (event) {
       var id = $(event.target).data("id");
-
       var index = _this.page.index(id);
-
       if (index > 0) {
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this.app));
-
         var prev = _this.activeSection.prev();
-
         _this.activeSection.insertBefore(prev);
-
         _this.page.move(index, index - 1);
       }
-
       return false;
     }).on("click", "#sectionMenuDown", function (event) {
       var id = $(event.target).data("id");
-
       var index = _this.page.index(id);
-
       if (index < _this.page.length - 1) {
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this.app));
-
         var prev = _this.activeSection.next();
-
         _this.activeSection.insertAfter(prev);
-
         _this.page.move(index, index + 1);
       }
-
       return false;
     }).on("dblclick", ".sections .section", function (event) {
       var section = _this.page.get($(event.target).closest(".section").data("id"));
-
       if (section) {
         _this.onSelect(section);
-
         _this.onEdit(section);
       }
-
       return false;
     }).on("click", "#sectionMenuEdit", function (event) {
       _this.onEdit(_this.page.get($(event.target).data("id")));
-
       return false;
     }).on("click", "#sectionMenuDelete", function (event) {
       _this.onDelete(_this.page.get($(event.target).data("id")));
-
       return false;
     }).on("click", "#sectionMenuCommitEdit", function (event) {
       _this.onCommitEdit(_this.page.get($(event.target).data("id")));
-
       return false;
     }).on("click", "#sectionMenuCancelEdit", function (event) {
       _this.onCancelEdit();
-
       return false;
     }).on("click", "#sectionMenuInsertImage", function (event) {
       var section = _this.addImage($(event.target).data("index"));
-
       if (section) {
         _this.onSelect(section);
-
         _this.onEdit(section);
       }
-
       return false;
     }).on("click", "#sectionMenuInsertMarkdown", function (event) {
       var section = _this.addMarkdown($(event.target).data("index"));
-
       if (section) {
         _this.onSelect(section);
-
         _this.onEdit(section);
       }
-
       return false;
     }).on("click", "#sectionMenuInsertBrain", function (event) {
       var section = _this.addBrain($(event.target).data("index"));
-
       if (section) {
         _this.onSelect(section);
-
         _this.onEdit(section);
       }
-
       return false;
     });
   }
-
   _createClass(View, [{
     key: "setPage",
     value: function setPage(page) {
       // commit the current changes if an editor is active
-      this.onCommitEdit(); // scroll to top
+      this.onCommitEdit();
 
+      // scroll to top
       $(".content").scrollTop(0);
       $(".pageElement").removeClass("selected");
       $(".pageElement[data-page='".concat(page.id, "']")).addClass("selected");
@@ -6343,39 +3888,30 @@ var View = /*#__PURE__*/function () {
       if (page === this.page) {
         var index = this.app.getDocument().index(page);
         this.onCommitEdit();
-
         if (index > 0) {
           var newPage = this.app.getDocument().get(index - 1);
           this.setPage(newPage);
         } else if (this.app.getDocument().length > 1) {
           var _newPage = this.app.getDocument().get(1);
-
           this.setPage(_newPage);
         }
       }
-
       this.app.getDocument().removePage(page);
     }
   }, {
     key: "addPage",
     value: function addPage() {
       var _this2 = this;
-
       // commit the current changes if an editor is active
       this.onCommitEdit();
       _common_js_InputPrompt__WEBPACK_IMPORTED_MODULE_0__["default"].show("Add new Chapter", "Chapter name").then(function (value) {
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this2.app));
         var page = new Page();
         page.name = value;
-
         _this2.app.getDocument().push(page);
-
         _this2.setPage(page);
-
         var section = _this2.addMarkdown(0);
-
         _this2.onSelect(section);
-
         _this2.onEdit(section);
       });
     }
@@ -6391,13 +3927,11 @@ var View = /*#__PURE__*/function () {
         content: "## Header"
       };
       this.page.add(section, index);
-
       if (typeof index === "number") {
         this.render(this.page);
       } else {
         this.renderMarkdown(section, index);
       }
-
       return section;
     }
   }, {
@@ -6412,13 +3946,11 @@ var View = /*#__PURE__*/function () {
         content: null
       };
       this.page.add(section, index);
-
       if (typeof index === "number") {
         this.render(this.page);
       } else {
         this.renderBrain(section, index);
       }
-
       return section;
     }
   }, {
@@ -6433,20 +3965,17 @@ var View = /*#__PURE__*/function () {
         content: null
       };
       this.page.add(section, index);
-
       if (typeof index === "number") {
         this.render(this.page);
       } else {
         this.renderImage(section, index);
       }
-
       return section;
     }
   }, {
     key: "render",
     value: function render(page) {
       var _this3 = this;
-
       // inject the host for the rendered section
       this.html.html($("<div class='sections'></div>"));
       this.renderSpacer(0);
@@ -6454,25 +3983,17 @@ var View = /*#__PURE__*/function () {
         switch (section.type) {
           case "brain":
             _this3.renderBrain(section);
-
             break;
-
           case "markdown":
             _this3.renderMarkdown(section);
-
             break;
-
           case "image":
             _this3.renderImage(section);
-
             break;
-
           default:
             _this3.renderUnknown(section);
-
             break;
         }
-
         _this3.renderSpacer(index + 1);
       });
     }
@@ -6481,14 +4002,12 @@ var View = /*#__PURE__*/function () {
     value: function renderMarkdown(section) {
       var errorCSS = "";
       var markdown = section.content;
-
       try {
         markdown = this.markdownEditor.render(section.content);
       } catch (error) {
         console.log(error);
         errorCSS = "error";
       }
-
       this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section ").concat(errorCSS, "'>\n           <div class=\"sectionContent markdownRendering\" data-type=\"markdown\">").concat(markdown, "</div>\n        </div>\n      "));
     }
   }, {
@@ -6525,7 +4044,6 @@ var View = /*#__PURE__*/function () {
       if (this.currentEditor) {
         return;
       }
-
       this.onUnselect();
       this.activeSection = $(".section[data-id='".concat(section.id, "']"));
       this.activeSection.addClass('activeSection');
@@ -6537,11 +4055,9 @@ var View = /*#__PURE__*/function () {
       if (this.currentEditor) {
         return;
       }
-
       if (this.activeSection === null) {
         return;
       }
-
       $(".activeSection .tinyFlyoverMenu").remove();
       this.activeSection.removeClass("activeSection");
       this.activeSection = null;
@@ -6552,22 +4068,18 @@ var View = /*#__PURE__*/function () {
       if (this.currentEditor) {
         return;
       }
-
       var type = section.type;
       var menu = $(".activeSection .tinyFlyoverMenu");
       menu.html("\n          <div data-id=\"".concat(section.id, "\" id=\"sectionMenuCommitEdit\" class='fa fa-check-square-o' ></div>\n          <div data-id=\"").concat(section.id, "\" id=\"sectionMenuCancelEdit\" class='fa fa-minus-square-o' ></div>\n        "));
-
       switch (type) {
         case 'markdown':
           this.currentEditor = this.markdownEditor.inject(section);
           $(".sections").removeClass("activeSection");
           break;
-
         case 'brain':
           this.currentEditor = this.brainEditor.inject(section);
           $(".sections").removeClass("activeSection");
           break;
-
         case 'image':
           this.currentEditor = this.imageEditor.inject(section);
           $(".sections").removeClass("activeSection");
@@ -6585,18 +4097,14 @@ var View = /*#__PURE__*/function () {
     key: "onCommitEdit",
     value: function onCommitEdit() {
       var _this4 = this;
-
       if (this.currentEditor === null) {
         return;
       }
-
       _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](this.app));
       this.currentEditor.commit().then(function () {
         _this4.currentEditor = null;
         $(".editorContainerSelector").remove();
-
         _this4.render(_this4.page);
-
         _this4.palette.render();
       });
     }
@@ -6604,17 +4112,13 @@ var View = /*#__PURE__*/function () {
     key: "onCancelEdit",
     value: function onCancelEdit() {
       var _this5 = this;
-
       if (this.currentEditor === null) {
         return;
       }
-
       this.currentEditor.cancel().then(function () {
         $(".editorContainerSelector").remove();
         _this5.currentEditor = null;
-
         _this5.render(_this5.page);
-
         _this5.palette.render();
       });
     }
@@ -6622,7 +4126,6 @@ var View = /*#__PURE__*/function () {
     key: "showWelcomeMessage",
     value: function showWelcomeMessage() {
       var _this6 = this;
-
       var tmpl = $("#welcomeTemplate").html();
       $("#editor .content").html(tmpl);
       $("#welcomeNewDocument").on("click", function () {
@@ -6632,6 +4135,7 @@ var View = /*#__PURE__*/function () {
         _this6.app.load("/basic/math/binary-addition.sheet", "global");
       });
     }
+
     /**
      * @method
      * Sent when an event occurs on the command stack. draw2d.command.CommandStackEvent.getDetail()
@@ -6641,26 +4145,21 @@ var View = /*#__PURE__*/function () {
      *
      * @param {draw2d.command.CommandStackEvent} event
      **/
-
   }, {
     key: "stackChanged",
     value: function stackChanged(event) {
       $("#editUndo").addClass("disabled");
       $("#editRedo").addClass("disabled");
-
       if (event.getStack().canUndo()) {
         $("#editUndo").removeClass("disabled");
       }
-
       if (event.getStack().canRedo()) {
         $("#editRedo").removeClass("disabled");
       }
     }
   }]);
-
   return View;
 }();
-
 
 
 /***/ }),
@@ -6676,15 +4175,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ AppSwitch)
 /* harmony export */ });
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var AppSwitch = /*#__PURE__*/_createClass(function AppSwitch(permissions) {
   _classCallCheck(this, AppSwitch);
-
   var appSwitchButtons = $(" \n            <label class=\"dropdown\" >\n\n                <span class=\"image-button\"  data-toggle=\"dropdown\">\n                  <img  src=\"../common/images/toolbar_app_switch.svg\" class=\"svg\"/>\n                </span>\n\n                <ul class=\"dropdown-menu\" role=\"menu\" >\n                    <form class=\"form-horizontal\" role=\"form\">\n\n                      <label class=\"applicationSwitchHome image-button\">\n                        <img src=\"../common/images/app_home.svg\"/>\n                        <div>Home<br>&nbsp;</div>\n                      </label>\n\n                      <label class=\"applicationSwitchSimulator image-button\">\n                        <img src=\"../common/images/app_simulator.svg\"/>\n                        <div>Circuit<br>Simulator</div>\n                      </label>\n\n                      <label class=\"applicationSwitchAuthor image-button\" >\n                        <img src=\"../common/images/app_lessons.svg\"/>\n                        <div>Lesson<br>Author</div>\n                      </label>\n\n                      <label class=\"applicationSwitchDesigner image-button\" >\n                        <img src=\"../common/images/app_designer.svg\"/>\n                        <div>Component<br>Designer</div>\n                      </label>\n                      \n                      <label class=\"applicationSwitchUser image-button\" >\n                        <img src=\"../common/images/app_user.svg\"/>\n                        <div>User<br>Management</div>\n                      </label>\n                      \n                      <label class=\"applicationSwitchGroups image-button\" >\n                        <img src=\"../common/images/app_groups.svg\"/>\n                        <div>My Groups<br>&nbsp;</div>\n                      </label>\n                      \n                    </form>\n                </ul>   \n                         \n         </span>\n    ");
   $(".applicationSwitch").prepend(appSwitchButtons);
   $(".applicationSwitchDesigner").off("click").on("click", function () {
@@ -6699,7 +4197,6 @@ var AppSwitch = /*#__PURE__*/_createClass(function AppSwitch(permissions) {
   $(".applicationSwitchHome").off("click").on("click", function () {
     window.open("../home", "home");
   });
-
   if (permissions.featureset.usermanagement === true) {
     $(document).on("click", ".applicationSwitchUser", function () {
       window.open("../user", "user");
@@ -6707,7 +4204,6 @@ var AppSwitch = /*#__PURE__*/_createClass(function AppSwitch(permissions) {
   } else {
     $(".applicationSwitchUser").remove();
   }
-
   if (permissions.featureset.records === true) {
     $(document).on("click", ".applicationSwitchGroups", function () {
       window.open("../groups", "groups");
@@ -6716,7 +4212,6 @@ var AppSwitch = /*#__PURE__*/_createClass(function AppSwitch(permissions) {
     $(".applicationSwitchGroups").remove();
   }
 });
-
 
 
 /***/ }),
@@ -6732,38 +4227,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ AuthorPage)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+var axios = __webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs");
 var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
-
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
-
 var AuthorPage = /*#__PURE__*/function () {
   function AuthorPage(containerId, file, token) {
     _classCallCheck(this, AuthorPage);
-
     this.file = file;
     this.containerId = containerId;
     this.token = token;
   }
-
   _createClass(AuthorPage, [{
     key: "render",
     value: function render() {
       var _this = this;
-
       var additionalParam = "";
-
       if (this.token) {
         additionalParam = "&token=" + this.token;
       }
-
       axios.get("../sheets/global/get?filePath=".concat(this.file).concat(additionalParam)).then(function (response) {
         $(_this.containerId).html("");
         var pages = response.data.pages;
@@ -6775,14 +4262,10 @@ var AuthorPage = /*#__PURE__*/function () {
             switch (section.type) {
               case "brain":
                 _this.renderBrain(container, section);
-
                 break;
-
               case "markdown":
                 _this.renderMarkdown(container, section);
-
                 break;
-
               default:
                 break;
             }
@@ -6803,10 +4286,8 @@ var AuthorPage = /*#__PURE__*/function () {
       container.append("<div class=\"imageRendering\"><img src=\"".concat(section.content.image, "\"></div>"));
     }
   }]);
-
   return AuthorPage;
 }();
-
 
 
 /***/ }),
@@ -6822,42 +4303,37 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 var BackendStorage = /*#__PURE__*/function () {
   function BackendStorage(conf) {
     _classCallCheck(this, BackendStorage);
-
     this.conf = conf;
   }
-
   _createClass(BackendStorage, [{
     key: "getFiles",
     value: function getFiles(path, scope) {
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.conf.backend[scope].list(path)).then(function (response) {
-        var files = response.data.files; // sort the result
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.conf.backend[scope].list(path)).then(function (response) {
+        var files = response.data.files;
+
+        // sort the result
         // Directories are always on top
         //
-
         files.sort(function (a, b) {
           if (a.type === b.type) {
             if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
             if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
             return 0;
           }
-
           if (a.type === "dir") {
             return -1;
           }
-
           return 1;
         });
         return files;
@@ -6869,7 +4345,7 @@ var BackendStorage = /*#__PURE__*/function () {
   }, {
     key: "shareFile",
     value: function shareFile(fileName, scope) {
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().get(this.conf.backend[scope].share(fileName));
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].get(this.conf.backend[scope].share(fileName));
     }
   }, {
     key: "saveFile",
@@ -6878,7 +4354,7 @@ var BackendStorage = /*#__PURE__*/function () {
         filePath: fileName,
         content: JSON.stringify(json, undefined, 2)
       };
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.conf.backend[scope].save, data);
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.conf.backend[scope].save, data);
     }
   }, {
     key: "deleteFile",
@@ -6886,7 +4362,7 @@ var BackendStorage = /*#__PURE__*/function () {
       var data = {
         filePath: fileName
       };
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.conf.backend[scope]["delete"], data);
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.conf.backend[scope]["delete"], data);
     }
   }, {
     key: "createFolder",
@@ -6894,12 +4370,12 @@ var BackendStorage = /*#__PURE__*/function () {
       var data = {
         filePath: folderName
       };
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().post(this.conf.backend[scope].folder, data);
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].post(this.conf.backend[scope].folder, data);
     }
   }, {
     key: "loadUrl",
     value: function loadUrl(url) {
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().get(url).then(function (response) {
+      return axios__WEBPACK_IMPORTED_MODULE_0__["default"].get(url).then(function (response) {
         return response.data;
       });
     }
@@ -6907,17 +4383,14 @@ var BackendStorage = /*#__PURE__*/function () {
     key: "sanitize",
     value: function sanitize(file) {
       var sanitize = __webpack_require__(/*! sanitize-filename */ "./node_modules/sanitize-filename/index.js");
-
       file = sanitize(file);
-      file = file.replace(this.conf.fileSuffix, ""); // I don't like dots in the name to. Is not an security issue...but I don't like it
-
+      file = file.replace(this.conf.fileSuffix, "");
+      // I don't like dots in the name to. Is not an security issue...but I don't like it
       return file.replace(RegExp("[.]", "g"), "");
     }
   }]);
-
   return BackendStorage;
 }();
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function (conf) {
   return new BackendStorage(conf);
 });
@@ -6958,31 +4431,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Values */ "../common/public/js/Values.js");
 
 
-
 var locator = (__webpack_require__(/*! ./PortDecorationCenterLocator */ "../common/public/js/PortDecorationCenterLocator.js")["default"]);
-
 var growPolicy = new draw2d.policy.port.IntrusivePortsFeedbackPolicy();
 growPolicy.growFactor = 1.5;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.InputPort.extend({
   NAME: "DecoratedInputPort",
   init: function init(attr, setter, getter) {
     var _this = this;
-
     this.hasChanged = false;
-
     this._super($.extend(attr, {
       coronaWidth: 2
     }), setter, getter);
-
     this.decoration = new _MarkerFigure__WEBPACK_IMPORTED_MODULE_0__["default"]();
     this.add(this.decoration, new draw2d.layout.locator.LeftLocator({
       margin: 8
     }));
     this.on("disconnect", function (emitter, event) {
-      _this.decoration.setVisible(_this.getConnections().getSize() === 0); // default value of a not connected port is always HIGH
+      _this.decoration.setVisible(_this.getConnections().getSize() === 0);
+
+      // default value of a not connected port is always HIGH
       //
-
-
       if (_this.getConnections().getSize() === 0) {
         _this.setValue(_Values__WEBPACK_IMPORTED_MODULE_1__["default"].DIGITAL_HIGH);
       }
@@ -6995,8 +4463,9 @@ growPolicy.growFactor = 1.5;
     });
     this.on("drag", function (emitter, event) {
       _this.decoration.setVisible(false);
-    }); // a port can have a value. Useful for workflow engines or circuit diagrams
+    });
 
+    // a port can have a value. Useful for workflow engines or circuit diagrams
     this.setValue(_Values__WEBPACK_IMPORTED_MODULE_1__["default"].DIGITAL_HIGH);
     this.hasChanged = false;
     this.installEditPolicy(growPolicy);
@@ -7005,11 +4474,9 @@ growPolicy.growFactor = 1.5;
       stroke: 0,
       bgColor: "#909090"
     });
-
     circle.hitTest = function () {
       return false;
     };
-
     this.add(circle, locator);
   },
   useDefaultValue: function useDefaultValue() {
@@ -7017,15 +4484,12 @@ growPolicy.growFactor = 1.5;
   },
   setValue: function setValue() {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _Values__WEBPACK_IMPORTED_MODULE_1__["default"].DIGITAL_LOW;
-
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean") {
       value = value ? 5.0 : 0.0;
     }
-
     this.hasChanged = this.value !== value;
-
     this._super(value);
   },
   hasChangedValue: function hasChangedValue() {
@@ -7037,7 +4501,6 @@ growPolicy.growFactor = 1.5;
   hasFallingEdge: function hasFallingEdge() {
     return this.hasChangedValue() && !this.getValue();
   },
-
   /**
    * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
    * v <= 1.5volt  => FALSE
@@ -7048,7 +4511,6 @@ growPolicy.growFactor = 1.5;
   getBooleanValue: function getBooleanValue() {
     return this.getValue() > 1.5;
   },
-
   /**
    *
    * Set Canvas must be overridden because all "children" must be painted BEHIND the main figures.
@@ -7065,24 +4527,20 @@ growPolicy.growFactor = 1.5;
       if (this.isSelected()) {
         this.unselect();
       }
-
       this.shape.remove();
       this.shape = null;
     }
-
     this.children.each(function (i, e) {
       e.figure.setCanvas(canvas);
     });
     this.canvas = canvas;
-
     if (this.canvas !== null) {
       this.getShapeElement();
-    } // reset the attribute cache. We must start by paint all attributes
+    }
+
+    // reset the attribute cache. We must start by paint all attributes
     //
-
-
     this.lastAppliedAttributes = {};
-
     if (canvas === null) {
       this.stopTimer();
     } else {
@@ -7090,7 +4548,6 @@ growPolicy.growFactor = 1.5;
         this.startTimer(this.timerInterval);
       }
     }
-
     return this;
   }
 }));
@@ -7110,9 +4567,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Values__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Values */ "../common/public/js/Values.js");
 
-
 var locator = (__webpack_require__(/*! ./PortDecorationCenterLocator */ "../common/public/js/PortDecorationCenterLocator.js")["default"]);
-
 var growPolicy = new draw2d.policy.port.IntrusivePortsFeedbackPolicy();
 growPolicy.growFactor = 1.5;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.OutputPort.extend({
@@ -7121,33 +4576,27 @@ growPolicy.growFactor = 1.5;
     this._super($.extend(attr, {
       coronaWidth: 2
     }), setter, getter);
-
     this.installEditPolicy(growPolicy);
     var circle = new draw2d.shape.basic.Circle({
       radius: 2,
       stroke: 0,
       bgColor: "#909090"
     });
-
     circle.hitTest = function () {
       return false;
     };
-
     this.add(circle, locator);
     this.setValue(_Values__WEBPACK_IMPORTED_MODULE_0__["default"].DIGITAL_LOW);
   },
   setValue: function setValue() {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _Values__WEBPACK_IMPORTED_MODULE_0__["default"].DIGITAL_LOW;
-
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean") {
       value = value ? 5.0 : 0.0;
     }
-
     this._super(value);
   },
-
   /**
    * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
    * v <= 1.5volt  => FALSE
@@ -7158,7 +4607,6 @@ growPolicy.growFactor = 1.5;
   getBooleanValue: function getBooleanValue() {
     return this.getValue() > 1.5;
   },
-
   /**
    *
    * Set Canvas must be overridden because all "children" must be painted BEHIND the main figures.
@@ -7175,27 +4623,24 @@ growPolicy.growFactor = 1.5;
       if (this.isSelected()) {
         this.unselect();
       }
-
       this.shape.remove();
       this.shape = null;
-    } // child must be init BEFORE the main shape. Now the child is behind the main shape and
+    }
+
+    // child must be init BEFORE the main shape. Now the child is behind the main shape and
     // this is exact the behaviour we want.
     //
-
-
     this.children.each(function (i, e) {
       e.figure.setCanvas(canvas);
     });
     this.canvas = canvas;
-
     if (this.canvas !== null) {
       this.getShapeElement();
-    } // reset the attribute cache. We must start by paint all attributes
+    }
+
+    // reset the attribute cache. We must start by paint all attributes
     //
-
-
     this.lastAppliedAttributes = {};
-
     if (canvas === null) {
       this.stopTimer();
     } else {
@@ -7203,7 +4648,6 @@ growPolicy.growFactor = 1.5;
         this.startTimer(this.timerInterval);
       }
     }
-
     return this;
   }
 }));
@@ -7223,26 +4667,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var hogan_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hogan.js */ "./node_modules/hogan.js/lib/hogan.js");
 /* harmony import */ var hogan_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(hogan_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _PopConfirm__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PopConfirm */ "../common/public/js/PopConfirm.js");
-/* harmony import */ var _PopConfirm__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_PopConfirm__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! path */ "./node_modules/path/path.js");
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _InputPrompt__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./InputPrompt */ "../common/public/js/InputPrompt.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _PopConfirm__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PopConfirm */ "../common/public/js/PopConfirm.js");
+/* harmony import */ var _PopConfirm__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_PopConfirm__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! path */ "./node_modules/path/path.js");
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _InputPrompt__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./InputPrompt */ "../common/public/js/InputPrompt.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 
 
@@ -7256,14 +4695,12 @@ var Files = /*#__PURE__*/function () {
    */
   function Files(app, conf, permissions) {
     _classCallCheck(this, Files);
-
     $("#files_tab a").on("click", this.onShow.bind(this));
     $("body").append(" \n        <script id=\"filesTemplate\" type=\"text/x-jsrender\">\n        <div class=\"fileOperations\">\n            <div data-folder=\"{{folder}}\" class='fileOperationsFolderAdd material-button' ><i class=\"fa fa-plus\"></i> ".concat(conf.fileScreen.addFolderButton, "</div>\n            <div data-folder=\"{{folder}}\" class='fileOperationsDocumentAdd material-button' ><i class=\"fa fa-plus\"></i> ").concat(conf.fileScreen.addFileButton, "</div>\n        </div>\n        <div>Folder: {{folder}}</div>\n        <ul class=\"list-group col-lg-10 col-md-10 col-xs-10 \">\n        {{#files}}\n          <li class=\"list-group-item\"  \n                  data-scope=\"{{scope}}\"  \n                  data-type=\"{{type}}\"  \n                  data-delete=\"{{delete}}\" \n                  data-update=\"{{update}}\" \n                  data-folder=\"{{folder}}\" \n                  data-title=\"{{title}}\" \n                  data-name=\"{{folder}}{{name}}\"\n                  >\n            <div class=\"media thumb\">\n               {{#dir}}\n                  <a class=\"media-left\">\n                  <div style=\"width: 48px; height: 48px\">\n                    <img style=\"width:100%; height:100%; object-fit: contain\"  src=\"../common/images/files_folder{{back}}.svg\">\n                  </div>\n                  </a>\n               {{/dir}}\n               {{^dir}}\n                  <a class=\"thumbnail media-left\">\n                  <div style=\"width: 48px; height: 48px\">\n                    <img style=\"width:100%; height:100%; object-fit: contain\" src=\"{{image}}\">\n                  </div>\n                  </a>\n               {{/dir}}\n              <div class=\"media-body\">\n                <h4 class=\"media-heading\">{{title}}</h4>\n                {{#update}}\n                <span class=\"editIcon\"><i class=\"fa fa-edit\"></i></span>\n                {{/update}}\n              </div>\n            </div>\n            {{#delete}}\n                <div class=\"deleteIcon\" data-toggle=\"confirmation\"><i class=\"fa fa-trash\"></i></div>\n            {{/delete}}   \n          </li>\n        {{/files}}\n        </ul>\n        </script>\n    "));
     this.conf = conf;
     this.app = app;
     this.render(conf, permissions);
   }
-
   _createClass(Files, [{
     key: "onShow",
     value: function onShow() {
@@ -7276,7 +4713,6 @@ var Files = /*#__PURE__*/function () {
         console.log("click");
         var w1 = $("#userFilesTab").outerWidth();
         var w2 = $("#globalFilesTab").outerWidth();
-
         if ($("#userFilesTab.active").length === 1) {
           $("span.yellow-bar").css({
             "left": "0",
@@ -7293,8 +4729,7 @@ var Files = /*#__PURE__*/function () {
   }, {
     key: "refresh",
     value: function refresh(conf, permissions, file) {
-      var directory = path__WEBPACK_IMPORTED_MODULE_3___default().dirname(file.name);
-
+      var directory = path__WEBPACK_IMPORTED_MODULE_2___default().dirname(file.name);
       if (file.scope === "user") {
         this.initPane("user", "#userFiles", conf.backend.user, permissions, directory);
       } else {
@@ -7305,15 +4740,12 @@ var Files = /*#__PURE__*/function () {
     key: "render",
     value: function render(conf, permissions) {
       var _this2 = this;
-
       var storage = (__webpack_require__(/*! ./BackendStorage */ "../common/public/js/BackendStorage.js")["default"])(conf);
-
       this.initTabs(permissions);
       this.initPane("user", "#userFiles", conf.backend.user, permissions, "");
       this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, "");
       socket.off("file:generated").on("file:generated", function (msg) {
         var preview = $(".list-group-item[data-name='" + msg.filePath + "'] img");
-
         if (preview.length === 0) {
           _this2.render(conf, permissions);
         } else {
@@ -7325,43 +4757,37 @@ var Files = /*#__PURE__*/function () {
       });
       $(document).on("click", "#userFiles .fileOperationsFolderAdd", function (event) {
         var folder = $(event.target).data("folder") || "";
-        _InputPrompt__WEBPACK_IMPORTED_MODULE_4__["default"].show("Create Library", "Name").then(function (value) {
+        _InputPrompt__WEBPACK_IMPORTED_MODULE_3__["default"].show("Create Library", "Name").then(function (value) {
           storage.createFolder(folder + value, "user");
-
           _this2.initPane("user", "#userFiles", conf.backend.user, permissions, folder);
         });
       }).on("click", "#globalFiles .fileOperationsFolderAdd", function (event) {
         var folder = $(event.target).data("folder") || "";
-        _InputPrompt__WEBPACK_IMPORTED_MODULE_4__["default"].show("Create Library", "Name").then(function (value) {
+        _InputPrompt__WEBPACK_IMPORTED_MODULE_3__["default"].show("Create Library", "Name").then(function (value) {
           storage.createFolder(folder + value, "global");
-
           _this2.initPane("global", "#globalFiles", conf.backend.global, permissions.global, folder);
         });
       }).on("click", "#userFiles .fileOperationsDocumentAdd", function (event) {
         var folder = $(event.target).data("folder") || "";
-
         _this2.app.fileNew(folder + conf.fileNew, "user");
-
         _this2.app.fileSave();
       }).on("click", "#globalFiles .fileOperationsDocumentAdd", function (event) {
         var folder = $(event.target).data("folder") || "";
-
         _this2.app.fileNew(folder + conf.fileNew, "global");
-
         _this2.app.fileSave();
       });
     }
   }, {
     key: "initTabs",
     value: function initTabs(permissions) {
-      var fileScreen = this; // user can see private files and the demo files
+      var fileScreen = this;
+      // user can see private files and the demo files
       //
-
       if (permissions.list === true && permissions.global.list === true) {
         $('#material-tabs').each(function () {
           var $active,
-              $content,
-              $links = $(this).find('a');
+            $content,
+            $links = $(this).find('a');
           $active = $($links[0]);
           $active.addClass('active');
           $content = $($active[0].hash);
@@ -7396,15 +4822,12 @@ var Files = /*#__PURE__*/function () {
     key: "initPane",
     value: function initPane(scope, paneSelector, backendConf, permissions, initialPath) {
       var storage = (__webpack_require__(/*! ./BackendStorage */ "../common/public/js/BackendStorage.js")["default"])(this.conf);
-
       if (permissions.list === false) {
         return;
       }
-
-      var _this = this; // load demo files
+      var _this = this;
+      // load demo files
       //
-
-
       function loadPane(path) {
         if (path === "/") path = "";
         storage.getFiles(path, scope).then(function (files) {
@@ -7420,10 +4843,9 @@ var Files = /*#__PURE__*/function () {
               image: backendConf.image(file.filePath)
             });
           });
-
           if (path.length !== 0) {
             files.unshift({
-              name: path__WEBPACK_IMPORTED_MODULE_3___default().dirname(path),
+              name: path__WEBPACK_IMPORTED_MODULE_2___default().dirname(path),
               folder: "",
               // important. Otherwise Hogan makes a lookup fallback to the root element
               type: "dir",
@@ -7435,18 +4857,15 @@ var Files = /*#__PURE__*/function () {
               title: ".."
             });
           }
-
           var compiled = hogan_js__WEBPACK_IMPORTED_MODULE_0___default().compile($("#filesTemplate").html());
           var output = compiled.render({
             folder: path,
             files: files
           });
           $(paneSelector).html($(output));
-
           if (permissions.create === false) {
             $(paneSelector + " .fileOperations").remove();
           }
-
           if (permissions["delete"] === true) {
             $(paneSelector + " .deleteIcon").on("click", function (event) {
               var $el = $(event.target).closest(".list-group-item");
@@ -7464,12 +4883,11 @@ var Files = /*#__PURE__*/function () {
               title: "Delete File?",
               content: "",
               placement: "bottom" // (top, right, bottom, left)
-
             });
-          } // Rename of a file or folder is the very same as delete -> create
+          }
+
+          // Rename of a file or folder is the very same as delete -> create
           // I this case the user must have the two permissions to rename a folder or file
-
-
           if (permissions["delete"] === true && permissions.create === true) {
             $(paneSelector + " .list-group-item .editIcon").off("click").on("click", function (event) {
               // check if the editor is already visible. We can do on/off of events or do it this way....
@@ -7478,7 +4896,6 @@ var Files = /*#__PURE__*/function () {
                 $("#filenameHelpBlock").html("press ESC if you want abort the rename operation");
                 return;
               }
-
               Mousetrap.pause();
               var parent = $(event.currentTarget).closest(".list-group-item");
               var $el = parent.find("h4");
@@ -7492,27 +4909,25 @@ var Files = /*#__PURE__*/function () {
               $replaceWith.focus();
               $replaceWith.on("click", function () {
                 return false;
-              }); // Rename the file on the Server
-              //
+              });
 
+              // Rename the file on the Server
+              //
               function fire() {
                 Mousetrap.unpause();
                 var newName = $replaceWith.val();
-
                 if (newName !== "") {
                   if (type !== "dir") {
                     newName = storage.sanitize(newName) + _this.conf.fileSuffix;
-                  } // nothing to do
-
-
+                  }
+                  // nothing to do
                   if (newName === title) {
                     $replaceWith.remove();
                     $el.show();
                     return;
                   }
-
                   newName = folder + newName;
-                  axios__WEBPACK_IMPORTED_MODULE_1___default().post(_this.conf.backend[scope].rename, {
+                  axios__WEBPACK_IMPORTED_MODULE_4__["default"].post(_this.conf.backend[scope].rename, {
                     from: name,
                     to: newName
                   }).then(function (response) {
@@ -7531,21 +4946,19 @@ var Files = /*#__PURE__*/function () {
                   $replaceWith.remove();
                   $el.show();
                 }
-              } // Cancel the rename operation
+              }
+
+              // Cancel the rename operation
               //
-
-
               function cancel() {
                 $replaceWith.remove();
                 $el.show();
               }
-
               $replaceWith.on("keydown", function (e) {
                 switch (e.which) {
                   case 13:
                     fire();
                     break;
-
                   case 27:
                     cancel();
                     break;
@@ -7556,7 +4969,6 @@ var Files = /*#__PURE__*/function () {
               return false;
             });
           }
-
           $(paneSelector + " .list-group-item[data-type='dir'] .thumb").on("click", function (event) {
             // check if the editor is already visible. We can do on/off of events or do it this way....
             if ($(".filenameInplaceEdit").length > 0) {
@@ -7564,14 +4976,11 @@ var Files = /*#__PURE__*/function () {
               $("#filenameHelpBlock").html("press ESC if you want abort the rename operation");
               return;
             }
-
             var $el = $(event.currentTarget).parent();
             var name = $el.data("name");
-
             if (name !== "" && !name.endsWith("/")) {
               name = name + "/";
             }
-
             loadPane(name);
           });
           $(paneSelector + " .list-group-item[data-type='file']").on("click", function (event) {
@@ -7581,7 +4990,6 @@ var Files = /*#__PURE__*/function () {
               $("#filenameHelpBlock").html("press ESC if you want abort the rename operation");
               return;
             }
-
             var $el = $(event.currentTarget);
             var name = $el.data("name");
             $el.addClass("spinner");
@@ -7596,14 +5004,11 @@ var Files = /*#__PURE__*/function () {
           });
         });
       }
-
       loadPane(initialPath);
     }
   }]);
-
   return Files;
 }();
-
 
 
 /***/ }),
@@ -7619,22 +5024,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var Dialog = /*#__PURE__*/function () {
   function Dialog() {
     _classCallCheck(this, Dialog);
-
     $("body").append("\n            <div id=\"inputPromptDialog\" class=\"modal fade genericDialog\" tabindex=\"-1\">\n            <div class=\"modal-dialog \">\n              <div class=\"modal-content\">\n                <div class=\"modal-header\">\n                  <h4 class=\"media-heading\">Input Prompt</h4>\n                </div>\n                <div class=\"modal-body\">\n                  <div class=\"media\">\n                    <fieldset>\n                      <div class=\"form-group\">\n                        <div class=\"col-lg-12\">\n                          <div class=\"promptValueLabel\">Value:</div>\n                          <input type=\"text\" class=\"form-control floating-label inputPromptValue\" value=\"\" >\n                        </div>\n                      </div>\n                    </fieldset>\n                  </div>\n                </div>\n                <div class=\"modal-footer\">\n                  <button class=\"btn\" data-dismiss=\"modal\">Cancel</button>\n                  <button class=\"btn btn-primary okButton\">Create</button>\n                </div>\n              </div>\n            </div>\n          </div>\n    ");
   }
+
   /**
    */
-
-
   _createClass(Dialog, [{
     key: "show",
     value: function show(title, label) {
@@ -7650,13 +5053,13 @@ var Dialog = /*#__PURE__*/function () {
         Mousetrap.pause();
         $('#inputPromptDialog .inputPromptValue').on('keypress', function (e) {
           var key = e.charCode || e.keyCode || 0;
-
           if (key === 13) {
             $("#inputPromptDialog .okButton").click();
           }
-        }); // Save Button
-        //
+        });
 
+        // Save Button
+        //
         $("#inputPromptDialog .okButton").off('click').on("click", function () {
           Mousetrap.unpause();
           $('#inputPromptDialog').modal('hide');
@@ -7666,10 +5069,8 @@ var Dialog = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return Dialog;
 }();
-
 var dialog = new Dialog();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dialog);
 
@@ -7687,13 +5088,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _toast__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./toast */ "../common/public/js/toast.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 var Dialog = /*#__PURE__*/function () {
   /**
@@ -7702,13 +5102,11 @@ var Dialog = /*#__PURE__*/function () {
    */
   function Dialog() {
     _classCallCheck(this, Dialog);
-
     $("body").append("\n            <div id=\"linkShareDialog\" class=\"modal fade genericDialog\" tabindex=\"-1\">\n            <div class=\"modal-dialog \">\n              <div class=\"modal-content\">\n                <div class=\"modal-header\">\n                  <h4 class=\"media-heading\">Share with Others</h4>\n                </div>\n                <div class=\"modal-body\">\n                  <div class=\"media\">\n                    <div class=\"promptValueLabel\">Public Link:</div>\n                    <fieldset>\n                      <div class=\"form-group\">\n                        <div class=\"col-lg-12\">\n                          <input id=\"sharedLinkInput\" type=\"text\" class=\"form-control floating-label\" value=\"\" > <button class=\"clipboardButton\" style=\"float:right\">copy</button>\n                        </div>\n                      </div>\n                    </fieldset>\n                  </div>\n                </div>\n                <div class=\"modal-footer\">\n                  <button class=\"btn\" data-dismiss=\"modal\">Close</button>\n                </div>\n              </div>\n            </div>\n          </div>\n    ");
   }
+
   /**
    */
-
-
   _createClass(Dialog, [{
     key: "show",
     value: function show(file) {
@@ -7728,10 +5126,8 @@ var Dialog = /*#__PURE__*/function () {
       });
     }
   }]);
-
   return Dialog;
 }();
-
 var dialog = new Dialog();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dialog);
 
@@ -7769,22 +5165,19 @@ __webpack_require__.r(__webpack_exports__);
   NAME: "MarkerFigure",
   init: function init(attr, setter, getter) {
     var _this = this;
-
     this.isMouseOver = false; // indicator if the mouse is over the element
-
     this.stick = false; // indicator if the stateBFigure should always be visible
-
     this.defaultValue = true; // current selected default value for the decoration
 
     this._super($.extend({
       stroke: 0
-    }, attr), setter, getter); // figure if the decoration is not permanent visible (sticky note)
+    }, attr), setter, getter);
 
-
+    // figure if the decoration is not permanent visible (sticky note)
     this.add(this.stateA = new _MarkerStateAFigure__WEBPACK_IMPORTED_MODULE_0__["default"]({
       text: "X"
-    })); // figure if the decoration permanent visible
-
+    }));
+    // figure if the decoration permanent visible
     this.add(this.stateB = new _MarkerStateBFigure__WEBPACK_IMPORTED_MODULE_1__["default"]({
       text: "X"
     }));
@@ -7816,18 +5209,12 @@ __webpack_require__.r(__webpack_exports__);
             switch (key) {
               case "high":
                 _this.setDefaultValue(true);
-
                 _this.setStick(true);
-
                 break;
-
               case "low":
                 _this.setDefaultValue(false);
-
                 _this.setStick(true);
-
                 break;
-
               default:
                 break;
             }
@@ -7850,7 +5237,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   onMouseOver: function onMouseOver(flag) {
     this.isMouseOver = flag;
-
     if (this.visible === false) {
       return; // silently
     }
@@ -7862,20 +5248,20 @@ __webpack_require__.r(__webpack_exports__);
       this.stateA.setVisible(!this.isMouseOver);
       this.stateB.setVisible(this.isMouseOver);
     }
-
     return this;
   },
   setVisible: function setVisible(flag) {
-    this._super(flag); // update the hover/stick state of the figure
+    this._super(flag);
 
-
+    // update the hover/stick state of the figure
     this.onMouseOver(this.isMouseOver);
     return this;
   },
   setStick: function setStick(flag) {
     this.stick = flag;
-    this.onMouseOver(this.isMouseOver); // the port has only a default value if the decoration is visible
+    this.onMouseOver(this.isMouseOver);
 
+    // the port has only a default value if the decoration is visible
     this.parent.setValue(flag ? this.defaultValue : null);
     this.stateB.setTick(this.getStick());
     return this;
@@ -7890,9 +5276,10 @@ __webpack_require__.r(__webpack_exports__);
   setDefaultValue: function setDefaultValue(value) {
     this.defaultValue = value;
     this.setText(this.defaultValue === true ? "High" : "Low ");
-    this.stateB.setTintColor(this.defaultValue === true ? _Colors__WEBPACK_IMPORTED_MODULE_2__["default"].high : _Colors__WEBPACK_IMPORTED_MODULE_2__["default"].low); // only propagate the value to the parent if the decoration permanent visible
-    //
+    this.stateB.setTintColor(this.defaultValue === true ? _Colors__WEBPACK_IMPORTED_MODULE_2__["default"].high : _Colors__WEBPACK_IMPORTED_MODULE_2__["default"].low);
 
+    // only propagate the value to the parent if the decoration permanent visible
+    //
     if (this.stick === true) {
       this.parent.setValue(this.defaultValue);
     }
@@ -7919,7 +5306,6 @@ __webpack_require__.r(__webpack_exports__);
  */
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.shape.basic.Label.extend({
   NAME: "MarkerStateAFigure",
-
   /**
    * @param attr
    */
@@ -7936,12 +5322,12 @@ __webpack_require__.r(__webpack_exports__);
       color: null,
       fontColor: null,
       fontSize: 8
-    }, attr), setter, getter); // we must override the hitTest method to ensure that the parent can receive the mouseenter/mouseleave events.
+    }, attr), setter, getter);
+
+    // we must override the hitTest method to ensure that the parent can receive the mouseenter/mouseleave events.
     // Unfortunately draw2D didn't provide event bubbling like HTML. The first shape in queue consumes the event.
     //
     // now this shape is "dead" for any mouse events and the parent must/can handle this.
-
-
     this.hitTest = function () {
       return false;
     };
@@ -7965,13 +5351,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (draw2d.shape.layout.HorizontalLayout.extend({
   NAME: "MarkerStateBFigure",
-
   /**
    * @param attr
    */
   init: function init(attr, setter, getter) {
     this.tintColor = _Colors__WEBPACK_IMPORTED_MODULE_0__["default"].low;
-
     this._super($.extend({
       bgColor: "#FFFFFF",
       stroke: 1,
@@ -7985,7 +5369,6 @@ __webpack_require__.r(__webpack_exports__);
       },
       gap: 5
     }, attr), setter, getter);
-
     this.stickTick = new draw2d.shape.basic.Circle({
       diameter: 8,
       bgColor: "#f0f0f0",
@@ -7993,11 +5376,9 @@ __webpack_require__.r(__webpack_exports__);
       resizeable: false
     });
     this.add(this.stickTick);
-
     this.stickTick.hitTest = function () {
       return false;
     };
-
     this.stickTick.addCssClass("highlightOnHover");
     this.label = new draw2d.shape.basic.Label({
       text: attr ? attr.text : "X",
@@ -8008,16 +5389,15 @@ __webpack_require__.r(__webpack_exports__);
       fontColor: "#303030"
     });
     this.add(this.label);
-
     this.label.hitTest = function () {
       return false;
     };
+    this.label.addCssClass("highlightOnHover");
 
-    this.label.addCssClass("highlightOnHover"); // we must override the hitTest method to ensure that the parent can receive the mouseenter/mouseleave events.
+    // we must override the hitTest method to ensure that the parent can receive the mouseenter/mouseleave events.
     // Unfortunately draw2D didn't provide event bubbling like HTML. The first shape in queue consumes the event.
     //
     // now this shape is "dead" for any mouse events and the parent must/can handle this.
-
     this.hitTest = function () {
       return false;
     };
@@ -8045,7 +5425,6 @@ __webpack_require__.r(__webpack_exports__);
   getLabelFigure: function getLabelFigure() {
     return this.label;
   },
-
   /**
    * @method
    *
@@ -8056,13 +5435,10 @@ __webpack_require__.r(__webpack_exports__);
     if (this.repaintBlocked === true || this.shape === null) {
       return;
     }
-
     attributes = attributes || {};
     attributes.path = this.calculatePath();
-
     this._super(attributes);
   },
-
   /**
    * @method
    *
@@ -8072,7 +5448,6 @@ __webpack_require__.r(__webpack_exports__);
   createShapeElement: function createShapeElement() {
     return this.canvas.paper.path(this.calculatePath());
   },
-
   /**
    * stupid copy&paste the code from the Polygon shape...unfortunately the LayoutFigure isn't a polygon.
    *
@@ -8092,35 +5467,31 @@ __webpack_require__.r(__webpack_exports__);
     this.vertices.add(new draw2d.geo.Point(pos.x + w - arrowLength, pos.y + h));
     this.vertices.add(new draw2d.geo.Point(pos.x, pos.y + h));
     var radius = this.getRadius();
-    var path = []; // hard corners
+    var path = [];
+    // hard corners
     //
-
     if (radius === 0) {
       length = this.vertices.getSize();
       var p = this.vertices.get(0);
       path.push("M", p.x, " ", p.y);
-
       for (i = 1; i < length; i++) {
         p = this.vertices.get(i);
         path.push("L", p.x, " ", p.y);
       }
-
       path.push("Z");
-    } // soften/round corners
+    }
+    // soften/round corners
     //
     else {
       length = this.vertices.getSize();
       var start = this.vertices.first();
       var end = this.vertices.last();
-
       if (start.equals(end)) {
         length = length - 1;
         end = this.vertices.get(length - 1);
       }
-
       var begin = draw2d.geo.Util.insetPoint(start, end, radius);
       path.push("M", begin.x, ",", begin.y);
-
       for (i = 0; i < length; i++) {
         start = this.vertices.get(i);
         end = this.vertices.get((i + 1) % length);
@@ -8130,7 +5501,6 @@ __webpack_require__.r(__webpack_exports__);
         path.push("L", modEnd.x, ",", modEnd.y);
       }
     }
-
     return path.join("");
   }
 }));
@@ -8146,61 +5516,60 @@ __webpack_require__.r(__webpack_exports__);
 $.fn.extend({
   popConfirm: function popConfirm(options) {
     var defaults = {
-      title: 'Confirmation',
-      content: 'Are you really sure ?',
-      placement: 'right',
-      container: 'body',
-      yesBtn: 'Yes',
-      noBtn: 'No'
-    },
-        last = null;
+        title: 'Confirmation',
+        content: 'Are you really sure ?',
+        placement: 'right',
+        container: 'body',
+        yesBtn: 'Yes',
+        noBtn: 'No'
+      },
+      last = null;
     options = $.extend(defaults, options);
     return this.each(function () {
       var self = $(this),
-          arrayActions = [],
-          arrayDelegatedActions = [],
-          eventToConfirm,
-          optName,
-          optValue,
-          i,
-          elmType,
-          code,
-          form; // Load data-* attriutes
+        arrayActions = [],
+        arrayDelegatedActions = [],
+        eventToConfirm,
+        optName,
+        optValue,
+        i,
+        elmType,
+        code,
+        form;
 
+      // Load data-* attriutes
       for (optName in options) {
         if (options.hasOwnProperty(optName)) {
           optValue = $(this).attr('data-confirm-' + optName);
-
           if (optValue) {
             options[optName] = optValue;
           }
         }
-      } // If there are jquery click events
+      }
 
-
+      // If there are jquery click events
       if (jQuery._data(this, "events") && jQuery._data(this, "events").click) {
         // Save all click handlers
         for (i = 0; i < jQuery._data(this, "events").click.length; i = i + 1) {
           arrayActions.push(jQuery._data(this, "events").click[i].handler);
-        } // unbind it to prevent it firing
+        }
 
-
+        // unbind it to prevent it firing
         $(self).unbind("click");
-      } // If there are jquery delegated click events
+      }
 
-
+      // If there are jquery delegated click events
       if (self.data('remote') && jQuery._data(document, "events") && jQuery._data(document, "events").click) {
         // Save all delegated click handlers that apply
         for (i = 0; i < jQuery._data(document, "events").click.length; i = i + 1) {
           elmType = self[0].tagName.toLowerCase();
-
           if (jQuery._data(document, "events").click[i].selector && jQuery._data(document, "events").click[i].selector.indexOf(elmType + "[data-remote]") !== -1) {
             arrayDelegatedActions.push(jQuery._data(document, "events").click[i].handler);
           }
         }
-      } // If there are hard onclick attribute
+      }
 
-
+      // If there are hard onclick attribute
       if (self.attr('onclick')) {
         // Extracting the onclick code to evaluate and bring it into a closure
         code = self.attr('onclick');
@@ -8208,17 +5577,17 @@ $.fn.extend({
           eval(code);
         });
         $(self).prop("onclick", null);
-      } // If there are href link defined
+      }
 
-
+      // If there are href link defined
       if (!self.data('remote') && self.attr('href')) {
         // Assume there is a href attribute to redirect to
         arrayActions.push(function () {
           window.location.href = self.attr('href');
         });
-      } // If the button is a submit one
+      }
 
-
+      // If the button is a submit one
       if (self.attr('type') && self.attr('type') === 'submit') {
         // Get the form related to this button then store submiting in closure
         form = $(this).parents('form:first');
@@ -8227,11 +5596,9 @@ $.fn.extend({
           if (typeof self.attr('name') !== "undefined") {
             $('<input type="hidden">').attr('name', self.attr('name')).attr('value', self.attr('value')).appendTo(form);
           }
-
           form.submit();
         });
       }
-
       self.popover({
         trigger: 'manual',
         title: options.title,
@@ -8244,7 +5611,6 @@ $.fn.extend({
         if (last && last !== self) {
           last.popover('hide').removeClass('popconfirm-active');
         }
-
         last = self;
       });
       $(document).on('click', function () {
@@ -8262,11 +5628,9 @@ $.fn.extend({
           for (i = 0; i < arrayActions.length; i = i + 1) {
             arrayActions[i].apply(self, [eventToConfirm]);
           }
-
           for (i = 0; i < arrayDelegatedActions.length; i = i + 1) {
             arrayDelegatedActions[i].apply(self, [eventToConfirm.originalEvent]);
           }
-
           self.popover('hide').removeClass('popconfirm-active');
         });
         $(document).find('.popover .confirm-dialog-btn-abord').bind('click', function (e) {
@@ -8313,11 +5677,9 @@ __webpack_require__.r(__webpack_exports__);
  * @author Andreas Herz
  * @extend draw2d.layout.locator.Locator
  */
-var Locator = draw2d.layout.locator.Locator.extend(
-/** @lends draw2d.layout.locator.CenterLocator.prototype */
+var Locator = draw2d.layout.locator.Locator.extend( /** @lends draw2d.layout.locator.CenterLocator.prototype */
 {
   NAME: "draw2d.layout.locator.CenterLocator",
-
   /**
    * Constructs a locator with associated parent.
    *
@@ -8325,7 +5687,6 @@ var Locator = draw2d.layout.locator.Locator.extend(
   init: function init(attr, setter, getter) {
     this._super(attr, setter, getter);
   },
-
   /**
    * 
    * Relocates the given Figure.
@@ -8353,26 +5714,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Userinfo)
 /* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 
 var Userinfo = /*#__PURE__*/function () {
   function Userinfo(permissions) {
     var _this = this;
-
     _classCallCheck(this, Userinfo);
-
     if (permissions.featureset.authentication === false) {
       $(".userinfo_toggler").remove();
     } else {
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get("../userinfo").then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_0__["default"].get("../userinfo").then(function (response) {
         _this.user = response.data;
         var icon = _this.user.picture ? _this.user.picture : "../common/images/toolbar_user.svg";
         var role = _this.user.role === "admin" ? "(Administrator)" : "";
@@ -8392,21 +5749,19 @@ var Userinfo = /*#__PURE__*/function () {
             mode: "redirect"
           } // customization attributes
           );
-        }); //google.accounts.id.prompt(); // also display the One Tap dialog
+        });
+        //google.accounts.id.prompt(); // also display the One Tap dialog
       });
     }
   }
-
   _createClass(Userinfo, [{
     key: "getUser",
     value: function getUser() {
       return this.user;
     }
   }]);
-
   return Userinfo;
 }();
-
 
 
 /***/ }),
@@ -8437,7 +5792,6 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
 (function (root, factory) {
   if (true) {
     !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory(root)),
@@ -8448,13 +5802,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 })(typeof __webpack_require__.g !== "undefined" ? __webpack_require__.g : this.window || this.global, function (root) {
   // Variables
   var inlineSVG = {},
-      supports = !!document.querySelector && !!root.addEventListener,
-      settings; // Defaults
+    supports = !!document.querySelector && !!root.addEventListener,
+    settings;
 
+  // Defaults
   var defaults = {
     initClass: 'js-inlinesvg',
     svgSelector: 'img.svg'
   };
+
   /**
    * Stolen from underscore.js
    * @private
@@ -8469,26 +5825,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
     };
   };
+
   /**
    * Merge two objects together
    * @private
    * @param {Function} fn
    */
-
-
   var extend = function extend() {
     // Variables
     var extended = {};
     var deep = false;
     var i = 0;
-    var length = arguments.length; // Check if a deep merge
+    var length = arguments.length;
 
+    // Check if a deep merge
     if (Object.prototype.toString.call(arguments[0]) === '[object Boolean]') {
       deep = arguments[0];
       i++;
-    } // Merge the object into the extended object
+    }
 
-
+    // Merge the object into the extended object
     var merge = function merge(obj) {
       for (var prop in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, prop)) {
@@ -8500,64 +5856,55 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         }
       }
-    }; // Loop through each object and conduct a merge
+    };
 
-
+    // Loop through each object and conduct a merge
     for (; i < length; i++) {
       var obj = arguments[i];
       merge(obj);
     }
-
     return extended;
-  }; // Methods
+  };
+
+  // Methods
 
   /**
    * Grab all the SVGs that match the selector
    * @public
    */
-
-
   var getAll = function getAll() {
     var svgs = document.querySelectorAll(settings.svgSelector);
     return svgs;
   };
+
   /**
    * Inline all the SVGs in the array
    * @public
    */
-
-
   var inliner = function inliner(cb) {
     var svgs = getAll();
     var callback = after(svgs.length, cb);
     Array.prototype.forEach.call(svgs, function (svg, i) {
       // Store some attributes of the image
       var src = svg.src || svg.getAttribute('data-src'),
-          attributes = svg.attributes; // Get the contents of the SVG
+        attributes = svg.attributes;
 
+      // Get the contents of the SVG
       var request = new XMLHttpRequest();
       request.open('GET', src, true);
-
       request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
           // Setup a parser to convert the response to text/xml in order for it
           // to be manipulated and changed
           var parser = new DOMParser(),
-              result = parser.parseFromString(request.responseText, 'text/xml'),
-              inlinedSVG = result.getElementsByTagName('svg')[0];
+            result = parser.parseFromString(request.responseText, 'text/xml'),
+            inlinedSVG = result.getElementsByTagName('svg')[0];
           var titles = inlinedSVG.getElementsByTagName('title');
-
-          while (titles[0]) {
-            titles[0].parentNode.removeChild(titles[0]);
-          }
-
+          while (titles[0]) titles[0].parentNode.removeChild(titles[0]);
           var descs = inlinedSVG.getElementsByTagName('desc');
+          while (descs[0]) descs[0].parentNode.removeChild(descs[0]);
 
-          while (descs[0]) {
-            descs[0].parentNode.removeChild(descs[0]);
-          } // Remove some of the attributes that aren't needed
-
-
+          // Remove some of the attributes that aren't needed
           inlinedSVG.removeAttribute('xmlns:a');
           inlinedSVG.removeAttribute('width');
           inlinedSVG.removeAttribute('height');
@@ -8566,72 +5913,74 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           inlinedSVG.removeAttribute('enable-background');
           inlinedSVG.removeAttribute('xmlns:xlink');
           inlinedSVG.removeAttribute('xml:space');
-          inlinedSVG.removeAttribute('version'); // Add in the attributes from the original <img> except `src` or
-          // `alt`, we don't need either
+          inlinedSVG.removeAttribute('version');
 
+          // Add in the attributes from the original <img> except `src` or
+          // `alt`, we don't need either
           Array.prototype.slice.call(attributes).forEach(function (attribute) {
             if (attribute.name !== 'src' && attribute.name !== 'alt') {
               inlinedSVG.setAttribute(attribute.name, attribute.value);
             }
-          }); // Add an additional class to the inlined SVG to imply it was
-          // infact inlined, might be useful to know
+          });
 
+          // Add an additional class to the inlined SVG to imply it was
+          // infact inlined, might be useful to know
           if (inlinedSVG.classList) {
             inlinedSVG.classList.add('inlined-svg');
           } else {
             inlinedSVG.className += ' ' + 'inlined-svg';
-          } // Add in some accessibility quick wins
+          }
 
+          // Add in some accessibility quick wins
+          inlinedSVG.setAttribute('role', 'img');
 
-          inlinedSVG.setAttribute('role', 'img'); // Use the `longdesc` attribute if one exists
-
+          // Use the `longdesc` attribute if one exists
           if (attributes.longdesc) {
             var description = document.createElementNS('http://www.w3.org/2000/svg', 'desc'),
-                descriptionText = document.createTextNode(attributes.longdesc.value);
+              descriptionText = document.createTextNode(attributes.longdesc.value);
             description.appendChild(descriptionText);
             inlinedSVG.insertBefore(description, inlinedSVG.firstChild);
-          } // Use the `alt` attribute if one exists
+          }
 
-
+          // Use the `alt` attribute if one exists
           if (attributes.alt) {
             inlinedSVG.setAttribute('aria-labelledby', 'title');
             var title = document.createElementNS('http://www.w3.org/2000/svg', 'title'),
-                titleText = document.createTextNode(attributes.alt.value);
+              titleText = document.createTextNode(attributes.alt.value);
             title.appendChild(titleText);
             inlinedSVG.insertBefore(title, inlinedSVG.firstChild);
-          } // Replace the image with the SVG
+          }
 
+          // Replace the image with the SVG
+          svg.parentNode.replaceChild(inlinedSVG, svg);
 
-          svg.parentNode.replaceChild(inlinedSVG, svg); // Fire the callback
-
+          // Fire the callback
           callback(settings.svgSelector);
         } else {
           console.error('There was an error retrieving the source of the SVG.');
         }
       };
-
       request.onerror = function () {
         console.error('There was an error connecting to the origin server.');
       };
-
       request.send();
     });
   };
+
   /**
    * Initialise the inliner
    * @public
    */
-
-
   inlineSVG.init = function (options, callback) {
     // Test for support
-    if (!supports) return; // Merge users option with defaults
+    if (!supports) return;
 
-    settings = extend(defaults, options || {}); // Kick-off the inliner
+    // Merge users option with defaults
+    settings = extend(defaults, options || {});
 
+    // Kick-off the inliner
     inliner(callback || function () {});
   };
-
   return inlineSVG;
 });
 
@@ -8668,7 +6017,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 // Utility function that allows modes to be combined. The mode given
 // as the base argument takes care of most of the normal mode
@@ -8765,7 +6114,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (true) // CommonJS
@@ -8844,9 +6193,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 /***/ (function(module) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
-// This is CodeMirror (https://codemirror.net), a code editor
+// This is CodeMirror (https://codemirror.net/5), a code editor
 // implemented in JavaScript on top of the browser's DOM.
 //
 // You can find some technical background for some of the code below
@@ -8870,7 +6219,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   var ie_version = ie && (ie_upto10 ? document.documentMode || 6 : +(edge || ie_11up)[1]);
   var webkit = !edge && /WebKit\//.test(userAgent);
   var qtwebkit = webkit && /Qt\/\d+\.\d+/.test(userAgent);
-  var chrome = !edge && /Chrome\//.test(userAgent);
+  var chrome = !edge && /Chrome\/(\d+)/.exec(userAgent);
+  var chrome_version = chrome && +chrome[1];
   var presto = /Opera\//.test(userAgent);
   var safari = /Apple Computer/.test(navigator.vendor);
   var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
@@ -8955,15 +6305,15 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     } while (child = child.parentNode)
   }
 
-  function activeElt() {
+  function activeElt(doc) {
     // IE and Edge may throw an "Unspecified Error" when accessing document.activeElement.
     // IE < 10 will throw when accessed while the page is loading or in an iframe.
     // IE > 9 and Edge will throw when accessed in an iframe if document.body is unavailable.
     var activeElement;
     try {
-      activeElement = document.activeElement;
+      activeElement = doc.activeElement;
     } catch(e) {
-      activeElement = document.body || null;
+      activeElement = doc.body || null;
     }
     while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement)
       { activeElement = activeElement.shadowRoot.activeElement; }
@@ -8986,6 +6336,10 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     { selectInput = function(node) { node.selectionStart = 0; node.selectionEnd = node.value.length; }; }
   else if (ie) // Suppress mysterious IE10 errors
     { selectInput = function(node) { try { node.select(); } catch(_e) {} }; }
+
+  function doc(cm) { return cm.display.wrapper.ownerDocument }
+
+  function win(cm) { return doc(cm).defaultView }
 
   function bind(f) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -10168,7 +7522,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   // Add a span to a line.
   function addMarkedSpan(line, span, op) {
     var inThisOp = op && window.WeakSet && (op.markedSpans || (op.markedSpans = new WeakSet));
-    if (inThisOp && inThisOp.has(line.markedSpans)) {
+    if (inThisOp && line.markedSpans && inThisOp.has(line.markedSpans)) {
       line.markedSpans.push(span);
     } else {
       line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
@@ -11416,16 +8770,16 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     cm.display.lineNumChars = null;
   }
 
-  function pageScrollX() {
+  function pageScrollX(doc) {
     // Work around https://bugs.chromium.org/p/chromium/issues/detail?id=489206
     // which causes page_Offset and bounding client rects to use
     // different reference viewports and invalidate our calculations.
-    if (chrome && android) { return -(document.body.getBoundingClientRect().left - parseInt(getComputedStyle(document.body).marginLeft)) }
-    return window.pageXOffset || (document.documentElement || document.body).scrollLeft
+    if (chrome && android) { return -(doc.body.getBoundingClientRect().left - parseInt(getComputedStyle(doc.body).marginLeft)) }
+    return doc.defaultView.pageXOffset || (doc.documentElement || doc.body).scrollLeft
   }
-  function pageScrollY() {
-    if (chrome && android) { return -(document.body.getBoundingClientRect().top - parseInt(getComputedStyle(document.body).marginTop)) }
-    return window.pageYOffset || (document.documentElement || document.body).scrollTop
+  function pageScrollY(doc) {
+    if (chrome && android) { return -(doc.body.getBoundingClientRect().top - parseInt(getComputedStyle(doc.body).marginTop)) }
+    return doc.defaultView.pageYOffset || (doc.documentElement || doc.body).scrollTop
   }
 
   function widgetTopHeight(lineObj) {
@@ -11453,8 +8807,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     else { yOff -= cm.display.viewOffset; }
     if (context == "page" || context == "window") {
       var lOff = cm.display.lineSpace.getBoundingClientRect();
-      yOff += lOff.top + (context == "window" ? 0 : pageScrollY());
-      var xOff = lOff.left + (context == "window" ? 0 : pageScrollX());
+      yOff += lOff.top + (context == "window" ? 0 : pageScrollY(doc(cm)));
+      var xOff = lOff.left + (context == "window" ? 0 : pageScrollX(doc(cm)));
       rect.left += xOff; rect.right += xOff;
     }
     rect.top += yOff; rect.bottom += yOff;
@@ -11468,8 +8822,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     var left = coords.left, top = coords.top;
     // First move into "page" coordinate system
     if (context == "page") {
-      left -= pageScrollX();
-      top -= pageScrollY();
+      left -= pageScrollX(doc(cm));
+      top -= pageScrollY(doc(cm));
     } else if (context == "local" || !context) {
       var localBox = cm.display.sizer.getBoundingClientRect();
       left += localBox.left;
@@ -12285,8 +9639,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     if (signalDOMEvent(cm, "scrollCursorIntoView")) { return }
 
     var display = cm.display, box = display.sizer.getBoundingClientRect(), doScroll = null;
+    var doc = display.wrapper.ownerDocument;
     if (rect.top + box.top < 0) { doScroll = true; }
-    else if (rect.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) { doScroll = false; }
+    else if (rect.bottom + box.top > (doc.defaultView.innerHeight || doc.documentElement.clientHeight)) { doScroll = false; }
     if (doScroll != null && !phantom) {
       var scrollNode = elt("div", "\u200b", null, ("position: absolute;\n                         top: " + (rect.top - display.viewOffset - paddingTop(cm.display)) + "px;\n                         height: " + (rect.bottom - rect.top + scrollGap(cm) + display.barHeight) + "px;\n                         left: " + (rect.left) + "px; width: " + (Math.max(2, rect.right - rect.left)) + "px;"));
       cm.display.lineSpace.appendChild(scrollNode);
@@ -12540,13 +9895,13 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   NativeScrollbars.prototype.zeroWidthHack = function () {
     var w = mac && !mac_geMountainLion ? "12px" : "18px";
     this.horiz.style.height = this.vert.style.width = w;
-    this.horiz.style.pointerEvents = this.vert.style.pointerEvents = "none";
+    this.horiz.style.visibility = this.vert.style.visibility = "hidden";
     this.disableHoriz = new Delayed;
     this.disableVert = new Delayed;
   };
 
   NativeScrollbars.prototype.enableZeroWidthBar = function (bar, delay, type) {
-    bar.style.pointerEvents = "auto";
+    bar.style.visibility = "";
     function maybeDisable() {
       // To find out whether the scrollbar is still visible, we
       // check whether the element under the pixel in the bottom
@@ -12557,7 +9912,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       var box = bar.getBoundingClientRect();
       var elt = type == "vert" ? document.elementFromPoint(box.right - 1, (box.top + box.bottom) / 2)
           : document.elementFromPoint((box.right + box.left) / 2, box.bottom - 1);
-      if (elt != bar) { bar.style.pointerEvents = "none"; }
+      if (elt != bar) { bar.style.visibility = "hidden"; }
       else { delay.set(1000, maybeDisable); }
     }
     delay.set(1000, maybeDisable);
@@ -12738,7 +10093,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       cm.display.maxLineChanged = false;
     }
 
-    var takeFocus = op.focus && op.focus == activeElt();
+    var takeFocus = op.focus && op.focus == activeElt(doc(cm));
     if (op.preparedSelection)
       { cm.display.input.showSelection(op.preparedSelection, takeFocus); }
     if (op.updatedDisplay || op.startHeight != cm.doc.height)
@@ -12915,11 +10270,11 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
   function selectionSnapshot(cm) {
     if (cm.hasFocus()) { return null }
-    var active = activeElt();
+    var active = activeElt(doc(cm));
     if (!active || !contains(cm.display.lineDiv, active)) { return null }
     var result = {activeElt: active};
     if (window.getSelection) {
-      var sel = window.getSelection();
+      var sel = win(cm).getSelection();
       if (sel.anchorNode && sel.extend && contains(cm.display.lineDiv, sel.anchorNode)) {
         result.anchorNode = sel.anchorNode;
         result.anchorOffset = sel.anchorOffset;
@@ -12931,11 +10286,12 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   }
 
   function restoreSelection(snapshot) {
-    if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt()) { return }
+    if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt(snapshot.activeElt.ownerDocument)) { return }
     snapshot.activeElt.focus();
     if (!/^(INPUT|TEXTAREA)$/.test(snapshot.activeElt.nodeName) &&
         snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
-      var sel = window.getSelection(), range = document.createRange();
+      var doc = snapshot.activeElt.ownerDocument;
+      var sel = doc.defaultView.getSelection(), range = doc.createRange();
       range.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
       range.collapse(false);
       sel.removeAllRanges();
@@ -13252,6 +10608,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     d.scroller.setAttribute("tabIndex", "-1");
     // The element in which the editor lives.
     d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror");
+    // See #6982. FIXME remove when this has been fixed for a while in Chrome
+    if (chrome && chrome_version >= 105) { d.wrapper.style.clipPath = "inset(0px)"; }
 
     // This attribute is respected by automatic translation systems such as Google Translate,
     // and may also be respected by tools used by human translators.
@@ -13353,6 +10711,17 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   }
 
   function onScrollWheel(cm, e) {
+    // On Chrome 102, viewport updates somehow stop wheel-based
+    // scrolling. Turning off pointer events during the scroll seems
+    // to avoid the issue.
+    if (chrome && chrome_version == 102) {
+      if (cm.display.chromeScrollHack == null) { cm.display.sizer.style.pointerEvents = "none"; }
+      else { clearTimeout(cm.display.chromeScrollHack); }
+      cm.display.chromeScrollHack = setTimeout(function () {
+        cm.display.chromeScrollHack = null;
+        cm.display.sizer.style.pointerEvents = "";
+      }, 100);
+    }
     var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
     var pixelsPerUnit = wheelPixelsPerUnit;
     if (e.deltaMode === 0) {
@@ -14036,7 +11405,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       var range = sel.ranges[i];
       var old = sel.ranges.length == doc.sel.ranges.length && doc.sel.ranges[i];
       var newAnchor = skipAtomic(doc, range.anchor, old && old.anchor, bias, mayClear);
-      var newHead = skipAtomic(doc, range.head, old && old.head, bias, mayClear);
+      var newHead = range.head == range.anchor ? newAnchor : skipAtomic(doc, range.head, old && old.head, bias, mayClear);
       if (out || newAnchor != range.anchor || newHead != range.head) {
         if (!out) { out = sel.ranges.slice(0, i); }
         out[i] = new Range(newAnchor, newHead);
@@ -16088,7 +13457,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   function onKeyDown(e) {
     var cm = this;
     if (e.target && e.target != cm.display.input.getField()) { return }
-    cm.curOp.focus = activeElt();
+    cm.curOp.focus = activeElt(doc(cm));
     if (signalDOMEvent(cm, e)) { return }
     // IE does strange things with escape.
     if (ie && ie_version < 11 && e.keyCode == 27) { e.returnValue = false; }
@@ -16195,7 +13564,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     }
     if (clickInGutter(cm, e)) { return }
     var pos = posFromMouse(cm, e), button = e_button(e), repeat = pos ? clickRepeat(pos, button) : "single";
-    window.focus();
+    win(cm).focus();
 
     // #3261: make sure, that we're not starting a second selection
     if (button == 1 && cm.state.selectingText)
@@ -16250,7 +13619,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
   function leftButtonDown(cm, pos, repeat, event) {
     if (ie) { setTimeout(bind(ensureFocus, cm), 0); }
-    else { cm.curOp.focus = activeElt(); }
+    else { cm.curOp.focus = activeElt(doc(cm)); }
 
     var behavior = configureMouse(cm, repeat, event);
 
@@ -16320,19 +13689,19 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   // Normal selection, as opposed to text dragging.
   function leftButtonSelect(cm, event, start, behavior) {
     if (ie) { delayBlurEvent(cm); }
-    var display = cm.display, doc = cm.doc;
+    var display = cm.display, doc$1 = cm.doc;
     e_preventDefault(event);
 
-    var ourRange, ourIndex, startSel = doc.sel, ranges = startSel.ranges;
+    var ourRange, ourIndex, startSel = doc$1.sel, ranges = startSel.ranges;
     if (behavior.addNew && !behavior.extend) {
-      ourIndex = doc.sel.contains(start);
+      ourIndex = doc$1.sel.contains(start);
       if (ourIndex > -1)
         { ourRange = ranges[ourIndex]; }
       else
         { ourRange = new Range(start, start); }
     } else {
-      ourRange = doc.sel.primary();
-      ourIndex = doc.sel.primIndex;
+      ourRange = doc$1.sel.primary();
+      ourIndex = doc$1.sel.primIndex;
     }
 
     if (behavior.unit == "rectangle") {
@@ -16349,18 +13718,18 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
     if (!behavior.addNew) {
       ourIndex = 0;
-      setSelection(doc, new Selection([ourRange], 0), sel_mouse);
-      startSel = doc.sel;
+      setSelection(doc$1, new Selection([ourRange], 0), sel_mouse);
+      startSel = doc$1.sel;
     } else if (ourIndex == -1) {
       ourIndex = ranges.length;
-      setSelection(doc, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex),
+      setSelection(doc$1, normalizeSelection(cm, ranges.concat([ourRange]), ourIndex),
                    {scroll: false, origin: "*mouse"});
     } else if (ranges.length > 1 && ranges[ourIndex].empty() && behavior.unit == "char" && !behavior.extend) {
-      setSelection(doc, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0),
+      setSelection(doc$1, normalizeSelection(cm, ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0),
                    {scroll: false, origin: "*mouse"});
-      startSel = doc.sel;
+      startSel = doc$1.sel;
     } else {
-      replaceOneSelection(doc, ourIndex, ourRange, sel_mouse);
+      replaceOneSelection(doc$1, ourIndex, ourRange, sel_mouse);
     }
 
     var lastPos = start;
@@ -16370,19 +13739,19 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
       if (behavior.unit == "rectangle") {
         var ranges = [], tabSize = cm.options.tabSize;
-        var startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize);
-        var posCol = countColumn(getLine(doc, pos.line).text, pos.ch, tabSize);
+        var startCol = countColumn(getLine(doc$1, start.line).text, start.ch, tabSize);
+        var posCol = countColumn(getLine(doc$1, pos.line).text, pos.ch, tabSize);
         var left = Math.min(startCol, posCol), right = Math.max(startCol, posCol);
         for (var line = Math.min(start.line, pos.line), end = Math.min(cm.lastLine(), Math.max(start.line, pos.line));
              line <= end; line++) {
-          var text = getLine(doc, line).text, leftPos = findColumn(text, left, tabSize);
+          var text = getLine(doc$1, line).text, leftPos = findColumn(text, left, tabSize);
           if (left == right)
             { ranges.push(new Range(Pos(line, leftPos), Pos(line, leftPos))); }
           else if (text.length > leftPos)
             { ranges.push(new Range(Pos(line, leftPos), Pos(line, findColumn(text, right, tabSize)))); }
         }
         if (!ranges.length) { ranges.push(new Range(start, start)); }
-        setSelection(doc, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex),
+        setSelection(doc$1, normalizeSelection(cm, startSel.ranges.slice(0, ourIndex).concat(ranges), ourIndex),
                      {origin: "*mouse", scroll: false});
         cm.scrollIntoView(pos);
       } else {
@@ -16397,8 +13766,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
           anchor = maxPos(oldRange.to(), range.head);
         }
         var ranges$1 = startSel.ranges.slice(0);
-        ranges$1[ourIndex] = bidiSimplify(cm, new Range(clipPos(doc, anchor), head));
-        setSelection(doc, normalizeSelection(cm, ranges$1, ourIndex), sel_mouse);
+        ranges$1[ourIndex] = bidiSimplify(cm, new Range(clipPos(doc$1, anchor), head));
+        setSelection(doc$1, normalizeSelection(cm, ranges$1, ourIndex), sel_mouse);
       }
     }
 
@@ -16414,9 +13783,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       var cur = posFromMouse(cm, e, true, behavior.unit == "rectangle");
       if (!cur) { return }
       if (cmp(cur, lastPos) != 0) {
-        cm.curOp.focus = activeElt();
+        cm.curOp.focus = activeElt(doc(cm));
         extendTo(cur);
-        var visible = visibleLines(display, doc);
+        var visible = visibleLines(display, doc$1);
         if (cur.line >= visible.to || cur.line < visible.from)
           { setTimeout(operation(cm, function () {if (counter == curCount) { extend(e); }}), 150); }
       } else {
@@ -16441,7 +13810,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       }
       off(display.wrapper.ownerDocument, "mousemove", move);
       off(display.wrapper.ownerDocument, "mouseup", up);
-      doc.history.lastSelOrigin = null;
+      doc$1.history.lastSelOrigin = null;
     }
 
     var move = operation(cm, function (e) {
@@ -16598,7 +13967,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       for (var i = newBreaks.length - 1; i >= 0; i--)
         { replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length)); }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\u202d\u202e\u2066\u2067\u2069\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
       if (old != Init) { cm.refresh(); }
     });
@@ -17041,7 +14410,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     var pasted = e.clipboardData && e.clipboardData.getData("Text");
     if (pasted) {
       e.preventDefault();
-      if (!cm.isReadOnly() && !cm.options.disableInput)
+      if (!cm.isReadOnly() && !cm.options.disableInput && cm.hasFocus())
         { runInOp(cm, function () { return applyTextInput(cm, pasted, 0, null, "paste"); }); }
       return true
     }
@@ -17083,8 +14452,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   }
 
   function disableBrowserMagic(field, spellcheck, autocorrect, autocapitalize) {
-    field.setAttribute("autocorrect", autocorrect ? "" : "off");
-    field.setAttribute("autocapitalize", autocapitalize ? "" : "off");
+    field.setAttribute("autocorrect", autocorrect ? "on" : "off");
+    field.setAttribute("autocapitalize", autocapitalize ? "on" : "off");
     field.setAttribute("spellcheck", !!spellcheck);
   }
 
@@ -17099,7 +14468,6 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     else { te.setAttribute("wrap", "off"); }
     // If border: 0; -- iOS fails to open keyboard (issue #1287)
     if (ios) { te.style.border = "1px solid black"; }
-    disableBrowserMagic(te);
     return div
   }
 
@@ -17118,7 +14486,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
     CodeMirror.prototype = {
       constructor: CodeMirror,
-      focus: function(){window.focus(); this.display.input.focus();},
+      focus: function(){win(this).focus(); this.display.input.focus();},
 
       setOption: function(option, value) {
         var options = this.options, old = options[option];
@@ -17442,7 +14810,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
         signal(this, "overwriteToggle", this, this.state.overwrite);
       },
-      hasFocus: function() { return this.display.input.getField() == activeElt() },
+      hasFocus: function() { return this.display.input.getField() == activeElt(doc(this)) },
       isReadOnly: function() { return !!(this.options.readOnly || this.doc.cantEdit) },
 
       scrollTo: methodOp(function (x, y) { scrollToCoords(this, x, y); }),
@@ -17623,7 +14991,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   function findPosV(cm, pos, dir, unit) {
     var doc = cm.doc, x = pos.left, y;
     if (unit == "page") {
-      var pageSize = Math.min(cm.display.wrapper.clientHeight, window.innerHeight || document.documentElement.clientHeight);
+      var pageSize = Math.min(cm.display.wrapper.clientHeight, win(cm).innerHeight || doc(cm).documentElement.clientHeight);
       var moveAmount = Math.max(pageSize - .5 * textHeight(cm.display), 3);
       y = (dir > 0 ? pos.bottom : pos.top) + dir * moveAmount;
 
@@ -17721,9 +15089,10 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       }
       // Old-fashioned briefly-focus-a-textarea hack
       var kludge = hiddenTextarea(), te = kludge.firstChild;
+      disableBrowserMagic(te);
       cm.display.lineSpace.insertBefore(kludge, cm.display.lineSpace.firstChild);
       te.value = lastCopied.text.join("\n");
-      var hadFocus = activeElt();
+      var hadFocus = activeElt(div.ownerDocument);
       selectInput(te);
       setTimeout(function () {
         cm.display.lineSpace.removeChild(kludge);
@@ -17746,7 +15115,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = activeElt() == this.div;
+    result.focus = activeElt(this.div.ownerDocument) == this.div;
     return result
   };
 
@@ -17842,7 +15211,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor() || activeElt() != this.div)
+      if (!this.selectionInEditor() || activeElt(this.div.ownerDocument) != this.div)
         { this.showSelection(this.prepareSelection(), true); }
       this.div.focus();
     }
@@ -18194,6 +15563,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     // Used to work around IE issue with selection being forgotten when focus moves away from textarea
     this.hasSelection = false;
     this.composing = null;
+    this.resetting = false;
   };
 
   TextareaInput.prototype.init = function (display) {
@@ -18284,6 +15654,8 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     // The semihidden textarea that is focused when the editor is
     // focused, and receives input.
     this.textarea = this.wrapper.firstChild;
+    var opts = this.cm.options;
+    disableBrowserMagic(this.textarea, opts.spellcheck, opts.autocorrect, opts.autocapitalize);
   };
 
   TextareaInput.prototype.screenReaderLabelChanged = function (label) {
@@ -18326,8 +15698,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   // Reset the input to correspond to the selection (or to be empty,
   // when not typing and nothing is selected)
   TextareaInput.prototype.reset = function (typing) {
-    if (this.contextMenuPending || this.composing) { return }
+    if (this.contextMenuPending || this.composing && typing) { return }
     var cm = this.cm;
+    this.resetting = true;
     if (cm.somethingSelected()) {
       this.prevInput = "";
       var content = cm.getSelection();
@@ -18338,6 +15711,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
       this.prevInput = this.textarea.value = "";
       if (ie && ie_version >= 9) { this.hasSelection = null; }
     }
+    this.resetting = false;
   };
 
   TextareaInput.prototype.getField = function () { return this.textarea };
@@ -18345,7 +15719,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
   TextareaInput.prototype.supportsTouch = function () { return false };
 
   TextareaInput.prototype.focus = function () {
-    if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt() != this.textarea)) {
+    if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt(this.textarea.ownerDocument) != this.textarea)) {
       try { this.textarea.focus(); }
       catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
     }
@@ -18399,7 +15773,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     // possible when it is clear that nothing happened. hasSelection
     // will be the case when there is a lot of text in the textarea,
     // in which case reading its value would be expensive.
-    if (this.contextMenuPending || !cm.state.focused ||
+    if (this.contextMenuPending || this.resetting || !cm.state.focused ||
         (hasSelection(input) && !prevInput && !this.composing) ||
         cm.isReadOnly() || cm.options.disableInput || cm.state.keySeq)
       { return false }
@@ -18468,9 +15842,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     input.wrapper.style.cssText = "position: static";
     te.style.cssText = "position: absolute; width: 30px; height: 30px;\n      top: " + (e.clientY - wrapperBox.top - 5) + "px; left: " + (e.clientX - wrapperBox.left - 5) + "px;\n      z-index: 1000; background: " + (ie ? "rgba(255, 255, 255, .05)" : "transparent") + ";\n      outline: none; border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);";
     var oldScrollY;
-    if (webkit) { oldScrollY = window.scrollY; } // Work around Chrome issue (#2712)
+    if (webkit) { oldScrollY = te.ownerDocument.defaultView.scrollY; } // Work around Chrome issue (#2712)
     display.input.focus();
-    if (webkit) { window.scrollTo(null, oldScrollY); }
+    if (webkit) { te.ownerDocument.defaultView.scrollTo(null, oldScrollY); }
     display.input.reset();
     // Adds "Select all" to context menu in FF
     if (!cm.somethingSelected()) { te.value = input.prevInput = " "; }
@@ -18552,7 +15926,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     // Set autofocus to true if this textarea is focused, or if it has
     // autofocus and no other element is focused.
     if (options.autofocus == null) {
-      var hasFocus = activeElt();
+      var hasFocus = activeElt(textarea.ownerDocument);
       options.autofocus = hasFocus == textarea ||
         textarea.getAttribute("autofocus") != null && hasFocus == document.body;
     }
@@ -18686,7 +16060,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.65.2";
+  CodeMirror.version = "5.65.11";
 
   return CodeMirror;
 
@@ -18702,7 +16076,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (true) // CommonJS
@@ -18838,7 +16212,7 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (true) // CommonJS
@@ -19731,7 +17105,7 @@ CodeMirror.defineMIME("text/x-markdown", "markdown");
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (true) // CommonJS
@@ -19959,7 +17333,7 @@ CodeMirror.defineMIME("text/x-markdown", "markdown");
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
 (function(mod) {
   if (true) // CommonJS
@@ -20522,68 +17896,55 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".noselect {\n  -webkit-touch-callout: 
   Author Tobias Koppers @sokra
 */
 module.exports = function (cssWithMappingToString) {
-  var list = []; // return the list of modules as css string
+  var list = [];
 
+  // return the list of modules as css string
   list.toString = function toString() {
     return this.map(function (item) {
       var content = "";
       var needLayer = typeof item[5] !== "undefined";
-
       if (item[4]) {
         content += "@supports (".concat(item[4], ") {");
       }
-
       if (item[2]) {
         content += "@media ".concat(item[2], " {");
       }
-
       if (needLayer) {
         content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
       }
-
       content += cssWithMappingToString(item);
-
       if (needLayer) {
         content += "}";
       }
-
       if (item[2]) {
         content += "}";
       }
-
       if (item[4]) {
         content += "}";
       }
-
       return content;
     }).join("");
-  }; // import a list of modules into the list
+  };
 
-
+  // import a list of modules into the list
   list.i = function i(modules, media, dedupe, supports, layer) {
     if (typeof modules === "string") {
       modules = [[null, modules, undefined]];
     }
-
     var alreadyImportedModules = {};
-
     if (dedupe) {
       for (var k = 0; k < this.length; k++) {
         var id = this[k][0];
-
         if (id != null) {
           alreadyImportedModules[id] = true;
         }
       }
     }
-
     for (var _k = 0; _k < modules.length; _k++) {
       var item = [].concat(modules[_k]);
-
       if (dedupe && alreadyImportedModules[item[0]]) {
         continue;
       }
-
       if (typeof layer !== "undefined") {
         if (typeof item[5] === "undefined") {
           item[5] = layer;
@@ -20592,7 +17953,6 @@ module.exports = function (cssWithMappingToString) {
           item[5] = layer;
         }
       }
-
       if (media) {
         if (!item[2]) {
           item[2] = media;
@@ -20601,7 +17961,6 @@ module.exports = function (cssWithMappingToString) {
           item[2] = media;
         }
       }
-
       if (supports) {
         if (!item[4]) {
           item[4] = "".concat(supports);
@@ -20610,11 +17969,9 @@ module.exports = function (cssWithMappingToString) {
           item[4] = supports;
         }
       }
-
       list.push(item);
     }
   };
-
   return list;
 };
 
@@ -20633,27 +17990,24 @@ module.exports = function (url, options) {
   if (!options) {
     options = {};
   }
-
   if (!url) {
     return url;
   }
+  url = String(url.__esModule ? url.default : url);
 
-  url = String(url.__esModule ? url.default : url); // If url is already wrapped in quotes, remove them
-
+  // If url is already wrapped in quotes, remove them
   if (/^['"].*['"]$/.test(url)) {
     url = url.slice(1, -1);
   }
-
   if (options.hash) {
     url += options.hash;
-  } // Should url be wrapped?
+  }
+
+  // Should url be wrapped?
   // See https://drafts.csswg.org/css-values-3/#urls
-
-
   if (/["'() \t\n]|(%20)/.test(url) || options.needQuotes) {
     return "\"".concat(url.replace(/"/g, '\\"').replace(/\n/g, "\\n"), "\"");
   }
-
   return url;
 };
 
@@ -20671,23 +18025,29 @@ module.exports = function (url, options) {
 module.exports = function (item) {
   var content = item[1];
   var cssMapping = item[3];
-
   if (!cssMapping) {
     return content;
   }
-
   if (typeof btoa === "function") {
     var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));
     var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
     var sourceMapping = "/*# ".concat(data, " */");
-    var sourceURLs = cssMapping.sources.map(function (source) {
-      return "/*# sourceURL=".concat(cssMapping.sourceRoot || "").concat(source, " */");
-    });
-    return [content].concat(sourceURLs).concat([sourceMapping]).join("\n");
+    return [content].concat([sourceMapping]).join("\n");
   }
-
   return [content].join("\n");
 };
+
+/***/ }),
+
+/***/ "./node_modules/form-data/lib/browser.js":
+/*!***********************************************!*\
+  !*** ./node_modules/form-data/lib/browser.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+/* eslint-env browser */
+module.exports = typeof self == 'object' ? self.FormData : window.FormData;
+
 
 /***/ }),
 
@@ -31302,8 +28662,9 @@ function compile(self) {
                       .map(escapeRE)
                       .join('|');
   // (?!_) cause 1.5x slowdown
-  self.re.schema_test   = RegExp('(^|(?!_)(?:[><\uff5c]|' + re.src_ZPCc + '))(' + slist + ')', 'i');
-  self.re.schema_search = RegExp('(^|(?!_)(?:[><\uff5c]|' + re.src_ZPCc + '))(' + slist + ')', 'ig');
+  self.re.schema_test     = RegExp('(^|(?!_)(?:[><\uff5c]|' + re.src_ZPCc + '))(' + slist + ')', 'i');
+  self.re.schema_search   = RegExp('(^|(?!_)(?:[><\uff5c]|' + re.src_ZPCc + '))(' + slist + ')', 'ig');
+  self.re.schema_at_start = RegExp('^' + self.re.schema_search.source, 'i');
 
   self.re.pretest = RegExp(
     '(' + self.re.schema_test.source + ')|(' + self.re.host_fuzzy_test.source + ')|@',
@@ -31618,6 +28979,33 @@ LinkifyIt.prototype.match = function match(text) {
 };
 
 
+/**
+ * LinkifyIt#matchAtStart(text) -> Match|null
+ *
+ * Returns fully-formed (not fuzzy) link if it starts at the beginning
+ * of the string, and null otherwise.
+ **/
+LinkifyIt.prototype.matchAtStart = function matchAtStart(text) {
+  // Reset scan cache
+  this.__text_cache__ = text;
+  this.__index__      = -1;
+
+  if (!text.length) return null;
+
+  var m = this.re.schema_at_start.exec(text);
+  if (!m) return null;
+
+  var len = this.testSchemaAt(text, m[2], m[0].length);
+  if (!len) return null;
+
+  this.__schema__     = m[2];
+  this.__index__      = m.index + m[1].length;
+  this.__last_index__ = m.index + m[0].length + len;
+
+  return createMatch(this, 0);
+};
+
+
 /** chainable
  * LinkifyIt#tlds(list [, keepOld]) -> this
  * - list (Array): list of tlds
@@ -31698,6 +29086,7 @@ module.exports = LinkifyIt;
 
 module.exports = function (opts) {
   var re = {};
+  opts = opts || {};
 
   // Use direct extract instead of `regenerate` to reduse browserified size
   re.src_Any = (__webpack_require__(/*! uc.micro/properties/Any/regex */ "./node_modules/uc.micro/properties/Any/regex.js").source);
@@ -31737,7 +29126,8 @@ module.exports = function (opts) {
 
   re.src_host_terminator =
 
-    '(?=$|' + text_separators + '|' + re.src_ZPCc + ')(?!-|_|:\\d|\\.-|\\.(?!$|' + re.src_ZPCc + '))';
+    '(?=$|' + text_separators + '|' + re.src_ZPCc + ')' +
+    '(?!' + (opts['---'] ? '-(?!--)|' : '-|') + '_|:\\d|\\.-|\\.(?!$|' + re.src_ZPCc + '))';
 
   re.src_path =
 
@@ -31750,7 +29140,7 @@ module.exports = function (opts) {
           '\\{(?:(?!' + re.src_ZCc + '|[}]).)*\\}|' +
           '\\"(?:(?!' + re.src_ZCc + '|["]).)+\\"|' +
           "\\'(?:(?!" + re.src_ZCc + "|[']).)+\\'|" +
-          "\\'(?=" + re.src_pseudo_letter + '|[-]).|' +  // allow `I'm_king` if no pair found
+          "\\'(?=" + re.src_pseudo_letter + '|[-])|' +  // allow `I'm_king` if no pair found
           '\\.{2,}[a-zA-Z0-9%/&]|' + // google has many dots in "google search" links (#66, #81).
                                      // github has ... in commit range links,
                                      // Restrict to
@@ -31759,16 +29149,16 @@ module.exports = function (opts) {
                                      // - parts of file path
                                      // - params separator
                                      // until more examples found.
-          '\\.(?!' + re.src_ZCc + '|[.]).|' +
-          (opts && opts['---'] ?
+          '\\.(?!' + re.src_ZCc + '|[.]|$)|' +
+          (opts['---'] ?
             '\\-(?!--(?:[^-]|$))(?:-*)|' // `---` => long dash, terminate
             :
             '\\-+|'
           ) +
-          ',(?!' + re.src_ZCc + ').|' +       // allow `,,,` in paths
-          ';(?!' + re.src_ZCc + ').|' +       // allow `;` if not followed by space-like char
-          '\\!+(?!' + re.src_ZCc + '|[!]).|' +  // allow `!!!` in paths, but not at the end
-          '\\?(?!' + re.src_ZCc + '|[?]).' +
+          ',(?!' + re.src_ZCc + '|$)|' +       // allow `,,,` in paths
+          ';(?!' + re.src_ZCc + '|$)|' +       // allow `;` if not followed by space-like char
+          '\\!+(?!' + re.src_ZCc + '|[!]|$)|' +  // allow `!!!` in paths, but not at the end
+          '\\?(?!' + re.src_ZCc + '|[?]|$)' +
         ')+' +
       '|\\/' +
     ')?';
@@ -32549,6 +29939,7 @@ function setup(md, options) {
     options = defaults;
   }
   var useKeyword = options.useKeyword;
+  console.log(useKeyword);
 
 
   //var options = assign({}, defaults, options);
@@ -32571,6 +29962,8 @@ function setup(md, options) {
 
   md.renderer.rules.code_inline = function(tokens, idx, options, env, self) {
     var token = tokens[idx];
+
+    console.log(useKeyword);
 
     if(!useKeyword) {
       console.log("1");
@@ -32657,18 +30050,20 @@ module.exports = setup;
 
 module.exports = function container_plugin(md, name, options) {
 
-  function validateDefault(params) {
+  // Second param may be useful if you decide
+  // to increase minimal allowed marker length
+  function validateDefault(params/*, markup*/) {
     return params.trim().split(' ', 2)[0] === name;
   }
 
-  function renderDefault(tokens, idx, _options, env, self) {
+  function renderDefault(tokens, idx, _options, env, slf) {
 
     // add a class to the opening tag
     if (tokens[idx].nesting === 1) {
-      tokens[idx].attrPush([ 'class', name ]);
+      tokens[idx].attrJoin('class', name);
     }
 
-    return self.renderToken(tokens, idx, _options, env, self);
+    return slf.renderToken(tokens, idx, _options, env, slf);
   }
 
   options = options || {};
@@ -32706,7 +30101,7 @@ module.exports = function container_plugin(md, name, options) {
 
     markup = state.src.slice(start, pos);
     params = state.src.slice(pos, max);
-    if (!validate(params)) { return false; }
+    if (!validate(params, markup)) { return false; }
 
     // Since start is found, we can report success here in validation mode
     //
@@ -34264,7 +31659,10 @@ var _rules = [
   [ 'inline',         __webpack_require__(/*! ./rules_core/inline */ "./node_modules/markdown-it/lib/rules_core/inline.js")         ],
   [ 'linkify',        __webpack_require__(/*! ./rules_core/linkify */ "./node_modules/markdown-it/lib/rules_core/linkify.js")        ],
   [ 'replacements',   __webpack_require__(/*! ./rules_core/replacements */ "./node_modules/markdown-it/lib/rules_core/replacements.js")   ],
-  [ 'smartquotes',    __webpack_require__(/*! ./rules_core/smartquotes */ "./node_modules/markdown-it/lib/rules_core/smartquotes.js")    ]
+  [ 'smartquotes',    __webpack_require__(/*! ./rules_core/smartquotes */ "./node_modules/markdown-it/lib/rules_core/smartquotes.js")    ],
+  // `text_join` finds `text_special` tokens (for escape sequences)
+  // and joins them with the rest of the text
+  [ 'text_join',      __webpack_require__(/*! ./rules_core/text_join */ "./node_modules/markdown-it/lib/rules_core/text_join.js")      ]
 ];
 
 
@@ -34331,6 +31729,7 @@ var Ruler           = __webpack_require__(/*! ./ruler */ "./node_modules/markdow
 
 var _rules = [
   [ 'text',            __webpack_require__(/*! ./rules_inline/text */ "./node_modules/markdown-it/lib/rules_inline/text.js") ],
+  [ 'linkify',         __webpack_require__(/*! ./rules_inline/linkify */ "./node_modules/markdown-it/lib/rules_inline/linkify.js") ],
   [ 'newline',         __webpack_require__(/*! ./rules_inline/newline */ "./node_modules/markdown-it/lib/rules_inline/newline.js") ],
   [ 'escape',          __webpack_require__(/*! ./rules_inline/escape */ "./node_modules/markdown-it/lib/rules_inline/escape.js") ],
   [ 'backticks',       __webpack_require__(/*! ./rules_inline/backticks */ "./node_modules/markdown-it/lib/rules_inline/backticks.js") ],
@@ -34343,11 +31742,18 @@ var _rules = [
   [ 'entity',          __webpack_require__(/*! ./rules_inline/entity */ "./node_modules/markdown-it/lib/rules_inline/entity.js") ]
 ];
 
+// `rule2` ruleset was created specifically for emphasis/strikethrough
+// post-processing and may be changed in the future.
+//
+// Don't use this for anything except pairs (plugins working with `balance_pairs`).
+//
 var _rules2 = [
   [ 'balance_pairs',   __webpack_require__(/*! ./rules_inline/balance_pairs */ "./node_modules/markdown-it/lib/rules_inline/balance_pairs.js") ],
   [ 'strikethrough',   (__webpack_require__(/*! ./rules_inline/strikethrough */ "./node_modules/markdown-it/lib/rules_inline/strikethrough.js").postProcess) ],
   [ 'emphasis',        (__webpack_require__(/*! ./rules_inline/emphasis */ "./node_modules/markdown-it/lib/rules_inline/emphasis.js").postProcess) ],
-  [ 'text_collapse',   __webpack_require__(/*! ./rules_inline/text_collapse */ "./node_modules/markdown-it/lib/rules_inline/text_collapse.js") ]
+  // rules for pairs separate '**' into its own text tokens, which may be left unused,
+  // rule below merges unused segments back with the rest of the text
+  [ 'fragments_join',  __webpack_require__(/*! ./rules_inline/fragments_join */ "./node_modules/markdown-it/lib/rules_inline/fragments_join.js") ]
 ];
 
 
@@ -34543,7 +31949,8 @@ module.exports = {
       rules: [
         'normalize',
         'block',
-        'inline'
+        'inline',
+        'text_join'
       ]
     },
 
@@ -34578,7 +31985,7 @@ module.exports = {
       rules2: [
         'balance_pairs',
         'emphasis',
-        'text_collapse'
+        'fragments_join'
       ]
     }
   }
@@ -34687,7 +32094,8 @@ module.exports = {
       rules: [
         'normalize',
         'block',
-        'inline'
+        'inline',
+        'text_join'
       ]
     },
 
@@ -34703,7 +32111,7 @@ module.exports = {
       ],
       rules2: [
         'balance_pairs',
-        'text_collapse'
+        'fragments_join'
       ]
     }
   }
@@ -37084,7 +34492,7 @@ function getLine(state, line) {
   var pos = state.bMarks[line] + state.tShift[line],
       max = state.eMarks[line];
 
-  return state.src.substr(pos, max - pos);
+  return state.src.slice(pos, max);
 }
 
 function escapedSplit(str) {
@@ -37427,8 +34835,17 @@ module.exports = function linkify(state) {
         level = currentToken.level;
         lastPos = 0;
 
-        for (ln = 0; ln < links.length; ln++) {
+        // forbid escape sequence at the start of the string,
+        // this avoids http\://example.com/ from being linkified as
+        // http:<a href="//example.com/">//example.com/</a>
+        if (links.length > 0 &&
+            links[0].index === 0 &&
+            i > 0 &&
+            tokens[i - 1].type === 'text_special') {
+          links = links.slice(1);
+        }
 
+        for (ln = 0; ln < links.length; ln++) {
           url = links[ln].url;
           fullUrl = state.md.normalizeLink(url);
           if (!state.md.validateLink(fullUrl)) { continue; }
@@ -37547,19 +34964,18 @@ module.exports = function normalize(state) {
 
 // TODO:
 // - fractionals 1/2, 1/4, 3/4 -> ½, ¼, ¾
-// - miltiplication 2 x 4 -> 2 × 4
+// - multiplications 2 x 4 -> 2 × 4
 
 var RARE_RE = /\+-|\.\.|\?\?\?\?|!!!!|,,|--/;
 
 // Workaround for phantomjs - need regex without /g flag,
 // or root check will fail every second time
-var SCOPED_ABBR_TEST_RE = /\((c|tm|r|p)\)/i;
+var SCOPED_ABBR_TEST_RE = /\((c|tm|r)\)/i;
 
-var SCOPED_ABBR_RE = /\((c|tm|r|p)\)/ig;
+var SCOPED_ABBR_RE = /\((c|tm|r)\)/ig;
 var SCOPED_ABBR = {
   c: '©',
   r: '®',
-  p: '§',
   tm: '™'
 };
 
@@ -37665,7 +35081,7 @@ var APOSTROPHE = '\u2019'; /* ’ */
 
 
 function replaceAt(str, index, ch) {
-  return str.substr(0, index) + ch + str.substr(index + 1);
+  return str.slice(0, index) + ch + str.slice(index + 1);
 }
 
 function process_inlines(tokens, state) {
@@ -37882,6 +35298,62 @@ StateCore.prototype.Token = Token;
 
 
 module.exports = StateCore;
+
+
+/***/ }),
+
+/***/ "./node_modules/markdown-it/lib/rules_core/text_join.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/markdown-it/lib/rules_core/text_join.js ***!
+  \**************************************************************/
+/***/ ((module) => {
+
+"use strict";
+// Join raw text tokens with the rest of the text
+//
+// This is set as a separate rule to provide an opportunity for plugins
+// to run text replacements after text join, but before escape join.
+//
+// For example, `\:)` shouldn't be replaced with an emoji.
+//
+
+
+
+module.exports = function text_join(state) {
+  var j, l, tokens, curr, max, last,
+      blockTokens = state.tokens;
+
+  for (j = 0, l = blockTokens.length; j < l; j++) {
+    if (blockTokens[j].type !== 'inline') continue;
+
+    tokens = blockTokens[j].children;
+    max = tokens.length;
+
+    for (curr = 0; curr < max; curr++) {
+      if (tokens[curr].type === 'text_special') {
+        tokens[curr].type = 'text';
+      }
+    }
+
+    for (curr = last = 0; curr < max; curr++) {
+      if (tokens[curr].type === 'text' &&
+          curr + 1 < max &&
+          tokens[curr + 1].type === 'text') {
+
+        // collapse two adjacent text nodes
+        tokens[curr + 1].content = tokens[curr].content + tokens[curr + 1].content;
+      } else {
+        if (curr !== last) { tokens[last] = tokens[curr]; }
+
+        last++;
+      }
+    }
+
+    if (curr !== last) {
+      tokens.length = last;
+    }
+  }
+};
 
 
 /***/ }),
@@ -38351,38 +35823,45 @@ var NAMED_RE   = /^&([a-z][a-z0-9]{1,31});/i;
 
 
 module.exports = function entity(state, silent) {
-  var ch, code, match, pos = state.pos, max = state.posMax;
+  var ch, code, match, token, pos = state.pos, max = state.posMax;
 
-  if (state.src.charCodeAt(pos) !== 0x26/* & */) { return false; }
+  if (state.src.charCodeAt(pos) !== 0x26/* & */) return false;
 
-  if (pos + 1 < max) {
-    ch = state.src.charCodeAt(pos + 1);
+  if (pos + 1 >= max) return false;
 
-    if (ch === 0x23 /* # */) {
-      match = state.src.slice(pos).match(DIGITAL_RE);
-      if (match) {
+  ch = state.src.charCodeAt(pos + 1);
+
+  if (ch === 0x23 /* # */) {
+    match = state.src.slice(pos).match(DIGITAL_RE);
+    if (match) {
+      if (!silent) {
+        code = match[1][0].toLowerCase() === 'x' ? parseInt(match[1].slice(1), 16) : parseInt(match[1], 10);
+
+        token         = state.push('text_special', '', 0);
+        token.content = isValidEntityCode(code) ? fromCodePoint(code) : fromCodePoint(0xFFFD);
+        token.markup  = match[0];
+        token.info    = 'entity';
+      }
+      state.pos += match[0].length;
+      return true;
+    }
+  } else {
+    match = state.src.slice(pos).match(NAMED_RE);
+    if (match) {
+      if (has(entities, match[1])) {
         if (!silent) {
-          code = match[1][0].toLowerCase() === 'x' ? parseInt(match[1].slice(1), 16) : parseInt(match[1], 10);
-          state.pending += isValidEntityCode(code) ? fromCodePoint(code) : fromCodePoint(0xFFFD);
+          token         = state.push('text_special', '', 0);
+          token.content = entities[match[1]];
+          token.markup  = match[0];
+          token.info    = 'entity';
         }
         state.pos += match[0].length;
         return true;
       }
-    } else {
-      match = state.src.slice(pos).match(NAMED_RE);
-      if (match) {
-        if (has(entities, match[1])) {
-          if (!silent) { state.pending += entities[match[1]]; }
-          state.pos += match[0].length;
-          return true;
-        }
-      }
     }
   }
 
-  if (!silent) { state.pending += '&'; }
-  state.pos++;
-  return true;
+  return false;
 };
 
 
@@ -38410,42 +35889,113 @@ for (var i = 0; i < 256; i++) { ESCAPED.push(0); }
 
 
 module.exports = function escape(state, silent) {
-  var ch, pos = state.pos, max = state.posMax;
+  var ch1, ch2, origStr, escapedStr, token, pos = state.pos, max = state.posMax;
 
-  if (state.src.charCodeAt(pos) !== 0x5C/* \ */) { return false; }
-
+  if (state.src.charCodeAt(pos) !== 0x5C/* \ */) return false;
   pos++;
 
-  if (pos < max) {
-    ch = state.src.charCodeAt(pos);
+  // '\' at the end of the inline block
+  if (pos >= max) return false;
 
-    if (ch < 256 && ESCAPED[ch] !== 0) {
-      if (!silent) { state.pending += state.src[pos]; }
-      state.pos += 2;
-      return true;
+  ch1 = state.src.charCodeAt(pos);
+
+  if (ch1 === 0x0A) {
+    if (!silent) {
+      state.push('hardbreak', 'br', 0);
     }
 
-    if (ch === 0x0A) {
-      if (!silent) {
-        state.push('hardbreak', 'br', 0);
-      }
-
+    pos++;
+    // skip leading whitespaces from next line
+    while (pos < max) {
+      ch1 = state.src.charCodeAt(pos);
+      if (!isSpace(ch1)) break;
       pos++;
-      // skip leading whitespaces from next line
-      while (pos < max) {
-        ch = state.src.charCodeAt(pos);
-        if (!isSpace(ch)) { break; }
-        pos++;
-      }
+    }
 
-      state.pos = pos;
-      return true;
+    state.pos = pos;
+    return true;
+  }
+
+  escapedStr = state.src[pos];
+
+  if (ch1 >= 0xD800 && ch1 <= 0xDBFF && pos + 1 < max) {
+    ch2 = state.src.charCodeAt(pos + 1);
+
+    if (ch2 >= 0xDC00 && ch2 <= 0xDFFF) {
+      escapedStr += state.src[pos + 1];
+      pos++;
     }
   }
 
-  if (!silent) { state.pending += '\\'; }
-  state.pos++;
+  origStr = '\\' + escapedStr;
+
+  if (!silent) {
+    token = state.push('text_special', '', 0);
+
+    if (ch1 < 256 && ESCAPED[ch1] !== 0) {
+      token.content = escapedStr;
+    } else {
+      token.content = origStr;
+    }
+
+    token.markup = origStr;
+    token.info   = 'escape';
+  }
+
+  state.pos = pos + 1;
   return true;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/markdown-it/lib/rules_inline/fragments_join.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/markdown-it/lib/rules_inline/fragments_join.js ***!
+  \*********************************************************************/
+/***/ ((module) => {
+
+"use strict";
+// Clean up tokens after emphasis and strikethrough postprocessing:
+// merge adjacent text nodes into one and re-calculate all token levels
+//
+// This is necessary because initially emphasis delimiter markers (*, _, ~)
+// are treated as their own separate text tokens. Then emphasis rule either
+// leaves them as text (needed to merge with adjacent text) or turns them
+// into opening/closing tags (which messes up levels inside).
+//
+
+
+
+module.exports = function fragments_join(state) {
+  var curr, last,
+      level = 0,
+      tokens = state.tokens,
+      max = state.tokens.length;
+
+  for (curr = last = 0; curr < max; curr++) {
+    // re-calculate levels after emphasis/strikethrough turns some text nodes
+    // into opening/closing tags
+    if (tokens[curr].nesting < 0) level--; // closing tag
+    tokens[curr].level = level;
+    if (tokens[curr].nesting > 0) level++; // opening tag
+
+    if (tokens[curr].type === 'text' &&
+        curr + 1 < max &&
+        tokens[curr + 1].type === 'text') {
+
+      // collapse two adjacent text nodes
+      tokens[curr + 1].content = tokens[curr].content + tokens[curr + 1].content;
+    } else {
+      if (curr !== last) { tokens[last] = tokens[curr]; }
+
+      last++;
+    }
+  }
+
+  if (curr !== last) {
+    tokens.length = last;
+  }
 };
 
 
@@ -38464,6 +36014,14 @@ module.exports = function escape(state, silent) {
 
 
 var HTML_TAG_RE = (__webpack_require__(/*! ../common/html_re */ "./node_modules/markdown-it/lib/common/html_re.js").HTML_TAG_RE);
+
+
+function isLinkOpen(str) {
+  return /^<a[>\s]/i.test(str);
+}
+function isLinkClose(str) {
+  return /^<\/a\s*>/i.test(str);
+}
 
 
 function isLetter(ch) {
@@ -38501,6 +36059,9 @@ module.exports = function html_inline(state, silent) {
   if (!silent) {
     token         = state.push('html_inline', '', 0);
     token.content = state.src.slice(pos, pos + match[0].length);
+
+    if (isLinkOpen(token.content))  state.linkLevel++;
+    if (isLinkClose(token.content)) state.linkLevel--;
   }
   state.pos += match[0].length;
   return true;
@@ -38818,13 +36379,84 @@ module.exports = function link(state, silent) {
       attrs.push([ 'title', title ]);
     }
 
+    state.linkLevel++;
     state.md.inline.tokenize(state);
+    state.linkLevel--;
 
     token        = state.push('link_close', 'a', -1);
   }
 
   state.pos = pos;
   state.posMax = max;
+  return true;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/markdown-it/lib/rules_inline/linkify.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/markdown-it/lib/rules_inline/linkify.js ***!
+  \**************************************************************/
+/***/ ((module) => {
+
+"use strict";
+// Process links like https://example.org/
+
+
+
+
+// RFC3986: scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+var SCHEME_RE = /(?:^|[^a-z0-9.+-])([a-z][a-z0-9.+-]*)$/i;
+
+
+module.exports = function linkify(state, silent) {
+  var pos, max, match, proto, link, url, fullUrl, token;
+
+  if (!state.md.options.linkify) return false;
+  if (state.linkLevel > 0) return false;
+
+  pos = state.pos;
+  max = state.posMax;
+
+  if (pos + 3 > max) return false;
+  if (state.src.charCodeAt(pos) !== 0x3A/* : */) return false;
+  if (state.src.charCodeAt(pos + 1) !== 0x2F/* / */) return false;
+  if (state.src.charCodeAt(pos + 2) !== 0x2F/* / */) return false;
+
+  match = state.pending.match(SCHEME_RE);
+  if (!match) return false;
+
+  proto = match[1];
+
+  link = state.md.linkify.matchAtStart(state.src.slice(pos - proto.length));
+  if (!link) return false;
+
+  url = link.url;
+
+  // disallow '*' at the end of the link (conflicts with emphasis)
+  url = url.replace(/\*+$/, '');
+
+  fullUrl = state.md.normalizeLink(url);
+  if (!state.md.validateLink(fullUrl)) return false;
+
+  if (!silent) {
+    state.pending = state.pending.slice(0, -proto.length);
+
+    token         = state.push('link_open', 'a', 1);
+    token.attrs   = [ [ 'href', fullUrl ] ];
+    token.markup  = 'linkify';
+    token.info    = 'auto';
+
+    token         = state.push('text', '', 0);
+    token.content = state.md.normalizeLinkText(url);
+
+    token         = state.push('link_close', 'a', -1);
+    token.markup  = 'linkify';
+    token.info    = 'auto';
+  }
+
+  state.pos += url.length - proto.length;
   return true;
 };
 
@@ -38932,6 +36564,10 @@ function StateInline(src, md, env, outTokens) {
   // backtick length => last seen position
   this.backticks = {};
   this.backticksScanned = false;
+
+  // Counter used to disable inline linkify-it execution
+  // inside <a> and markdown links
+  this.linkLevel = 0;
 }
 
 
@@ -39290,58 +36926,6 @@ module.exports = function text(state, silent) {
 
   return true;
 };*/
-
-
-/***/ }),
-
-/***/ "./node_modules/markdown-it/lib/rules_inline/text_collapse.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/markdown-it/lib/rules_inline/text_collapse.js ***!
-  \********************************************************************/
-/***/ ((module) => {
-
-"use strict";
-// Clean up tokens after emphasis and strikethrough postprocessing:
-// merge adjacent text nodes into one and re-calculate all token levels
-//
-// This is necessary because initially emphasis delimiter markers (*, _, ~)
-// are treated as their own separate text tokens. Then emphasis rule either
-// leaves them as text (needed to merge with adjacent text) or turns them
-// into opening/closing tags (which messes up levels inside).
-//
-
-
-
-module.exports = function text_collapse(state) {
-  var curr, last,
-      level = 0,
-      tokens = state.tokens,
-      max = state.tokens.length;
-
-  for (curr = last = 0; curr < max; curr++) {
-    // re-calculate levels after emphasis/strikethrough turns some text nodes
-    // into opening/closing tags
-    if (tokens[curr].nesting < 0) level--; // closing tag
-    tokens[curr].level = level;
-    if (tokens[curr].nesting > 0) level++; // opening tag
-
-    if (tokens[curr].type === 'text' &&
-        curr + 1 < max &&
-        tokens[curr + 1].type === 'text') {
-
-      // collapse two adjacent text nodes
-      tokens[curr + 1].content = tokens[curr].content + tokens[curr + 1].content;
-    } else {
-      if (curr !== last) { tokens[last] = tokens[curr]; }
-
-      last++;
-    }
-  }
-
-  if (curr !== last) {
-    tokens.length = last;
-  }
-};
 
 
 /***/ }),
@@ -45686,6 +43270,7014 @@ module.exports = __webpack_require__.p + "dca8f336a84254858b58.png";
 
 /***/ }),
 
+/***/ "./node_modules/axios/dist/browser/axios.cjs":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/dist/browser/axios.cjs ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+// Axios v1.2.1 Copyright (c) 2022 Matt Zabriskie and contributors
+
+
+function bind(fn, thisArg) {
+  return function wrap() {
+    return fn.apply(thisArg, arguments);
+  };
+}
+
+// utils is a library of generic helper functions non-specific to axios
+
+const {toString} = Object.prototype;
+const {getPrototypeOf} = Object;
+
+const kindOf = (cache => thing => {
+    const str = toString.call(thing);
+    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+})(Object.create(null));
+
+const kindOfTest = (type) => {
+  type = type.toLowerCase();
+  return (thing) => kindOf(thing) === type
+};
+
+const typeOfTest = type => thing => typeof thing === type;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ *
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+const {isArray} = Array;
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+const isUndefined = typeOfTest('undefined');
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+const isArrayBuffer = kindOfTest('ArrayBuffer');
+
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  let result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+const isString = typeOfTest('string');
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {*} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+const isFunction = typeOfTest('function');
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+const isNumber = typeOfTest('number');
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {*} thing The value to test
+ *
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+const isObject = (thing) => thing !== null && typeof thing === 'object';
+
+/**
+ * Determine if a value is a Boolean
+ *
+ * @param {*} thing The value to test
+ * @returns {boolean} True if value is a Boolean, otherwise false
+ */
+const isBoolean = thing => thing === true || thing === false;
+
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a plain Object, otherwise false
+ */
+const isPlainObject = (val) => {
+  if (kindOf(val) !== 'object') {
+    return false;
+  }
+
+  const prototype = getPrototypeOf(val);
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+};
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+const isDate = kindOfTest('Date');
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+const isFile = kindOfTest('File');
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+const isBlob = kindOfTest('Blob');
+
+/**
+ * Determine if a value is a FileList
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+const isFileList = kindOfTest('FileList');
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+const isStream = (val) => isObject(val) && isFunction(val.pipe);
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {*} thing The value to test
+ *
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+const isFormData = (thing) => {
+  const pattern = '[object FormData]';
+  return thing && (
+    (typeof FormData === 'function' && thing instanceof FormData) ||
+    toString.call(thing) === pattern ||
+    (isFunction(thing.toString) && thing.toString() === pattern)
+  );
+};
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+const isURLSearchParams = kindOfTest('URLSearchParams');
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ *
+ * @returns {String} The String freed of excess whitespace
+ */
+const trim = (str) => str.trim ?
+  str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ *
+ * @param {Boolean} [allOwnKeys = false]
+ * @returns {any}
+ */
+function forEach(obj, fn, {allOwnKeys = false} = {}) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  let i;
+  let l;
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+    const len = keys.length;
+    let key;
+
+    for (i = 0; i < len; i++) {
+      key = keys[i];
+      fn.call(null, obj[key], key, obj);
+    }
+  }
+}
+
+function findKey(obj, key) {
+  key = key.toLowerCase();
+  const keys = Object.keys(obj);
+  let i = keys.length;
+  let _key;
+  while (i-- > 0) {
+    _key = keys[i];
+    if (key === _key.toLowerCase()) {
+      return _key;
+    }
+  }
+  return null;
+}
+
+const _global = typeof self === "undefined" ? typeof __webpack_require__.g === "undefined" ? undefined : __webpack_require__.g : self;
+
+const isContextDefined = (context) => !isUndefined(context) && context !== _global;
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ *
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  const {caseless} = isContextDefined(this) && this || {};
+  const result = {};
+  const assignValue = (val, key) => {
+    const targetKey = caseless && findKey(result, key) || key;
+    if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
+      result[targetKey] = merge(result[targetKey], val);
+    } else if (isPlainObject(val)) {
+      result[targetKey] = merge({}, val);
+    } else if (isArray(val)) {
+      result[targetKey] = val.slice();
+    } else {
+      result[targetKey] = val;
+    }
+  };
+
+  for (let i = 0, l = arguments.length; i < l; i++) {
+    arguments[i] && forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ *
+ * @param {Boolean} [allOwnKeys]
+ * @returns {Object} The resulting value of object a
+ */
+const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
+  forEach(b, (val, key) => {
+    if (thisArg && isFunction(val)) {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  }, {allOwnKeys});
+  return a;
+};
+
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ *
+ * @returns {string} content value without BOM
+ */
+const stripBOM = (content) => {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+};
+
+/**
+ * Inherit the prototype methods from one constructor into another
+ * @param {function} constructor
+ * @param {function} superConstructor
+ * @param {object} [props]
+ * @param {object} [descriptors]
+ *
+ * @returns {void}
+ */
+const inherits = (constructor, superConstructor, props, descriptors) => {
+  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+  constructor.prototype.constructor = constructor;
+  Object.defineProperty(constructor, 'super', {
+    value: superConstructor.prototype
+  });
+  props && Object.assign(constructor.prototype, props);
+};
+
+/**
+ * Resolve object with deep prototype chain to a flat object
+ * @param {Object} sourceObj source object
+ * @param {Object} [destObj]
+ * @param {Function|Boolean} [filter]
+ * @param {Function} [propFilter]
+ *
+ * @returns {Object}
+ */
+const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
+  let props;
+  let i;
+  let prop;
+  const merged = {};
+
+  destObj = destObj || {};
+  // eslint-disable-next-line no-eq-null,eqeqeq
+  if (sourceObj == null) return destObj;
+
+  do {
+    props = Object.getOwnPropertyNames(sourceObj);
+    i = props.length;
+    while (i-- > 0) {
+      prop = props[i];
+      if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+        destObj[prop] = sourceObj[prop];
+        merged[prop] = true;
+      }
+    }
+    sourceObj = filter !== false && getPrototypeOf(sourceObj);
+  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+
+  return destObj;
+};
+
+/**
+ * Determines whether a string ends with the characters of a specified string
+ *
+ * @param {String} str
+ * @param {String} searchString
+ * @param {Number} [position= 0]
+ *
+ * @returns {boolean}
+ */
+const endsWith = (str, searchString, position) => {
+  str = String(str);
+  if (position === undefined || position > str.length) {
+    position = str.length;
+  }
+  position -= searchString.length;
+  const lastIndex = str.indexOf(searchString, position);
+  return lastIndex !== -1 && lastIndex === position;
+};
+
+
+/**
+ * Returns new array from array like object or null if failed
+ *
+ * @param {*} [thing]
+ *
+ * @returns {?Array}
+ */
+const toArray = (thing) => {
+  if (!thing) return null;
+  if (isArray(thing)) return thing;
+  let i = thing.length;
+  if (!isNumber(i)) return null;
+  const arr = new Array(i);
+  while (i-- > 0) {
+    arr[i] = thing[i];
+  }
+  return arr;
+};
+
+/**
+ * Checking if the Uint8Array exists and if it does, it returns a function that checks if the
+ * thing passed in is an instance of Uint8Array
+ *
+ * @param {TypedArray}
+ *
+ * @returns {Array}
+ */
+// eslint-disable-next-line func-names
+const isTypedArray = (TypedArray => {
+  // eslint-disable-next-line func-names
+  return thing => {
+    return TypedArray && thing instanceof TypedArray;
+  };
+})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
+
+/**
+ * For each entry in the object, call the function with the key and value.
+ *
+ * @param {Object<any, any>} obj - The object to iterate over.
+ * @param {Function} fn - The function to call for each entry.
+ *
+ * @returns {void}
+ */
+const forEachEntry = (obj, fn) => {
+  const generator = obj && obj[Symbol.iterator];
+
+  const iterator = generator.call(obj);
+
+  let result;
+
+  while ((result = iterator.next()) && !result.done) {
+    const pair = result.value;
+    fn.call(obj, pair[0], pair[1]);
+  }
+};
+
+/**
+ * It takes a regular expression and a string, and returns an array of all the matches
+ *
+ * @param {string} regExp - The regular expression to match against.
+ * @param {string} str - The string to search.
+ *
+ * @returns {Array<boolean>}
+ */
+const matchAll = (regExp, str) => {
+  let matches;
+  const arr = [];
+
+  while ((matches = regExp.exec(str)) !== null) {
+    arr.push(matches);
+  }
+
+  return arr;
+};
+
+/* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
+const isHTMLForm = kindOfTest('HTMLFormElement');
+
+const toCamelCase = str => {
+  return str.toLowerCase().replace(/[_-\s]([a-z\d])(\w*)/g,
+    function replacer(m, p1, p2) {
+      return p1.toUpperCase() + p2;
+    }
+  );
+};
+
+/* Creating a function that will check if an object has a property. */
+const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
+
+/**
+ * Determine if a value is a RegExp object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a RegExp object, otherwise false
+ */
+const isRegExp = kindOfTest('RegExp');
+
+const reduceDescriptors = (obj, reducer) => {
+  const descriptors = Object.getOwnPropertyDescriptors(obj);
+  const reducedDescriptors = {};
+
+  forEach(descriptors, (descriptor, name) => {
+    if (reducer(descriptor, name, obj) !== false) {
+      reducedDescriptors[name] = descriptor;
+    }
+  });
+
+  Object.defineProperties(obj, reducedDescriptors);
+};
+
+/**
+ * Makes all methods read-only
+ * @param {Object} obj
+ */
+
+const freezeMethods = (obj) => {
+  reduceDescriptors(obj, (descriptor, name) => {
+    // skip restricted props in strict mode
+    if (isFunction(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
+      return false;
+    }
+
+    const value = obj[name];
+
+    if (!isFunction(value)) return;
+
+    descriptor.enumerable = false;
+
+    if ('writable' in descriptor) {
+      descriptor.writable = false;
+      return;
+    }
+
+    if (!descriptor.set) {
+      descriptor.set = () => {
+        throw Error('Can not rewrite read-only method \'' + name + '\'');
+      };
+    }
+  });
+};
+
+const toObjectSet = (arrayOrString, delimiter) => {
+  const obj = {};
+
+  const define = (arr) => {
+    arr.forEach(value => {
+      obj[value] = true;
+    });
+  };
+
+  isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
+
+  return obj;
+};
+
+const noop = () => {};
+
+const toFiniteNumber = (value, defaultValue) => {
+  value = +value;
+  return Number.isFinite(value) ? value : defaultValue;
+};
+
+const toJSONObject = (obj) => {
+  const stack = new Array(10);
+
+  const visit = (source, i) => {
+
+    if (isObject(source)) {
+      if (stack.indexOf(source) >= 0) {
+        return;
+      }
+
+      if(!('toJSON' in source)) {
+        stack[i] = source;
+        const target = isArray(source) ? [] : {};
+
+        forEach(source, (value, key) => {
+          const reducedValue = visit(value, i + 1);
+          !isUndefined(reducedValue) && (target[key] = reducedValue);
+        });
+
+        stack[i] = undefined;
+
+        return target;
+      }
+    }
+
+    return source;
+  };
+
+  return visit(obj, 0);
+};
+
+var utils = {
+  isArray,
+  isArrayBuffer,
+  isBuffer,
+  isFormData,
+  isArrayBufferView,
+  isString,
+  isNumber,
+  isBoolean,
+  isObject,
+  isPlainObject,
+  isUndefined,
+  isDate,
+  isFile,
+  isBlob,
+  isRegExp,
+  isFunction,
+  isStream,
+  isURLSearchParams,
+  isTypedArray,
+  isFileList,
+  forEach,
+  merge,
+  extend,
+  trim,
+  stripBOM,
+  inherits,
+  toFlatObject,
+  kindOf,
+  kindOfTest,
+  endsWith,
+  toArray,
+  forEachEntry,
+  matchAll,
+  isHTMLForm,
+  hasOwnProperty,
+  hasOwnProp: hasOwnProperty, // an alias to avoid ESLint no-prototype-builtins detection
+  reduceDescriptors,
+  freezeMethods,
+  toObjectSet,
+  toCamelCase,
+  noop,
+  toFiniteNumber,
+  findKey,
+  global: _global,
+  isContextDefined,
+  toJSONObject
+};
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [config] The config.
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ *
+ * @returns {Error} The created error.
+ */
+function AxiosError(message, code, config, request, response) {
+  Error.call(this);
+
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    this.stack = (new Error()).stack;
+  }
+
+  this.message = message;
+  this.name = 'AxiosError';
+  code && (this.code = code);
+  config && (this.config = config);
+  request && (this.request = request);
+  response && (this.response = response);
+}
+
+utils.inherits(AxiosError, Error, {
+  toJSON: function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: utils.toJSONObject(this.config),
+      code: this.code,
+      status: this.response && this.response.status ? this.response.status : null
+    };
+  }
+});
+
+const prototype$1 = AxiosError.prototype;
+const descriptors = {};
+
+[
+  'ERR_BAD_OPTION_VALUE',
+  'ERR_BAD_OPTION',
+  'ECONNABORTED',
+  'ETIMEDOUT',
+  'ERR_NETWORK',
+  'ERR_FR_TOO_MANY_REDIRECTS',
+  'ERR_DEPRECATED',
+  'ERR_BAD_RESPONSE',
+  'ERR_BAD_REQUEST',
+  'ERR_CANCELED',
+  'ERR_NOT_SUPPORT',
+  'ERR_INVALID_URL'
+// eslint-disable-next-line func-names
+].forEach(code => {
+  descriptors[code] = {value: code};
+});
+
+Object.defineProperties(AxiosError, descriptors);
+Object.defineProperty(prototype$1, 'isAxiosError', {value: true});
+
+// eslint-disable-next-line func-names
+AxiosError.from = (error, code, config, request, response, customProps) => {
+  const axiosError = Object.create(prototype$1);
+
+  utils.toFlatObject(error, axiosError, function filter(obj) {
+    return obj !== Error.prototype;
+  }, prop => {
+    return prop !== 'isAxiosError';
+  });
+
+  AxiosError.call(axiosError, error.message, code, config, request, response);
+
+  axiosError.cause = error;
+
+  axiosError.name = error.name;
+
+  customProps && Object.assign(axiosError, customProps);
+
+  return axiosError;
+};
+
+/* eslint-env browser */
+var browser = typeof self == 'object' ? self.FormData : window.FormData;
+
+var FormData$2 = browser;
+
+/**
+ * Determines if the given thing is a array or js object.
+ *
+ * @param {string} thing - The object or array to be visited.
+ *
+ * @returns {boolean}
+ */
+function isVisitable(thing) {
+  return utils.isPlainObject(thing) || utils.isArray(thing);
+}
+
+/**
+ * It removes the brackets from the end of a string
+ *
+ * @param {string} key - The key of the parameter.
+ *
+ * @returns {string} the key without the brackets.
+ */
+function removeBrackets(key) {
+  return utils.endsWith(key, '[]') ? key.slice(0, -2) : key;
+}
+
+/**
+ * It takes a path, a key, and a boolean, and returns a string
+ *
+ * @param {string} path - The path to the current key.
+ * @param {string} key - The key of the current object being iterated over.
+ * @param {string} dots - If true, the key will be rendered with dots instead of brackets.
+ *
+ * @returns {string} The path to the current key.
+ */
+function renderKey(path, key, dots) {
+  if (!path) return key;
+  return path.concat(key).map(function each(token, i) {
+    // eslint-disable-next-line no-param-reassign
+    token = removeBrackets(token);
+    return !dots && i ? '[' + token + ']' : token;
+  }).join(dots ? '.' : '');
+}
+
+/**
+ * If the array is an array and none of its elements are visitable, then it's a flat array.
+ *
+ * @param {Array<any>} arr - The array to check
+ *
+ * @returns {boolean}
+ */
+function isFlatArray(arr) {
+  return utils.isArray(arr) && !arr.some(isVisitable);
+}
+
+const predicates = utils.toFlatObject(utils, {}, null, function filter(prop) {
+  return /^is[A-Z]/.test(prop);
+});
+
+/**
+ * If the thing is a FormData object, return true, otherwise return false.
+ *
+ * @param {unknown} thing - The thing to check.
+ *
+ * @returns {boolean}
+ */
+function isSpecCompliant(thing) {
+  return thing && utils.isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator];
+}
+
+/**
+ * Convert a data object to FormData
+ *
+ * @param {Object} obj
+ * @param {?Object} [formData]
+ * @param {?Object} [options]
+ * @param {Function} [options.visitor]
+ * @param {Boolean} [options.metaTokens = true]
+ * @param {Boolean} [options.dots = false]
+ * @param {?Boolean} [options.indexes = false]
+ *
+ * @returns {Object}
+ **/
+
+/**
+ * It converts an object into a FormData object
+ *
+ * @param {Object<any, any>} obj - The object to convert to form data.
+ * @param {string} formData - The FormData object to append to.
+ * @param {Object<string, any>} options
+ *
+ * @returns
+ */
+function toFormData(obj, formData, options) {
+  if (!utils.isObject(obj)) {
+    throw new TypeError('target must be an object');
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  formData = formData || new (FormData$2 || FormData)();
+
+  // eslint-disable-next-line no-param-reassign
+  options = utils.toFlatObject(options, {
+    metaTokens: true,
+    dots: false,
+    indexes: false
+  }, false, function defined(option, source) {
+    // eslint-disable-next-line no-eq-null,eqeqeq
+    return !utils.isUndefined(source[option]);
+  });
+
+  const metaTokens = options.metaTokens;
+  // eslint-disable-next-line no-use-before-define
+  const visitor = options.visitor || defaultVisitor;
+  const dots = options.dots;
+  const indexes = options.indexes;
+  const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
+  const useBlob = _Blob && isSpecCompliant(formData);
+
+  if (!utils.isFunction(visitor)) {
+    throw new TypeError('visitor must be a function');
+  }
+
+  function convertValue(value) {
+    if (value === null) return '';
+
+    if (utils.isDate(value)) {
+      return value.toISOString();
+    }
+
+    if (!useBlob && utils.isBlob(value)) {
+      throw new AxiosError('Blob is not supported. Use a Buffer instead.');
+    }
+
+    if (utils.isArrayBuffer(value) || utils.isTypedArray(value)) {
+      return useBlob && typeof Blob === 'function' ? new Blob([value]) : Buffer.from(value);
+    }
+
+    return value;
+  }
+
+  /**
+   * Default visitor.
+   *
+   * @param {*} value
+   * @param {String|Number} key
+   * @param {Array<String|Number>} path
+   * @this {FormData}
+   *
+   * @returns {boolean} return true to visit the each prop of the value recursively
+   */
+  function defaultVisitor(value, key, path) {
+    let arr = value;
+
+    if (value && !path && typeof value === 'object') {
+      if (utils.endsWith(key, '{}')) {
+        // eslint-disable-next-line no-param-reassign
+        key = metaTokens ? key : key.slice(0, -2);
+        // eslint-disable-next-line no-param-reassign
+        value = JSON.stringify(value);
+      } else if (
+        (utils.isArray(value) && isFlatArray(value)) ||
+        (utils.isFileList(value) || utils.endsWith(key, '[]') && (arr = utils.toArray(value))
+        )) {
+        // eslint-disable-next-line no-param-reassign
+        key = removeBrackets(key);
+
+        arr.forEach(function each(el, index) {
+          !(utils.isUndefined(el) || el === null) && formData.append(
+            // eslint-disable-next-line no-nested-ternary
+            indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
+            convertValue(el)
+          );
+        });
+        return false;
+      }
+    }
+
+    if (isVisitable(value)) {
+      return true;
+    }
+
+    formData.append(renderKey(path, key, dots), convertValue(value));
+
+    return false;
+  }
+
+  const stack = [];
+
+  const exposedHelpers = Object.assign(predicates, {
+    defaultVisitor,
+    convertValue,
+    isVisitable
+  });
+
+  function build(value, path) {
+    if (utils.isUndefined(value)) return;
+
+    if (stack.indexOf(value) !== -1) {
+      throw Error('Circular reference detected in ' + path.join('.'));
+    }
+
+    stack.push(value);
+
+    utils.forEach(value, function each(el, key) {
+      const result = !(utils.isUndefined(el) || el === null) && visitor.call(
+        formData, el, utils.isString(key) ? key.trim() : key, path, exposedHelpers
+      );
+
+      if (result === true) {
+        build(el, path ? path.concat(key) : [key]);
+      }
+    });
+
+    stack.pop();
+  }
+
+  if (!utils.isObject(obj)) {
+    throw new TypeError('data must be an object');
+  }
+
+  build(obj);
+
+  return formData;
+}
+
+/**
+ * It encodes a string by replacing all characters that are not in the unreserved set with
+ * their percent-encoded equivalents
+ *
+ * @param {string} str - The string to encode.
+ *
+ * @returns {string} The encoded string.
+ */
+function encode$1(str) {
+  const charMap = {
+    '!': '%21',
+    "'": '%27',
+    '(': '%28',
+    ')': '%29',
+    '~': '%7E',
+    '%20': '+',
+    '%00': '\x00'
+  };
+  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
+    return charMap[match];
+  });
+}
+
+/**
+ * It takes a params object and converts it to a FormData object
+ *
+ * @param {Object<string, any>} params - The parameters to be converted to a FormData object.
+ * @param {Object<string, any>} options - The options object passed to the Axios constructor.
+ *
+ * @returns {void}
+ */
+function AxiosURLSearchParams(params, options) {
+  this._pairs = [];
+
+  params && toFormData(params, this, options);
+}
+
+const prototype = AxiosURLSearchParams.prototype;
+
+prototype.append = function append(name, value) {
+  this._pairs.push([name, value]);
+};
+
+prototype.toString = function toString(encoder) {
+  const _encode = encoder ? function(value) {
+    return encoder.call(this, value, encode$1);
+  } : encode$1;
+
+  return this._pairs.map(function each(pair) {
+    return _encode(pair[0]) + '=' + _encode(pair[1]);
+  }, '').join('&');
+};
+
+/**
+ * It replaces all instances of the characters `:`, `$`, `,`, `+`, `[`, and `]` with their
+ * URI encoded counterparts
+ *
+ * @param {string} val The value to be encoded.
+ *
+ * @returns {string} The encoded value.
+ */
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @param {?object} options
+ *
+ * @returns {string} The formatted url
+ */
+function buildURL(url, params, options) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+  
+  const _encode = options && options.encode || encode;
+
+  const serializeFn = options && options.serialize;
+
+  let serializedParams;
+
+  if (serializeFn) {
+    serializedParams = serializeFn(params, options);
+  } else {
+    serializedParams = utils.isURLSearchParams(params) ?
+      params.toString() :
+      new AxiosURLSearchParams(params, options).toString(_encode);
+  }
+
+  if (serializedParams) {
+    const hashmarkIndex = url.indexOf("#");
+
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+}
+
+class InterceptorManager {
+  constructor() {
+    this.handlers = [];
+  }
+
+  /**
+   * Add a new interceptor to the stack
+   *
+   * @param {Function} fulfilled The function to handle `then` for a `Promise`
+   * @param {Function} rejected The function to handle `reject` for a `Promise`
+   *
+   * @return {Number} An ID used to remove interceptor later
+   */
+  use(fulfilled, rejected, options) {
+    this.handlers.push({
+      fulfilled,
+      rejected,
+      synchronous: options ? options.synchronous : false,
+      runWhen: options ? options.runWhen : null
+    });
+    return this.handlers.length - 1;
+  }
+
+  /**
+   * Remove an interceptor from the stack
+   *
+   * @param {Number} id The ID that was returned by `use`
+   *
+   * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
+   */
+  eject(id) {
+    if (this.handlers[id]) {
+      this.handlers[id] = null;
+    }
+  }
+
+  /**
+   * Clear all interceptors from the stack
+   *
+   * @returns {void}
+   */
+  clear() {
+    if (this.handlers) {
+      this.handlers = [];
+    }
+  }
+
+  /**
+   * Iterate over all the registered interceptors
+   *
+   * This method is particularly useful for skipping over any
+   * interceptors that may have become `null` calling `eject`.
+   *
+   * @param {Function} fn The function to call for each interceptor
+   *
+   * @returns {void}
+   */
+  forEach(fn) {
+    utils.forEach(this.handlers, function forEachHandler(h) {
+      if (h !== null) {
+        fn(h);
+      }
+    });
+  }
+}
+
+var InterceptorManager$1 = InterceptorManager;
+
+var transitionalDefaults = {
+  silentJSONParsing: true,
+  forcedJSONParsing: true,
+  clarifyTimeoutError: false
+};
+
+var URLSearchParams$1 = typeof URLSearchParams !== 'undefined' ? URLSearchParams : AxiosURLSearchParams;
+
+var FormData$1 = FormData;
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ *
+ * @returns {boolean}
+ */
+const isStandardBrowserEnv = (() => {
+  let product;
+  if (typeof navigator !== 'undefined' && (
+    (product = navigator.product) === 'ReactNative' ||
+    product === 'NativeScript' ||
+    product === 'NS')
+  ) {
+    return false;
+  }
+
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+})();
+
+/**
+ * Determine if we're running in a standard browser webWorker environment
+ *
+ * Although the `isStandardBrowserEnv` method indicates that
+ * `allows axios to run in a web worker`, the WebWorker will still be
+ * filtered out due to its judgment standard
+ * `typeof window !== 'undefined' && typeof document !== 'undefined'`.
+ * This leads to a problem when axios post `FormData` in webWorker
+ */
+ const isStandardBrowserWebWorkerEnv = (() => {
+  return (
+    typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope &&
+    typeof self.importScripts === 'function'
+  );
+})();
+
+
+var platform = {
+  isBrowser: true,
+  classes: {
+    URLSearchParams: URLSearchParams$1,
+    FormData: FormData$1,
+    Blob
+  },
+  isStandardBrowserEnv,
+  isStandardBrowserWebWorkerEnv,
+  protocols: ['http', 'https', 'file', 'blob', 'url', 'data']
+};
+
+function toURLEncodedForm(data, options) {
+  return toFormData(data, new platform.classes.URLSearchParams(), Object.assign({
+    visitor: function(value, key, path, helpers) {
+      if (platform.isNode && utils.isBuffer(value)) {
+        this.append(key, value.toString('base64'));
+        return false;
+      }
+
+      return helpers.defaultVisitor.apply(this, arguments);
+    }
+  }, options));
+}
+
+/**
+ * It takes a string like `foo[x][y][z]` and returns an array like `['foo', 'x', 'y', 'z']
+ *
+ * @param {string} name - The name of the property to get.
+ *
+ * @returns An array of strings.
+ */
+function parsePropPath(name) {
+  // foo[x][y][z]
+  // foo.x.y.z
+  // foo-x-y-z
+  // foo x y z
+  return utils.matchAll(/\w+|\[(\w*)]/g, name).map(match => {
+    return match[0] === '[]' ? '' : match[1] || match[0];
+  });
+}
+
+/**
+ * Convert an array to an object.
+ *
+ * @param {Array<any>} arr - The array to convert to an object.
+ *
+ * @returns An object with the same keys and values as the array.
+ */
+function arrayToObject(arr) {
+  const obj = {};
+  const keys = Object.keys(arr);
+  let i;
+  const len = keys.length;
+  let key;
+  for (i = 0; i < len; i++) {
+    key = keys[i];
+    obj[key] = arr[key];
+  }
+  return obj;
+}
+
+/**
+ * It takes a FormData object and returns a JavaScript object
+ *
+ * @param {string} formData The FormData object to convert to JSON.
+ *
+ * @returns {Object<string, any> | null} The converted object.
+ */
+function formDataToJSON(formData) {
+  function buildPath(path, value, target, index) {
+    let name = path[index++];
+    const isNumericKey = Number.isFinite(+name);
+    const isLast = index >= path.length;
+    name = !name && utils.isArray(target) ? target.length : name;
+
+    if (isLast) {
+      if (utils.hasOwnProp(target, name)) {
+        target[name] = [target[name], value];
+      } else {
+        target[name] = value;
+      }
+
+      return !isNumericKey;
+    }
+
+    if (!target[name] || !utils.isObject(target[name])) {
+      target[name] = [];
+    }
+
+    const result = buildPath(path, value, target[name], index);
+
+    if (result && utils.isArray(target[name])) {
+      target[name] = arrayToObject(target[name]);
+    }
+
+    return !isNumericKey;
+  }
+
+  if (utils.isFormData(formData) && utils.isFunction(formData.entries)) {
+    const obj = {};
+
+    utils.forEachEntry(formData, (name, value) => {
+      buildPath(parsePropPath(name), value, obj, 0);
+    });
+
+    return obj;
+  }
+
+  return null;
+}
+
+const DEFAULT_CONTENT_TYPE = {
+  'Content-Type': undefined
+};
+
+/**
+ * It takes a string, tries to parse it, and if it fails, it returns the stringified version
+ * of the input
+ *
+ * @param {any} rawValue - The value to be stringified.
+ * @param {Function} parser - A function that parses a string into a JavaScript object.
+ * @param {Function} encoder - A function that takes a value and returns a string.
+ *
+ * @returns {string} A stringified version of the rawValue.
+ */
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+const defaults = {
+
+  transitional: transitionalDefaults,
+
+  adapter: ['xhr', 'http'],
+
+  transformRequest: [function transformRequest(data, headers) {
+    const contentType = headers.getContentType() || '';
+    const hasJSONContentType = contentType.indexOf('application/json') > -1;
+    const isObjectPayload = utils.isObject(data);
+
+    if (isObjectPayload && utils.isHTMLForm(data)) {
+      data = new FormData(data);
+    }
+
+    const isFormData = utils.isFormData(data);
+
+    if (isFormData) {
+      if (!hasJSONContentType) {
+        return data;
+      }
+      return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
+    }
+
+    if (utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
+      return data.toString();
+    }
+
+    let isFileList;
+
+    if (isObjectPayload) {
+      if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
+        return toURLEncodedForm(data, this.formSerializer).toString();
+      }
+
+      if ((isFileList = utils.isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
+        const _FormData = this.env && this.env.FormData;
+
+        return toFormData(
+          isFileList ? {'files[]': data} : data,
+          _FormData && new _FormData(),
+          this.formSerializer
+        );
+      }
+    }
+
+    if (isObjectPayload || hasJSONContentType ) {
+      headers.setContentType('application/json', false);
+      return stringifySafely(data);
+    }
+
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    const transitional = this.transitional || defaults.transitional;
+    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    const JSONRequested = this.responseType === 'json';
+
+    if (data && utils.isString(data) && ((forcedJSONParsing && !this.responseType) || JSONRequested)) {
+      const silentJSONParsing = transitional && transitional.silentJSONParsing;
+      const strictJSONParsing = !silentJSONParsing && JSONRequested;
+
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
+          }
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+  maxBodyLength: -1,
+
+  env: {
+    FormData: platform.classes.FormData,
+    Blob: platform.classes.Blob
+  },
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  },
+
+  headers: {
+    common: {
+      'Accept': 'application/json, text/plain, */*'
+    }
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+var defaults$1 = defaults;
+
+// RawAxiosHeaders whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+const ignoreDuplicateOf = utils.toObjectSet([
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+]);
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} rawHeaders Headers needing to be parsed
+ *
+ * @returns {Object} Headers parsed into an object
+ */
+var parseHeaders = rawHeaders => {
+  const parsed = {};
+  let key;
+  let val;
+  let i;
+
+  rawHeaders && rawHeaders.split('\n').forEach(function parser(line) {
+    i = line.indexOf(':');
+    key = line.substring(0, i).trim().toLowerCase();
+    val = line.substring(i + 1).trim();
+
+    if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
+      return;
+    }
+
+    if (key === 'set-cookie') {
+      if (parsed[key]) {
+        parsed[key].push(val);
+      } else {
+        parsed[key] = [val];
+      }
+    } else {
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+    }
+  });
+
+  return parsed;
+};
+
+const $internals = Symbol('internals');
+
+function normalizeHeader(header) {
+  return header && String(header).trim().toLowerCase();
+}
+
+function normalizeValue(value) {
+  if (value === false || value == null) {
+    return value;
+  }
+
+  return utils.isArray(value) ? value.map(normalizeValue) : String(value);
+}
+
+function parseTokens(str) {
+  const tokens = Object.create(null);
+  const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
+  let match;
+
+  while ((match = tokensRE.exec(str))) {
+    tokens[match[1]] = match[2];
+  }
+
+  return tokens;
+}
+
+function isValidHeaderName(str) {
+  return /^[-_a-zA-Z]+$/.test(str.trim());
+}
+
+function matchHeaderValue(context, value, header, filter) {
+  if (utils.isFunction(filter)) {
+    return filter.call(this, value, header);
+  }
+
+  if (!utils.isString(value)) return;
+
+  if (utils.isString(filter)) {
+    return value.indexOf(filter) !== -1;
+  }
+
+  if (utils.isRegExp(filter)) {
+    return filter.test(value);
+  }
+}
+
+function formatHeader(header) {
+  return header.trim()
+    .toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
+      return char.toUpperCase() + str;
+    });
+}
+
+function buildAccessors(obj, header) {
+  const accessorName = utils.toCamelCase(' ' + header);
+
+  ['get', 'set', 'has'].forEach(methodName => {
+    Object.defineProperty(obj, methodName + accessorName, {
+      value: function(arg1, arg2, arg3) {
+        return this[methodName].call(this, header, arg1, arg2, arg3);
+      },
+      configurable: true
+    });
+  });
+}
+
+class AxiosHeaders {
+  constructor(headers) {
+    headers && this.set(headers);
+  }
+
+  set(header, valueOrRewrite, rewrite) {
+    const self = this;
+
+    function setHeader(_value, _header, _rewrite) {
+      const lHeader = normalizeHeader(_header);
+
+      if (!lHeader) {
+        throw new Error('header name must be a non-empty string');
+      }
+
+      const key = utils.findKey(self, lHeader);
+
+      if(!key || self[key] === undefined || _rewrite === true || (_rewrite === undefined && self[key] !== false)) {
+        self[key || _header] = normalizeValue(_value);
+      }
+    }
+
+    const setHeaders = (headers, _rewrite) =>
+      utils.forEach(headers, (_value, _header) => setHeader(_value, _header, _rewrite));
+
+    if (utils.isPlainObject(header) || header instanceof this.constructor) {
+      setHeaders(header, valueOrRewrite);
+    } else if(utils.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+      setHeaders(parseHeaders(header), valueOrRewrite);
+    } else {
+      header != null && setHeader(valueOrRewrite, header, rewrite);
+    }
+
+    return this;
+  }
+
+  get(header, parser) {
+    header = normalizeHeader(header);
+
+    if (header) {
+      const key = utils.findKey(this, header);
+
+      if (key) {
+        const value = this[key];
+
+        if (!parser) {
+          return value;
+        }
+
+        if (parser === true) {
+          return parseTokens(value);
+        }
+
+        if (utils.isFunction(parser)) {
+          return parser.call(this, value, key);
+        }
+
+        if (utils.isRegExp(parser)) {
+          return parser.exec(value);
+        }
+
+        throw new TypeError('parser must be boolean|regexp|function');
+      }
+    }
+  }
+
+  has(header, matcher) {
+    header = normalizeHeader(header);
+
+    if (header) {
+      const key = utils.findKey(this, header);
+
+      return !!(key && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
+    }
+
+    return false;
+  }
+
+  delete(header, matcher) {
+    const self = this;
+    let deleted = false;
+
+    function deleteHeader(_header) {
+      _header = normalizeHeader(_header);
+
+      if (_header) {
+        const key = utils.findKey(self, _header);
+
+        if (key && (!matcher || matchHeaderValue(self, self[key], key, matcher))) {
+          delete self[key];
+
+          deleted = true;
+        }
+      }
+    }
+
+    if (utils.isArray(header)) {
+      header.forEach(deleteHeader);
+    } else {
+      deleteHeader(header);
+    }
+
+    return deleted;
+  }
+
+  clear() {
+    return Object.keys(this).forEach(this.delete.bind(this));
+  }
+
+  normalize(format) {
+    const self = this;
+    const headers = {};
+
+    utils.forEach(this, (value, header) => {
+      const key = utils.findKey(headers, header);
+
+      if (key) {
+        self[key] = normalizeValue(value);
+        delete self[header];
+        return;
+      }
+
+      const normalized = format ? formatHeader(header) : String(header).trim();
+
+      if (normalized !== header) {
+        delete self[header];
+      }
+
+      self[normalized] = normalizeValue(value);
+
+      headers[normalized] = true;
+    });
+
+    return this;
+  }
+
+  concat(...targets) {
+    return this.constructor.concat(this, ...targets);
+  }
+
+  toJSON(asStrings) {
+    const obj = Object.create(null);
+
+    utils.forEach(this, (value, header) => {
+      value != null && value !== false && (obj[header] = asStrings && utils.isArray(value) ? value.join(', ') : value);
+    });
+
+    return obj;
+  }
+
+  [Symbol.iterator]() {
+    return Object.entries(this.toJSON())[Symbol.iterator]();
+  }
+
+  toString() {
+    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+  }
+
+  get [Symbol.toStringTag]() {
+    return 'AxiosHeaders';
+  }
+
+  static from(thing) {
+    return thing instanceof this ? thing : new this(thing);
+  }
+
+  static concat(first, ...targets) {
+    const computed = new this(first);
+
+    targets.forEach((target) => computed.set(target));
+
+    return computed;
+  }
+
+  static accessor(header) {
+    const internals = this[$internals] = (this[$internals] = {
+      accessors: {}
+    });
+
+    const accessors = internals.accessors;
+    const prototype = this.prototype;
+
+    function defineAccessor(_header) {
+      const lHeader = normalizeHeader(_header);
+
+      if (!accessors[lHeader]) {
+        buildAccessors(prototype, _header);
+        accessors[lHeader] = true;
+      }
+    }
+
+    utils.isArray(header) ? header.forEach(defineAccessor) : defineAccessor(header);
+
+    return this;
+  }
+}
+
+AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent']);
+
+utils.freezeMethods(AxiosHeaders.prototype);
+utils.freezeMethods(AxiosHeaders);
+
+var AxiosHeaders$1 = AxiosHeaders;
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Array|Function} fns A single function or Array of functions
+ * @param {?Object} response The response object
+ *
+ * @returns {*} The resulting transformed data
+ */
+function transformData(fns, response) {
+  const config = this || defaults$1;
+  const context = response || config;
+  const headers = AxiosHeaders$1.from(context.headers);
+  let data = context.data;
+
+  utils.forEach(fns, function transform(fn) {
+    data = fn.call(config, data, headers.normalize(), response ? response.status : undefined);
+  });
+
+  headers.normalize();
+
+  return data;
+}
+
+function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+}
+
+/**
+ * A `CanceledError` is an object that is thrown when an operation is canceled.
+ *
+ * @param {string=} message The message.
+ * @param {Object=} config The config.
+ * @param {Object=} request The request.
+ *
+ * @returns {CanceledError} The created error.
+ */
+function CanceledError(message, config, request) {
+  // eslint-disable-next-line no-eq-null,eqeqeq
+  AxiosError.call(this, message == null ? 'canceled' : message, AxiosError.ERR_CANCELED, config, request);
+  this.name = 'CanceledError';
+}
+
+utils.inherits(CanceledError, AxiosError, {
+  __CANCEL__: true
+});
+
+// eslint-disable-next-line strict
+var httpAdapter = null;
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ *
+ * @returns {object} The response.
+ */
+function settle(resolve, reject, response) {
+  const validateStatus = response.config.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(new AxiosError(
+      'Request failed with status code ' + response.status,
+      [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+      response.config,
+      response.request,
+      response
+    ));
+  }
+}
+
+var cookies = platform.isStandardBrowserEnv ?
+
+// Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        const cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+// Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })();
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ *
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+}
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ *
+ * @returns {string} The combined URL
+ */
+function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+}
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ *
+ * @returns {string} The combined full path
+ */
+function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+  return requestedURL;
+}
+
+var isURLSameOrigin = platform.isStandardBrowserEnv ?
+
+// Standard browser envs have full support of the APIs needed to test
+// whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    const msie = /(msie|trident)/i.test(navigator.userAgent);
+    const urlParsingNode = document.createElement('a');
+    let originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      let href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+          urlParsingNode.pathname :
+          '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      const parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+          parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })();
+
+function parseProtocol(url) {
+  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+  return match && match[1] || '';
+}
+
+/**
+ * Calculate data maxRate
+ * @param {Number} [samplesCount= 10]
+ * @param {Number} [min= 1000]
+ * @returns {Function}
+ */
+function speedometer(samplesCount, min) {
+  samplesCount = samplesCount || 10;
+  const bytes = new Array(samplesCount);
+  const timestamps = new Array(samplesCount);
+  let head = 0;
+  let tail = 0;
+  let firstSampleTS;
+
+  min = min !== undefined ? min : 1000;
+
+  return function push(chunkLength) {
+    const now = Date.now();
+
+    const startedAt = timestamps[tail];
+
+    if (!firstSampleTS) {
+      firstSampleTS = now;
+    }
+
+    bytes[head] = chunkLength;
+    timestamps[head] = now;
+
+    let i = tail;
+    let bytesCount = 0;
+
+    while (i !== head) {
+      bytesCount += bytes[i++];
+      i = i % samplesCount;
+    }
+
+    head = (head + 1) % samplesCount;
+
+    if (head === tail) {
+      tail = (tail + 1) % samplesCount;
+    }
+
+    if (now - firstSampleTS < min) {
+      return;
+    }
+
+    const passed = startedAt && now - startedAt;
+
+    return passed ? Math.round(bytesCount * 1000 / passed) : undefined;
+  };
+}
+
+function progressEventReducer(listener, isDownloadStream) {
+  let bytesNotified = 0;
+  const _speedometer = speedometer(50, 250);
+
+  return e => {
+    const loaded = e.loaded;
+    const total = e.lengthComputable ? e.total : undefined;
+    const progressBytes = loaded - bytesNotified;
+    const rate = _speedometer(progressBytes);
+    const inRange = loaded <= total;
+
+    bytesNotified = loaded;
+
+    const data = {
+      loaded,
+      total,
+      progress: total ? (loaded / total) : undefined,
+      bytes: progressBytes,
+      rate: rate ? rate : undefined,
+      estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
+      event: e
+    };
+
+    data[isDownloadStream ? 'download' : 'upload'] = true;
+
+    listener(data);
+  };
+}
+
+const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
+
+var xhrAdapter = isXHRAdapterSupported && function (config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    let requestData = config.data;
+    const requestHeaders = AxiosHeaders$1.from(config.headers).normalize();
+    const responseType = config.responseType;
+    let onCanceled;
+    function done() {
+      if (config.cancelToken) {
+        config.cancelToken.unsubscribe(onCanceled);
+      }
+
+      if (config.signal) {
+        config.signal.removeEventListener('abort', onCanceled);
+      }
+    }
+
+    if (utils.isFormData(requestData) && (platform.isStandardBrowserEnv || platform.isStandardBrowserWebWorkerEnv)) {
+      requestHeaders.setContentType(false); // Let the browser set it
+    }
+
+    let request = new XMLHttpRequest();
+
+    // HTTP basic authentication
+    if (config.auth) {
+      const username = config.auth.username || '';
+      const password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.set('Authorization', 'Basic ' + btoa(username + ':' + password));
+    }
+
+    const fullPath = buildFullPath(config.baseURL, config.url);
+
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    function onloadend() {
+      if (!request) {
+        return;
+      }
+      // Prepare the response
+      const responseHeaders = AxiosHeaders$1.from(
+        'getAllResponseHeaders' in request && request.getAllResponseHeaders()
+      );
+      const responseData = !responseType || responseType === 'text' || responseType === 'json' ?
+        request.responseText : request.response;
+      const response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config,
+        request
+      };
+
+      settle(function _resolve(value) {
+        resolve(value);
+        done();
+      }, function _reject(err) {
+        reject(err);
+        done();
+      }, response);
+
+      // Clean up request
+      request = null;
+    }
+
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
+    } else {
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        }
+
+        // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+        // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
+        setTimeout(onloadend);
+      };
+    }
+
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      let timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
+      const transitional = config.transitional || transitionalDefaults;
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(new AxiosError(
+        timeoutErrorMessage,
+        transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
+        config,
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (platform.isStandardBrowserEnv) {
+      // Add xsrf header
+      const xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath))
+        && config.xsrfCookieName && cookies.read(config.xsrfCookieName);
+
+      if (xsrfValue) {
+        requestHeaders.set(config.xsrfHeaderName, xsrfValue);
+      }
+    }
+
+    // Remove Content-Type if data is undefined
+    requestData === undefined && requestHeaders.setContentType(null);
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
+        request.setRequestHeader(key, val);
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
+
+    // Add responseType to request if needed
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', progressEventReducer(config.onDownloadProgress, true));
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', progressEventReducer(config.onUploadProgress));
+    }
+
+    if (config.cancelToken || config.signal) {
+      // Handle cancellation
+      // eslint-disable-next-line func-names
+      onCanceled = cancel => {
+        if (!request) {
+          return;
+        }
+        reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
+        request.abort();
+        request = null;
+      };
+
+      config.cancelToken && config.cancelToken.subscribe(onCanceled);
+      if (config.signal) {
+        config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
+      }
+    }
+
+    const protocol = parseProtocol(fullPath);
+
+    if (protocol && platform.protocols.indexOf(protocol) === -1) {
+      reject(new AxiosError('Unsupported protocol ' + protocol + ':', AxiosError.ERR_BAD_REQUEST, config));
+      return;
+    }
+
+
+    // Send the request
+    request.send(requestData || null);
+  });
+};
+
+const knownAdapters = {
+  http: httpAdapter,
+  xhr: xhrAdapter
+};
+
+utils.forEach(knownAdapters, (fn, value) => {
+  if(fn) {
+    try {
+      Object.defineProperty(fn, 'name', {value});
+    } catch (e) {
+      // eslint-disable-next-line no-empty
+    }
+    Object.defineProperty(fn, 'adapterName', {value});
+  }
+});
+
+var adapters = {
+  getAdapter: (adapters) => {
+    adapters = utils.isArray(adapters) ? adapters : [adapters];
+
+    const {length} = adapters;
+    let nameOrAdapter;
+    let adapter;
+
+    for (let i = 0; i < length; i++) {
+      nameOrAdapter = adapters[i];
+      if((adapter = utils.isString(nameOrAdapter) ? knownAdapters[nameOrAdapter.toLowerCase()] : nameOrAdapter)) {
+        break;
+      }
+    }
+
+    if (!adapter) {
+      if (adapter === false) {
+        throw new AxiosError(
+          `Adapter ${nameOrAdapter} is not supported by the environment`,
+          'ERR_NOT_SUPPORT'
+        );
+      }
+
+      throw new Error(
+        utils.hasOwnProp(knownAdapters, nameOrAdapter) ?
+          `Adapter '${nameOrAdapter}' is not available in the build` :
+          `Unknown adapter '${nameOrAdapter}'`
+      );
+    }
+
+    if (!utils.isFunction(adapter)) {
+      throw new TypeError('adapter is not a function');
+    }
+
+    return adapter;
+  },
+  adapters: knownAdapters
+};
+
+/**
+ * Throws a `CanceledError` if cancellation has been requested.
+ *
+ * @param {Object} config The config that is to be used for the request
+ *
+ * @returns {void}
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+
+  if (config.signal && config.signal.aborted) {
+    throw new CanceledError(null, config);
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ *
+ * @returns {Promise} The Promise to be fulfilled
+ */
+function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  config.headers = AxiosHeaders$1.from(config.headers);
+
+  // Transform request data
+  config.data = transformData.call(
+    config,
+    config.transformRequest
+  );
+
+  if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
+    config.headers.setContentType('application/x-www-form-urlencoded', false);
+  }
+
+  const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter);
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData.call(
+      config,
+      config.transformResponse,
+      response
+    );
+
+    response.headers = AxiosHeaders$1.from(response.headers);
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData.call(
+          config,
+          config.transformResponse,
+          reason.response
+        );
+        reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+}
+
+const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? thing.toJSON() : thing;
+
+/**
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
+ *
+ * @param {Object} config1
+ * @param {Object} config2
+ *
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  const config = {};
+
+  function getMergedValue(target, source, caseless) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge.call({caseless}, target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDeepProperties(a, b, caseless) {
+    if (!utils.isUndefined(b)) {
+      return getMergedValue(a, b, caseless);
+    } else if (!utils.isUndefined(a)) {
+      return getMergedValue(undefined, a, caseless);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function valueFromConfig2(a, b) {
+    if (!utils.isUndefined(b)) {
+      return getMergedValue(undefined, b);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function defaultToConfig2(a, b) {
+    if (!utils.isUndefined(b)) {
+      return getMergedValue(undefined, b);
+    } else if (!utils.isUndefined(a)) {
+      return getMergedValue(undefined, a);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDirectKeys(a, b, prop) {
+    if (prop in config2) {
+      return getMergedValue(a, b);
+    } else if (prop in config1) {
+      return getMergedValue(undefined, a);
+    }
+  }
+
+  const mergeMap = {
+    url: valueFromConfig2,
+    method: valueFromConfig2,
+    data: valueFromConfig2,
+    baseURL: defaultToConfig2,
+    transformRequest: defaultToConfig2,
+    transformResponse: defaultToConfig2,
+    paramsSerializer: defaultToConfig2,
+    timeout: defaultToConfig2,
+    timeoutMessage: defaultToConfig2,
+    withCredentials: defaultToConfig2,
+    adapter: defaultToConfig2,
+    responseType: defaultToConfig2,
+    xsrfCookieName: defaultToConfig2,
+    xsrfHeaderName: defaultToConfig2,
+    onUploadProgress: defaultToConfig2,
+    onDownloadProgress: defaultToConfig2,
+    decompress: defaultToConfig2,
+    maxContentLength: defaultToConfig2,
+    maxBodyLength: defaultToConfig2,
+    beforeRedirect: defaultToConfig2,
+    transport: defaultToConfig2,
+    httpAgent: defaultToConfig2,
+    httpsAgent: defaultToConfig2,
+    cancelToken: defaultToConfig2,
+    socketPath: defaultToConfig2,
+    responseEncoding: defaultToConfig2,
+    validateStatus: mergeDirectKeys,
+    headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
+  };
+
+  utils.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
+    const merge = mergeMap[prop] || mergeDeepProperties;
+    const configValue = merge(config1[prop], config2[prop], prop);
+    (utils.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
+  });
+
+  return config;
+}
+
+const VERSION = "1.2.1";
+
+const validators$1 = {};
+
+// eslint-disable-next-line func-names
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach((type, i) => {
+  validators$1[type] = function validator(thing) {
+    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+
+const deprecatedWarnings = {};
+
+/**
+ * Transitional option validator
+ *
+ * @param {function|boolean?} validator - set to false if the transitional option has been removed
+ * @param {string?} version - deprecated version / removed since version
+ * @param {string?} message - some message with additional info
+ *
+ * @returns {function}
+ */
+validators$1.transitional = function transitional(validator, version, message) {
+  function formatMessage(opt, desc) {
+    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  }
+
+  // eslint-disable-next-line func-names
+  return (value, opt, opts) => {
+    if (validator === false) {
+      throw new AxiosError(
+        formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
+        AxiosError.ERR_DEPRECATED
+      );
+    }
+
+    if (version && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        formatMessage(
+          opt,
+          ' has been deprecated since v' + version + ' and will be removed in the near future'
+        )
+      );
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+
+/**
+ * Assert object's properties type
+ *
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ *
+ * @returns {object}
+ */
+
+function assertOptions(options, schema, allowUnknown) {
+  if (typeof options !== 'object') {
+    throw new AxiosError('options must be an object', AxiosError.ERR_BAD_OPTION_VALUE);
+  }
+  const keys = Object.keys(options);
+  let i = keys.length;
+  while (i-- > 0) {
+    const opt = keys[i];
+    const validator = schema[opt];
+    if (validator) {
+      const value = options[opt];
+      const result = value === undefined || validator(value, opt, options);
+      if (result !== true) {
+        throw new AxiosError('option ' + opt + ' must be ' + result, AxiosError.ERR_BAD_OPTION_VALUE);
+      }
+      continue;
+    }
+    if (allowUnknown !== true) {
+      throw new AxiosError('Unknown option ' + opt, AxiosError.ERR_BAD_OPTION);
+    }
+  }
+}
+
+var validator = {
+  assertOptions,
+  validators: validators$1
+};
+
+const validators = validator.validators;
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ *
+ * @return {Axios} A new instance of Axios
+ */
+class Axios {
+  constructor(instanceConfig) {
+    this.defaults = instanceConfig;
+    this.interceptors = {
+      request: new InterceptorManager$1(),
+      response: new InterceptorManager$1()
+    };
+  }
+
+  /**
+   * Dispatch a request
+   *
+   * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
+   * @param {?Object} config
+   *
+   * @returns {Promise} The Promise to be fulfilled
+   */
+  request(configOrUrl, config) {
+    /*eslint no-param-reassign:0*/
+    // Allow for axios('example/url'[, config]) a la fetch API
+    if (typeof configOrUrl === 'string') {
+      config = config || {};
+      config.url = configOrUrl;
+    } else {
+      config = configOrUrl || {};
+    }
+
+    config = mergeConfig(this.defaults, config);
+
+    const {transitional, paramsSerializer, headers} = config;
+
+    if (transitional !== undefined) {
+      validator.assertOptions(transitional, {
+        silentJSONParsing: validators.transitional(validators.boolean),
+        forcedJSONParsing: validators.transitional(validators.boolean),
+        clarifyTimeoutError: validators.transitional(validators.boolean)
+      }, false);
+    }
+
+    if (paramsSerializer !== undefined) {
+      validator.assertOptions(paramsSerializer, {
+        encode: validators.function,
+        serialize: validators.function
+      }, true);
+    }
+
+    // Set config.method
+    config.method = (config.method || this.defaults.method || 'get').toLowerCase();
+
+    let contextHeaders;
+
+    // Flatten headers
+    contextHeaders = headers && utils.merge(
+      headers.common,
+      headers[config.method]
+    );
+
+    contextHeaders && utils.forEach(
+      ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+      (method) => {
+        delete headers[method];
+      }
+    );
+
+    config.headers = AxiosHeaders$1.concat(contextHeaders, headers);
+
+    // filter out skipped interceptors
+    const requestInterceptorChain = [];
+    let synchronousRequestInterceptors = true;
+    this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+      if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+        return;
+      }
+
+      synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+
+      requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+    });
+
+    const responseInterceptorChain = [];
+    this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+      responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+    });
+
+    let promise;
+    let i = 0;
+    let len;
+
+    if (!synchronousRequestInterceptors) {
+      const chain = [dispatchRequest.bind(this), undefined];
+      chain.unshift.apply(chain, requestInterceptorChain);
+      chain.push.apply(chain, responseInterceptorChain);
+      len = chain.length;
+
+      promise = Promise.resolve(config);
+
+      while (i < len) {
+        promise = promise.then(chain[i++], chain[i++]);
+      }
+
+      return promise;
+    }
+
+    len = requestInterceptorChain.length;
+
+    let newConfig = config;
+
+    i = 0;
+
+    while (i < len) {
+      const onFulfilled = requestInterceptorChain[i++];
+      const onRejected = requestInterceptorChain[i++];
+      try {
+        newConfig = onFulfilled(newConfig);
+      } catch (error) {
+        onRejected.call(this, error);
+        break;
+      }
+    }
+
+    try {
+      promise = dispatchRequest.call(this, newConfig);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    i = 0;
+    len = responseInterceptorChain.length;
+
+    while (i < len) {
+      promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
+    }
+
+    return promise;
+  }
+
+  getUri(config) {
+    config = mergeConfig(this.defaults, config);
+    const fullPath = buildFullPath(config.baseURL, config.url);
+    return buildURL(fullPath, config.params, config.paramsSerializer);
+  }
+}
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(mergeConfig(config || {}, {
+      method,
+      url,
+      data: (config || {}).data
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+
+  function generateHTTPMethod(isForm) {
+    return function httpMethod(url, data, config) {
+      return this.request(mergeConfig(config || {}, {
+        method,
+        headers: isForm ? {
+          'Content-Type': 'multipart/form-data'
+        } : {},
+        url,
+        data
+      }));
+    };
+  }
+
+  Axios.prototype[method] = generateHTTPMethod();
+
+  Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
+});
+
+var Axios$1 = Axios;
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @param {Function} executor The executor function.
+ *
+ * @returns {CancelToken}
+ */
+class CancelToken {
+  constructor(executor) {
+    if (typeof executor !== 'function') {
+      throw new TypeError('executor must be a function.');
+    }
+
+    let resolvePromise;
+
+    this.promise = new Promise(function promiseExecutor(resolve) {
+      resolvePromise = resolve;
+    });
+
+    const token = this;
+
+    // eslint-disable-next-line func-names
+    this.promise.then(cancel => {
+      if (!token._listeners) return;
+
+      let i = token._listeners.length;
+
+      while (i-- > 0) {
+        token._listeners[i](cancel);
+      }
+      token._listeners = null;
+    });
+
+    // eslint-disable-next-line func-names
+    this.promise.then = onfulfilled => {
+      let _resolve;
+      // eslint-disable-next-line func-names
+      const promise = new Promise(resolve => {
+        token.subscribe(resolve);
+        _resolve = resolve;
+      }).then(onfulfilled);
+
+      promise.cancel = function reject() {
+        token.unsubscribe(_resolve);
+      };
+
+      return promise;
+    };
+
+    executor(function cancel(message, config, request) {
+      if (token.reason) {
+        // Cancellation has already been requested
+        return;
+      }
+
+      token.reason = new CanceledError(message, config, request);
+      resolvePromise(token.reason);
+    });
+  }
+
+  /**
+   * Throws a `CanceledError` if cancellation has been requested.
+   */
+  throwIfRequested() {
+    if (this.reason) {
+      throw this.reason;
+    }
+  }
+
+  /**
+   * Subscribe to the cancel signal
+   */
+
+  subscribe(listener) {
+    if (this.reason) {
+      listener(this.reason);
+      return;
+    }
+
+    if (this._listeners) {
+      this._listeners.push(listener);
+    } else {
+      this._listeners = [listener];
+    }
+  }
+
+  /**
+   * Unsubscribe from the cancel signal
+   */
+
+  unsubscribe(listener) {
+    if (!this._listeners) {
+      return;
+    }
+    const index = this._listeners.indexOf(listener);
+    if (index !== -1) {
+      this._listeners.splice(index, 1);
+    }
+  }
+
+  /**
+   * Returns an object that contains a new `CancelToken` and a function that, when called,
+   * cancels the `CancelToken`.
+   */
+  static source() {
+    let cancel;
+    const token = new CancelToken(function executor(c) {
+      cancel = c;
+    });
+    return {
+      token,
+      cancel
+    };
+  }
+}
+
+var CancelToken$1 = CancelToken;
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ *
+ * @returns {Function}
+ */
+function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+}
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ *
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+function isAxiosError(payload) {
+  return utils.isObject(payload) && (payload.isAxiosError === true);
+}
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ *
+ * @returns {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  const context = new Axios$1(defaultConfig);
+  const instance = bind(Axios$1.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios$1.prototype, context, {allOwnKeys: true});
+
+  // Copy context to instance
+  utils.extend(instance, context, null, {allOwnKeys: true});
+
+  // Factory for creating new instances
+  instance.create = function create(instanceConfig) {
+    return createInstance(mergeConfig(defaultConfig, instanceConfig));
+  };
+
+  return instance;
+}
+
+// Create the default instance to be exported
+const axios = createInstance(defaults$1);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios$1;
+
+// Expose Cancel & CancelToken
+axios.CanceledError = CanceledError;
+axios.CancelToken = CancelToken$1;
+axios.isCancel = isCancel;
+axios.VERSION = VERSION;
+axios.toFormData = toFormData;
+
+// Expose AxiosError class
+axios.AxiosError = AxiosError;
+
+// alias for CanceledError for backward compatibility
+axios.Cancel = axios.CanceledError;
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+
+axios.spread = spread;
+
+// Expose isAxiosError
+axios.isAxiosError = isAxiosError;
+
+// Expose mergeConfig
+axios.mergeConfig = mergeConfig;
+
+axios.AxiosHeaders = AxiosHeaders$1;
+
+axios.formToJSON = thing => formDataToJSON(utils.isHTMLForm(thing) ? new FormData(thing) : thing);
+
+axios.default = axios;
+
+module.exports = axios;
+//# sourceMappingURL=axios.cjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/adapters.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/adapters.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _http_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./http.js */ "./node_modules/axios/lib/helpers/null.js");
+/* harmony import */ var _xhr_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./xhr.js */ "./node_modules/axios/lib/adapters/xhr.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+
+
+
+
+
+const knownAdapters = {
+  http: _http_js__WEBPACK_IMPORTED_MODULE_0__["default"],
+  xhr: _xhr_js__WEBPACK_IMPORTED_MODULE_1__["default"]
+}
+
+_utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].forEach(knownAdapters, (fn, value) => {
+  if(fn) {
+    try {
+      Object.defineProperty(fn, 'name', {value});
+    } catch (e) {
+      // eslint-disable-next-line no-empty
+    }
+    Object.defineProperty(fn, 'adapterName', {value});
+  }
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  getAdapter: (adapters) => {
+    adapters = _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isArray(adapters) ? adapters : [adapters];
+
+    const {length} = adapters;
+    let nameOrAdapter;
+    let adapter;
+
+    for (let i = 0; i < length; i++) {
+      nameOrAdapter = adapters[i];
+      if((adapter = _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isString(nameOrAdapter) ? knownAdapters[nameOrAdapter.toLowerCase()] : nameOrAdapter)) {
+        break;
+      }
+    }
+
+    if (!adapter) {
+      if (adapter === false) {
+        throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_3__["default"](
+          `Adapter ${nameOrAdapter} is not supported by the environment`,
+          'ERR_NOT_SUPPORT'
+        );
+      }
+
+      throw new Error(
+        _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].hasOwnProp(knownAdapters, nameOrAdapter) ?
+          `Adapter '${nameOrAdapter}' is not available in the build` :
+          `Unknown adapter '${nameOrAdapter}'`
+      );
+    }
+
+    if (!_utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isFunction(adapter)) {
+      throw new TypeError('adapter is not a function');
+    }
+
+    return adapter;
+  },
+  adapters: knownAdapters
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/xhr.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _core_settle_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../core/settle.js */ "./node_modules/axios/lib/core/settle.js");
+/* harmony import */ var _helpers_cookies_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../helpers/cookies.js */ "./node_modules/axios/lib/helpers/cookies.js");
+/* harmony import */ var _helpers_buildURL_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../helpers/buildURL.js */ "./node_modules/axios/lib/helpers/buildURL.js");
+/* harmony import */ var _core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../core/buildFullPath.js */ "./node_modules/axios/lib/core/buildFullPath.js");
+/* harmony import */ var _helpers_isURLSameOrigin_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../helpers/isURLSameOrigin.js */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
+/* harmony import */ var _defaults_transitional_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../defaults/transitional.js */ "./node_modules/axios/lib/defaults/transitional.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+/* harmony import */ var _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../cancel/CanceledError.js */ "./node_modules/axios/lib/cancel/CanceledError.js");
+/* harmony import */ var _helpers_parseProtocol_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../helpers/parseProtocol.js */ "./node_modules/axios/lib/helpers/parseProtocol.js");
+/* harmony import */ var _platform_index_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../platform/index.js */ "./node_modules/axios/lib/platform/browser/index.js");
+/* harmony import */ var _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+/* harmony import */ var _helpers_speedometer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/speedometer.js */ "./node_modules/axios/lib/helpers/speedometer.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function progressEventReducer(listener, isDownloadStream) {
+  let bytesNotified = 0;
+  const _speedometer = (0,_helpers_speedometer_js__WEBPACK_IMPORTED_MODULE_0__["default"])(50, 250);
+
+  return e => {
+    const loaded = e.loaded;
+    const total = e.lengthComputable ? e.total : undefined;
+    const progressBytes = loaded - bytesNotified;
+    const rate = _speedometer(progressBytes);
+    const inRange = loaded <= total;
+
+    bytesNotified = loaded;
+
+    const data = {
+      loaded,
+      total,
+      progress: total ? (loaded / total) : undefined,
+      bytes: progressBytes,
+      rate: rate ? rate : undefined,
+      estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
+      event: e
+    };
+
+    data[isDownloadStream ? 'download' : 'upload'] = true;
+
+    listener(data);
+  };
+}
+
+const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isXHRAdapterSupported && function (config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    let requestData = config.data;
+    const requestHeaders = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(config.headers).normalize();
+    const responseType = config.responseType;
+    let onCanceled;
+    function done() {
+      if (config.cancelToken) {
+        config.cancelToken.unsubscribe(onCanceled);
+      }
+
+      if (config.signal) {
+        config.signal.removeEventListener('abort', onCanceled);
+      }
+    }
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isFormData(requestData) && (_platform_index_js__WEBPACK_IMPORTED_MODULE_3__["default"].isStandardBrowserEnv || _platform_index_js__WEBPACK_IMPORTED_MODULE_3__["default"].isStandardBrowserWebWorkerEnv)) {
+      requestHeaders.setContentType(false); // Let the browser set it
+    }
+
+    let request = new XMLHttpRequest();
+
+    // HTTP basic authentication
+    if (config.auth) {
+      const username = config.auth.username || '';
+      const password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.set('Authorization', 'Basic ' + btoa(username + ':' + password));
+    }
+
+    const fullPath = (0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_4__["default"])(config.baseURL, config.url);
+
+    request.open(config.method.toUpperCase(), (0,_helpers_buildURL_js__WEBPACK_IMPORTED_MODULE_5__["default"])(fullPath, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    function onloadend() {
+      if (!request) {
+        return;
+      }
+      // Prepare the response
+      const responseHeaders = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(
+        'getAllResponseHeaders' in request && request.getAllResponseHeaders()
+      );
+      const responseData = !responseType || responseType === 'text' || responseType === 'json' ?
+        request.responseText : request.response;
+      const response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config,
+        request
+      };
+
+      (0,_core_settle_js__WEBPACK_IMPORTED_MODULE_6__["default"])(function _resolve(value) {
+        resolve(value);
+        done();
+      }, function _reject(err) {
+        reject(err);
+        done();
+      }, response);
+
+      // Clean up request
+      request = null;
+    }
+
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
+    } else {
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        }
+
+        // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+        // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
+        setTimeout(onloadend);
+      };
+    }
+
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"]('Request aborted', _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"].ECONNABORTED, config, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"]('Network Error', _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"].ERR_NETWORK, config, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      let timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
+      const transitional = config.transitional || _defaults_transitional_js__WEBPACK_IMPORTED_MODULE_8__["default"];
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"](
+        timeoutErrorMessage,
+        transitional.clarifyTimeoutError ? _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"].ETIMEDOUT : _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"].ECONNABORTED,
+        config,
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (_platform_index_js__WEBPACK_IMPORTED_MODULE_3__["default"].isStandardBrowserEnv) {
+      // Add xsrf header
+      const xsrfValue = (config.withCredentials || (0,_helpers_isURLSameOrigin_js__WEBPACK_IMPORTED_MODULE_9__["default"])(fullPath))
+        && config.xsrfCookieName && _helpers_cookies_js__WEBPACK_IMPORTED_MODULE_10__["default"].read(config.xsrfCookieName);
+
+      if (xsrfValue) {
+        requestHeaders.set(config.xsrfHeaderName, xsrfValue);
+      }
+    }
+
+    // Remove Content-Type if data is undefined
+    requestData === undefined && requestHeaders.setContentType(null);
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
+        request.setRequestHeader(key, val);
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (!_utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
+
+    // Add responseType to request if needed
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', progressEventReducer(config.onDownloadProgress, true));
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', progressEventReducer(config.onUploadProgress));
+    }
+
+    if (config.cancelToken || config.signal) {
+      // Handle cancellation
+      // eslint-disable-next-line func-names
+      onCanceled = cancel => {
+        if (!request) {
+          return;
+        }
+        reject(!cancel || cancel.type ? new _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_11__["default"](null, config, request) : cancel);
+        request.abort();
+        request = null;
+      };
+
+      config.cancelToken && config.cancelToken.subscribe(onCanceled);
+      if (config.signal) {
+        config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
+      }
+    }
+
+    const protocol = (0,_helpers_parseProtocol_js__WEBPACK_IMPORTED_MODULE_12__["default"])(fullPath);
+
+    if (protocol && _platform_index_js__WEBPACK_IMPORTED_MODULE_3__["default"].protocols.indexOf(protocol) === -1) {
+      reject(new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"]('Unsupported protocol ' + protocol + ':', _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_7__["default"].ERR_BAD_REQUEST, config));
+      return;
+    }
+
+
+    // Send the request
+    request.send(requestData || null);
+  });
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/axios.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _helpers_bind_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers/bind.js */ "./node_modules/axios/lib/helpers/bind.js");
+/* harmony import */ var _core_Axios_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/Axios.js */ "./node_modules/axios/lib/core/Axios.js");
+/* harmony import */ var _core_mergeConfig_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/mergeConfig.js */ "./node_modules/axios/lib/core/mergeConfig.js");
+/* harmony import */ var _defaults_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./defaults/index.js */ "./node_modules/axios/lib/defaults/index.js");
+/* harmony import */ var _helpers_formDataToJSON_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./helpers/formDataToJSON.js */ "./node_modules/axios/lib/helpers/formDataToJSON.js");
+/* harmony import */ var _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./cancel/CanceledError.js */ "./node_modules/axios/lib/cancel/CanceledError.js");
+/* harmony import */ var _cancel_CancelToken_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./cancel/CancelToken.js */ "./node_modules/axios/lib/cancel/CancelToken.js");
+/* harmony import */ var _cancel_isCancel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./cancel/isCancel.js */ "./node_modules/axios/lib/cancel/isCancel.js");
+/* harmony import */ var _env_data_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./env/data.js */ "./node_modules/axios/lib/env/data.js");
+/* harmony import */ var _helpers_toFormData_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./helpers/toFormData.js */ "./node_modules/axios/lib/helpers/toFormData.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+/* harmony import */ var _helpers_spread_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./helpers/spread.js */ "./node_modules/axios/lib/helpers/spread.js");
+/* harmony import */ var _helpers_isAxiosError_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./helpers/isAxiosError.js */ "./node_modules/axios/lib/helpers/isAxiosError.js");
+/* harmony import */ var _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./core/AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ *
+ * @returns {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  const context = new _core_Axios_js__WEBPACK_IMPORTED_MODULE_0__["default"](defaultConfig);
+  const instance = (0,_helpers_bind_js__WEBPACK_IMPORTED_MODULE_1__["default"])(_core_Axios_js__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.request, context);
+
+  // Copy axios.prototype to instance
+  _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].extend(instance, _core_Axios_js__WEBPACK_IMPORTED_MODULE_0__["default"].prototype, context, {allOwnKeys: true});
+
+  // Copy context to instance
+  _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].extend(instance, context, null, {allOwnKeys: true});
+
+  // Factory for creating new instances
+  instance.create = function create(instanceConfig) {
+    return createInstance((0,_core_mergeConfig_js__WEBPACK_IMPORTED_MODULE_3__["default"])(defaultConfig, instanceConfig));
+  };
+
+  return instance;
+}
+
+// Create the default instance to be exported
+const axios = createInstance(_defaults_index_js__WEBPACK_IMPORTED_MODULE_4__["default"]);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = _core_Axios_js__WEBPACK_IMPORTED_MODULE_0__["default"];
+
+// Expose Cancel & CancelToken
+axios.CanceledError = _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_5__["default"];
+axios.CancelToken = _cancel_CancelToken_js__WEBPACK_IMPORTED_MODULE_6__["default"];
+axios.isCancel = _cancel_isCancel_js__WEBPACK_IMPORTED_MODULE_7__["default"];
+axios.VERSION = _env_data_js__WEBPACK_IMPORTED_MODULE_8__.VERSION;
+axios.toFormData = _helpers_toFormData_js__WEBPACK_IMPORTED_MODULE_9__["default"];
+
+// Expose AxiosError class
+axios.AxiosError = _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_10__["default"];
+
+// alias for CanceledError for backward compatibility
+axios.Cancel = axios.CanceledError;
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+
+axios.spread = _helpers_spread_js__WEBPACK_IMPORTED_MODULE_11__["default"];
+
+// Expose isAxiosError
+axios.isAxiosError = _helpers_isAxiosError_js__WEBPACK_IMPORTED_MODULE_12__["default"];
+
+// Expose mergeConfig
+axios.mergeConfig = _core_mergeConfig_js__WEBPACK_IMPORTED_MODULE_3__["default"];
+
+axios.AxiosHeaders = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_13__["default"];
+
+axios.formToJSON = thing => (0,_helpers_formDataToJSON_js__WEBPACK_IMPORTED_MODULE_14__["default"])(_utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isHTMLForm(thing) ? new FormData(thing) : thing);
+
+axios.default = axios;
+
+// this module should only have a default export
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (axios);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _CanceledError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CanceledError.js */ "./node_modules/axios/lib/cancel/CanceledError.js");
+
+
+
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @param {Function} executor The executor function.
+ *
+ * @returns {CancelToken}
+ */
+class CancelToken {
+  constructor(executor) {
+    if (typeof executor !== 'function') {
+      throw new TypeError('executor must be a function.');
+    }
+
+    let resolvePromise;
+
+    this.promise = new Promise(function promiseExecutor(resolve) {
+      resolvePromise = resolve;
+    });
+
+    const token = this;
+
+    // eslint-disable-next-line func-names
+    this.promise.then(cancel => {
+      if (!token._listeners) return;
+
+      let i = token._listeners.length;
+
+      while (i-- > 0) {
+        token._listeners[i](cancel);
+      }
+      token._listeners = null;
+    });
+
+    // eslint-disable-next-line func-names
+    this.promise.then = onfulfilled => {
+      let _resolve;
+      // eslint-disable-next-line func-names
+      const promise = new Promise(resolve => {
+        token.subscribe(resolve);
+        _resolve = resolve;
+      }).then(onfulfilled);
+
+      promise.cancel = function reject() {
+        token.unsubscribe(_resolve);
+      };
+
+      return promise;
+    };
+
+    executor(function cancel(message, config, request) {
+      if (token.reason) {
+        // Cancellation has already been requested
+        return;
+      }
+
+      token.reason = new _CanceledError_js__WEBPACK_IMPORTED_MODULE_0__["default"](message, config, request);
+      resolvePromise(token.reason);
+    });
+  }
+
+  /**
+   * Throws a `CanceledError` if cancellation has been requested.
+   */
+  throwIfRequested() {
+    if (this.reason) {
+      throw this.reason;
+    }
+  }
+
+  /**
+   * Subscribe to the cancel signal
+   */
+
+  subscribe(listener) {
+    if (this.reason) {
+      listener(this.reason);
+      return;
+    }
+
+    if (this._listeners) {
+      this._listeners.push(listener);
+    } else {
+      this._listeners = [listener];
+    }
+  }
+
+  /**
+   * Unsubscribe from the cancel signal
+   */
+
+  unsubscribe(listener) {
+    if (!this._listeners) {
+      return;
+    }
+    const index = this._listeners.indexOf(listener);
+    if (index !== -1) {
+      this._listeners.splice(index, 1);
+    }
+  }
+
+  /**
+   * Returns an object that contains a new `CancelToken` and a function that, when called,
+   * cancels the `CancelToken`.
+   */
+  static source() {
+    let cancel;
+    const token = new CancelToken(function executor(c) {
+      cancel = c;
+    });
+    return {
+      token,
+      cancel
+    };
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CancelToken);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CanceledError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CanceledError.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+
+/**
+ * A `CanceledError` is an object that is thrown when an operation is canceled.
+ *
+ * @param {string=} message The message.
+ * @param {Object=} config The config.
+ * @param {Object=} request The request.
+ *
+ * @returns {CanceledError} The created error.
+ */
+function CanceledError(message, config, request) {
+  // eslint-disable-next-line no-eq-null,eqeqeq
+  _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"].call(this, message == null ? 'canceled' : message, _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"].ERR_CANCELED, config, request);
+  this.name = 'CanceledError';
+}
+
+_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].inherits(CanceledError, _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"], {
+  __CANCEL__: true
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CanceledError);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/isCancel.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isCancel)
+/* harmony export */ });
+
+
+function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/Axios.js":
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _helpers_buildURL_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../helpers/buildURL.js */ "./node_modules/axios/lib/helpers/buildURL.js");
+/* harmony import */ var _InterceptorManager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./InterceptorManager.js */ "./node_modules/axios/lib/core/InterceptorManager.js");
+/* harmony import */ var _dispatchRequest_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./dispatchRequest.js */ "./node_modules/axios/lib/core/dispatchRequest.js");
+/* harmony import */ var _mergeConfig_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mergeConfig.js */ "./node_modules/axios/lib/core/mergeConfig.js");
+/* harmony import */ var _buildFullPath_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./buildFullPath.js */ "./node_modules/axios/lib/core/buildFullPath.js");
+/* harmony import */ var _helpers_validator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/validator.js */ "./node_modules/axios/lib/helpers/validator.js");
+/* harmony import */ var _AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+
+
+
+
+
+
+
+
+
+
+
+const validators = _helpers_validator_js__WEBPACK_IMPORTED_MODULE_0__["default"].validators;
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ *
+ * @return {Axios} A new instance of Axios
+ */
+class Axios {
+  constructor(instanceConfig) {
+    this.defaults = instanceConfig;
+    this.interceptors = {
+      request: new _InterceptorManager_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
+      response: new _InterceptorManager_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
+    };
+  }
+
+  /**
+   * Dispatch a request
+   *
+   * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
+   * @param {?Object} config
+   *
+   * @returns {Promise} The Promise to be fulfilled
+   */
+  request(configOrUrl, config) {
+    /*eslint no-param-reassign:0*/
+    // Allow for axios('example/url'[, config]) a la fetch API
+    if (typeof configOrUrl === 'string') {
+      config = config || {};
+      config.url = configOrUrl;
+    } else {
+      config = configOrUrl || {};
+    }
+
+    config = (0,_mergeConfig_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this.defaults, config);
+
+    const {transitional, paramsSerializer, headers} = config;
+
+    if (transitional !== undefined) {
+      _helpers_validator_js__WEBPACK_IMPORTED_MODULE_0__["default"].assertOptions(transitional, {
+        silentJSONParsing: validators.transitional(validators.boolean),
+        forcedJSONParsing: validators.transitional(validators.boolean),
+        clarifyTimeoutError: validators.transitional(validators.boolean)
+      }, false);
+    }
+
+    if (paramsSerializer !== undefined) {
+      _helpers_validator_js__WEBPACK_IMPORTED_MODULE_0__["default"].assertOptions(paramsSerializer, {
+        encode: validators.function,
+        serialize: validators.function
+      }, true);
+    }
+
+    // Set config.method
+    config.method = (config.method || this.defaults.method || 'get').toLowerCase();
+
+    let contextHeaders;
+
+    // Flatten headers
+    contextHeaders = headers && _utils_js__WEBPACK_IMPORTED_MODULE_3__["default"].merge(
+      headers.common,
+      headers[config.method]
+    );
+
+    contextHeaders && _utils_js__WEBPACK_IMPORTED_MODULE_3__["default"].forEach(
+      ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+      (method) => {
+        delete headers[method];
+      }
+    );
+
+    config.headers = _AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_4__["default"].concat(contextHeaders, headers);
+
+    // filter out skipped interceptors
+    const requestInterceptorChain = [];
+    let synchronousRequestInterceptors = true;
+    this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+      if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+        return;
+      }
+
+      synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+
+      requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+    });
+
+    const responseInterceptorChain = [];
+    this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+      responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+    });
+
+    let promise;
+    let i = 0;
+    let len;
+
+    if (!synchronousRequestInterceptors) {
+      const chain = [_dispatchRequest_js__WEBPACK_IMPORTED_MODULE_5__["default"].bind(this), undefined];
+      chain.unshift.apply(chain, requestInterceptorChain);
+      chain.push.apply(chain, responseInterceptorChain);
+      len = chain.length;
+
+      promise = Promise.resolve(config);
+
+      while (i < len) {
+        promise = promise.then(chain[i++], chain[i++]);
+      }
+
+      return promise;
+    }
+
+    len = requestInterceptorChain.length;
+
+    let newConfig = config;
+
+    i = 0;
+
+    while (i < len) {
+      const onFulfilled = requestInterceptorChain[i++];
+      const onRejected = requestInterceptorChain[i++];
+      try {
+        newConfig = onFulfilled(newConfig);
+      } catch (error) {
+        onRejected.call(this, error);
+        break;
+      }
+    }
+
+    try {
+      promise = _dispatchRequest_js__WEBPACK_IMPORTED_MODULE_5__["default"].call(this, newConfig);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    i = 0;
+    len = responseInterceptorChain.length;
+
+    while (i < len) {
+      promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
+    }
+
+    return promise;
+  }
+
+  getUri(config) {
+    config = (0,_mergeConfig_js__WEBPACK_IMPORTED_MODULE_2__["default"])(this.defaults, config);
+    const fullPath = (0,_buildFullPath_js__WEBPACK_IMPORTED_MODULE_6__["default"])(config.baseURL, config.url);
+    return (0,_helpers_buildURL_js__WEBPACK_IMPORTED_MODULE_7__["default"])(fullPath, config.params, config.paramsSerializer);
+  }
+}
+
+// Provide aliases for supported request methods
+_utils_js__WEBPACK_IMPORTED_MODULE_3__["default"].forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request((0,_mergeConfig_js__WEBPACK_IMPORTED_MODULE_2__["default"])(config || {}, {
+      method,
+      url,
+      data: (config || {}).data
+    }));
+  };
+});
+
+_utils_js__WEBPACK_IMPORTED_MODULE_3__["default"].forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+
+  function generateHTTPMethod(isForm) {
+    return function httpMethod(url, data, config) {
+      return this.request((0,_mergeConfig_js__WEBPACK_IMPORTED_MODULE_2__["default"])(config || {}, {
+        method,
+        headers: isForm ? {
+          'Content-Type': 'multipart/form-data'
+        } : {},
+        url,
+        data
+      }));
+    };
+  }
+
+  Axios.prototype[method] = generateHTTPMethod();
+
+  Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Axios);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/AxiosError.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/core/AxiosError.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [config] The config.
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ *
+ * @returns {Error} The created error.
+ */
+function AxiosError(message, code, config, request, response) {
+  Error.call(this);
+
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, this.constructor);
+  } else {
+    this.stack = (new Error()).stack;
+  }
+
+  this.message = message;
+  this.name = 'AxiosError';
+  code && (this.code = code);
+  config && (this.config = config);
+  request && (this.request = request);
+  response && (this.response = response);
+}
+
+_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].inherits(AxiosError, Error, {
+  toJSON: function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toJSONObject(this.config),
+      code: this.code,
+      status: this.response && this.response.status ? this.response.status : null
+    };
+  }
+});
+
+const prototype = AxiosError.prototype;
+const descriptors = {};
+
+[
+  'ERR_BAD_OPTION_VALUE',
+  'ERR_BAD_OPTION',
+  'ECONNABORTED',
+  'ETIMEDOUT',
+  'ERR_NETWORK',
+  'ERR_FR_TOO_MANY_REDIRECTS',
+  'ERR_DEPRECATED',
+  'ERR_BAD_RESPONSE',
+  'ERR_BAD_REQUEST',
+  'ERR_CANCELED',
+  'ERR_NOT_SUPPORT',
+  'ERR_INVALID_URL'
+// eslint-disable-next-line func-names
+].forEach(code => {
+  descriptors[code] = {value: code};
+});
+
+Object.defineProperties(AxiosError, descriptors);
+Object.defineProperty(prototype, 'isAxiosError', {value: true});
+
+// eslint-disable-next-line func-names
+AxiosError.from = (error, code, config, request, response, customProps) => {
+  const axiosError = Object.create(prototype);
+
+  _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toFlatObject(error, axiosError, function filter(obj) {
+    return obj !== Error.prototype;
+  }, prop => {
+    return prop !== 'isAxiosError';
+  });
+
+  AxiosError.call(axiosError, error.message, code, config, request, response);
+
+  axiosError.cause = error;
+
+  axiosError.name = error.name;
+
+  customProps && Object.assign(axiosError, customProps);
+
+  return axiosError;
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AxiosError);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/AxiosHeaders.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/core/AxiosHeaders.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _helpers_parseHeaders_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/parseHeaders.js */ "./node_modules/axios/lib/helpers/parseHeaders.js");
+
+
+
+
+
+const $internals = Symbol('internals');
+
+function normalizeHeader(header) {
+  return header && String(header).trim().toLowerCase();
+}
+
+function normalizeValue(value) {
+  if (value === false || value == null) {
+    return value;
+  }
+
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(value) ? value.map(normalizeValue) : String(value);
+}
+
+function parseTokens(str) {
+  const tokens = Object.create(null);
+  const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
+  let match;
+
+  while ((match = tokensRE.exec(str))) {
+    tokens[match[1]] = match[2];
+  }
+
+  return tokens;
+}
+
+function isValidHeaderName(str) {
+  return /^[-_a-zA-Z]+$/.test(str.trim());
+}
+
+function matchHeaderValue(context, value, header, filter) {
+  if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFunction(filter)) {
+    return filter.call(this, value, header);
+  }
+
+  if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(value)) return;
+
+  if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(filter)) {
+    return value.indexOf(filter) !== -1;
+  }
+
+  if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isRegExp(filter)) {
+    return filter.test(value);
+  }
+}
+
+function formatHeader(header) {
+  return header.trim()
+    .toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
+      return char.toUpperCase() + str;
+    });
+}
+
+function buildAccessors(obj, header) {
+  const accessorName = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toCamelCase(' ' + header);
+
+  ['get', 'set', 'has'].forEach(methodName => {
+    Object.defineProperty(obj, methodName + accessorName, {
+      value: function(arg1, arg2, arg3) {
+        return this[methodName].call(this, header, arg1, arg2, arg3);
+      },
+      configurable: true
+    });
+  });
+}
+
+class AxiosHeaders {
+  constructor(headers) {
+    headers && this.set(headers);
+  }
+
+  set(header, valueOrRewrite, rewrite) {
+    const self = this;
+
+    function setHeader(_value, _header, _rewrite) {
+      const lHeader = normalizeHeader(_header);
+
+      if (!lHeader) {
+        throw new Error('header name must be a non-empty string');
+      }
+
+      const key = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].findKey(self, lHeader);
+
+      if(!key || self[key] === undefined || _rewrite === true || (_rewrite === undefined && self[key] !== false)) {
+        self[key || _header] = normalizeValue(_value);
+      }
+    }
+
+    const setHeaders = (headers, _rewrite) =>
+      _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(headers, (_value, _header) => setHeader(_value, _header, _rewrite));
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isPlainObject(header) || header instanceof this.constructor) {
+      setHeaders(header, valueOrRewrite)
+    } else if(_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+      setHeaders((0,_helpers_parseHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"])(header), valueOrRewrite);
+    } else {
+      header != null && setHeader(valueOrRewrite, header, rewrite);
+    }
+
+    return this;
+  }
+
+  get(header, parser) {
+    header = normalizeHeader(header);
+
+    if (header) {
+      const key = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].findKey(this, header);
+
+      if (key) {
+        const value = this[key];
+
+        if (!parser) {
+          return value;
+        }
+
+        if (parser === true) {
+          return parseTokens(value);
+        }
+
+        if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFunction(parser)) {
+          return parser.call(this, value, key);
+        }
+
+        if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isRegExp(parser)) {
+          return parser.exec(value);
+        }
+
+        throw new TypeError('parser must be boolean|regexp|function');
+      }
+    }
+  }
+
+  has(header, matcher) {
+    header = normalizeHeader(header);
+
+    if (header) {
+      const key = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].findKey(this, header);
+
+      return !!(key && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
+    }
+
+    return false;
+  }
+
+  delete(header, matcher) {
+    const self = this;
+    let deleted = false;
+
+    function deleteHeader(_header) {
+      _header = normalizeHeader(_header);
+
+      if (_header) {
+        const key = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].findKey(self, _header);
+
+        if (key && (!matcher || matchHeaderValue(self, self[key], key, matcher))) {
+          delete self[key];
+
+          deleted = true;
+        }
+      }
+    }
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(header)) {
+      header.forEach(deleteHeader);
+    } else {
+      deleteHeader(header);
+    }
+
+    return deleted;
+  }
+
+  clear() {
+    return Object.keys(this).forEach(this.delete.bind(this));
+  }
+
+  normalize(format) {
+    const self = this;
+    const headers = {};
+
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(this, (value, header) => {
+      const key = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].findKey(headers, header);
+
+      if (key) {
+        self[key] = normalizeValue(value);
+        delete self[header];
+        return;
+      }
+
+      const normalized = format ? formatHeader(header) : String(header).trim();
+
+      if (normalized !== header) {
+        delete self[header];
+      }
+
+      self[normalized] = normalizeValue(value);
+
+      headers[normalized] = true;
+    });
+
+    return this;
+  }
+
+  concat(...targets) {
+    return this.constructor.concat(this, ...targets);
+  }
+
+  toJSON(asStrings) {
+    const obj = Object.create(null);
+
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(this, (value, header) => {
+      value != null && value !== false && (obj[header] = asStrings && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(value) ? value.join(', ') : value);
+    });
+
+    return obj;
+  }
+
+  [Symbol.iterator]() {
+    return Object.entries(this.toJSON())[Symbol.iterator]();
+  }
+
+  toString() {
+    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+  }
+
+  get [Symbol.toStringTag]() {
+    return 'AxiosHeaders';
+  }
+
+  static from(thing) {
+    return thing instanceof this ? thing : new this(thing);
+  }
+
+  static concat(first, ...targets) {
+    const computed = new this(first);
+
+    targets.forEach((target) => computed.set(target));
+
+    return computed;
+  }
+
+  static accessor(header) {
+    const internals = this[$internals] = (this[$internals] = {
+      accessors: {}
+    });
+
+    const accessors = internals.accessors;
+    const prototype = this.prototype;
+
+    function defineAccessor(_header) {
+      const lHeader = normalizeHeader(_header);
+
+      if (!accessors[lHeader]) {
+        buildAccessors(prototype, _header);
+        accessors[lHeader] = true;
+      }
+    }
+
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(header) ? header.forEach(defineAccessor) : defineAccessor(header);
+
+    return this;
+  }
+}
+
+AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent']);
+
+_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].freezeMethods(AxiosHeaders.prototype);
+_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].freezeMethods(AxiosHeaders);
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AxiosHeaders);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+class InterceptorManager {
+  constructor() {
+    this.handlers = [];
+  }
+
+  /**
+   * Add a new interceptor to the stack
+   *
+   * @param {Function} fulfilled The function to handle `then` for a `Promise`
+   * @param {Function} rejected The function to handle `reject` for a `Promise`
+   *
+   * @return {Number} An ID used to remove interceptor later
+   */
+  use(fulfilled, rejected, options) {
+    this.handlers.push({
+      fulfilled,
+      rejected,
+      synchronous: options ? options.synchronous : false,
+      runWhen: options ? options.runWhen : null
+    });
+    return this.handlers.length - 1;
+  }
+
+  /**
+   * Remove an interceptor from the stack
+   *
+   * @param {Number} id The ID that was returned by `use`
+   *
+   * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
+   */
+  eject(id) {
+    if (this.handlers[id]) {
+      this.handlers[id] = null;
+    }
+  }
+
+  /**
+   * Clear all interceptors from the stack
+   *
+   * @returns {void}
+   */
+  clear() {
+    if (this.handlers) {
+      this.handlers = [];
+    }
+  }
+
+  /**
+   * Iterate over all the registered interceptors
+   *
+   * This method is particularly useful for skipping over any
+   * interceptors that may have become `null` calling `eject`.
+   *
+   * @param {Function} fn The function to call for each interceptor
+   *
+   * @returns {void}
+   */
+  forEach(fn) {
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(this.handlers, function forEachHandler(h) {
+      if (h !== null) {
+        fn(h);
+      }
+    });
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (InterceptorManager);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/buildFullPath.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ buildFullPath)
+/* harmony export */ });
+/* harmony import */ var _helpers_isAbsoluteURL_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/isAbsoluteURL.js */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+/* harmony import */ var _helpers_combineURLs_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/combineURLs.js */ "./node_modules/axios/lib/helpers/combineURLs.js");
+
+
+
+
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ *
+ * @returns {string} The combined full path
+ */
+function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !(0,_helpers_isAbsoluteURL_js__WEBPACK_IMPORTED_MODULE_0__["default"])(requestedURL)) {
+    return (0,_helpers_combineURLs_js__WEBPACK_IMPORTED_MODULE_1__["default"])(baseURL, requestedURL);
+  }
+  return requestedURL;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ dispatchRequest)
+/* harmony export */ });
+/* harmony import */ var _transformData_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./transformData.js */ "./node_modules/axios/lib/core/transformData.js");
+/* harmony import */ var _cancel_isCancel_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../cancel/isCancel.js */ "./node_modules/axios/lib/cancel/isCancel.js");
+/* harmony import */ var _defaults_index_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../defaults/index.js */ "./node_modules/axios/lib/defaults/index.js");
+/* harmony import */ var _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../cancel/CanceledError.js */ "./node_modules/axios/lib/cancel/CanceledError.js");
+/* harmony import */ var _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+/* harmony import */ var _adapters_adapters_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../adapters/adapters.js */ "./node_modules/axios/lib/adapters/adapters.js");
+
+
+
+
+
+
+
+
+
+/**
+ * Throws a `CanceledError` if cancellation has been requested.
+ *
+ * @param {Object} config The config that is to be used for the request
+ *
+ * @returns {void}
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+
+  if (config.signal && config.signal.aborted) {
+    throw new _cancel_CanceledError_js__WEBPACK_IMPORTED_MODULE_0__["default"](null, config);
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ *
+ * @returns {Promise} The Promise to be fulfilled
+ */
+function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  config.headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(config.headers);
+
+  // Transform request data
+  config.data = _transformData_js__WEBPACK_IMPORTED_MODULE_2__["default"].call(
+    config,
+    config.transformRequest
+  );
+
+  if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
+    config.headers.setContentType('application/x-www-form-urlencoded', false);
+  }
+
+  const adapter = _adapters_adapters_js__WEBPACK_IMPORTED_MODULE_3__["default"].getAdapter(config.adapter || _defaults_index_js__WEBPACK_IMPORTED_MODULE_4__["default"].adapter);
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = _transformData_js__WEBPACK_IMPORTED_MODULE_2__["default"].call(
+      config,
+      config.transformResponse,
+      response
+    );
+
+    response.headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(response.headers);
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!(0,_cancel_isCancel_js__WEBPACK_IMPORTED_MODULE_5__["default"])(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = _transformData_js__WEBPACK_IMPORTED_MODULE_2__["default"].call(
+          config,
+          config.transformResponse,
+          reason.response
+        );
+        reason.response.headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(reason.response.headers);
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/mergeConfig.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ mergeConfig)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+
+
+
+
+
+const headersToObject = (thing) => thing instanceof _AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_0__["default"] ? thing.toJSON() : thing;
+
+/**
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
+ *
+ * @param {Object} config1
+ * @param {Object} config2
+ *
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  const config = {};
+
+  function getMergedValue(target, source, caseless) {
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isPlainObject(target) && _utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isPlainObject(source)) {
+      return _utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].merge.call({caseless}, target, source);
+    } else if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isPlainObject(source)) {
+      return _utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].merge({}, source);
+    } else if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDeepProperties(a, b, caseless) {
+    if (!_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(b)) {
+      return getMergedValue(a, b, caseless);
+    } else if (!_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(a)) {
+      return getMergedValue(undefined, a, caseless);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function valueFromConfig2(a, b) {
+    if (!_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(b)) {
+      return getMergedValue(undefined, b);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function defaultToConfig2(a, b) {
+    if (!_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(b)) {
+      return getMergedValue(undefined, b);
+    } else if (!_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(a)) {
+      return getMergedValue(undefined, a);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDirectKeys(a, b, prop) {
+    if (prop in config2) {
+      return getMergedValue(a, b);
+    } else if (prop in config1) {
+      return getMergedValue(undefined, a);
+    }
+  }
+
+  const mergeMap = {
+    url: valueFromConfig2,
+    method: valueFromConfig2,
+    data: valueFromConfig2,
+    baseURL: defaultToConfig2,
+    transformRequest: defaultToConfig2,
+    transformResponse: defaultToConfig2,
+    paramsSerializer: defaultToConfig2,
+    timeout: defaultToConfig2,
+    timeoutMessage: defaultToConfig2,
+    withCredentials: defaultToConfig2,
+    adapter: defaultToConfig2,
+    responseType: defaultToConfig2,
+    xsrfCookieName: defaultToConfig2,
+    xsrfHeaderName: defaultToConfig2,
+    onUploadProgress: defaultToConfig2,
+    onDownloadProgress: defaultToConfig2,
+    decompress: defaultToConfig2,
+    maxContentLength: defaultToConfig2,
+    maxBodyLength: defaultToConfig2,
+    beforeRedirect: defaultToConfig2,
+    transport: defaultToConfig2,
+    httpAgent: defaultToConfig2,
+    httpsAgent: defaultToConfig2,
+    cancelToken: defaultToConfig2,
+    socketPath: defaultToConfig2,
+    responseEncoding: defaultToConfig2,
+    validateStatus: mergeDirectKeys,
+    headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
+  };
+
+  _utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
+    const merge = mergeMap[prop] || mergeDeepProperties;
+    const configValue = merge(config1[prop], config2[prop], prop);
+    (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
+  });
+
+  return config;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/settle.js":
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ settle)
+/* harmony export */ });
+/* harmony import */ var _AxiosError_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+
+
+
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ *
+ * @returns {object} The response.
+ */
+function settle(resolve, reject, response) {
+  const validateStatus = response.config.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(new _AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"](
+      'Request failed with status code ' + response.status,
+      [_AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"].ERR_BAD_REQUEST, _AxiosError_js__WEBPACK_IMPORTED_MODULE_0__["default"].ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+      response.config,
+      response.request,
+      response
+    ));
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/transformData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ transformData)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _defaults_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../defaults/index.js */ "./node_modules/axios/lib/defaults/index.js");
+/* harmony import */ var _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/AxiosHeaders.js */ "./node_modules/axios/lib/core/AxiosHeaders.js");
+
+
+
+
+
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Array|Function} fns A single function or Array of functions
+ * @param {?Object} response The response object
+ *
+ * @returns {*} The resulting transformed data
+ */
+function transformData(fns, response) {
+  const config = this || _defaults_index_js__WEBPACK_IMPORTED_MODULE_0__["default"];
+  const context = response || config;
+  const headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(context.headers);
+  let data = context.data;
+
+  _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].forEach(fns, function transform(fn) {
+    data = fn.call(config, data, headers.normalize(), response ? response.status : undefined);
+  });
+
+  headers.normalize();
+
+  return data;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/index.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+/* harmony import */ var _transitional_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./transitional.js */ "./node_modules/axios/lib/defaults/transitional.js");
+/* harmony import */ var _helpers_toFormData_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../helpers/toFormData.js */ "./node_modules/axios/lib/helpers/toFormData.js");
+/* harmony import */ var _helpers_toURLEncodedForm_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../helpers/toURLEncodedForm.js */ "./node_modules/axios/lib/helpers/toURLEncodedForm.js");
+/* harmony import */ var _platform_index_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../platform/index.js */ "./node_modules/axios/lib/platform/browser/index.js");
+/* harmony import */ var _helpers_formDataToJSON_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helpers/formDataToJSON.js */ "./node_modules/axios/lib/helpers/formDataToJSON.js");
+
+
+
+
+
+
+
+
+
+
+const DEFAULT_CONTENT_TYPE = {
+  'Content-Type': undefined
+};
+
+/**
+ * It takes a string, tries to parse it, and if it fails, it returns the stringified version
+ * of the input
+ *
+ * @param {any} rawValue - The value to be stringified.
+ * @param {Function} parser - A function that parses a string into a JavaScript object.
+ * @param {Function} encoder - A function that takes a value and returns a string.
+ *
+ * @returns {string} A stringified version of the rawValue.
+ */
+function stringifySafely(rawValue, parser, encoder) {
+  if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+const defaults = {
+
+  transitional: _transitional_js__WEBPACK_IMPORTED_MODULE_1__["default"],
+
+  adapter: ['xhr', 'http'],
+
+  transformRequest: [function transformRequest(data, headers) {
+    const contentType = headers.getContentType() || '';
+    const hasJSONContentType = contentType.indexOf('application/json') > -1;
+    const isObjectPayload = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(data);
+
+    if (isObjectPayload && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isHTMLForm(data)) {
+      data = new FormData(data);
+    }
+
+    const isFormData = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFormData(data);
+
+    if (isFormData) {
+      if (!hasJSONContentType) {
+        return data;
+      }
+      return hasJSONContentType ? JSON.stringify((0,_helpers_formDataToJSON_js__WEBPACK_IMPORTED_MODULE_2__["default"])(data)) : data;
+    }
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArrayBuffer(data) ||
+      _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isBuffer(data) ||
+      _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isStream(data) ||
+      _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFile(data) ||
+      _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isBlob(data)
+    ) {
+      return data;
+    }
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isURLSearchParams(data)) {
+      headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
+      return data.toString();
+    }
+
+    let isFileList;
+
+    if (isObjectPayload) {
+      if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
+        return (0,_helpers_toURLEncodedForm_js__WEBPACK_IMPORTED_MODULE_3__["default"])(data, this.formSerializer).toString();
+      }
+
+      if ((isFileList = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
+        const _FormData = this.env && this.env.FormData;
+
+        return (0,_helpers_toFormData_js__WEBPACK_IMPORTED_MODULE_4__["default"])(
+          isFileList ? {'files[]': data} : data,
+          _FormData && new _FormData(),
+          this.formSerializer
+        );
+      }
+    }
+
+    if (isObjectPayload || hasJSONContentType ) {
+      headers.setContentType('application/json', false);
+      return stringifySafely(data);
+    }
+
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    const transitional = this.transitional || defaults.transitional;
+    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    const JSONRequested = this.responseType === 'json';
+
+    if (data && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(data) && ((forcedJSONParsing && !this.responseType) || JSONRequested)) {
+      const silentJSONParsing = transitional && transitional.silentJSONParsing;
+      const strictJSONParsing = !silentJSONParsing && JSONRequested;
+
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_5__["default"].from(e, _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_5__["default"].ERR_BAD_RESPONSE, this, null, this.response);
+          }
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+  maxBodyLength: -1,
+
+  env: {
+    FormData: _platform_index_js__WEBPACK_IMPORTED_MODULE_6__["default"].classes.FormData,
+    Blob: _platform_index_js__WEBPACK_IMPORTED_MODULE_6__["default"].classes.Blob
+  },
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  },
+
+  headers: {
+    common: {
+      'Accept': 'application/json, text/plain, */*'
+    }
+  }
+};
+
+_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].merge(DEFAULT_CONTENT_TYPE);
+});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (defaults);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults/transitional.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/transitional.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  silentJSONParsing: true,
+  forcedJSONParsing: true,
+  clarifyTimeoutError: false
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/env/classes/FormData.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/env/classes/FormData.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var form_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! form-data */ "./node_modules/form-data/lib/browser.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (form_data__WEBPACK_IMPORTED_MODULE_0__);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/env/data.js":
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/env/data.js ***!
+  \********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "VERSION": () => (/* binding */ VERSION)
+/* harmony export */ });
+const VERSION = "1.2.1";
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/AxiosURLSearchParams.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/AxiosURLSearchParams.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _toFormData_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./toFormData.js */ "./node_modules/axios/lib/helpers/toFormData.js");
+
+
+
+
+/**
+ * It encodes a string by replacing all characters that are not in the unreserved set with
+ * their percent-encoded equivalents
+ *
+ * @param {string} str - The string to encode.
+ *
+ * @returns {string} The encoded string.
+ */
+function encode(str) {
+  const charMap = {
+    '!': '%21',
+    "'": '%27',
+    '(': '%28',
+    ')': '%29',
+    '~': '%7E',
+    '%20': '+',
+    '%00': '\x00'
+  };
+  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
+    return charMap[match];
+  });
+}
+
+/**
+ * It takes a params object and converts it to a FormData object
+ *
+ * @param {Object<string, any>} params - The parameters to be converted to a FormData object.
+ * @param {Object<string, any>} options - The options object passed to the Axios constructor.
+ *
+ * @returns {void}
+ */
+function AxiosURLSearchParams(params, options) {
+  this._pairs = [];
+
+  params && (0,_toFormData_js__WEBPACK_IMPORTED_MODULE_0__["default"])(params, this, options);
+}
+
+const prototype = AxiosURLSearchParams.prototype;
+
+prototype.append = function append(name, value) {
+  this._pairs.push([name, value]);
+};
+
+prototype.toString = function toString(encoder) {
+  const _encode = encoder ? function(value) {
+    return encoder.call(this, value, encode);
+  } : encode;
+
+  return this._pairs.map(function each(pair) {
+    return _encode(pair[0]) + '=' + _encode(pair[1]);
+  }, '').join('&');
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AxiosURLSearchParams);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/bind.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ bind)
+/* harmony export */ });
+
+
+function bind(fn, thisArg) {
+  return function wrap() {
+    return fn.apply(thisArg, arguments);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/buildURL.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ buildURL)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _helpers_AxiosURLSearchParams_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../helpers/AxiosURLSearchParams.js */ "./node_modules/axios/lib/helpers/AxiosURLSearchParams.js");
+
+
+
+
+
+/**
+ * It replaces all instances of the characters `:`, `$`, `,`, `+`, `[`, and `]` with their
+ * URI encoded counterparts
+ *
+ * @param {string} val The value to be encoded.
+ *
+ * @returns {string} The encoded value.
+ */
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @param {?object} options
+ *
+ * @returns {string} The formatted url
+ */
+function buildURL(url, params, options) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+  
+  const _encode = options && options.encode || encode;
+
+  const serializeFn = options && options.serialize;
+
+  let serializedParams;
+
+  if (serializeFn) {
+    serializedParams = serializeFn(params, options);
+  } else {
+    serializedParams = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isURLSearchParams(params) ?
+      params.toString() :
+      new _helpers_AxiosURLSearchParams_js__WEBPACK_IMPORTED_MODULE_1__["default"](params, options).toString(_encode);
+  }
+
+  if (serializedParams) {
+    const hashmarkIndex = url.indexOf("#");
+
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ combineURLs)
+/* harmony export */ });
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ *
+ * @returns {string} The combined URL
+ */
+function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/cookies.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _platform_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../platform/index.js */ "./node_modules/axios/lib/platform/browser/index.js");
+
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_platform_index_js__WEBPACK_IMPORTED_MODULE_0__["default"].isStandardBrowserEnv ?
+
+// Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        const cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+// Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })());
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/formDataToJSON.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/formDataToJSON.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+/**
+ * It takes a string like `foo[x][y][z]` and returns an array like `['foo', 'x', 'y', 'z']
+ *
+ * @param {string} name - The name of the property to get.
+ *
+ * @returns An array of strings.
+ */
+function parsePropPath(name) {
+  // foo[x][y][z]
+  // foo.x.y.z
+  // foo-x-y-z
+  // foo x y z
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].matchAll(/\w+|\[(\w*)]/g, name).map(match => {
+    return match[0] === '[]' ? '' : match[1] || match[0];
+  });
+}
+
+/**
+ * Convert an array to an object.
+ *
+ * @param {Array<any>} arr - The array to convert to an object.
+ *
+ * @returns An object with the same keys and values as the array.
+ */
+function arrayToObject(arr) {
+  const obj = {};
+  const keys = Object.keys(arr);
+  let i;
+  const len = keys.length;
+  let key;
+  for (i = 0; i < len; i++) {
+    key = keys[i];
+    obj[key] = arr[key];
+  }
+  return obj;
+}
+
+/**
+ * It takes a FormData object and returns a JavaScript object
+ *
+ * @param {string} formData The FormData object to convert to JSON.
+ *
+ * @returns {Object<string, any> | null} The converted object.
+ */
+function formDataToJSON(formData) {
+  function buildPath(path, value, target, index) {
+    let name = path[index++];
+    const isNumericKey = Number.isFinite(+name);
+    const isLast = index >= path.length;
+    name = !name && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(target) ? target.length : name;
+
+    if (isLast) {
+      if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].hasOwnProp(target, name)) {
+        target[name] = [target[name], value];
+      } else {
+        target[name] = value;
+      }
+
+      return !isNumericKey;
+    }
+
+    if (!target[name] || !_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(target[name])) {
+      target[name] = [];
+    }
+
+    const result = buildPath(path, value, target[name], index);
+
+    if (result && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(target[name])) {
+      target[name] = arrayToObject(target[name]);
+    }
+
+    return !isNumericKey;
+  }
+
+  if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFormData(formData) && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFunction(formData.entries)) {
+    const obj = {};
+
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEachEntry(formData, (name, value) => {
+      buildPath(parsePropPath(name), value, obj, 0);
+    });
+
+    return obj;
+  }
+
+  return null;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (formDataToJSON);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isAbsoluteURL)
+/* harmony export */ });
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ *
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ isAxiosError)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ *
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+function isAxiosError(payload) {
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(payload) && (payload.isAxiosError === true);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _platform_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../platform/index.js */ "./node_modules/axios/lib/platform/browser/index.js");
+
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_platform_index_js__WEBPACK_IMPORTED_MODULE_0__["default"].isStandardBrowserEnv ?
+
+// Standard browser envs have full support of the APIs needed to test
+// whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    const msie = /(msie|trident)/i.test(navigator.userAgent);
+    const urlParsingNode = document.createElement('a');
+    let originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      let href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+          urlParsingNode.pathname :
+          '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      const parsed = (_utils_js__WEBPACK_IMPORTED_MODULE_1__["default"].isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+          parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })());
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/null.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/null.js ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// eslint-disable-next-line strict
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (null);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../utils.js */ "./node_modules/axios/lib/utils.js");
+
+
+
+
+// RawAxiosHeaders whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+const ignoreDuplicateOf = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toObjectSet([
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+]);
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} rawHeaders Headers needing to be parsed
+ *
+ * @returns {Object} Headers parsed into an object
+ */
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (rawHeaders => {
+  const parsed = {};
+  let key;
+  let val;
+  let i;
+
+  rawHeaders && rawHeaders.split('\n').forEach(function parser(line) {
+    i = line.indexOf(':');
+    key = line.substring(0, i).trim().toLowerCase();
+    val = line.substring(i + 1).trim();
+
+    if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
+      return;
+    }
+
+    if (key === 'set-cookie') {
+      if (parsed[key]) {
+        parsed[key].push(val);
+      } else {
+        parsed[key] = [val];
+      }
+    } else {
+      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+    }
+  });
+
+  return parsed;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseProtocol.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseProtocol.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ parseProtocol)
+/* harmony export */ });
+
+
+function parseProtocol(url) {
+  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+  return match && match[1] || '';
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/speedometer.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/speedometer.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+
+
+/**
+ * Calculate data maxRate
+ * @param {Number} [samplesCount= 10]
+ * @param {Number} [min= 1000]
+ * @returns {Function}
+ */
+function speedometer(samplesCount, min) {
+  samplesCount = samplesCount || 10;
+  const bytes = new Array(samplesCount);
+  const timestamps = new Array(samplesCount);
+  let head = 0;
+  let tail = 0;
+  let firstSampleTS;
+
+  min = min !== undefined ? min : 1000;
+
+  return function push(chunkLength) {
+    const now = Date.now();
+
+    const startedAt = timestamps[tail];
+
+    if (!firstSampleTS) {
+      firstSampleTS = now;
+    }
+
+    bytes[head] = chunkLength;
+    timestamps[head] = now;
+
+    let i = tail;
+    let bytesCount = 0;
+
+    while (i !== head) {
+      bytesCount += bytes[i++];
+      i = i % samplesCount;
+    }
+
+    head = (head + 1) % samplesCount;
+
+    if (head === tail) {
+      tail = (tail + 1) % samplesCount;
+    }
+
+    if (now - firstSampleTS < min) {
+      return;
+    }
+
+    const passed = startedAt && now - startedAt;
+
+    return passed ? Math.round(bytesCount * 1000 / passed) : undefined;
+  };
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (speedometer);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/spread.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ spread)
+/* harmony export */ });
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ *
+ * @returns {Function}
+ */
+function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/toFormData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/toFormData.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+/* harmony import */ var _env_classes_FormData_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../env/classes/FormData.js */ "./node_modules/axios/lib/env/classes/FormData.js");
+
+
+
+
+
+
+/**
+ * Determines if the given thing is a array or js object.
+ *
+ * @param {string} thing - The object or array to be visited.
+ *
+ * @returns {boolean}
+ */
+function isVisitable(thing) {
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isPlainObject(thing) || _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(thing);
+}
+
+/**
+ * It removes the brackets from the end of a string
+ *
+ * @param {string} key - The key of the parameter.
+ *
+ * @returns {string} the key without the brackets.
+ */
+function removeBrackets(key) {
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].endsWith(key, '[]') ? key.slice(0, -2) : key;
+}
+
+/**
+ * It takes a path, a key, and a boolean, and returns a string
+ *
+ * @param {string} path - The path to the current key.
+ * @param {string} key - The key of the current object being iterated over.
+ * @param {string} dots - If true, the key will be rendered with dots instead of brackets.
+ *
+ * @returns {string} The path to the current key.
+ */
+function renderKey(path, key, dots) {
+  if (!path) return key;
+  return path.concat(key).map(function each(token, i) {
+    // eslint-disable-next-line no-param-reassign
+    token = removeBrackets(token);
+    return !dots && i ? '[' + token + ']' : token;
+  }).join(dots ? '.' : '');
+}
+
+/**
+ * If the array is an array and none of its elements are visitable, then it's a flat array.
+ *
+ * @param {Array<any>} arr - The array to check
+ *
+ * @returns {boolean}
+ */
+function isFlatArray(arr) {
+  return _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(arr) && !arr.some(isVisitable);
+}
+
+const predicates = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toFlatObject(_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"], {}, null, function filter(prop) {
+  return /^is[A-Z]/.test(prop);
+});
+
+/**
+ * If the thing is a FormData object, return true, otherwise return false.
+ *
+ * @param {unknown} thing - The thing to check.
+ *
+ * @returns {boolean}
+ */
+function isSpecCompliant(thing) {
+  return thing && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator];
+}
+
+/**
+ * Convert a data object to FormData
+ *
+ * @param {Object} obj
+ * @param {?Object} [formData]
+ * @param {?Object} [options]
+ * @param {Function} [options.visitor]
+ * @param {Boolean} [options.metaTokens = true]
+ * @param {Boolean} [options.dots = false]
+ * @param {?Boolean} [options.indexes = false]
+ *
+ * @returns {Object}
+ **/
+
+/**
+ * It converts an object into a FormData object
+ *
+ * @param {Object<any, any>} obj - The object to convert to form data.
+ * @param {string} formData - The FormData object to append to.
+ * @param {Object<string, any>} options
+ *
+ * @returns
+ */
+function toFormData(obj, formData, options) {
+  if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(obj)) {
+    throw new TypeError('target must be an object');
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  formData = formData || new (_env_classes_FormData_js__WEBPACK_IMPORTED_MODULE_1__["default"] || FormData)();
+
+  // eslint-disable-next-line no-param-reassign
+  options = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toFlatObject(options, {
+    metaTokens: true,
+    dots: false,
+    indexes: false
+  }, false, function defined(option, source) {
+    // eslint-disable-next-line no-eq-null,eqeqeq
+    return !_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isUndefined(source[option]);
+  });
+
+  const metaTokens = options.metaTokens;
+  // eslint-disable-next-line no-use-before-define
+  const visitor = options.visitor || defaultVisitor;
+  const dots = options.dots;
+  const indexes = options.indexes;
+  const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
+  const useBlob = _Blob && isSpecCompliant(formData);
+
+  if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFunction(visitor)) {
+    throw new TypeError('visitor must be a function');
+  }
+
+  function convertValue(value) {
+    if (value === null) return '';
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isDate(value)) {
+      return value.toISOString();
+    }
+
+    if (!useBlob && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isBlob(value)) {
+      throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_2__["default"]('Blob is not supported. Use a Buffer instead.');
+    }
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArrayBuffer(value) || _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isTypedArray(value)) {
+      return useBlob && typeof Blob === 'function' ? new Blob([value]) : Buffer.from(value);
+    }
+
+    return value;
+  }
+
+  /**
+   * Default visitor.
+   *
+   * @param {*} value
+   * @param {String|Number} key
+   * @param {Array<String|Number>} path
+   * @this {FormData}
+   *
+   * @returns {boolean} return true to visit the each prop of the value recursively
+   */
+  function defaultVisitor(value, key, path) {
+    let arr = value;
+
+    if (value && !path && typeof value === 'object') {
+      if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].endsWith(key, '{}')) {
+        // eslint-disable-next-line no-param-reassign
+        key = metaTokens ? key : key.slice(0, -2);
+        // eslint-disable-next-line no-param-reassign
+        value = JSON.stringify(value);
+      } else if (
+        (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(value) && isFlatArray(value)) ||
+        (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isFileList(value) || _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].endsWith(key, '[]') && (arr = _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].toArray(value))
+        )) {
+        // eslint-disable-next-line no-param-reassign
+        key = removeBrackets(key);
+
+        arr.forEach(function each(el, index) {
+          !(_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isUndefined(el) || el === null) && formData.append(
+            // eslint-disable-next-line no-nested-ternary
+            indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
+            convertValue(el)
+          );
+        });
+        return false;
+      }
+    }
+
+    if (isVisitable(value)) {
+      return true;
+    }
+
+    formData.append(renderKey(path, key, dots), convertValue(value));
+
+    return false;
+  }
+
+  const stack = [];
+
+  const exposedHelpers = Object.assign(predicates, {
+    defaultVisitor,
+    convertValue,
+    isVisitable
+  });
+
+  function build(value, path) {
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isUndefined(value)) return;
+
+    if (stack.indexOf(value) !== -1) {
+      throw Error('Circular reference detected in ' + path.join('.'));
+    }
+
+    stack.push(value);
+
+    _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].forEach(value, function each(el, key) {
+      const result = !(_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isUndefined(el) || el === null) && visitor.call(
+        formData, el, _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(key) ? key.trim() : key, path, exposedHelpers
+      );
+
+      if (result === true) {
+        build(el, path ? path.concat(key) : [key]);
+      }
+    });
+
+    stack.pop();
+  }
+
+  if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(obj)) {
+    throw new TypeError('data must be an object');
+  }
+
+  build(obj);
+
+  return formData;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (toFormData);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/toURLEncodedForm.js":
+/*!************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/toURLEncodedForm.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ toURLEncodedForm)
+/* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils.js */ "./node_modules/axios/lib/utils.js");
+/* harmony import */ var _toFormData_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./toFormData.js */ "./node_modules/axios/lib/helpers/toFormData.js");
+/* harmony import */ var _platform_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../platform/index.js */ "./node_modules/axios/lib/platform/browser/index.js");
+
+
+
+
+
+
+function toURLEncodedForm(data, options) {
+  return (0,_toFormData_js__WEBPACK_IMPORTED_MODULE_0__["default"])(data, new _platform_index_js__WEBPACK_IMPORTED_MODULE_1__["default"].classes.URLSearchParams(), Object.assign({
+    visitor: function(value, key, path, helpers) {
+      if (_platform_index_js__WEBPACK_IMPORTED_MODULE_1__["default"].isNode && _utils_js__WEBPACK_IMPORTED_MODULE_2__["default"].isBuffer(value)) {
+        this.append(key, value.toString('base64'));
+        return false;
+      }
+
+      return helpers.defaultVisitor.apply(this, arguments);
+    }
+  }, options));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/validator.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/validator.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _env_data_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../env/data.js */ "./node_modules/axios/lib/env/data.js");
+/* harmony import */ var _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/AxiosError.js */ "./node_modules/axios/lib/core/AxiosError.js");
+
+
+
+
+
+const validators = {};
+
+// eslint-disable-next-line func-names
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach((type, i) => {
+  validators[type] = function validator(thing) {
+    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+
+const deprecatedWarnings = {};
+
+/**
+ * Transitional option validator
+ *
+ * @param {function|boolean?} validator - set to false if the transitional option has been removed
+ * @param {string?} version - deprecated version / removed since version
+ * @param {string?} message - some message with additional info
+ *
+ * @returns {function}
+ */
+validators.transitional = function transitional(validator, version, message) {
+  function formatMessage(opt, desc) {
+    return '[Axios v' + _env_data_js__WEBPACK_IMPORTED_MODULE_0__.VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  }
+
+  // eslint-disable-next-line func-names
+  return (value, opt, opts) => {
+    if (validator === false) {
+      throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"](
+        formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
+        _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"].ERR_DEPRECATED
+      );
+    }
+
+    if (version && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        formatMessage(
+          opt,
+          ' has been deprecated since v' + version + ' and will be removed in the near future'
+        )
+      );
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+
+/**
+ * Assert object's properties type
+ *
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ *
+ * @returns {object}
+ */
+
+function assertOptions(options, schema, allowUnknown) {
+  if (typeof options !== 'object') {
+    throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"]('options must be an object', _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"].ERR_BAD_OPTION_VALUE);
+  }
+  const keys = Object.keys(options);
+  let i = keys.length;
+  while (i-- > 0) {
+    const opt = keys[i];
+    const validator = schema[opt];
+    if (validator) {
+      const value = options[opt];
+      const result = value === undefined || validator(value, opt, options);
+      if (result !== true) {
+        throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"]('option ' + opt + ' must be ' + result, _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"].ERR_BAD_OPTION_VALUE);
+      }
+      continue;
+    }
+    if (allowUnknown !== true) {
+      throw new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"]('Unknown option ' + opt, _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_1__["default"].ERR_BAD_OPTION);
+    }
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  assertOptions,
+  validators
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/platform/browser/classes/FormData.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/axios/lib/platform/browser/classes/FormData.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FormData);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/platform/browser/classes/URLSearchParams.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/axios/lib/platform/browser/classes/URLSearchParams.js ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _helpers_AxiosURLSearchParams_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../helpers/AxiosURLSearchParams.js */ "./node_modules/axios/lib/helpers/AxiosURLSearchParams.js");
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (typeof URLSearchParams !== 'undefined' ? URLSearchParams : _helpers_AxiosURLSearchParams_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/platform/browser/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/axios/lib/platform/browser/index.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _classes_URLSearchParams_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./classes/URLSearchParams.js */ "./node_modules/axios/lib/platform/browser/classes/URLSearchParams.js");
+/* harmony import */ var _classes_FormData_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/FormData.js */ "./node_modules/axios/lib/platform/browser/classes/FormData.js");
+
+
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ *
+ * @returns {boolean}
+ */
+const isStandardBrowserEnv = (() => {
+  let product;
+  if (typeof navigator !== 'undefined' && (
+    (product = navigator.product) === 'ReactNative' ||
+    product === 'NativeScript' ||
+    product === 'NS')
+  ) {
+    return false;
+  }
+
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+})();
+
+/**
+ * Determine if we're running in a standard browser webWorker environment
+ *
+ * Although the `isStandardBrowserEnv` method indicates that
+ * `allows axios to run in a web worker`, the WebWorker will still be
+ * filtered out due to its judgment standard
+ * `typeof window !== 'undefined' && typeof document !== 'undefined'`.
+ * This leads to a problem when axios post `FormData` in webWorker
+ */
+ const isStandardBrowserWebWorkerEnv = (() => {
+  return (
+    typeof WorkerGlobalScope !== 'undefined' &&
+    self instanceof WorkerGlobalScope &&
+    typeof self.importScripts === 'function'
+  );
+})();
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  isBrowser: true,
+  classes: {
+    URLSearchParams: _classes_URLSearchParams_js__WEBPACK_IMPORTED_MODULE_0__["default"],
+    FormData: _classes_FormData_js__WEBPACK_IMPORTED_MODULE_1__["default"],
+    Blob
+  },
+  isStandardBrowserEnv,
+  isStandardBrowserWebWorkerEnv,
+  protocols: ['http', 'https', 'file', 'blob', 'url', 'data']
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/utils.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _helpers_bind_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./helpers/bind.js */ "./node_modules/axios/lib/helpers/bind.js");
+
+
+
+
+// utils is a library of generic helper functions non-specific to axios
+
+const {toString} = Object.prototype;
+const {getPrototypeOf} = Object;
+
+const kindOf = (cache => thing => {
+    const str = toString.call(thing);
+    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+})(Object.create(null));
+
+const kindOfTest = (type) => {
+  type = type.toLowerCase();
+  return (thing) => kindOf(thing) === type
+}
+
+const typeOfTest = type => thing => typeof thing === type;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ *
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+const {isArray} = Array;
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+const isUndefined = typeOfTest('undefined');
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+const isArrayBuffer = kindOfTest('ArrayBuffer');
+
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  let result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+const isString = typeOfTest('string');
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {*} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+const isFunction = typeOfTest('function');
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+const isNumber = typeOfTest('number');
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {*} thing The value to test
+ *
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+const isObject = (thing) => thing !== null && typeof thing === 'object';
+
+/**
+ * Determine if a value is a Boolean
+ *
+ * @param {*} thing The value to test
+ * @returns {boolean} True if value is a Boolean, otherwise false
+ */
+const isBoolean = thing => thing === true || thing === false;
+
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a plain Object, otherwise false
+ */
+const isPlainObject = (val) => {
+  if (kindOf(val) !== 'object') {
+    return false;
+  }
+
+  const prototype = getPrototypeOf(val);
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+const isDate = kindOfTest('Date');
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+const isFile = kindOfTest('File');
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+const isBlob = kindOfTest('Blob');
+
+/**
+ * Determine if a value is a FileList
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+const isFileList = kindOfTest('FileList');
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+const isStream = (val) => isObject(val) && isFunction(val.pipe);
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {*} thing The value to test
+ *
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+const isFormData = (thing) => {
+  const pattern = '[object FormData]';
+  return thing && (
+    (typeof FormData === 'function' && thing instanceof FormData) ||
+    toString.call(thing) === pattern ||
+    (isFunction(thing.toString) && thing.toString() === pattern)
+  );
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+const isURLSearchParams = kindOfTest('URLSearchParams');
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ *
+ * @returns {String} The String freed of excess whitespace
+ */
+const trim = (str) => str.trim ?
+  str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ *
+ * @param {Boolean} [allOwnKeys = false]
+ * @returns {any}
+ */
+function forEach(obj, fn, {allOwnKeys = false} = {}) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  let i;
+  let l;
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+    const len = keys.length;
+    let key;
+
+    for (i = 0; i < len; i++) {
+      key = keys[i];
+      fn.call(null, obj[key], key, obj);
+    }
+  }
+}
+
+function findKey(obj, key) {
+  key = key.toLowerCase();
+  const keys = Object.keys(obj);
+  let i = keys.length;
+  let _key;
+  while (i-- > 0) {
+    _key = keys[i];
+    if (key === _key.toLowerCase()) {
+      return _key;
+    }
+  }
+  return null;
+}
+
+const _global = typeof self === "undefined" ? typeof global === "undefined" ? undefined : global : self;
+
+const isContextDefined = (context) => !isUndefined(context) && context !== _global;
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ *
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  const {caseless} = isContextDefined(this) && this || {};
+  const result = {};
+  const assignValue = (val, key) => {
+    const targetKey = caseless && findKey(result, key) || key;
+    if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
+      result[targetKey] = merge(result[targetKey], val);
+    } else if (isPlainObject(val)) {
+      result[targetKey] = merge({}, val);
+    } else if (isArray(val)) {
+      result[targetKey] = val.slice();
+    } else {
+      result[targetKey] = val;
+    }
+  }
+
+  for (let i = 0, l = arguments.length; i < l; i++) {
+    arguments[i] && forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ *
+ * @param {Boolean} [allOwnKeys]
+ * @returns {Object} The resulting value of object a
+ */
+const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
+  forEach(b, (val, key) => {
+    if (thisArg && isFunction(val)) {
+      a[key] = (0,_helpers_bind_js__WEBPACK_IMPORTED_MODULE_0__["default"])(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  }, {allOwnKeys});
+  return a;
+}
+
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ *
+ * @returns {string} content value without BOM
+ */
+const stripBOM = (content) => {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+}
+
+/**
+ * Inherit the prototype methods from one constructor into another
+ * @param {function} constructor
+ * @param {function} superConstructor
+ * @param {object} [props]
+ * @param {object} [descriptors]
+ *
+ * @returns {void}
+ */
+const inherits = (constructor, superConstructor, props, descriptors) => {
+  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+  constructor.prototype.constructor = constructor;
+  Object.defineProperty(constructor, 'super', {
+    value: superConstructor.prototype
+  });
+  props && Object.assign(constructor.prototype, props);
+}
+
+/**
+ * Resolve object with deep prototype chain to a flat object
+ * @param {Object} sourceObj source object
+ * @param {Object} [destObj]
+ * @param {Function|Boolean} [filter]
+ * @param {Function} [propFilter]
+ *
+ * @returns {Object}
+ */
+const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
+  let props;
+  let i;
+  let prop;
+  const merged = {};
+
+  destObj = destObj || {};
+  // eslint-disable-next-line no-eq-null,eqeqeq
+  if (sourceObj == null) return destObj;
+
+  do {
+    props = Object.getOwnPropertyNames(sourceObj);
+    i = props.length;
+    while (i-- > 0) {
+      prop = props[i];
+      if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+        destObj[prop] = sourceObj[prop];
+        merged[prop] = true;
+      }
+    }
+    sourceObj = filter !== false && getPrototypeOf(sourceObj);
+  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+
+  return destObj;
+}
+
+/**
+ * Determines whether a string ends with the characters of a specified string
+ *
+ * @param {String} str
+ * @param {String} searchString
+ * @param {Number} [position= 0]
+ *
+ * @returns {boolean}
+ */
+const endsWith = (str, searchString, position) => {
+  str = String(str);
+  if (position === undefined || position > str.length) {
+    position = str.length;
+  }
+  position -= searchString.length;
+  const lastIndex = str.indexOf(searchString, position);
+  return lastIndex !== -1 && lastIndex === position;
+}
+
+
+/**
+ * Returns new array from array like object or null if failed
+ *
+ * @param {*} [thing]
+ *
+ * @returns {?Array}
+ */
+const toArray = (thing) => {
+  if (!thing) return null;
+  if (isArray(thing)) return thing;
+  let i = thing.length;
+  if (!isNumber(i)) return null;
+  const arr = new Array(i);
+  while (i-- > 0) {
+    arr[i] = thing[i];
+  }
+  return arr;
+}
+
+/**
+ * Checking if the Uint8Array exists and if it does, it returns a function that checks if the
+ * thing passed in is an instance of Uint8Array
+ *
+ * @param {TypedArray}
+ *
+ * @returns {Array}
+ */
+// eslint-disable-next-line func-names
+const isTypedArray = (TypedArray => {
+  // eslint-disable-next-line func-names
+  return thing => {
+    return TypedArray && thing instanceof TypedArray;
+  };
+})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
+
+/**
+ * For each entry in the object, call the function with the key and value.
+ *
+ * @param {Object<any, any>} obj - The object to iterate over.
+ * @param {Function} fn - The function to call for each entry.
+ *
+ * @returns {void}
+ */
+const forEachEntry = (obj, fn) => {
+  const generator = obj && obj[Symbol.iterator];
+
+  const iterator = generator.call(obj);
+
+  let result;
+
+  while ((result = iterator.next()) && !result.done) {
+    const pair = result.value;
+    fn.call(obj, pair[0], pair[1]);
+  }
+}
+
+/**
+ * It takes a regular expression and a string, and returns an array of all the matches
+ *
+ * @param {string} regExp - The regular expression to match against.
+ * @param {string} str - The string to search.
+ *
+ * @returns {Array<boolean>}
+ */
+const matchAll = (regExp, str) => {
+  let matches;
+  const arr = [];
+
+  while ((matches = regExp.exec(str)) !== null) {
+    arr.push(matches);
+  }
+
+  return arr;
+}
+
+/* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
+const isHTMLForm = kindOfTest('HTMLFormElement');
+
+const toCamelCase = str => {
+  return str.toLowerCase().replace(/[_-\s]([a-z\d])(\w*)/g,
+    function replacer(m, p1, p2) {
+      return p1.toUpperCase() + p2;
+    }
+  );
+};
+
+/* Creating a function that will check if an object has a property. */
+const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
+
+/**
+ * Determine if a value is a RegExp object
+ *
+ * @param {*} val The value to test
+ *
+ * @returns {boolean} True if value is a RegExp object, otherwise false
+ */
+const isRegExp = kindOfTest('RegExp');
+
+const reduceDescriptors = (obj, reducer) => {
+  const descriptors = Object.getOwnPropertyDescriptors(obj);
+  const reducedDescriptors = {};
+
+  forEach(descriptors, (descriptor, name) => {
+    if (reducer(descriptor, name, obj) !== false) {
+      reducedDescriptors[name] = descriptor;
+    }
+  });
+
+  Object.defineProperties(obj, reducedDescriptors);
+}
+
+/**
+ * Makes all methods read-only
+ * @param {Object} obj
+ */
+
+const freezeMethods = (obj) => {
+  reduceDescriptors(obj, (descriptor, name) => {
+    // skip restricted props in strict mode
+    if (isFunction(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
+      return false;
+    }
+
+    const value = obj[name];
+
+    if (!isFunction(value)) return;
+
+    descriptor.enumerable = false;
+
+    if ('writable' in descriptor) {
+      descriptor.writable = false;
+      return;
+    }
+
+    if (!descriptor.set) {
+      descriptor.set = () => {
+        throw Error('Can not rewrite read-only method \'' + name + '\'');
+      };
+    }
+  });
+}
+
+const toObjectSet = (arrayOrString, delimiter) => {
+  const obj = {};
+
+  const define = (arr) => {
+    arr.forEach(value => {
+      obj[value] = true;
+    });
+  }
+
+  isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
+
+  return obj;
+}
+
+const noop = () => {}
+
+const toFiniteNumber = (value, defaultValue) => {
+  value = +value;
+  return Number.isFinite(value) ? value : defaultValue;
+}
+
+const toJSONObject = (obj) => {
+  const stack = new Array(10);
+
+  const visit = (source, i) => {
+
+    if (isObject(source)) {
+      if (stack.indexOf(source) >= 0) {
+        return;
+      }
+
+      if(!('toJSON' in source)) {
+        stack[i] = source;
+        const target = isArray(source) ? [] : {};
+
+        forEach(source, (value, key) => {
+          const reducedValue = visit(value, i + 1);
+          !isUndefined(reducedValue) && (target[key] = reducedValue);
+        });
+
+        stack[i] = undefined;
+
+        return target;
+      }
+    }
+
+    return source;
+  }
+
+  return visit(obj, 0);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  isArray,
+  isArrayBuffer,
+  isBuffer,
+  isFormData,
+  isArrayBufferView,
+  isString,
+  isNumber,
+  isBoolean,
+  isObject,
+  isPlainObject,
+  isUndefined,
+  isDate,
+  isFile,
+  isBlob,
+  isRegExp,
+  isFunction,
+  isStream,
+  isURLSearchParams,
+  isTypedArray,
+  isFileList,
+  forEach,
+  merge,
+  extend,
+  trim,
+  stripBOM,
+  inherits,
+  toFlatObject,
+  kindOf,
+  kindOfTest,
+  endsWith,
+  toArray,
+  forEachEntry,
+  matchAll,
+  isHTMLForm,
+  hasOwnProperty,
+  hasOwnProp: hasOwnProperty, // an alias to avoid ESLint no-prototype-builtins detection
+  reduceDescriptors,
+  freezeMethods,
+  toObjectSet,
+  toCamelCase,
+  noop,
+  toFiniteNumber,
+  findKey,
+  global: _global,
+  isContextDefined,
+  toJSONObject
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/entities/lib/maps/entities.json":
 /*!******************************************************!*\
   !*** ./node_modules/entities/lib/maps/entities.json ***!
@@ -45825,6 +50417,11 @@ module.exports = JSON.parse('{"Aacute":"Á","aacute":"á","Abreve":"Ă","abreve"
 /******/ 		// no jsonp function
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
@@ -45834,25 +50431,23 @@ var __webpack_exports__ = {};
   !*** ./public/js/index.js ***!
   \****************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _less_index_less__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../less/index.less */ "./public/less/index.less");
-/* harmony import */ var font_awesome_css_font_awesome_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! font-awesome/css/font-awesome.css */ "./node_modules/font-awesome/css/font-awesome.css");
-/* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _less_index_less__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../less/index.less */ "./public/less/index.less");
+/* harmony import */ var font_awesome_css_font_awesome_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! font-awesome/css/font-awesome.css */ "./node_modules/font-awesome/css/font-awesome.css");
+/* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
 
 
 
 
+__webpack_require__(/*! js-treeview/dist/treeview.min.css */ "./node_modules/js-treeview/dist/treeview.min.css");
 
-__webpack_require__(/*! js-treeview/dist/treeview.min.css */ "./node_modules/js-treeview/dist/treeview.min.css"); // Resolve name collision between jQuery UI and Twitter Bootstrap
-
+// Resolve name collision between jQuery UI and Twitter Bootstrap
 /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
-
-
 $.widget.bridge('uibutton', $.ui.button);
-$.widget.bridge('uitooltip', $.ui.tooltip); // required to be compatible with jquery.layout and jquery.handsontable
-//
+$.widget.bridge('uitooltip', $.ui.tooltip);
 
+// required to be compatible with jquery.layout and jquery.handsontable
+//
 jQuery.uaMatch = function (ua) {
   ua = ua.toLowerCase();
   var match = /(chrome)[ \/]([\w.]+)/.exec(ua) || /(webkit)[ \/]([\w.]+)/.exec(ua) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) || /(msie) ([\w.]+)/.exec(ua) || ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [];
@@ -45861,54 +50456,47 @@ jQuery.uaMatch = function (ua) {
     version: match[2] || "0"
   };
 };
-
 if (!jQuery.browser) {
   var matched = jQuery.uaMatch(navigator.userAgent);
   var browser = {};
-
   if (matched.browser) {
     browser[matched.browser] = true;
     browser.version = matched.version;
-  } // Chrome is Webkit, but Webkit is also Safari.
-
-
+  }
+  // Chrome is Webkit, but Webkit is also Safari.
   if (browser.chrome) {
     browser.webkit = true;
   } else if (browser.webkit) {
     browser.safari = true;
   }
-
   jQuery.browser = browser;
-} // need to be global for the "static" version hosted on gh-pages
+}
+
+// need to be global for the "static" version hosted on gh-pages
 //
-
-
-window.conf = _configuration__WEBPACK_IMPORTED_MODULE_3__["default"];
+window.conf = _configuration__WEBPACK_IMPORTED_MODULE_2__["default"];
 $(window).load(function () {
-  document.title = _configuration__WEBPACK_IMPORTED_MODULE_3__["default"].appName;
+  document.title = _configuration__WEBPACK_IMPORTED_MODULE_2__["default"].appName;
   socket = io({
     path: '/socket.io'
-  }); // export all required classes for deserialize JSON with "eval"
+  });
+
+  // export all required classes for deserialize JSON with "eval"
   // "eval" code didn't sees imported class or code
   //
+
   // Init the UI after we have receive the UI/UX permissions of this kind of installation
   // (fake event from the socket.io mock )
   //
-
-  axios__WEBPACK_IMPORTED_MODULE_0___default().get("../permissions").then(function (response) {
+  axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("../permissions").then(function (response) {
     var permissions = response.data;
-
     var global = __webpack_require__(/*! ./global */ "./public/js/global.js");
+    for (var k in global["default"]) window[k] = global["default"][k];
 
-    for (var k in global["default"]) {
-      window[k] = global["default"][k];
-    } // we must load the "shape/index.js" in the global scope.
+    // we must load the "shape/index.js" in the global scope.
     //
-
-
     var s = document.createElement("script");
-    s.setAttribute("src", _configuration__WEBPACK_IMPORTED_MODULE_3__["default"].shapes.jsUrl);
-
+    s.setAttribute("src", _configuration__WEBPACK_IMPORTED_MODULE_2__["default"].shapes.jsUrl);
     s.onload = function () {
       app = (__webpack_require__(/*! ./application */ "./public/js/application.js")["default"]);
       app.init(permissions);
@@ -45917,7 +50505,6 @@ $(window).load(function () {
       });
       inlineSVG.init();
     };
-
     document.head.appendChild(s);
   });
 });
