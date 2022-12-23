@@ -1,35 +1,39 @@
 .toolbar {
-  margin:0;
-  padding-top:0;
   padding-right:10px;
   top:0;
   right:0;
   left:@leftPaneWidth;
   height:@toolbarHeight;
-  overflow: visible;
   position:absolute;
   background-color:@toolbarBackground;
   border: none !important;
+
+  display: flex;
+  gap: 10px;
 
   * {
     outline:none;
   }
 
+  .spacer{
+    flex-grow: 1;
+  }
+
   .group{
-    padding-right:20px;
-    display: inline-block;
-    vertical-align: top;
+    display: flex;
+    flex-direction: row;
 
     .image-button{
-      display: inline-block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       img, svg{
         margin: 5px;
         margin-bottom:0;
         padding: 0;
         width: @toolbarHeight - 20;
         height: @toolbarHeight - 20;
-        position: relative;
-        display: inline-block;
         text-align: center;
         color:#777;
         font-size:45px;
@@ -64,6 +68,79 @@
           &:hover{
             box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
           }
+        }
+      }
+    }
+
+    .form-horizontal {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      
+      min-width: 170px;
+      .statusIndicator {
+        margin: 20px;
+        img {
+          display: block;
+          cursor:pointer;
+          margin:auto;
+          &:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+          }
+        }
+        span {
+          font-size: .8em;
+          text-align: center;
+          width: 100%;
+          display: inline-block;
+          white-space: nowrap;
+        }
+        .notSupported{
+          display:none;
+          font-weight: bold;
+        }
+        .connected{
+          display: block;
+        }
+        .disconnected{
+          display: none;
+        }
+      }
+      .statusIndicator.disabled {
+        img {
+          opacity: 0.5;
+          cursor: not-allowed;
+          &:hover {
+            box-shadow: none;
+          }
+        }
+        span {
+          opacity: 0.5;
+        }
+        .notSupported{
+          display:block;
+        }
+        .connected{
+          display: none;
+        }
+        .disconnected{
+          display: none;
+        }
+      }
+      .statusIndicator.error:not(.disabled) {
+       span {
+          color:red;
+          font-weight: bold;
+        }
+        .notSupported{
+          display:none;
+        }
+        .connected{
+          display: none;
+        }
+        .disconnected{
+          display: block;
         }
       }
     }
