@@ -217,8 +217,10 @@ export default class Toolbar {
       return false
     })
 
+    buttonGroup = $('<div class="spacer"></div>')
+    this.html.append(buttonGroup)
 
-    buttonGroup = $('<div class="group" style="float:right"></div>')
+    buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
     this.testButton = $('<div class="image-button" id="editTest" data-toggle="tooltip" title="Test your shape"><img src="./images/toolbar_element_test.svg"/><div>Test</div></div>')
     buttonGroup.append(this.testButton)
