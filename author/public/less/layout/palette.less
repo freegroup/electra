@@ -1,25 +1,26 @@
 .paletteContainer {
   border: 0;
-  background-color: @layerPaneBgColor;
   text-align: center;
-  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3);
   z-index: 1;
-  box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
-  border-right: 1px solid rgba(74, 74, 74, 0.5);
-  border-left: 1px solid rgba(74, 74, 74, 0.5);
+  border-right-width: 1px ;
+  border-right-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
 
   .palette_item{
     padding:0;
     text-align:center;
     width: unit( (@leftPaneWidth / 2) , px);
     height: unit( (@leftPaneWidth / 2) , px);
-    border: 1px solid #f0f0f0;
+    border-width: 1px;
+    border-style: solid;
 
     >div{
       width:100%;
       height:100%;
       text-align:center;
-      border:1px solid transparent;
+      border-width: 1px;
+      border-style: solid;
       img{
         position: absolute;
         top: 0;
@@ -34,12 +35,12 @@
         width: 100%;
         bottom: 0;
         padding-top: 2px;
-        background-color:rgba(0,0,0,0.05);
         cursor:default;
       }
     }
     .glowBorder{
-      border: 1px solid @tintColor;
+      border-style: solid;
+      border-width: 1px;
     }
   }
   .draw2d_droppable{
@@ -63,16 +64,17 @@
       padding:10px;
       text-align: left;
       cursor:pointer;
-      border-left:2px solid transparent;
+      border-left-width:2px;
+      border-left-style:solid;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
       position: relative;
       padding-right: 45px;
-      border-bottom: 1px solid rgba(0,0,0,0.03);
       &.selected{
-        background-color:#EFEFEF !important;
-        border-left: 2px solid @tintColor;
+        border-left-width:2px;
+        border-left-style:solid;
       }
       &:hover{
-        background-color: rgba(248, 248, 248, 0.6);
         .page_action {
           visibility: initial;
         }
@@ -80,10 +82,11 @@
       .fa{
         padding:4px;
         border-radius: 2px;
-        border:1px solid transparent;
+        border-width:1px;
+        border-style:solid;
         &:hover{
-          border:1px solid rgba(0,0,0,0.4);
-          box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
+          border-width:1px;
+          border-style:solid;
         }
       }
       .page_action {
@@ -109,7 +112,6 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: rgba(255,255,255,0.7);
   display: none;
 }
 

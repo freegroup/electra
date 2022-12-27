@@ -1,0 +1,251 @@
+body.light {
+
+    .tooltip-inner {
+        color: #b0b0b0 !important;
+    }
+
+    #draw2dCanvasWrapper {
+        background-color: white;
+    }
+
+    #editor-container {
+
+        .left {
+            border-right-color: black;
+        }
+    }
+
+    #leftTabStrip {
+        background-color: #C71D3D;
+
+        &:after {
+            color: #EEE;
+            content: "Simulator";
+        }
+
+        li {
+            &.active {
+                a {
+                    &:hover {
+                        background-color: white;
+                    }
+                }
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: #C71D3D !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: #C71D3D !important;
+                    }
+                }
+            }
+
+            a {
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                padding: 4px;
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: white !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: white !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .welcomeMessage {
+
+        background: url(../images/background.png) no-repeat ;
+        background-position: center top;
+        background-size: 100% 50%;
+        img{
+          background-color: white;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+        .teaser {
+          background-color: white;
+          box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+          h2 {
+            color: #C71D3D;
+          }
+        }
+        button{
+          background-color: #C71D3D;
+          color: white;
+        }
+      }
+      
+
+    .toolbar{
+        background-color: rgba(252, 202, 202, 0.42);
+      }
+      
+    .shadow{
+        border:1px solid #C71D3D;
+        box-shadow: 0 5px 15px rgba(0,0,0,.2);
+        background-color:white;
+      }
+      
+      .spinner:before {
+        border-color:#ccc;
+        border-top-color: #07d;
+      }
+      
+    .paletteContainer {
+        background-color: white;
+        box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+        border-right-color: rgba(74, 74, 74, 0.5);
+        border-left-color: rgba(74, 74, 74, 0.5);
+
+        .palette_item {
+            border-color: #f0f0f0;
+
+            >div {
+                border-color: transparent;
+
+                div {
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+            }
+
+            .glowBorder {
+                border-color: #C71D3D;
+            }
+        }
+
+        #paletteElementsScroll {
+            .pageElement {
+                border-left-color: transparent;
+                border-bottom-color: rgba(0, 0, 0, 0.03);
+
+                &.selected {
+                    background-color: #EFEFEF !important;
+                    border-left-color: #C71D3D;
+                }
+
+                &:hover {
+                    background-color: rgba(248, 248, 248, 0.6);
+                }
+
+                .fa {
+                    border-color: transparent;
+
+                    &:hover {
+                        border-color: rgba(0, 0, 0, 0.4);
+                        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    #paletteElementsOverlay {
+        background-color: rgba(255, 255, 255, 0.7);
+    }
+
+
+    #paletteFilter.pages {
+        box-shadow: none !important;
+    }
+
+
+    .sections {
+        .section {
+            border-color: transparent;
+
+            &.error {
+                border-color: red;
+            }
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.01);
+                border-color: rgba(0, 0, 0, 0.1);
+            }
+
+            .sectionContent {
+                &[data-type='image'] {
+
+                    #editor-container {
+                        &:hover {
+                            box-shadow: 0 0 45px rgba(0, 0, 0, 0.1);
+                            border-color: black;
+                        }
+
+                        #image-preview {
+                            .overlay {
+                                background: rgba(255, 255, 255, 0.5);
+                            }
+                        }
+                    }
+                }
+
+                &[data-type='markdown'] {
+                    h1 {
+                        color: #C71D3D;
+                    }
+
+                    h2 {
+                        color: #C71D3D;
+                    }
+                }
+            }
+
+        }
+
+        .activeSection {
+            box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+        }
+    }
+
+    #simulationStartStop {
+        color: #9e9e9e;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+        &:focus {
+            color: rgba(0, 0, 0, 0);
+        }
+
+        &>span {
+            &>span {
+                background-color: #C71D3D;
+            }
+        }
+
+        &.play {
+            &>span {
+                &>span {
+                    background-color: #C71D3D;
+                }
+            }
+        }
+    }
+
+
+
+
+}
