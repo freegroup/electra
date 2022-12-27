@@ -1,0 +1,136 @@
+.context-menu-list {
+  margin: 0;
+  padding: 0;
+
+  min-width: 120px;
+  max-width: 250px;
+  display: inline-block;
+  position: absolute;
+  list-style-type: none;
+
+  border-width: 1px;
+  border-style: solid;
+  border-left-width: 2px;
+  font-size: 15px;
+  white-space: nowrap;
+
+  .context-menu-item {
+    padding: 5px 5px 5px 24px;
+    position: relative;
+    user-select: none;
+
+    &.hover {
+      cursor: pointer;
+    }
+
+    >label {
+
+      >input,
+      >textarea {
+        user-select: text;
+      }
+    }
+  }
+
+  .context-menu-separator {
+    padding-bottom: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+  }
+
+  .context-menu-input.hover,
+  .context-menu-item.disabled.hover {
+    cursor: default;
+  }
+
+  .context-menu-submenu:after {
+    content: ">";
+    position: absolute;
+    top: 0;
+    right: 3px;
+    z-index: 1;
+  }
+
+  .context-menu-item.icon {
+    min-height: 18px;
+  }
+
+  .context-menu-item.icon:before {
+    position: relative;
+    left: -15px;
+    font-size: 19px;
+  }
+
+  /* vertically align inside labels */
+  .context-menu-input>label>* {
+    vertical-align: top;
+  }
+
+  /* position checkboxes and radios as icons */
+  .context-menu-input>label>input[type="checkbox"],
+  .context-menu-input>label>input[type="radio"] {
+    margin-left: -17px;
+  }
+
+  .context-menu-input>label>span {
+    margin-left: 5px;
+  }
+
+  .context-menu-input>label,
+  .context-menu-input>label>input[type="text"],
+  .context-menu-input>label>textarea,
+  .context-menu-input>label>select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .context-menu-input>label>textarea {
+    height: 100px;
+  }
+
+  .context-menu-item>.context-menu-list {
+    display: none;
+    /* re-positioned by js */
+    right: -5px;
+    top: 5px;
+  }
+
+  .context-menu-item.hover>.context-menu-list {
+    display: block;
+  }
+
+  .context-menu-accesskey {
+    text-decoration: underline;
+  }
+
+  .context-menu-list {
+    border-color: #DDD;
+    background: white;
+    border-left-color: #C71D3D;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+
+    .context-menu-separator {
+      border-bottom: 1px solid #DDD;
+    }
+
+    .context-menu-item {
+      &.hover {
+        background-color: #C71D3D;
+        color: white;
+      }
+
+      &.disabled {
+        color: #666;
+
+        &.hover {
+          background-color: #EEE;
+        }
+      }
+
+      .context-menu-submenu:after {
+        color: #666;
+      }
+    }
+  }
+}

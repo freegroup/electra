@@ -2,21 +2,17 @@
 #configMenuIcon{
   font-size: 25px;
   cursor:pointer;
-  opacity: 0.3;
-  &:hover{
-    opacity: 1;
-    color:@tintColor;
-  }
 }
 
 
 #figureConfigDialog{
   display:none;
-  background-color:white;
-  border: 1px solid rgba(0,0,0,0.2);
+  border-width:1px;
+  border-style: solid;
   padding: 10px;
   margin-left:30px;
-  border-left: 3px solid @tintColor;
+  border-left-width:1px;
+  border-left-style: solid;
   border-radius:4px;
   .header{
     font-size: 16px;
@@ -27,9 +23,6 @@
     font-size:12px;
     font-weight: 200;
     cursor:pointer;
-    &:hover{
-      color:@tintColor;
-    }
   }
 
   .form-group{
@@ -46,9 +39,7 @@
     top: 10px;
     width: 0;
     height: 0;
-    border-right: 10px solid @tintColor;
-    border-top: 10px solid transparent;
-    border-left: 10px solid transparent;
-    border-bottom: 10px solid transparent;
+    border-width:10px;
+    border-style: solid;
   }
 }

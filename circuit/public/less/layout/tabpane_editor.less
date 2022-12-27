@@ -1,8 +1,7 @@
 
 .shadow{
-  border:1px solid @tintColor;
-  box-shadow: 0 5px 15px rgba(0,0,0,.2);
-  background-color:white;
+  border-width:1px;
+  border-style: solid;
 }
 
 .ui-draggable-dragging{
@@ -18,18 +17,12 @@ ellipse.highlightOnHover:hover{
   cursor: pointer;
 }
 
-rect.Raft{
-  fill:rgba(28, 155, 171,0.1);
-}
-
-
 #paletteElementsOverlay{
     bottom: 0;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    background-color: rgba(255,255,255,0.7);
     display: none;
 }
 
@@ -50,17 +43,18 @@ rect.Raft{
   margin-top: -15px;
   margin-left: -15px;
   border-radius: 50%;
-  border: 2px solid #ccc;
-  border-top-color: #07d;
+  border-width: 2px ;
+  border-style: solid;
   animation: spinner .6s linear infinite;
 }
 
 .workspace {
 
   .paletteContainer {
-    box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
-    border-right: 1px solid rgba(74, 74, 74, 0.5);
-    border-left: 1px solid rgba(74, 74, 74, 0.5);
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-left-width: 1px;
+    border-left-style: solid;
 
     .paletteTitle {
       img {
@@ -90,7 +84,6 @@ rect.Raft{
           padding:0;
           text-align: left;
           letter-spacing: 4px;
-          color: @tintColor;
         }
       }
     }
@@ -99,13 +92,15 @@ rect.Raft{
       text-align:center;
       width:120px;
       height: unit( (@leftPaneWidth / 2) , px);
-      border: 1px solid #f0f0f0;
+      border-width: 1px;
+      border-style: solid;
 
       >div{
         width:100%;
         height:100%;
         text-align:center;
-        border:1px solid transparent;
+        border-width: 1px;
+        border-style: solid;
         img{
           position: absolute;
           top: 0;
@@ -120,12 +115,12 @@ rect.Raft{
           width: 100%;
           bottom: 0;
           padding-top: 2px;
-          background-color:rgba(0,0,0,0.05);
           cursor:default;
         }
       }
       .glowBorder{
-        border: 1px solid @tintColor;
+        border-width: 1px;
+        border-style: solid;
       }
     }
     .draw2d_droppable{
@@ -133,15 +128,8 @@ rect.Raft{
       max-height:80px;
     }
   }
-
-
   .content {
     .canvas {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
         user-select: none;
 
     }

@@ -1,0 +1,222 @@
+body.light {
+
+    #draw2dCanvasWrapper {
+        .draw2d_tooltip {
+            background: #88b7d5;
+        }
+
+        .draw2d_tooltip:after,
+        .draw2d_tooltip:before {
+            border-color: transparent;
+        }
+
+        .draw2d_tooltip:after {
+            border-color: rgba(136, 183, 213, 0);
+            border-bottom-color: #88b7d5;
+        }
+
+        rect.Raft {
+            fill: rgba(28, 155, 171, 0.1);
+        }
+
+        ellipse.draw2d_shape_basic_LineStartResizeHandle,
+        ellipse.draw2d_shape_basic_LineEndResizeHandle,
+        rect.draw2d_policy_line_OrthogonalSelectionFeedbackPolicy_ResizeHandle {
+            fill: #C71D3D;
+        }
+    }
+
+
+    .shadow {
+        border-color: #C71D3D;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
+        background-color: white;
+    }
+
+    .spinner:before {
+        border-color: #ccc;
+        border-top-color: #07d;
+    }
+
+    .workspace {
+        .paletteContainer {
+            box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+            border-right-color: rgba(74, 74, 74, 0.5);
+            border-left-color: rgba(74, 74, 74, 0.5);
+
+            .paletteTitle {
+                div {
+                    h2 {
+                        color: #C71D3D;
+                    }
+                }
+            }
+
+            .palette_item {
+                border-color: #f0f0f0;
+
+                >div {
+                    border-color: transparent;
+
+                    div {
+                        background-color: rgba(0, 0, 0, 0.05);
+                    }
+                }
+
+                .glowBorder {
+                    border-color: #C71D3D;
+                }
+            }
+
+            #paletteElementsOverlay {
+                background-color: rgba(255, 255, 255, 0.7);
+            }
+        }
+    }
+
+
+    .toolbar {
+        background-color: #B2E2F2;
+
+        .slider-handle {
+            background-color: #C71D3D;
+        }
+
+        .simulationBase {
+            label {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    #leftTabStrip {
+        background-color: #C71D3D;
+
+        &:after {
+            color: #EEE;
+            content: "Simulator";
+        }
+
+        li {
+            &.active {
+                a {
+                    &:hover {
+                        background-color: white;
+                    }
+                }
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: #C71D3D !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: #C71D3D !important;
+                    }
+                }
+            }
+
+            a {
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                padding: 4px;
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: white !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: white !important;
+                    }
+                }
+            }
+        }
+    }
+
+
+    #probe_hint {
+        color: white;
+    }
+
+    #probe_window {
+        background: #009DAC;
+        color: white;
+    }
+
+    #probe_window_stick {
+        color: black;
+        border-bottom-color: #009DAC;
+    }
+
+    #probeSortable {
+        li {
+            path {
+                stroke: white;
+            }
+
+            div {
+                background: rgba(0, 157, 172, 0.8);
+            }
+        }
+
+        li:nth-child(even) {
+            background: #04A9B9;
+
+            div {
+                background: rgba(4, 169, 185, 0.5);
+            }
+        }
+
+        .inplaceEdit {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+
+    #simulationStartStop {
+        background-color: #FFF;
+        color: #9e9e9e;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+        &:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+        }
+
+        &:focus {
+            color: rgba(0, 0, 0, 0);
+        }
+
+        &>span {
+            &>span {
+                background-color: #C71D3D;
+                border-color: transparent;
+            }
+        }
+
+        &.play {
+            &>span {
+                &>span {
+                    background-color: #C71D3D;
+                }
+            }
+        }
+    }
+}

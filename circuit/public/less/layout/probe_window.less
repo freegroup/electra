@@ -3,17 +3,14 @@
 {
   display: block;
   padding: 30px;
-  color: white;
   font-size: 20px;
   font-weight: 100;
 }
 
 #probe_window
 {
-  background: @probeWindowBackground;
   bottom: 0;
   height:0;
-  color: white;
   position: absolute;
   right: 0;
   left: unit(@leftPaneWidth, px);
@@ -29,9 +26,9 @@
   position: absolute;
   top: -30px;
   cursor: pointer;
-  color: black;
   width: 100%;
-  border-bottom: 2px solid @probeWindowBackground;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
   text-align: center;
 }
 
@@ -42,27 +39,12 @@
     list-style-type: none;
     padding-top: 10px;
     padding-left:0;
-    path{
-      stroke:white;
-    }
     div{
       cursor: pointer;
       display: inline-block;
       padding-left: 10px;
       padding-right:10px;
       position: absolute;
-      background: rgba(0, 157, 172,0.8);
     }
-  }
-
-  li:nth-child(even) {
-    background: #04A9B9;
-    div{
-       background :rgba(4,169,185,0.5);
-    }
-  }
-
-  .inplaceEdit{
-    background:rgba(255,255,255,0.1);
   }
 }

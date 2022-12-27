@@ -5,10 +5,10 @@
   left:@leftPaneWidth;
   height:@toolbarHeight;
   position:absolute;
-  background-color:@toolbarBackground;
   border: none !important;
 
   display: flex;
+  align-items: center;
   gap: 10px;
 
   * {
@@ -35,40 +35,14 @@
         width: @toolbarHeight - 20;
         height: @toolbarHeight - 20;
         text-align: center;
-        color:#777;
         font-size:45px;
         transition: all 0.5s;
 
-        circle[stroke], 
-        polyline[stroke], 
-        path[stroke], 
-        g[stroke] {
-          stroke: @toolbarButtonFontColor !important;
-        }
-        rect[fill],
-        circle[fill] {
-          fill: @toolbarButtonFontColor !important;
-        }
       }
 
       div{
-        color:@toolbarButtonFontColor;
         text-align: center;
         font-size: 10px;
-        &.highlight{
-          animation: highlight 3s infinite;
-        }
-      }
-      &.disabled{
-        opacity:0.2;
-      }
-      &:not(.disabled){
-        img, svg {
-          cursor:pointer;
-          &:hover{
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-          }
-        }
       }
     }
 
@@ -85,9 +59,6 @@
           display: block;
           cursor:pointer;
           margin:auto;
-          &:hover {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-          }
         }
         span {
           font-size: .8em;
@@ -109,14 +80,10 @@
       }
       .statusIndicator.disabled {
         img {
-          opacity: 0.5;
           cursor: not-allowed;
           &:hover {
             box-shadow: none;
           }
-        }
-        span {
-          opacity: 0.5;
         }
         .notSupported{
           display:block;
@@ -130,7 +97,6 @@
       }
       .statusIndicator.error:not(.disabled) {
        span {
-          color:red;
           font-weight: bold;
         }
         .notSupported{
@@ -145,11 +111,4 @@
       }
     }
   }
-}
-
-
-@keyframes highlight {
-  0%   { color: @tintColor;  }
-  50%  { color: rgba(0,0,0,0.4); }
-  100% { color: @tintColor;  }
 }

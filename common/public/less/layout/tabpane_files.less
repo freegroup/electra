@@ -2,21 +2,11 @@
 #files{
   overflow-y: scroll;
   padding:30px !important;
-  box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
-
-  .toolbar{
-    background-color:transparent;
-  }
 
   .teaser {
     margin-bottom:0;
-    background-image:
-      linear-gradient(to bottom,rgba(255,255,255,0) 20%,rgba(255,255,255,.4) 70%,#fff 100%),
-      radial-gradient(ellipse at center,rgba(247,249,250,.7) 0%,rgba(247,249,250,0) 60%),
-      linear-gradient(to bottom,rgba(247,249,250,0) 0%,#f7f9fa 100%);
 
     .title {
-      color: @tintColor;
       font-weight: 200;
       font-size: 4vw;
       white-space: nowrap;
@@ -29,7 +19,6 @@
     .slogan {
       font-size: 2vw;
       font-weight: 200;
-      color: #34495e;
     }
   }
 
@@ -41,9 +30,6 @@
     font-size: 25px;
     padding: 4px;
     border-radius: 2px;
-    &:hover{
-      background-color: rgba(0,0,0,0.03);
-    }
   }
 
   .list-group-item {
@@ -60,13 +46,11 @@
 
       .filenameInplaceEdit {
         font-size: 18px;
-        color: @tintColor;
         margin-top: -5px;
       }
 
       h4 {
         font-size: 18px;
-        color: @tintColor;
         display: inline-block;
       }
       .editIcon{
@@ -88,12 +72,11 @@
   }
 
   .thumbAdd{
-    color: #0078f2;
-    border: 1px solid rgba(0, 120, 242, 0.33);
+    border-width:1px;
+    border-style: solid;
     border-radius: 6px;
-    cursor:pointer;
+    cursor: pointer;
     transition: all 1s;
-    -webkit-transition: all 1s;
     div{
       font-size: 160px;
       text-align: center;
@@ -102,16 +85,16 @@
       text-align: center;
     }
     &:hover{
-      border: 1px solid rgba(0, 120, 242, 1);
+      border-width:1px;
+      border-style: solid;
       transition: all 1s;
-      -webkit-transition: all 1s;
     }
   }
 
   .fileOperations {
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 9px;
-    
+    border-bottom-width:1px;
+    border-bottom-style: solid;
+    padding-bottom: 9px;    
   }
 
 
@@ -121,7 +104,8 @@
       position: relative;
       display: block;
       padding:0;
-      border-bottom: 1px solid @filesTabContainerBorderColor;
+      border-bottom-width:1px;
+      border-bottom-style: solid;
 
       a {
         position: relative;
@@ -134,7 +118,6 @@
         text-transform: uppercase;
         font-size: 14px;
         font-weight: 300;
-        color: #424f5a;
         text-align: center;
         transition: all 0.3s ease;
         outline:none;
@@ -149,7 +132,6 @@
       &>div{
         padding: 10px;
         min-height:600px;
-        background-color: @filesTabPaneColor;
       }
     }
   }
@@ -158,25 +140,16 @@
     position: relative;
   }
 
-
-  #material-tabs>a:not(.active):hover {
-    background-color: inherit;
-    color: @tintColor;
-  }
-
   .yellow-bar {
     position: absolute;
     z-index: 1000;
     bottom: -2px;
     height: 50px;
-    background: @filesTabPaneColor;
     display: block;
     left: 0;
     transition: all 0.3s ease;
     border-radius: 10px 10px 0 0;
     border-width: 1px 1px 0 1px;
     border-style: solid;
-    border-color: @filesTabContainerBorderColor;
   }
-
 }

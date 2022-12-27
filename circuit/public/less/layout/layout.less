@@ -25,18 +25,6 @@ body {
       }
     }
 
-    #leftTabStrip {
-      height: 100%;
-      position:absolute;
-      width: @tabSize;
-      padding-top: @tabSize;
-      overflow:hidden;
-      .leftTab {
-        border-radius: 0 !important;
-        width:@tabSize;
-        height:@tabSize;
-      }
-    }
 
     .tab-content {
       position: relative;
@@ -56,7 +44,7 @@ body {
             height: 100%;
             width: unit(@leftPaneWidth, px);
             padding: 0;
-
+            user-select: none;
 
             #paletteHeader {
               position: relative;
