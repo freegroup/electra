@@ -5739,12 +5739,14 @@ var Userinfo = /*#__PURE__*/function () {
         _this.user = response.data;
         var icon = _this.user.picture ? _this.user.picture : "../common/images/toolbar_user.svg";
         var role = _this.user.role === "admin" ? "(Administrator)" : "";
-        console.log("Render Google Button");
         $(".userinfo_toggler img").attr("src", icon);
         $(".userinfo_toggler .dropdown-menu").html(" \n              <div class=\"userContainer\">\n                <img src=\"".concat(icon, "\"/>\n                <div>").concat(_this.user.displayName, "</div>\n                <div>").concat(role, "</div>\n              </div>\n          "));
       })["catch"](function () {
         $(".userinfo_toggler").each(function (i, element) {
-          google.accounts.id.renderButton(element, {
+          google.accounts.id.renderButton(element,
+          // "size: medium" do not render user information into the button. But with "large", only one button is updated and not all of them
+          // In this case I decide to use a consistend appearance
+          {
             theme: "outline",
             size: "medium",
             mode: "redirect",
@@ -5752,7 +5754,8 @@ var Userinfo = /*#__PURE__*/function () {
           } // customization attributes
           );
         });
-        //google.accounts.id.prompt(); // also display the One Tap dialog
+
+        google.accounts.id.prompt(); // also display the One Tap dialog
       });
     }
   }

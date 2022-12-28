@@ -73,7 +73,7 @@ $(window).load(function () {
       app = require("./application").default
       app.init(permissions)
       $(".loader").fadeOut(500, function () {
-        $(this).remove();
+       $(this).remove();
       })
       inlineSVG.init()
     }

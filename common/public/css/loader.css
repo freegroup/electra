@@ -1,4 +1,3 @@
-
 .loader {
   width: 100%;
   height: 100%;
@@ -9,9 +8,12 @@
   z-index: 10000;
 }
 .loader .title {
+  font-family: sans-serif !important;
+  font-weight: 300;
   position: absolute;
   top: 50%;
   left: 50%;
+  display: block !important;
   transform: translateX(-50%) translateY(-48px);
 }
 .loader .gooey {

@@ -9,7 +9,9 @@
   <link rel="icon" type="./image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
   <link rel="icon" type="./image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
   <link rel="icon" type="./image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
-  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+  
+  <link href='../common/css/roboto.css' rel='stylesheet' type='text/css' rel="preload" >
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css' rel="preload" />
 
   <style>
     .x.axis line {
@@ -470,22 +472,21 @@
 
 
 <div class="loader">
-<div class="title">Loading the <i>Circuit Simulator</i>...</div>
-<div class="gooey">
-  <span class="dot"></span>
-  <div class="dots">
-    <span></span>
-    <span></span>
-    <span></span>
+  <div class="title" style="display: none; font-family: sans-serif; font-weight: 300;">Loading the <i>Circuit Simulator</i>...</div>
+  <div class="gooey">
+    <span class="dot"></span>
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
-</div>
 </div>
 
 </body>
 
 
 <link href="../common/css/katex.min.css" rel="stylesheet" >
-<link href='../common/css/roboto.css' rel='stylesheet' type='text/css'>
 
 <script src="../common/js/tfjs/tf.js"> </script>
 <script src="../common/js/tfjs/coco-ssd.js"> </script>

@@ -75,7 +75,6 @@ export default class Files {
 
   onTabClick() {
     setTimeout(()=>{
-      console.log("click")
       let w1= $("#userFilesTab").outerWidth()
       let w2= $("#globalFilesTab").outerWidth()
       if($("#userFilesTab.active").length===1){

@@ -20,7 +20,6 @@ export default class Userinfo {
           this.user = response.data
           let icon = this.user.picture?this.user.picture:"../common/images/toolbar_user.svg"
           let role = this.user.role==="admin"?"(Administrator)":""
-          console.log("Render Google Button")
           $(".userinfo_toggler img").attr("src",icon)
           $(".userinfo_toggler .dropdown-menu").html(` 
               <div class="userContainer">
@@ -34,10 +33,12 @@ export default class Userinfo {
           $(".userinfo_toggler").each(function( i, element ) {
             google.accounts.id.renderButton(
               element,
+              // "size: medium" do not render user information into the button. But with "large", only one button is updated and not all of them
+              // In this case I decide to use a consistend appearance
               { theme: "outline", size: "medium", mode:"redirect", text:"signin" }  // customization attributes
             );
           });
-          //google.accounts.id.prompt(); // also display the One Tap dialog
+          google.accounts.id.prompt(); // also display the One Tap dialog
         })
     }
   }

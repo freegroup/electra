@@ -76,9 +76,6 @@ $(window).load(function () {
     var s = document.createElement("script")
     s.setAttribute("src",conf.shapes.jsUrl)
     s.onload = function(){
-      // export all required classes for deserialize JSON with "eval".
-      // "eval" code didn't sees imported class or code
-      //
       app = require("./Application").default
       app.init(permissions)
       require("./hardware").default.init(socket)
