@@ -19,7 +19,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    
+
     .image-button{
       display: flex;
       flex-direction: column;
@@ -43,13 +43,10 @@
       }
     }
 
-    .form-horizontal {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      
-      min-width: 170px;
+      .image-button {
+        font-weight: 400;
+      }
+
       .statusIndicator {
         margin: 20px;
         img {
@@ -93,19 +90,21 @@
         }
       }
       .statusIndicator.error:not(.disabled) {
-       span {
+        span {
           font-weight: bold;
         }
+
         .notSupported{
           display:none;
         }
+
         .connected{
           display: none;
         }
+
         .disconnected{
           display: block;
         }
       }
-    }
   }
 }

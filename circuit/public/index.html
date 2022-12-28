@@ -165,8 +165,7 @@
                 <div>Connection</div>
               </span>
 
-                <ul class="dropdown-menu" role="menu" >
-                    <form class="form-horizontal" role="form" style="min-width:300px">
+                <div class="dropdown-menu" role="menu" >
 
                       <label class="statusIndicator" id="statusWebUSB" >
                         <img src="./images/status_arduino.svg"/>
@@ -175,8 +174,7 @@
                         <span class="disconnected">disconnected</span>
                         <span class="notSupported">Not Supported - <a class="help-link" href="#">why?</a></span>
                       </label>
-                    </form>
-                </ul>
+                    </div>
               </label>
           </span>
 
@@ -237,11 +235,11 @@
         <div class="content" id="draw2dCanvasWrapper">
           <div class="canvas" id="draw2dCanvas" oncontextmenu="return false;">
           </div>
-          <div id="canvas_zoom">
-            <button type="button" id="canvas_zoom_in"     >&#8210;</button>
-            <button type="button" id="canvas_zoom_normal" >100%</button>
-            <button type="button" id="canvas_zoom_out"    >&#xFF0B</button>
-          </div>
+        </div>
+        <div id="canvas_zoom">
+          <button type="button" id="canvas_zoom_in"     >&#8210;</button>
+          <button type="button" id="canvas_zoom_normal" >100%</button>
+          <button type="button" id="canvas_zoom_out"    >&#xFF0B</button>
         </div>
         <div id='probe_window'>
           <div id="probe_window_stick" class="ion-ios-eye-outline" title="Stick Window"><img id="probe_window_opener" src="./images/slideout_bottom.svg"/></div>

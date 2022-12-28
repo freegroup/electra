@@ -8,9 +8,8 @@ export default class AppSwitch {
                   <img  src="../common/images/toolbar_app_switch.svg" class="svg"/>
                 </span>
 
-                <ul class="dropdown-menu" role="menu" >
-                    <form class="form-horizontal" role="form">
-
+                <div class="dropdown-menu" role="menu" >
+  
                       <label class="applicationSwitchHome image-button">
                         <img src="../common/images/app_home.svg"/>
                         <div>Home<br>&nbsp;</div>
@@ -40,9 +39,7 @@ export default class AppSwitch {
                         <img src="../common/images/app_groups.svg"/>
                         <div>My Groups<br>&nbsp;</div>
                       </label>
-                      
-                    </form>
-                </ul>   
+                </div>   
                          
          </span>
     `)

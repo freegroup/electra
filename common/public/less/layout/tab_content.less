@@ -28,7 +28,7 @@
           position: relative;
           width: 40px;
           top: @toolbarHeight + 5;
-          left: @leftPaneWidth + 5;
+          left: unit(@leftPaneWidth+5, px);
           cursor: pointer;
           border-width: 1px;
           border-style: solid;
@@ -41,9 +41,9 @@
 
 
         #canvas_config_items {
-          position: fixed;
+          position: absolute;
           top: @toolbarHeight+30;
-          left: @leftPaneWidth+5px;
+          left: unit(@leftPaneWidth+5, px);;
           cursor: pointer;
           padding: 10px;
           white-space: nowrap;

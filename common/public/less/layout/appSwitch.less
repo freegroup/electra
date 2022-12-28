@@ -1,20 +1,20 @@
 
 .applicationSwitch {
-  float: right;
-  padding-top: 7px;
-  .dropdown {
-    vertical-align: middle;
+
+  .open {
+    .dropdown-menu{
+      z-index: 10000;
+      right:0;
+      left: initial;
+
+      display: grid;
+      max-width:200px;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      grid-auto-rows: minmax(80px, auto);
+      grid-gap: 5px;
+    }
   }
   .dropdown-menu{
-    z-index: 10000;
-    right:0;
-    left: initial;
-    min-width: 190px;
-  }
-  .form-horizontal {
-    .image-button {
-      padding:15px;
-      font-weight: 400;
-    }
+    display: none;
   }
 }

@@ -88,6 +88,7 @@ export default class ProbeWindow {
       $("#probe_hint").hide()
     else
       $("#probe_hint").show()
+    $("#canvas_zoom").show().animate({bottom: '220px'}, 300)
     $("#probe_window").show().animate({height: '200px'}, 300)
     $("#draw2dCanvasWrapper").animate({bottom: '200px'}, 300)
     $("#probeSortable").sortable({
@@ -105,6 +106,7 @@ export default class ProbeWindow {
   }
 
   hide() {
+    $("#canvas_zoom").show().animate({bottom: '20px'}, 300)
     $("#probe_window").animate({height: '0'}, 300)
     $("#draw2dCanvasWrapper").animate({bottom: '0'}, 300, () => {
       $("#probeSortable").remove()
