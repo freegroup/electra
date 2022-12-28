@@ -3,17 +3,15 @@
 #simulationStartStop {
   z-index: 1000;
   display: inline-block;
-  width: @buttonSize;
-  height:@buttonSize;
+  width: unit( @buttonSize , px);
+  height:unit( @buttonSize , px);
   overflow: hidden;
   transform: translateZ(0);
   transition: all 500ms ease;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   top: 2px;
   position: relative;
 
   &:active {
-    -webkit-transform: scale(1.1, 1.1);
     transform: scale(1.1, 1.1);
   }
 
@@ -25,8 +23,8 @@
   &>span {
     display: block;
     position: relative;
-    width: @buttonSize;
-    height: @buttonSize;
+    width: unit( @buttonSize , px);
+    height:unit( @buttonSize , px);
     transition: all 500ms ease;
     overflow: hidden;
     margin: 0;
@@ -36,8 +34,8 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: @buttonSize;
-      height: @buttonSize;
+      width: unit( @buttonSize , px);
+      height: unit( @buttonSize , px);
       transition: all 500ms ease;
       border-width:1px;
       border-style:solid;
@@ -46,10 +44,10 @@
 
   &.play{
     &>span {
-      transform: translate(@buttonSize / 2, 0) scale(1.6, 1);
+      transform: translate(unit( (@buttonSize/2) , px), 0) scale(1.6, 1);
 
       &>span {
-        transform: rotate(-45deg) translate(-@buttonSize / 2 , -@buttonSize / 2) scale(1, 1);
+        transform: rotate(-45deg) translate(unit( (-@buttonSize/2) , px), unit( (-@buttonSize/2) , px)) scale(1, 1);
       }
     }
   }
@@ -59,13 +57,12 @@
     &>span {
 
       &>span {
-        transform: scale(0.4, 1) translate(-@buttonSize / 3 * 2, 0);
+        transform: scale(0.4, 1) translate(unit( (-@buttonSize/3*2) , px), 0);
 
         &.s3 {
-          transform: scale(0.4, 1) translate(@buttonSize / 3 * 2, 0);
+          transform: scale(0.4, 1) translate(unit( (@buttonSize/3*2) , px), 0);
         }
       }
     }
   }
 }
-
