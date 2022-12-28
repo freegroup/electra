@@ -1,0 +1,442 @@
+body.light {
+    #leftTabStrip {
+        background-color: #C71D3D;
+
+        &:after {
+            color: #EEE;
+            content: "Simulator";
+        }
+
+        li {
+            &.active {
+                a {
+                    &:hover {
+                        background-color: white;
+                    }
+                }
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: #C71D3D !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: #C71D3D !important;
+                    }
+                }
+            }
+
+            a {
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                padding: 4px;
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke: white !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: white !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .ui-anglepicker {
+        background: linear-gradient(to bottom, #dbdbdb 0%, #e1e1de 20%, #f8f8f3 100%);
+        border-color: #666;
+        box-shadow: inset 0 2px 3px white, inset 0 -1px 2px #fffef8;
+    }
+
+    .ui-anglepicker:hover,
+    .ui-anglepicker.ui-anglepicker-dragging {
+        border-color: #494949;
+    }
+
+    .ui-anglepicker-dragging .ui-anglepicker-dot,
+    .ui-anglepicker-dragging .ui-anglepicker-line,
+    .ui-anglepicker:hover .ui-anglepicker-dot,
+    .ui-anglepicker:hover .ui-anglepicker-line {
+        background: #494949;
+    }
+
+    .ui-anglepicker-dot {
+        background: #838383;
+    }
+
+    .ui-anglepicker-line {
+        background: #838383;
+    }
+
+    .tooltip-inner {
+        color: #b0b0b0 !important;
+    }
+
+    input {
+        background: none repeat scroll 0 0 #f8f8f8;
+        border-color: #C6C6C6 #DADADA #EAEAEA;
+    }
+
+
+    .readonly-highlight{
+        background-color: rgba(50,43,168,0.5);
+        opacity: 0.2;
+        color:darkblue;
+      }
+      
+      .content {
+        background-color:#FFFFFF;
+      }
+      
+      #canvas_config{
+        border-color:transparent;
+        background-color:fadeout(#B2E2F2,70%);
+        &:hover {
+          border-color:#C71D3D  !important;
+          color:#C71D3D;
+        }
+      }      
+      #codeDialog {
+
+        .codeContainer {
+          background-color: white;
+        }
+      }
+
+      #FigureMarkdownEdit
+      {
+        .header{
+          background-color:white;
+          .left{
+            color: #CC4F5A;
+            background-color: rgba(0,0,0,0.1);
+          }
+          .right{
+            color: #CC4F5A;
+            background-color: rgba(0,0,0,0.05);
+          }
+        }
+      
+        .markdownRendering{
+          background-color: white;
+        }
+      }
+
+      #testDialog {
+        .testInfo {
+          color: black;
+          border-color:lightgray;
+          background-color: white;
+        }
+      
+        #testCanvas {
+          background-color: white;
+        }
+      
+        .tinyFlyoverMenu {
+          svg {
+            :hover{
+              color:red !important;
+           }
+          }
+        }
+      }
+      
+       
+
+
+      .portDirectionOption{
+        & label > input + span{ /* IMAGE STYLES */
+          color:gray !important;
+        }
+      
+        & label > input:checked + span{ /* (CHECKED) IMAGE STYLES */
+          color:#C71D3D !important;
+        }
+      }
+      
+      
+      .portTypeOption{
+        & label > input{ /* HIDE RADIO */
+          + span{ /* IMAGE STYLES */
+            color:gray !important;
+          }
+        }
+      
+        & label > input:checked + span{ /* (CHECKED) IMAGE STYLES */
+          color:#C71D3D !important;
+        }
+      }
+      
+      #filter {
+        background-color: #282a30;
+        .filter_header{
+          background:none repeat scroll 0 0 #303030;
+          border-bottom-color:#222222;
+          border-top-color:#111111;
+          color: white;
+        }
+      
+        .filter_toolbar{
+          background:none repeat scroll 0 0 #303030;
+          #add_filter_button {
+            color: #C71D3D;
+          }
+        }
+      
+        .filter_actions{
+          .panel-body{
+            .btn-primary {
+              color: #fff;
+              background-color: #C71D3D;
+              border-color: #C71D3D;
+            }
+          }
+      
+      
+          .icon {
+            color: #26B4A8;
+            color:rgba(255,255,255,0.25);
+            &:hover{
+              color:#C71D3D;
+            }
+          }
+      
+          .filter-heading{
+            color: #DDDDDD !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            .icon {
+              * {
+                stroke : white !important;
+              }
+            }
+          }
+        }
+      
+      
+        .input-group-addon{
+          color:rgba(0,0,0,0.3);
+          background-color: white;
+        }
+        .panel-default {
+          background-color: fade(#C71D3D, 2%);
+          border-top-color:#303030;
+          border-bottom-color:#202525;
+        }
+      }
+   
+      
+
+
+
+
+      .layer-name-prompt {
+
+        .modal-header{
+          border-bottom-color:#C71D3D;
+        }
+      
+        input{
+          background-color: rgba(0,0,0,0.02) !important;
+          &:focus{
+            border:1px solid #C71D3D;
+          }
+        }
+        .btn-primary{
+          background-color:#C71D3D;
+          &:hover{
+            background-color:darken(#C71D3D,10%);
+          }
+        }
+      }
+      
+      #layer {
+        background-color: #ffffff;
+        box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3);
+      
+        .panetitle {
+          border-bottom-color:#222222;
+          color: #C71D3D;
+          box-shadow: 0 4px 2px -2px rgba(31, 73, 125, 0.3);
+        }
+      
+        #layer_elements {
+          .layerElement {
+            background-color:darken(#ffffff, 2%);
+            color: #000000;
+            border-color:transparent;
+            border-bottom-color:#222222;
+      
+      
+            &.ExtLine::before {
+              background: url("../images/layer_line.svg") no-repeat;
+              background-size: cover;
+            }
+            &.PolyRect::before {
+              background: url("../images/layer_rect.svg") no-repeat;
+              background-size: cover;
+            }
+      
+            &.PolyCircle::before {
+              background: url("../images/layer_circle.svg") no-repeat;
+              background-size: cover;
+            }
+      
+            &.ExtLabel::before {
+              background: url("../images/layer_text.svg") no-repeat;
+              background-size: cover;
+            }
+      
+            &.ExtPort::before {
+              background: url("../images/layer_port.svg") no-repeat;
+              background-size: cover;
+            }
+      
+            &[data-visibility="false"]{
+              opacity: 0.5;
+            }
+            .icon {
+              * {
+                stroke: #000000 !important;
+              }
+              &:hover {
+                * {
+                  stroke: #C71D3D !important;
+                }
+              }
+            }
+          }
+      
+          .layerSelectedElement {
+            background-color: darken(#ffffff, 4%);
+            color: #000000;
+            border-color: #C71D3D;
+          }
+        }
+      }
+
+
+      .shadow{
+        border:1px solid #C71D3D;
+        box-shadow: 0 5px 15px rgba(0,0,0,.2);
+        background-color:white;
+      }
+      
+      rect.Raft{
+        fill:rgba(28, 155, 171,0.1);
+      }
+      
+      #configMenuIcon{
+        &:hover{
+          color:#C71D3D;
+        }
+      }
+      
+      
+      #paletteElementsOverlay{
+          background-color: rgba(255,255,255,0.7);
+      }
+      
+      
+      #figureConfigDialog{
+        background-color:white;
+        border: 1px solid rgba(0,0,0,0.2);
+        border-left-color:#C71D3D;
+        .figureAddLabel{
+          &:hover{
+            color:#C71D3D;
+          }
+        }
+      
+        &:after {
+          border-right-color: #C71D3D;
+          border-top-color: transparent;
+          border-left-color: transparent;
+          border-bottom-color:transparent;
+        }
+      }
+      
+      .workspace {
+      
+        .palette {
+          box-shadow: 5px 0 20px -3px rgba(31, 73, 125, 0.3), -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+          border-right-color:rgba(74, 74, 74, 0.5);
+          border-left-color: rgba(74, 74, 74, 0.5);
+      
+          .title {
+            div{
+              h2{
+                color:#C71D3D;
+              }
+            }
+          }
+          .palette_item{
+            >div{
+              border-color: transparent;
+              div{
+                background-color:rgba(0,0,0,0.05);
+              }
+            }
+            .glowBorder{
+              border-color: #C71D3D;
+            }
+          }
+      
+          .request{
+            color: #C71D3D;
+          }
+        }
+      }
+      
+
+      #tool_shape {
+        .tool_shape_entry {
+          .tool_shortcut{
+            color:rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
+      .welcomeMessage{
+        background-color: white;
+        background-image: url(../images/background.png);
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-size: 100% 50%;
+        img{
+          background-color: white;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+        .teaser {
+          background-color: white;
+          box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+          h2 {
+            color: #C71D3D;
+          }
+        }
+        button{
+          background-color: #C71D3D;
+          color: white;
+        }
+    }
+      
+       
+}

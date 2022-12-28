@@ -1,0 +1,55 @@
+
+  .tab-content {
+    position: relative;
+    margin-left: @tabSize;
+    height: 100%;
+
+    .tab-pane {
+      display: none;
+      padding: 0;
+      height: 100%;
+      position: relative;
+
+      &.active {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .workspace {
+        .palette {
+          position: absolute;
+          height: 100%;
+          width: @leftPaneWidth;
+          padding: 0;
+        }
+
+        #canvas_config {
+          position: relative;
+          width: 40px;
+          top: @toolbarHeight+5;
+          left: @leftPaneWidth+5px;
+          cursor: pointer;
+          border-width: 1px;
+          border-style: solid;
+
+          &:hover {
+            border-width: 1px !important;
+            border-style: solid !important;
+          }
+        }
+
+
+        #canvas_config_items {
+          position: fixed;
+          top: @toolbarHeight+30;
+          left: @leftPaneWidth+5px;
+          cursor: pointer;
+          padding: 10px;
+          white-space: nowrap;
+          min-width: 250px;
+        }
+
+      }
+    }
+  }

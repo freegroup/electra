@@ -1,173 +1,176 @@
-#layout {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0;
+body {
+  overflow:hidden;
+  font-family:  'Roboto', sans-serif !important;
+  font-weight: 300;
 
-  .nav-tabs {
-    float: left;
-    border-bottom: 0;
+  #layout {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
 
-    li {
-      float: none;
-      margin: 0;
+    .nav-tabs {
+      float: left;
+      border-bottom: 0;
 
-      a {
-        margin-right: 0;
-        border: 0;
+      li {
+        float: none;
+        margin: 0;
+
+        a {
+          margin-right: 0;
+          border: 0;
+        }
       }
     }
-  }
 
-  .tab-content {
-    position: relative;
-    margin-left: @tabSize;
-    height: 100%;
-
-    .tab-pane {
-      display: none;
-      padding: 0;
-      height: 100%;
+    .tab-content {
       position: relative;
+      margin-left: @tabSize;
+      height: 100%;
 
-      .workspace {
-        .paletteContainer {
-          position:absolute;
-          height: 100%;
-          width: unit(@leftPaneWidth, px);
-          padding: 0;
+      .tab-pane {
+        display: none;
+        padding: 0;
+        height: 100%;
+        position: relative;
 
-
-          #paletteHeader {
-            position: relative;
-            margin: 0;
+        .workspace {
+          .paletteContainer {
+            position:absolute;
+            height: 100%;
+            width: unit(@leftPaneWidth, px);
             padding: 0;
-            top: 0;
-            left: 0;
-            height:  unit(@leftPaneTitleHeight, px);
-            overflow: hidden;
-            .paletteTitle {
-              img {
-                padding-right:20px;
-                position: absolute;
-                left:10px;
-                top:10px;
-                height:40px;
-              }
-              div{
-                position: absolute;
-                left:60px;
-                top:10px;
-                h1{
-                  font-size: 15px;
-                  font-weight:200;
-                  line-height: 25px;
-                  margin:0;
-                  padding:0;
-                  text-align: left;
-                  letter-spacing: 3.5px;
+
+
+            #paletteHeader {
+              position: relative;
+              margin: 0;
+              padding: 0;
+              top: 0;
+              left: 0;
+              height:  unit(@leftPaneTitleHeight, px);
+              overflow: hidden;
+              .paletteTitle {
+                img {
+                  padding-right:20px;
+                  position: absolute;
+                  left:10px;
+                  top:10px;
+                  height:40px;
                 }
-                h2{
-                  font-size: 10px;
-                  font-weight:600;
-                  margin:0;
-                  padding:0;
-                  text-align: left;
-                  letter-spacing: 4px;
-                  color: #C71D3D;
+                div{
+                  position: absolute;
+                  left:60px;
+                  top:10px;
+                  h1{
+                    font-size: 15px;
+                    font-weight:200;
+                    line-height: 25px;
+                    margin:0;
+                    padding:0;
+                    text-align: left;
+                    letter-spacing: 3.5px;
+                  }
+                  h2{
+                    font-size: 10px;
+                    font-weight:600;
+                    margin:0;
+                    padding:0;
+                    text-align: left;
+                    letter-spacing: 4px;
+                    color: #C71D3D;
+                  }
+                }
+              }
+              #paletteFilter{
+                padding: 10px;
+                overflow-x: hidden;
+                position: absolute;
+                top: 64px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                overflow-y: scroll;
+
+                &::-webkit-scrollbar {
+                  width: 5px;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                  background: #666;
+                }
+
+                .tree-leaf {
+                  font-weight: 200;
+                  .tree-expando {
+                    line-height: 10px;
+                    width: 12px;
+                    height: 12px;
+                    &.hidden{
+                      display: block !important;
+                      visibility: hidden !important;
+                    }
+                  }
+                  .tree-leaf-content{
+                    cursor: pointer;
+                    transition: all 0.7s;
+                    &.tree-child-leaves{
+                      transition: all 0.7s;
+                    }
+                    &:hover{
+                      background-color: rgba(243, 245, 246, 0.69);
+                      transition: all 0.7s;
+                    }
+                    &.selected{
+                      transition: all 0.4s;
+                      background-color: #f3f5f6;
+                    }
+                  }
                 }
               }
             }
-            #paletteFilter{
-              padding: 10px;
-              overflow-x: hidden;
-              position: absolute;
-              top: 64px;
+            #paletteElementsScroll {
+              position: relative;
+              width: unit((@leftPaneWidth - 2) , px);
+              margin: 0;
+              padding: 0;
+              top: 0;
               bottom: 0;
-              left: 0;
-              right: 0;
-              overflow-y: scroll;
-
+              overflow: auto;
+              box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
               &::-webkit-scrollbar {
                 width: 5px;
               }
-
               &::-webkit-scrollbar-thumb {
                 background: #666;
               }
-
-              .tree-leaf {
-                font-weight: 200;
-                .tree-expando {
-                  line-height: 10px;
-                  width: 12px;
-                  height: 12px;
-                  &.hidden{
-                    display: block !important;
-                    visibility: hidden !important;
-                  }
-                }
-                .tree-leaf-content{
-                  cursor: pointer;
-                  transition: all 0.7s;
-                  &.tree-child-leaves{
-                    transition: all 0.7s;
-                  }
-                  &:hover{
-                    background-color: rgba(243, 245, 246, 0.69);
-                    transition: all 0.7s;
-                  }
-                  &.selected{
-                    transition: all 0.4s;
-                    background-color: #f3f5f6;
-                  }
+              #paletteElements {
+                position: absolute;
+                width: 100%;
+                min-height:100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                .mix {
+                  height: unit( (@leftPaneWidth / 2), px);
+                  border: 1px solid #f0f0f0;
+                  /* to avoid doubling the border of the grid */
+                  margin: -1px 0 0 -1px;
                 }
               }
             }
           }
-          #paletteElementsScroll {
-            position: relative;
-            width: unit((@leftPaneWidth - 2) , px);
-            margin: 0;
-            padding: 0;
-            top: 0;
-            bottom: 0;
-            overflow: auto;
-            box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
-            &::-webkit-scrollbar {
-              width: 5px;
-            }
-            &::-webkit-scrollbar-thumb {
-              background: #666;
-            }
-            #paletteElements {
-              position: absolute;
-              width: 100%;
-              min-height:100%;
-              margin: 0;
-              padding: 0;
-              overflow: hidden;
-              .mix {
-                height: unit( (@leftPaneWidth / 2), px);
-                border: 1px solid #f0f0f0;
-                /* to avoid doubling the border of the grid */
-                margin: -1px 0 0 -1px;
-              }
-            }
+          .content {
+            position:absolute;
+            right: 0;
+            top: unit(@toolbarHeight,px);
+            bottom:0;
+            left: unit(@leftPaneWidth, px);
+            overflow: scroll;
           }
-        }
-        .content {
-          position:absolute;
-          right: 0;
-          top: unit(@toolbarHeight,px);
-          bottom:0;
-          left: unit(@leftPaneWidth, px);
-          overflow: scroll;
         }
       }
-    }
-    .active {
-      display: block;
     }
   }
 }

@@ -1,0 +1,31 @@
+#codeDialog {
+  z-index: 10000;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  .readonly-highlight{
+    opacity: 0.2;
+    position: absolute;
+  }
+  
+  .codeContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tinyFlyoverMenu.codeOverlay {
+    top: 15px;
+    position: fixed;
+    right: 30px;
+    z-index: 1;
+    svg {
+      cursor: pointer;
+    }
+  }
+}

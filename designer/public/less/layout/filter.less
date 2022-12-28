@@ -1,0 +1,170 @@
+
+
+.portDirectionOption{
+  height: 60px;
+  text-align: center;
+
+  & label > input{ /* HIDE RADIO */
+    display:none;
+  }
+
+  & label > input + span{ /* IMAGE STYLES */
+    cursor:pointer;
+    padding-right: 5px;
+  }
+
+  & label > input:checked + span{ /* (CHECKED) IMAGE STYLES */
+  }
+}
+
+
+
+
+.portTypeOption{
+  height: 65px;
+  padding-left:60px;
+
+  & label > input{ /* HIDE RADIO */
+    display:none;
+
+    + span{ /* IMAGE STYLES */
+      cursor:pointer;
+      padding-right: 5px;
+      font-weight:100;
+      font-size:14px;
+      &:before{
+        padding-right:10px;
+      }
+    }
+  }
+}
+
+#filter {
+  position:absolute;
+  top:@toolbarHeight;
+  right:0;
+  bottom:0;
+  width:@filterPaneWidth;
+  padding:0;
+  margin:0;
+  border-radius:0;
+  border:0;
+
+  .filter_header{
+    position: fixed;
+    height: @filterPaneTitleHeight;
+    width: @filterPaneWidth;
+    top:@toolbarHeight;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-top-width: 1px;
+    border-top-style: solid;
+    font-weight: 500;
+    font-size: 12px;
+    padding-top: 5px;
+    padding-left: 8px;
+    letter-spacing: 5px;
+    text-align: left;
+  }
+
+  .filter_toolbar{
+    overflow:visible;
+    border:0;
+    padding:3px;
+    padding-left:10px;
+    position:absolute;
+    bottom:0;
+    right:0;
+    width:@filterPaneWidth;
+    height:30px;
+    #add_filter_button {
+      border-radius: 2px !important;
+      .glyphicon{
+        top:2px;
+      }
+    }
+  }
+
+  .filter_actions{
+    position:fixed;
+    top:@toolbarHeight+30;
+    bottom:30px;
+    width:@filterPaneWidth;
+    border:0;
+    padding:0;
+    overflow-y: auto;
+
+    .panel-body{
+      padding:7px;
+      padding-top:0;
+    }
+
+
+    .form-group{
+      margin-bottom: 2px !important;
+
+      > .input-group{
+        margin-bottom: 10px;
+      }
+
+      > .input-group:last-child{
+        margin-bottom: 0px;
+      }
+    }
+
+    .icon {
+      padding:0;
+      top: -4px;
+    }
+
+    .filter-heading{
+      font-size: 12px;
+      padding-right:10px !important;
+      padding-top:1px !important;
+      padding-bottom:0 !important;
+      padding-left: 8px !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      border: 0 !important;
+      margin-top:4px;
+      cursor:pointer;
+      font-weight:300;
+      .icon {
+        width: 15px;
+      }
+    }
+
+  }
+
+  .form-control{
+    height:25px;
+  }
+
+  .btn{
+    padding-left:5px;
+    padding-right:5px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+  }
+
+  .input-group-addon{
+    padding:0;
+    padding-left:5px;
+    padding-right:5px;
+    border-left: 0;
+    border-radius:0;
+    font-weight: 100;
+    text-transform: lowercase;
+    font-size: 12px;
+  }
+  .panel-default {
+    margin: 0;
+    border-radius: 0;
+    border: 0;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin-top: 3px;
+  }
+}
