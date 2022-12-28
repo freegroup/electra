@@ -14,6 +14,7 @@ set -x
 (cd ./designer && npm run build)
 
 (cd ./home && npm install)
+(cd ./home && npm build)
 
 (cd ./ingress && npm install)
 

@@ -1,8 +1,11 @@
 .toolbar {
+  position:relative;
   border: none !important;
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-right:10px;
+  height: @toolbarHeight;
 
   * {
     outline:none;
@@ -15,7 +18,8 @@
   .group{
     display: flex;
     flex-direction: row;
-
+    align-items: center;
+    
     .image-button{
       display: flex;
       flex-direction: column;
