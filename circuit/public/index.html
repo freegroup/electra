@@ -161,23 +161,22 @@
           </span>
 
           <span class="group editBase">
-              <label id="tool_shape" class="dropdown" >
-              <span class="image-button" id="editConnections" data-toggle="dropdown" >
-                <img src="./images/status_index.svg" class="svg">
-                <div>Connection</div>
-              </span>
+              <div id="tool_shape" class="dropdown" >
+                <div class="image-button" id="editConnections" data-toggle="dropdown" >
+                  <img src="./images/status_index.svg" class="svg">
+                  <div>Connection</div>
+                </div>
 
                 <div class="dropdown-menu" role="menu" >
-
-                      <label class="statusIndicator" id="statusWebUSB" >
-                        <img src="./images/status_arduino.svg"/>
-                        <span>WebUSB</span>
-                        <span class="connected">connected</span>
-                        <span class="disconnected">disconnected</span>
-                        <span class="notSupported">Not Supported - <a class="help-link" href="#">why?</a></span>
-                      </label>
-                    </div>
-              </label>
+                  <label class="statusIndicator" id="statusWebUSB" >
+                    <img src="./images/status_arduino.svg"/>
+                    <span>WebUSB</span>
+                    <span class="connected">Connected</span>
+                    <span class="disconnected">Disconnected</span>
+                    <span class="notSupported">Not Supported - <a class="help-link" href="#">why?</a></span>
+                  </label>
+                </div>
+              </div>
           </span>
 
 
@@ -189,7 +188,7 @@
           </span>
 
           <span class="group simulationBase" style="display: none;">
-                <label>Simulation Speed</label>
+              <div class="image-button">
                 <input id="simulationBaseTimer"
                        type="text"
                        value="100"
@@ -201,6 +200,8 @@
                        data-slider-tooltip="hide"
                        data-slider-id="simulationBaseTimerSlider"
                        data-slider-orientation="horizontal">
+                <div>Simulation Speed</div>
+              </div>
           </span>
 
           <span class="spacer"></span>

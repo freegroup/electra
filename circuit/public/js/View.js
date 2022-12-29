@@ -502,9 +502,12 @@ export default draw2d.Canvas.extend({
     $("#simulationStartStop")
       .addClass("pause")
       .removeClass("play")
-    $(".editBase").fadeOut("slow", () => {
-      $(".simulationBase").fadeIn("slow")
-    })
+
+    $("#editConnections")
+      .addClass("disabled")
+
+    $(".simulationBase").fadeIn("fast")
+
     $("#paletteElementsOverlay")
       .fadeIn("fast")
       .height($("#paletteElements").height())
@@ -526,9 +529,11 @@ export default draw2d.Canvas.extend({
     $("#simulationStartStop")
       .addClass("play")
       .removeClass("pause")
-    $(".simulationBase").fadeOut("slow", () => {
-      $(".editBase").fadeIn("slow")
-    })
+
+    $("#editConnections")
+      .removeClass("disabled")
+
+    $(".simulationBase").fadeOut("fast")
     $("#paletteElementsOverlay").fadeOut("fast")
   },
 
@@ -595,7 +600,7 @@ export default draw2d.Canvas.extend({
     let arduinoRequired = elements.reduce((sum, cur) => sum || cur.getRequiredHardware().arduino, false)
     let arduinoConnected = hardware.arduino.connected
 
-    // Det the status of top button for the pulldown menu.
+    // Set the status of top button for the pulldown menu.
     //
     if (arduinoRequired === false) {
       $("#editConnections").attr("src", imgConnectionStatusNeutral)
