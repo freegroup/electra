@@ -31,3 +31,52 @@ body {
     color: white;
     font-weight: 300;
 }
+
+.toolbar {
+
+    .group {
+        .image-button {
+
+            img,
+            svg {
+                color: #777;
+
+                circle[stroke],
+                polyline[stroke],
+                path[stroke],
+                g[stroke] {
+                    stroke: #777 !important;
+                }
+
+                rect[fill],
+                circle[fill] {
+                    fill: #777 !important;
+                }
+            }
+
+            div {
+                color: #777;
+
+                &.highlight {
+                    animation: highlight 3s infinite;
+                }
+            }
+
+            &.disabled {
+                opacity: 0.2;
+            }
+
+            &:not(.disabled) {
+
+                img,
+                svg {
+                    cursor: pointer;
+
+                    &:hover {
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+                    }
+                }
+            }
+        }
+    }
+}
