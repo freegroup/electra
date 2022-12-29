@@ -6,8 +6,8 @@ let octokat = null
 let repo = null
 let gh = null
 
-const GITHUB_ORG = process.env.GITHUB_ORG || 'thindexed'
-const GITHUB_REPO = process.env.GITHUB_REPO || 'shapes'
+const GITHUB_ORG = process.env.GITHUB_ORG || 'freegroup'
+const GITHUB_REPO = process.env.GITHUB_REPO || 'electra'
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main'
 const TYPE = { BLOB: 'blob', TREE: 'tree' };
