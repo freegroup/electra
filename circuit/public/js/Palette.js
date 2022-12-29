@@ -55,7 +55,7 @@ export default class Palette {
       $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
     })
 
-    // Update the shape thumbnail if the bakcend fineshed the calculation
+    // Update the shape thumbnail if the backend fineshed the calculation
     //
     socket.on("shape:generated", (msg) => {
       $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
