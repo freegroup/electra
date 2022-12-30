@@ -1,30 +1,32 @@
-
-#files{
+#files {
   overflow-y: scroll;
+  padding: 40px;
 
   .teaser {
     display: inline-block;
-    padding-left:20px;
-    padding-right:20px;
-    margin-bottom:0;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 0;
 
     .title {
       font-weight: 200;
       font-size: 4vw;
       white-space: nowrap;
-      margin-bottom:10px;
-      img{
+      margin-bottom: 10px;
+
+      img {
         padding-right: 40px;
         height: 100px;
       }
     }
+
     .slogan {
       font-size: 2vw;
       font-weight: 200;
     }
   }
 
-  .deleteIcon{
+  .deleteIcon {
     position: absolute;
     right: 24px;
     top: 18px;
@@ -36,6 +38,7 @@
 
   .list-group-item {
     cursor: pointer;
+
     .thumb {
       .thumbnail {
         cursor: pointer;
@@ -55,17 +58,19 @@
         font-size: 18px;
         display: inline-block;
       }
-      .editIcon{
-        padding-left:10px;
-        font-size:14px;
+
+      .editIcon {
+        padding-left: 10px;
+        font-size: 14px;
         display: none;
       }
 
-      &:hover{
+      &:hover {
         h4 {
           text-decoration: underline;
         }
-        .editIcon{
+
+        .editIcon {
           display: inline-block;
         }
       }
@@ -73,70 +78,70 @@
 
   }
 
-  .thumbAdd{
-    border-width:1px;
+  .thumbAdd {
+    border-width: 1px;
     border-style: solid;
     border-radius: 6px;
     cursor: pointer;
     transition: all 1s;
-    div{
+
+    div {
       font-size: 160px;
       text-align: center;
     }
-    h4{
+
+    h4 {
       text-align: center;
     }
-    &:hover{
-      border-width:1px;
+
+    &:hover {
+      border-width: 1px;
       border-style: solid;
       transition: all 1s;
     }
   }
 
   .fileOperations {
-    border-bottom-width:1px;
+    border-bottom-width: 1px;
     border-bottom-style: solid;
-    padding-bottom: 9px;    
+    padding-bottom: 9px;
   }
 
 
-  .container{
-    padding-left:20px;
-    padding-right:20px;
-    width:100%;
-    #material-tabs {
-      position: relative;
-      display: block;
-      padding:0;
-      border-bottom-width:1px;
-      border-bottom-style: solid;
+  #material-tabs {
+    position: relative;
+    display: block;
+    padding: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 
-      a {
-        position: relative;
-        display:inline-block;
-        text-decoration: none;
-        padding-bottom: 15px;
-        padding-left:20px;
-        padding-right:20px;
-        padding-top:5px;
-        text-transform: uppercase;
-        font-size: 14px;
-        font-weight: 300;
-        text-align: center;
+    a {
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      padding-bottom: 15px;
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 5px;
+      text-transform: uppercase;
+      font-size: 14px;
+      font-weight: 300;
+      text-align: center;
+      transition: all 0.3s ease;
+      outline: none;
+      z-index: 1001;
+
+      &.active {
+        font-weight: 400;
         transition: all 0.3s ease;
-        outline:none;
-        z-index: 1001;
-        &.active {
-          font-weight: 400;
-          transition: all 0.3s ease;
-        }        
       }
     }
-    .material-tab-content {
-      &>div{
-        padding: 10px;
-        min-height:600px;
-      }
+  }
+
+  .material-tab-content {
+    &>div {
+      padding: 10px;
+      min-height: 600px;
     }
   }
 

@@ -32,6 +32,26 @@
 <body class="mousetrap light" >
 <div id="layout">
 
+  <div class="appbar">
+    <img class="icon" src="../common/images/favicon_64x64.svg"/>
+    <div class="title">
+        <h1>Circuit</h1>
+        <h2>Simulator</h2>
+    </div>
+
+    <span class="spacer"></span>
+
+    <span class="group applicationSwitch">
+      <label class="dropdown userinfo_toggler" >
+        <span class="image-button" data-toggle="dropdown">
+          <img  src="../common/images/toolbar_user.svg"/>
+        </span>
+        <div class="dropdown-menu" role="menu" >
+        </div>
+      </label>
+    </span>
+  </div>
+
   <ul class="nav nav-tabs" id="leftTabStrip">
     <li id="editor_tab"  class="active">
       <a href="#editor" class="leftTab editor" data-toggle="tab">
@@ -53,8 +73,6 @@
     </li>
   </ul>
 
-
-
   <div class="tab-content">
 
     <div class="tab-pane" id="home">
@@ -64,24 +82,6 @@
     <div class="tab-pane" id="files">
       
       <div class="toolbar">
-        <span class="spacer"></span>
-        <span class="group applicationSwitch">
-          <label class="userinfo_toggler dropdown" >
-            <span class="image-button" data-toggle="dropdown">
-              <img  src="../common/images/toolbar_user.svg"/>
-            </span>
-            <div class="dropdown-menu" role="menu" >
-            </div>
-          </label>
-          <div class="g_id_signin"
-              data-type="standard"
-              data-shape="rectangular"
-              data-theme="outline"
-              data-text="signin"
-              data-size="medium"
-              data-logo_alignment="left">
-          </div>
-        </span>
       </div>
 
       <div class="teaser">
@@ -93,7 +93,7 @@
         </div>
       </div>
 
-      <div class="container">
+      <div>
         <header>
           <div id="material-tabs">
             <span class="yellow-bar"></span>
@@ -117,14 +117,7 @@
 
         <div class="paletteContainer">
           <div id="paletteHeader">
-            <div class="paletteTitle">
-              <a href="https://github.com/freegroup/electra/" target="_blank"><img src="../common/images/favicon_64x64.svg"/>
-              <div>
-                <h1>Circuit</h1>
-                <h2>Simulator</h2>
-              </div>
-              </a>
-            </div>
+            <div class="paletteFilterTitle">Components</div>
             <div id="paletteFilter"></div>
           </div>
           <div id="paletteElementsScroll">
@@ -204,27 +197,6 @@
               </div>
           </span>
 
-          <span class="spacer"></span>
-
-          <span class="group applicationSwitch">
-            
-            <label class="userinfo_toggler dropdown" >
-              <span class="image-button" data-toggle="dropdown">
-                <img  src="../common/images/toolbar_user.svg"/>
-              </span>
-              <div class="dropdown-menu" role="menu" >
-              </div>
-            </label>
-            <div class="g_id_signin"
-                data-type="standard"
-                data-shape="rectangular"
-                data-theme="outline"
-                data-text="signin"
-                data-size="medium"
-                data-logo_alignment="left">
-            </div>
-          </span>
-
           <div class="morph_btn play" id="simulationStartStop">
             <span>
               <span class="s1"></span>
@@ -254,9 +226,9 @@
     </div>
 
 
-  </div><!-- /tab-content -->
+  </div>
 
-</div><!-- /container -->
+</div>
 
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}

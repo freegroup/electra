@@ -25,39 +25,32 @@
 }
 
 #layer {
+  position: absolute;
+  z-index: 1;
   padding: 0;
   margin: 0;
-  border: 0;
-  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   width: @leftPaneWidth;
-  text-align: center;
-  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
 
   .panetitle {
-    position: fixed;
     height: @layerPaneTitleHeight;
-    width: @leftPaneWidth;
-    top: @layerTitleHeight;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     font-weight: 500;
     font-size: 12px;
     padding: 4px 4px 4px 20px;
     letter-spacing: 5px;
-    text-align: left;
   }
 
   #layer_elements {
     padding: 0;
     margin: 0;
     border: 0;
-    position: fixed;
-    top: @layerPaneTitleHeight + @layerTitleHeight;
-    bottom: 0;
-    width: @leftPaneWidth;
     overflow: auto;
 
     .layerElement {

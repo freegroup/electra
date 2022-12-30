@@ -28,6 +28,25 @@
 <body id="container" class="light">
 
 <div id="layout">
+  <div class="appbar">
+    <img class="icon" src="../common/images/favicon_64x64.svg"/>
+    <div class="title">
+        <h1>Component</h1>
+        <h2>Designer</h2>
+    </div>
+
+    <span class="spacer"></span>
+
+    <span class="group applicationSwitch">
+      <label class="dropdown userinfo_toggler" >
+        <span class="image-button" data-toggle="dropdown">
+          <img  src="../common/images/toolbar_user.svg"/>
+        </span>
+        <div class="dropdown-menu" role="menu" >
+        </div>
+      </label>
+    </span>
+  </div>
 
   <ul class="nav nav-tabs" id="leftTabStrip">
     <li id="editor_tab"  class="active">
@@ -53,18 +72,10 @@
 
      <div class="tab-pane active" id="editor">
        <div class="workspace">
-          <div class="toolbar navbar-default">
+          <div class="toolbar">
           </div>
 
            <div id="layer" class="palette">
-             <div class="title">
-               <a href="../" ><img src="../common/images/favicon_64x64.svg"/>
-               <div>
-                 <h1>Component</h1>
-                 <h2>Editor</h2>
-               </div>
-               </a>
-             </div>
              <div id="layer_header" class="panetitle">Layers</div>
              <div id="layer_elements"></div>
            </div>
@@ -91,38 +102,28 @@
                </div>
             </div>
 
-           <div id="filter" class="navbar-default">
-               <div class="filter_actions" ></div>
-               <div class="highlight filter_header">Properties</div>
-               <div class="filter_toolbar" >
-                  <div class="btn-group dropup">
-                      <button id="add_filter_button" class="disabled btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                          <span class="glyphicon glyphicon-plus-sign"></span>
-                          Filter
-                      </button>
-                      <ul class="dropdown-menu" id="add_filter_action_menu">
-                      </ul>
-                  </div>
-               </div>
-           </div>
+           <div id="filter">
+              <div class="filter_header">Properties</div>
+              <div class="filter_actions" ></div>
+              <div class="filter_toolbar" >
+                <div class="btn-group dropup">
+                    <button id="add_filter_button" class="disabled btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-plus-sign"></span>
+                        Filter
+                    </button>
+                    <ul class="dropdown-menu" id="add_filter_action_menu">
+                    </ul>
+                </div>
+            </div>
+         </div>
        </div>
       </div>
 
 
 
       <div class="tab-pane" id="files">
-        <div class="toolbar navbar-default">
+        <div class="toolbar">
           <span class="spacer"></span>
-          <span class="group applicationSwitch">
-              <label class="userinfo_toggler dropdown" >
-                    <span class="image-button" data-toggle="dropdown">
-                      <img  src="../common/images/toolbar_user.svg"/>
-                    </span>
-
-                    <div class="dropdown-menu" role="menu" >
-                    </div>
-              </label>
-          </span>
         </div>
         
         <div class="row hidden-xs teaser">
@@ -134,7 +135,7 @@
           </div>
         </div>
 
-        <div class="container">
+        <div>
           <header>
             <div id="material-tabs">
               <span class="yellow-bar"></span>

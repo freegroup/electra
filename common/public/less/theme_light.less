@@ -266,10 +266,11 @@ body.light {
         }
     }
 
+    .tab-pane {
+        box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+    }
 
     #files {
-        box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
-
         .teaser {
             background-image:
                 linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, .4) 70%, #fff 100%),
@@ -317,19 +318,18 @@ body.light {
             }
         }
 
-        .container {
-            #material-tabs {
-                border-bottom-color: #e0e0e0;
 
-                a {
-                    color: #424f5a;
-                }
+        #material-tabs {
+            border-bottom-color: #e0e0e0;
+
+            a {
+                color: #424f5a;
             }
+        }
 
-            .material-tab-content {
-                &>div {
-                    background-color: rgb(254 249 249);
-                }
+        .material-tab-content {
+            &>div {
+                background-color: rgb(254 249 249);
             }
         }
 

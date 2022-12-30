@@ -23,6 +23,26 @@
 
 <div id="layout">
 
+  <div class="appbar">
+    <img class="icon" src="../common/images/favicon_64x64.svg"/>
+    <div class="title">
+        <h1>Documention</h1>
+        <h2>Author</h2>
+    </div>
+
+    <span class="spacer"></span>
+
+    <span class="group applicationSwitch">
+      <label class="dropdown userinfo_toggler" >
+        <span class="image-button" data-toggle="dropdown">
+          <img  src="../common/images/toolbar_user.svg"/>
+        </span>
+        <div class="dropdown-menu" role="menu" >
+        </div>
+      </label>
+    </span>
+  </div>
+
   <ul class="nav nav-tabs" id="leftTabStrip">
     <li id="editor_tab"  class="active">
       <a href="#editor" class="leftTab editor" data-toggle="tab">
@@ -79,30 +99,11 @@
                   </span>
               </span>
 
-              <span class="spacer"></span>
-
-              <span class="group applicationSwitch">
-                <label class="dropdown userinfo_toggler" >
-                  <span class="image-button" data-toggle="dropdown">
-                    <img  src="../common/images/toolbar_user.svg"/>
-                  </span>
-                  <div class="dropdown-menu" role="menu" >
-                  </div>
-                </label>
-              </span>
 
           </div>
 
            <div class="paletteContainer">
              <div id="paletteHeader">
-               <div class="paletteTitle">
-                 <a href="https://github.com/freegroup/electra" target="_blank"><img src="../common/images/favicon_64x64.svg"/>
-                 <div>
-                   <h1>Documention</h1>
-                   <h2>Author</h2>
-                 </div>
-                 </a>
-               </div>
                <div id="paletteFilter"></div>
              </div>
              <div id="paletteElementsScroll">
@@ -120,20 +121,6 @@
 
 
       <div class="tab-pane" id="files">
-        <div class="toolbar">
-          <span class="spacer"></span>
-          
-          <span class="group applicationSwitch">
-            <label class="dropdown userinfo_toggler" >
-              <span class="image-button" data-toggle="dropdown">
-                <img  src="../common/images/toolbar_user.svg"/>
-              </span>
-              <div class="dropdown-menu" role="menu" >
-              </div>
-            </label>
-          </span>
-
-        </div>
 
         <div class="teaser">
           <div class="col-sm-8 col-md-8">
@@ -144,7 +131,7 @@
           </div>
         </div>
 
-        <div class="container">
+        <div>
           <header>
             <div id="material-tabs">
               <span class="yellow-bar"></span>
@@ -168,7 +155,7 @@
         Home
       </div>
 
-    </div>
+  </div>
 </div>
 
 

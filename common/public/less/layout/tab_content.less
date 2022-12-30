@@ -1,9 +1,10 @@
 
   .tab-content {
-    position: relative;
-    margin-left: @tabSize;
-    height: 100%;
-
+    position: absolute;
+    left: @tabSize;
+    right: 0px;
+    top: @appbarHeight;
+    bottom:0;
     .tab-pane {
       display: none;
       padding: 0;
@@ -17,12 +18,6 @@
       }
 
       .workspace {
-        .palette {
-          position: absolute;
-          height: 100%;
-          width: @leftPaneWidth;
-          padding: 0;
-        }
 
         #canvas_config {
           position: relative;

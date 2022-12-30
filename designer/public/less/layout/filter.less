@@ -41,6 +41,8 @@
 
 #filter {
   position:absolute;
+  display: flex;
+  flex-direction: column;
   top:@toolbarHeight;
   right:0;
   bottom:0;
@@ -51,18 +53,13 @@
   border:0;
 
   .filter_header{
-    position: fixed;
-    height: @filterPaneTitleHeight;
-    width: @filterPaneWidth;
-    top:@toolbarHeight;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     border-top-width: 1px;
     border-top-style: solid;
     font-weight: 500;
     font-size: 12px;
-    padding-top: 5px;
-    padding-left: 8px;
+    padding: 5px;
     letter-spacing: 5px;
     text-align: left;
   }
@@ -72,11 +69,6 @@
     border:0;
     padding:3px;
     padding-left:10px;
-    position:absolute;
-    bottom:0;
-    right:0;
-    width:@filterPaneWidth;
-    height:30px;
     #add_filter_button {
       border-radius: 2px !important;
       .glyphicon{
@@ -86,10 +78,7 @@
   }
 
   .filter_actions{
-    position:fixed;
-    top:@toolbarHeight+30;
-    bottom:30px;
-    width:@filterPaneWidth;
+    flex-grow: 1;
     border:0;
     padding:0;
     overflow-y: auto;
