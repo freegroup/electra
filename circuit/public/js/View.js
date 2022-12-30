@@ -541,7 +541,11 @@ export default draw2d.Canvas.extend({
     // call the "calculate" method if given to calculate the output-port values
     //
     this.getFigures().each((i, figure) => {
-      figure.calculate?.(this.simulationContext)
+      try{
+        figure.calculate?.(this.simulationContext)
+      } catch(exc){
+        console.log(exc)
+      }
     })
 
     // transport the value from outputPort to inputPort
