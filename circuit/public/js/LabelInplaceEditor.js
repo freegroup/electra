@@ -9,15 +9,9 @@ export default draw2d.ui.LabelInplaceEditor.extend({
     init: function(attr, setter, getter)
     {
         this._super({
-          onStart: function(){
-            Mousetrap.pause()
-          },
-          onCancel: function(){
-            Mousetrap.unpause()
-          },
-          onCommit: function(){
-            Mousetrap.unpause()
-          }
+          onStart: () => Mousetrap.pause(),
+          onCancel:() => Mousetrap.unpause(),
+          onCommit:() => Mousetrap.unpause()
         }, setter, getter);
     }
 });

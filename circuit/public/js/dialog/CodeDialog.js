@@ -19,12 +19,10 @@ export default class CodeDialog {
       prettyPrint()
       $('#codePreviewDialog').modal('show')
       $("#codePreviewDialog .editButton").off("click").on("click", () => {
-        let designerUrl = `../designer?${scope}=${shapeName}`
-        window.open(designerUrl, "designer")
+        window.open(`../designer?${scope}=${shapeName}`, "designer")
       })
       $("#codePreviewDialog .editButtonGuided").off("click").on("click", () => {
-        let designerUrl = `../designer?${scope}=${shapeName}&tutorial=code`
-        window.open(designerUrl, "designer")
+        window.open( `../designer?${scope}=${shapeName}&tutorial=code`, "designer")
       })
     })
   }

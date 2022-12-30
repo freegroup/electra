@@ -5,7 +5,7 @@ export default class WebUSBHelpDialog {
   }
 
   
-  show(js) {
+  show() {
     $('#webUSBHelpDialog').modal('show')
   }
 }
