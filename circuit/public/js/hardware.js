@@ -179,21 +179,5 @@ export default {
       }
       return currentImage["webcam"]
     }
-  },
-
-  pca9685:{
-    set(channel, value) {
-      socket.emit('pca9685:set', {
-        channel: channel,
-        value: value
-      })
-    },
-
-    pwm(channel, value) {
-      socket.emit('pca9685:pwm', {
-        channel: channel,
-        value: value
-      })
-    }
   }
 }
