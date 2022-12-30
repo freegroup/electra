@@ -38,7 +38,7 @@ export default class Userinfo {
               { theme: "outline", size: "medium", mode:"redirect", text:"signin" }  // customization attributes
             );
           });
-          google.accounts.id.prompt(); // also display the One Tap dialog
+          //google.accounts.id.prompt(); // also display the One Tap dialog
         })
     }
   }
