@@ -35,7 +35,7 @@ export default class Userinfo {
               element,
               // "size: medium" do not render user information into the button. But with "large", only one button is updated and not all of them
               // In this case I decide to use a consistend appearance
-              { theme: "outline", size: "medium", mode:"redirect", text:"signin" }  // customization attributes
+              { theme: "outline", size: "large", mode:"redirect", text:"signin" }  // customization attributes
             );
           });
           //google.accounts.id.prompt(); // also display the One Tap dialog

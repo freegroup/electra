@@ -3,13 +3,11 @@ export default class AppSwitch {
   constructor(permissions){
     let appSwitchButtons = $(` 
             <label class="dropdown" >
-
-                <span class="image-button"  data-toggle="dropdown">
+                <span class="image-button application-waffel"  data-toggle="dropdown">
                   <img  src="../common/images/toolbar_app_switch.svg" class="svg"/>
                 </span>
 
                 <div class="dropdown-menu" role="menu" >
-  
                       <label class="applicationSwitchHome image-button">
                         <img src="../common/images/app_home.svg"/>
                         <div>Home<br>&nbsp;</div>
@@ -17,30 +15,34 @@ export default class AppSwitch {
 
                       <label class="applicationSwitchSimulator image-button">
                         <img src="../common/images/app_simulator.svg"/>
-                        <div>Circuit<br>Simulator</div>
+                        <div>Circuit</div>
+                        <div>Simulator</div>
                       </label>
 
                       <label class="applicationSwitchAuthor image-button" >
                         <img src="../common/images/app_lessons.svg"/>
-                        <div>Lesson<br>Author</div>
+                        <div>Lesson</div>
+                        <div>Author</div>
                       </label>
 
                       <label class="applicationSwitchDesigner image-button" >
                         <img src="../common/images/app_designer.svg"/>
-                        <div>Component<br>Designer</div>
+                        <div>Component</div>
+                        <div>Designer</div>
                       </label>
                       
                       <label class="applicationSwitchUser image-button" >
                         <img src="../common/images/app_user.svg"/>
-                        <div>User<br>Management</div>
+                        <div>User</div>
+                        <div>Management</div>
                       </label>
                       
                       <label class="applicationSwitchGroups image-button" >
                         <img src="../common/images/app_groups.svg"/>
-                        <div>My Groups<br>&nbsp;</div>
+                        <div>My Groups</div>
+                        <div>&nbsp;</div>
                       </label>
                 </div>   
-                         
          </span>
     `)
     $(".applicationSwitch").prepend(appSwitchButtons)

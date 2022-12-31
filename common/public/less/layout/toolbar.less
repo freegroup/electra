@@ -20,44 +20,6 @@
     flex-direction: row;
     align-items: center;
 
-    .image-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-weight: 400;
-      img,
-      svg {
-        margin: 5px;
-        margin-bottom: 0;
-        padding: 0;
-        width: @toolbarHeight - 20;
-        height: @toolbarHeight - 20;
-        text-align: center;
-        font-size: 45px;
-        transition: all 0.5s;
-        border-radius: 4px;
-        border-width: 1px;
-        border-style: solid;
-      }
-
-      div {
-        text-align: center;
-        font-size: 10px;
-        cursor: default;
-      }
-
-      &:not(.disabled) {
-
-        img,
-        svg {
-          cursor: pointer;
-          &:hover {
-          }
-        }
-      }
-    }
-
     .statusIndicator {
       margin: 20px;
 

@@ -1,4 +1,89 @@
+:root {
+    --shadow-color: #C71D3D;
+    --shadow-color-light: white;
+}
+
+
+@keyframes neon {
+    0% {
+      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
+      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),
+      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);
+    }
+    50% {
+      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
+      0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light),
+      0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);
+    }
+    100% {
+      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
+      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),
+      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);
+    }
+  }
+
 body.light {
+
+    .appbar {
+        background-color:rgb(32, 43, 59);
+        .title {
+            h1 {
+                color: white;
+            }
+            h2 {
+                color: white;
+                animation: neon 3s infinite;
+            }
+        }
+        .slogan{
+            color: white;
+            letter-spacing: 0.2vw;
+        }
+
+        .application-waffel {
+
+            img,
+            svg {
+                color: white;
+                border-color:transparent;
+    
+                circle[stroke],
+                polyline[stroke],
+                path[stroke],
+                g[stroke] {
+                    stroke: white !important;
+                }
+    
+                rect[fill],
+                circle[fill] {
+                    fill: white !important;
+                }
+            }
+    
+            div {
+                color: white;
+    
+                &.highlight {
+                    animation: highlight 3s infinite;
+                }
+            }
+    
+            &.disabled {
+                opacity: 0.2;
+            }
+    
+            &:not(.disabled) {
+                img,
+                svg {
+                    &:hover {
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+                        border-color:white;
+                    }
+                }
+            }
+        }
+    }
+
     .spinner:before {
         border-color: #ccc;
         border-top-color: #C71D3D;
@@ -395,54 +480,50 @@ body.light {
 
     .toolbar {
         background-color: #B2E2F2;
+    }
 
-        .group {
-            .image-button {
+    .image-button {
 
-                img,
-                svg {
-                    color: #777;
-                    border-color:transparent;
+        img,
+        svg {
+            color: #777;
+            border-color:transparent;
 
-                    circle[stroke],
-                    polyline[stroke],
-                    path[stroke],
-                    g[stroke] {
-                        stroke: #777 !important;
-                    }
+            circle[stroke],
+            polyline[stroke],
+            path[stroke],
+            g[stroke] {
+                stroke: #777 !important;
+            }
 
-                    rect[fill],
-                    circle[fill] {
-                        fill: #777 !important;
-                    }
-                }
+            rect[fill],
+            circle[fill] {
+                fill: #777 !important;
+            }
+        }
 
-                div {
-                    color: #777;
+        div {
+            color: #777;
 
-                    &.highlight {
-                        animation: highlight 3s infinite;
-                    }
-                }
+            &.highlight {
+                animation: highlight 3s infinite;
+            }
+        }
 
-                &.disabled {
-                    opacity: 0.2;
-                }
+        &.disabled {
+            opacity: 0.2;
+        }
 
-                &:not(.disabled) {
-                    img,
-                    svg {
-                        &:hover {
-                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-                            border-color:rgba(0,0,0,0.15);
-                        }
-                    }
+        &:not(.disabled) {
+            img,
+            svg {
+                &:hover {
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+                    border-color:rgba(0,0,0,0.15);
                 }
             }
         }
     }
-
-
     @keyframes highlight {
         0% {
             color: #C71D3D;
