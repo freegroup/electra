@@ -113,7 +113,6 @@ signal_SignalSource = signal_SignalSource.extend({
         if(context.signalPorts && context.signalPorts[signalId]){
             this.getOutputPort(0).getValue = function(){ 
                 if(context.signalPorts[signalId] instanceof draw2d.Port){
-                    console.log("Signal Source", context.signalPorts[signalId].getValue())
                     return context.signalPorts[signalId].getValue()
                 }
                 else {
