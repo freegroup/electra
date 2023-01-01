@@ -42,9 +42,7 @@ export default draw2d.Connection.extend({
    * @return {ProbeFigure}
    */
   getProbeFigure: function () {
-    let entry = this.children.find(function (entry) {
-      return entry.figure instanceof ProbeFigure
-    })
+    let entry = this.children.find( entry => entry.figure instanceof ProbeFigure)
     return (entry !== null) ? entry.figure : null
   },
 
