@@ -1,5 +1,6 @@
 import {Remarkable, utils} from "remarkable"
 import CircuitFigure from "../figures/CircuitFigure";
+import conf from "../Configuration"
 
 class Dialog {
 
@@ -14,7 +15,7 @@ class Dialog {
     }
   }
 
-  show(conf, figure) {
+  show(figure) {
     let scope = figure.attr("userData.scope")
     let shapeName = figure.attr("userData.file")
     let markdownName = shapeName.replace(/\.shape$/, ".md")

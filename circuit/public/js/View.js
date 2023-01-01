@@ -282,7 +282,7 @@ export default draw2d.Canvas.extend({
               "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
               "delete": {name: "Delete", icon: "x ion-ios-close-outline"},
               "sep1": "---------",
-              "design": {name: "Ope in Component Editor (readonly)", icon: "x ion-ios-compose-outline"},
+              "design": {name: "Open in Component Editor (readonly)", icon: "x ion-ios-compose-outline"},
               "code": {name: "Show JS Code", icon: "x ion-code"},
               "help": {name: "Description", icon: "x ion-ios-information-outline"}
             }
