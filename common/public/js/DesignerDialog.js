@@ -6,7 +6,7 @@ class Dialog {
   }
 
   show(figure) {
-    if(figure === undefine || figure === null){
+    if(figure === undefined || figure === null){
       console.error("missing parameter 'figure'")
       return
     }
