@@ -5533,16 +5533,16 @@ signal_SignalInverter = signal_SignalInverter.extend({
 var signal_SignalSource = CircuitFigure.extend({
 
    NAME: "signal_SignalSource",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:65.72720000000481,height:22},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:65.72720000000481,height:21.525390625},attr), setter, getter);
      var port;
      // Port
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.47855986562651, y: 46.56272727272815 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.47855986562651, y: 47.58938027402321 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
@@ -5553,7 +5553,7 @@ var signal_SignalSource = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 65.72720000000481;
-      this.originalHeight= 22;
+      this.originalHeight= 21.525390625;
       return shape;
    },
 
@@ -5562,7 +5562,7 @@ var signal_SignalSource = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L65.72720000000481,0 L65.72720000000481,22 L0,22");
+       shape = this.canvas.paper.path("M0,0 L65.72720000000481,0 L65.72720000000481,21.525390625 L0,21.525390625");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -5573,7 +5573,7 @@ var signal_SignalSource = CircuitFigure.extend({
        
        // label
        shape = this.canvas.paper.text(0,0,'Signal_ID');
-       shape.attr({"x":4.773050000005242,"y":11,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4.773050000005242,"y":10.7626953125,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","label");
        
 
@@ -5625,7 +5625,7 @@ signal_SignalSource = signal_SignalSource.extend({
         })
         
         // override the "getValue" method of the port and delegate them to the related party (SourceTarget port)
-        this.originalGetValue = this.getOutputPort(0).getBooleanValue
+        this.originalGetValue = this.getOutputPort(0).getValue
     },
 
     /**
@@ -5637,9 +5637,9 @@ signal_SignalSource = signal_SignalSource.extend({
     {
         var signalId = this.attr("userData.signalId")
         if(context.signalPorts && context.signalPorts[signalId]){
-            this.getOutputPort(0).getBooleanValue = function(){ 
+            this.getOutputPort(0).getValue = function(){ 
                 if(context.signalPorts[signalId] instanceof draw2d.Port){
-                    return context.signalPorts[signalId].getBooleanValue()
+                    return context.signalPorts[signalId].getValue()
                 }
                 else {
                     return false
