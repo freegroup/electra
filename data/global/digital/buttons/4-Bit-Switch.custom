@@ -1,0 +1,34 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_buttons_4_Bit_Switch = digital_buttons_4_Bit_Switch.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+
+        this.setResizeable(false);
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.on("click",function(emitter, event){
+            var h = emitter.getHeight();
+            var modh = h/8;
+            var index = (event.relY/modh)|0;
+            var port = emitter.getOutputPort(index);
+            port.setValue(!port.getBooleanValue());
+            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":null});
+        });
+    },
+    
+    calculate: function()
+    {
+    
+        
+    }
+
+});
