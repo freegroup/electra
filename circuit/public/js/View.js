@@ -356,8 +356,14 @@ export default draw2d.Canvas.extend({
       $("#figureConfigDialog").hide()
     })
 
-    socket.on("shape:generated", msg => {
-      $.getScript(conf.shapes.url + msg.jsPath + "?timestamp=" + new Date().getTime(),
+    socket.on("shape/global/generated", msg => {
+      $.getScript(conf.shapes.global.file(msg.jsPath),
+        this.reloadFromCache.bind(this)
+      )
+    })
+
+    socket.on("shape/user/generated", msg => {
+      $.getScript(conf.shapes.user.file(msg.jsPath),
         this.reloadFromCache.bind(this)
       )
     })
@@ -489,7 +495,7 @@ export default draw2d.Canvas.extend({
     this.installEditPolicy(new SimulationEditPolicy())
     this.uninstallEditPolicy(this.connectionPolicy)
     this.uninstallEditPolicy(this.coronaFeedback)
-    this.commonPorts.each(function (i, p) {
+    this.commonPorts.each((i, p) => {
       p.setVisible(false)
     })
 
@@ -515,7 +521,7 @@ export default draw2d.Canvas.extend({
 
   simulationStop: function () {
     this.simulate = false
-    this.commonPorts.each(function (i, p) {
+    this.commonPorts.each( (i, p) => {
       p.setVisible(true)
     })
     this.installEditPolicy(new EditEditPolicy())
@@ -643,6 +649,10 @@ export default draw2d.Canvas.extend({
     return new draw2d.geo.Rectangle(minX, minY, width, height)
   },
 
+  /**
+   * Reload the canvas. This is required when a shapes has changed by the designer.
+   * Implementation or representation must be reloaded
+   */
   reloadFromCache: function () {
     new draw2d.io.json.Writer().marshal(this, json => {
       draw2d.Canvas.prototype.clear.call(this)

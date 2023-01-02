@@ -4,24 +4,24 @@
 // created with http://www.draw2d.org
 //
 //
-var NewComponent2 = CircuitFigure.extend({
+var Test2 = CircuitFigure.extend({
 
-   NAME: "NewComponent2",
+   NAME: "Test2",
    VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:51,height:77},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:55,height:70},attr), setter, getter);
      var port;
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 51;
-      this.originalHeight= 77;
+      this.originalWidth = 55;
+      this.originalHeight= 70;
       return shape;
    },
 
@@ -30,12 +30,12 @@ var NewComponent2 = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L51,0 L51,77 L0,77");
+       shape = this.canvas.paper.path("M0,0 L55,0 L55,70 L0,70");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0 38.95363771846132L0 77L51 77L51 0L42.46164007346033 0L42.85533905932698 4.5L42.31821201600087 10.639390198448382L40.72315121943393 16.59223813239896L38.118621784789866 22.177669529663945L34.58376102098555 27.22597388360191L30.22597388360191 31.58376102098555L25.177669529663945 35.118621784789866L19.59223813239896 37.72315121943393L13.639390198448382 39.31821201600087L7.5 39.85533905932698L1.3606098015516181 39.31821201600087L0 38.95363771846132Z');
+       shape = this.canvas.paper.path('M0 0L55 0L55 70L0 70Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
@@ -45,18 +45,13 @@ var NewComponent2 = CircuitFigure.extend({
 });
 
 /**
- * Generated Code for the Draw2D touch HTML5 lib.
- * File will be generated if you save the *.shape file.
- *
- * by 'Draw2D Shape Designer'
- *
  * Custom JS code to tweak the standard behaviour of the generated
  * shape. add your custom code and event handler here.
  *
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-NewComponent2 = NewComponent2.extend({
+Test2 = Test2.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
@@ -103,5 +98,3 @@ NewComponent2 = NewComponent2.extend({
     }
 
 });
-
-

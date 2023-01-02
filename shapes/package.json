@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "author": "Andreas Herz <a.herz@freegroup.de>",
   "license": "ISC",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
-    "dotenv": "^16.0.3",
     "body-parser": "1.20.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs-extra": "^11.1.0",
     "github-api": "^3.4.0",
@@ -18,6 +17,7 @@
     "octokat": "^0.10.0",
     "path-browserify": "^1.0.1",
     "puppeteer": "19.4.1",
+    "request": "^2.88.2",
     "truncate-utf8-bytes": "^1.0.2"
   }
 }

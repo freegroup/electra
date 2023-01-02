@@ -31,7 +31,7 @@ function die(msg){
     process.exit(1)
 }
 
-const PORT = process.env.PORT_SHAPES || die("missing env variable PORT_SHAPES");
+const PORT = process.env.PORT_SHAPES  || die("missing env variable PORT_SHAPES");
 
 // Tell the bodyparser middleware to accept more data
 //

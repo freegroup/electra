@@ -47,12 +47,20 @@ const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable POR
 
 const API_SERVICE_URL = "http://localhost";
 
+function ensureLocalhost(req, res, next) {
+	var remote = req.ip || req.connection.remoteAddress
+	console.log("in islocal")
+	if ((remote === '::1') || (remote === 'localhost'))
+		return next();
+	else 
+		return next('route'); //call next /test route to handle check on authentication.
+}
+
 function onProxyReq(proxyReq, req, res){
     const session = req.session
     if (session.idToken){
         console.log("Found user in session: "+session.email);
-        proxyReq.setHeader("x-mail", session.email
-        );
+        proxyReq.setHeader("x-mail", session.email);
         proxyReq.setHeader("x-picture", session.picture);
         proxyReq.setHeader("x-name", session.name);
         proxyReq.setHeader("x-family_name", session.familyName);
@@ -72,6 +80,7 @@ function onProxyReq(proxyReq, req, res){
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use(session({
     secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
@@ -173,7 +182,6 @@ app.use('/permissions', createProxyMiddleware({
 
 // Google auth endpoints
 app.use('/oauth/callback/:componentUri', async function(req, res) {
-    console.log(req.params.componentUri)
     const csrfTokenCookie = req.cookies['g_csrf_token'];
     if (!csrfTokenCookie) {
       return res.status(400).send('No CSRF token in Cookie.');
@@ -204,11 +212,35 @@ app.use('/oauth/callback/:componentUri', async function(req, res) {
     return res.redirect(`${req.protocol}://${req.headers.host}/${req.params.componentUri}/`);
 });
 
+//then, after all proxys
+app.use(bodyParser.json());
 
 // Start Proxy
 try {
     const http = require('http').Server(app)
     const io = require('./websocket').connect(http, {path: '/socket.io'})
+
+
+    io.on("connection", (socket) => {
+        console.log("CONNECTED.....")
+        // send a message to the client
+        socket.emit("hello from server", 1, "2", { 3: Buffer.from([4]) });
+    
+        // receive a message from the client
+        socket.on("hello from client", (...args) => {
+        // ...
+        });
+    });
+
+    app.use('/broadcast', ensureLocalhost, function( req, res){
+        const topic = req.body.topic
+        const event = req.body.event
+        console.log(req.body)
+        console.log("socket.emit...")
+        io.sockets.emit(topic, event)
+        res.send("success")
+    });
+    
     http.listen(PORT, () => {
         console.log(`Starting Ingress at http://${HOST}:${PORT}`);
     });

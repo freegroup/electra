@@ -58,6 +58,7 @@ export default class Palette {
     // Update the shape thumbnail if the backend fineshed the calculation
     //
     socket.on("shape:generated", (msg) => {
+      console.log(msg)
       $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
       $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.imageUrl + msg.imagePath})
     })

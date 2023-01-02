@@ -1,12 +1,15 @@
 const fs = require('fs-extra')
 const path = require('path')
 const glob = require("glob")
+const request = require('request');
 const {createHash } =  require('crypto')
   
 const filesystem = require("../utils/file")
 const github = require('../utils/github')
 const generator = require("../thumbnails")
 const conf = require("../configuration")
+
+const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
 
 function nocache(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -176,14 +179,48 @@ module.exports = {
             let content = req.body.content
             let reason = req.body.commitMessage || "-empty-"
             filesystem.writeFile(conf.absoluteUserDataDirectory(req), shapeRelativePath, content, res)
-                .then((sanitizedRelativePath) => {
+            .then( (sanitizedRelativePath) => {
+                let body = { 
+                topic: "shape/user/generating",
+                event :{
+                    filePath: shapeRelativePath,
+                    imagePath: shapeRelativePath.replace(".shape", ".png"),
+                    jsPath: shapeRelativePath.replace(".shape", ".js")
+                }}                    
+                request(
+                    {
+                        url: `http://localhost:${PORT_INGRESS}/broadcast`,
+                        method: "POST",
+                        json: body
+                    })
+                return sanitizedRelativePath
+            })
+            .then((sanitizedRelativePath) => {
+                    console.log("Thumbnail",sanitizedRelativePath)
                     return generator.thumbnail(conf.absoluteUserDataDirectory(req), sanitizedRelativePath)
                 })
                 .then((files) => {
+                    console.log("Git commit")
                     return github.commit(files.map(file => { return { path: path.join(conf.githubUserDataDirectory(req), file.path), content: file.content } }), reason)
                 })
                 .then( () => {
+                    console.log("Shape generate")
                     return generator.generateShapeIndex(conf.absoluteUserDataDirectory(req), "user")
+                })
+                .then( () => {
+                    let body = { 
+                    topic: "shape/user/generated",
+                    event :{
+                        filePath: shapeRelativePath,
+                        imagePath: shapeRelativePath.replace(".shape", ".png"),
+                        jsPath: shapeRelativePath.replace(".shape", ".js")
+                    }}                    
+                    return request(
+                        {
+                            url: `http://localhost:${PORT_INGRESS}/broadcast`,
+                            method: "POST",
+                            json: body
+                        })
                 })
                 .catch(reason => {
                     console.log(reason)

@@ -58,6 +58,7 @@ $(window).load(function () {
   socket = io( { path: '/socket.io'})
 
   socket.on("shape:updated", () => {
+    console.log("socketio")
     new UpdateSuccessDialog().show()
   })
   
