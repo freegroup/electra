@@ -34,7 +34,7 @@ export default class AppSwitch {
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="../common/images/app_youtube.svg"/>
                         <div>Youtube</div>
-                        <div> </div>
+                        <div>Channel</div>
                       </label>
 
                       <label class="applicationSwitchUser image-button" >
