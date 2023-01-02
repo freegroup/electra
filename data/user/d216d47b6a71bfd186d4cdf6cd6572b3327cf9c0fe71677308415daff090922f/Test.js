@@ -13,15 +13,15 @@ var Test = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:10,height:10},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:55,height:70},attr), setter, getter);
      var port;
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 10;
-      this.originalHeight= 10;
+      this.originalWidth = 55;
+      this.originalHeight= 70;
       return shape;
    },
 
@@ -30,9 +30,14 @@ var Test = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L10,0 L10,10 L0,10");
+       shape = this.canvas.paper.path("M0,0 L55,0 L55,70 L0,70");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 0L55 0L55 70L0 70Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
        
 
        return this.canvas.paper.setFinish();
