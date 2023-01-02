@@ -11,13 +11,14 @@ digital_buttons_4_Bit_Switch = digital_buttons_4_Bit_Switch.extend({
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
 
-
+        this.bitCount = 4;
+        
         this.setResizeable(false);
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
-        this.on("click",function(emitter, event){
+        this.on("click",(emitter, event) => {
             var h = emitter.getHeight();
-            var modh = h/8;
+            var modh = h/this.bitCount;
             var index = (event.relY/modh)|0;
             var port = emitter.getOutputPort(index);
             port.setValue(!port.getBooleanValue());
