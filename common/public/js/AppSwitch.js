@@ -31,6 +31,12 @@ export default class AppSwitch {
                         <div>Designer</div>
                       </label>
                       
+                      <label class="applicationSwitchYoutube image-button" >
+                        <img src="../common/images/app_youtube.svg"/>
+                        <div>Youtube</div>
+                        <div> </div>
+                      </label>
+
                       <label class="applicationSwitchUser image-button" >
                         <img src="../common/images/app_user.svg"/>
                         <div>User</div>
@@ -47,6 +53,9 @@ export default class AppSwitch {
     `)
     $(".applicationSwitch").prepend(appSwitchButtons)
 
+    $(".applicationSwitchYoutube").off("click").on("click", () => {
+      window.open("https://www.youtube.com/@electra.academy", "youtube")
+    })
     $(".applicationSwitchDesigner").off("click").on("click", () => {
       window.open("../designer", "designer")
     })
