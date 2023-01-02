@@ -1,0 +1,114 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "4e78fdca-b249-b3dd-4482-d81967802b51",
+      "x": 7974.5,
+      "y": 7949.5,
+      "width": 51,
+      "height": 89,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Rectangle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n         // your special code here\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n    },\n\n    /**\n     * Get the simulator a hint which kind of hardware the shapes requires or supports\n     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost\n     * and your are running a circuit which needs this kind of hardware...\n     **/\n    getRequiredHardware: function(){\n      return {\n        arduino: false\n      }\n    }\n\n});",
+        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7974.5,
+          "y": 7994.52433450575
+        },
+        {
+          "x": 7974.5,
+          "y": 8038.5
+        },
+        {
+          "x": 8025.5,
+          "y": 8038.5
+        },
+        {
+          "x": 8025.5,
+          "y": 7949.5
+        },
+        {
+          "x": 8016.96164007346,
+          "y": 7949.5
+        },
+        {
+          "x": 8017.355339059327,
+          "y": 7954.7012987012995
+        },
+        {
+          "x": 8016.818212016001,
+          "y": 7961.797476982626
+        },
+        {
+          "x": 8015.223151219434,
+          "y": 7968.678041477709
+        },
+        {
+          "x": 8012.61862178479,
+          "y": 7975.133929716108
+        },
+        {
+          "x": 8009.083761020986,
+          "y": 7980.968982800522
+        },
+        {
+          "x": 8004.725973883602,
+          "y": 7986.005905595684
+        },
+        {
+          "x": 7999.677669529664,
+          "y": 7990.091653751249
+        },
+        {
+          "x": 7994.092238132399,
+          "y": 7993.102083877008
+        },
+        {
+          "x": 7988.139390198448,
+          "y": 7994.945725576932
+        },
+        {
+          "x": 7982,
+          "y": 7995.566560730906
+        },
+        {
+          "x": 7975.860609801552,
+          "y": 7994.945725576932
+        },
+        {
+          "x": 7974.5,
+          "y": 7994.52433450575
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    }
+  ]
+}
