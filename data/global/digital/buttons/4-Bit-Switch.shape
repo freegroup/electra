@@ -4,7 +4,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "6c335ec7-cfab-85f1-a3e2-8a5a188bc22e",
       "x": 7990,
-      "y": 7920,
+      "y": 7960,
       "width": 20,
       "height": 20,
       "alpha": 1,
@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.bitCount = 4;\n        \n        this.setResizeable(false);\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"click\",(emitter, event) => {\n            var h = emitter.getHeight();\n            var modh = h/this.bitCount;\n            var index = (event.relY/modh)|0;\n            var port = emitter.getOutputPort(index);\n            port.setValue(!port.getBooleanValue());\n            emitter.layerAttr(\"rect0\"+(index+1), {fill:port.getBooleanValue()?\"#C21B7A\":null});\n        });\n    },\n    \n    calculate: function()\n    {\n    \n        \n    }\n\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.bitCount = 4;\n        \n        this.setResizeable(false);\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"click\",(emitter, event) => {\n            var h = emitter.getHeight();\n            var modh = h/this.bitCount;\n            var index = (event.relY/modh)|0;\n            var port = emitter.getOutputPort(index);\n            port.setValue(!port.getBooleanValue());\n            emitter.layerAttr(\"rect0\"+(index+1), {fill:port.getBooleanValue()?\"#C21B7A\":\"#FFFFFF\"});\n        });\n    },\n    \n    calculate: function()\n    {\n    \n        \n    }\n\n});",
         "name": "rect01",
         "markdown": "# High / Low Array\n\nThe High Low Array is a macro object for 8 toggle switches in row.\n\n\n",
         "type": "Output",
@@ -29,19 +29,19 @@
       "vertices": [
         {
           "x": 8010,
-          "y": 7940
+          "y": 7980
         },
         {
           "x": 7990,
-          "y": 7940
+          "y": 7980
         },
         {
           "x": 7990,
-          "y": 7920
+          "y": 7960
         },
         {
           "x": 8010,
-          "y": 7920
+          "y": 7960
         }
       ],
       "blur": 0,
@@ -64,7 +64,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "b9805919-fa94-3684-0f3f-cd43469c82ae",
       "x": 7990,
-      "y": 7940,
+      "y": 7980,
       "width": 20,
       "height": 20,
       "alpha": 1,
@@ -84,19 +84,19 @@
       "vertices": [
         {
           "x": 8010,
-          "y": 7960
+          "y": 8000
         },
         {
           "x": 7990,
-          "y": 7960
+          "y": 8000
         },
         {
           "x": 7990,
-          "y": 7940
+          "y": 7980
         },
         {
           "x": 8010,
-          "y": 7940
+          "y": 7980
         }
       ],
       "blur": 0,
@@ -119,7 +119,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "82529c00-3171-9ddd-8af9-ef9e18edd426",
       "x": 7990,
-      "y": 7960,
+      "y": 8000,
       "width": 20,
       "height": 20,
       "alpha": 1,
@@ -139,19 +139,19 @@
       "vertices": [
         {
           "x": 8010,
-          "y": 7980
+          "y": 8020
         },
         {
           "x": 7990,
-          "y": 7980
+          "y": 8020
         },
         {
           "x": 7990,
-          "y": 7960
+          "y": 8000
         },
         {
           "x": 8010,
-          "y": 7960
+          "y": 8000
         }
       ],
       "blur": 0,
@@ -174,7 +174,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "bdc37923-873a-0f71-c82b-5a55c2608151",
       "x": 7990,
-      "y": 7980,
+      "y": 8020,
       "width": 20,
       "height": 20,
       "alpha": 1,
@@ -194,19 +194,19 @@
       "vertices": [
         {
           "x": 8010,
-          "y": 8000
+          "y": 8040
         },
         {
           "x": 7990,
-          "y": 8000
+          "y": 8040
         },
         {
           "x": 7990,
-          "y": 7980
+          "y": 8020
         },
         {
           "x": 8010,
-          "y": 7980
+          "y": 8020
         }
       ],
       "blur": 0,
@@ -229,7 +229,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "f4794033-1659-4dec-9b29-31774436bb39",
       "x": 8005.5,
-      "y": 7924.4901,
+      "y": 7964.4901,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -266,7 +266,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "e5e8fff6-5626-2b88-44f1-1a55e4b467cd",
       "x": 8006,
-      "y": 7945.5,
+      "y": 7985.5,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -303,7 +303,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "578b7cce-0703-dd36-b0c2-6765f3390c22",
       "x": 8005.5,
-      "y": 7965,
+      "y": 8005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -340,7 +340,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "3e88b3aa-290e-bd6d-9553-2fc7402d9a7f",
       "x": 8005.5,
-      "y": 7985,
+      "y": 8025,
       "width": 10,
       "height": 10,
       "alpha": 1,
