@@ -96,7 +96,7 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
       pos.y -= 30
 
       if (this.configIcon === null) {
-        this.configIcon = $("<div class='fa fa-cog' id='configMenuIcon'></div>")
+        this.configIcon = $("<div id='configMenuIcon'>&#9881;</div>")
         $("body").append(this.configIcon)
         this.configIcon.on("click",  () => {
           FigureConfigDialog.show(hit, pos)
