@@ -66,7 +66,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "93554173-8870-0d72-d177-4ca7538a0fff",
-      "x": 7979.59765625,
+      "x": 7979.09765625,
       "y": 8027,
       "width": 10,
       "height": 10,
@@ -76,8 +76,8 @@
       "angle": 0,
       "userData": {
         "name": "input03",
-        "type": "Hybrid",
-        "direction": null,
+        "type": "Input",
+        "direction": 3,
         "fanout": 20
       },
       "cssClass": "shape_designer_figure_ExtPort",
@@ -104,8 +104,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
-      "x": 7979.59765625,
-      "y": 8006,
+      "x": 7979.09765625,
+      "y": 8005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -185,7 +185,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8010.00390625,
-      "y": 8006.5,
+      "y": 8005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -224,8 +224,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "0a4705bb-c6fd-7a26-332f-6972e8683949",
-      "x": 7984.59765625,
-      "y": 7984,
+      "x": 7985.09765625,
+      "y": 7994.5,
       "width": 30.350000381469727,
       "height": 23,
       "alpha": 1,
@@ -279,16 +279,16 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 8000.09030625,
-          "y": 8006.1686
+          "x": 8000.59030625,
+          "y": 8016.6686
         },
         {
-          "x": 7995.38950625,
-          "y": 8006.315500000001
+          "x": 7995.88950625,
+          "y": 8016.815500000001
         },
         {
-          "x": 7990.68870625,
-          "y": 8006.4624
+          "x": 7991.18870625,
+          "y": 8016.9624
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
