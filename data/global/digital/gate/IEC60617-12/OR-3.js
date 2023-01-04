@@ -100,8 +100,9 @@ digital_gate_IEC60617_12_OR_3 = digital_gate_IEC60617_12_OR_3.extend({
     {
         var i1 = this.getInputPort(0);
         var i2 = this.getInputPort(1);
+        var i3 = this.getInputPort(2);
         var o1 = this.getOutputPort(0);
         
-        o1.setValue(i1.getBooleanValue() || i2.getBooleanValue());
+        o1.setValue(i1.getBooleanValue() || i2.getBooleanValue() || i3.getBooleanValue());
     }
 });
