@@ -4,10 +4,10 @@
 // created with http://www.draw2d.org
 //
 //
-var signal_SignalInverter = CircuitFigure.extend({
+var analog_SignalInverter = CircuitFigure.extend({
 
-   NAME: "signal_SignalInverter",
-   VERSION: "2.0.343_1136",
+   NAME: "analog_SignalInverter",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -16,13 +16,13 @@ var signal_SignalInverter = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:40,height:40},attr), setter, getter);
      var port;
      // input_port1
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.75, y: 49.77049046325682 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.75, y: 49.770490463256465 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
      port.setMaxFanOut(20);
      // output_port1
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.80516287231444, y: 49.77049046325682 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.8051628723133, y: 49.770490463256465 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_port1");
@@ -53,7 +53,7 @@ var signal_SignalInverter = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'5-X');
-       shape.attr({"x":6.8828125,"y":18.004896185302727,"text-anchor":"start","text":"5-X","font-family":"\"Arial\"","font-size":16,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":7.8828125,"y":20.00489618530264,"text-anchor":"start","text":"5-X","font-family":"\"Arial\"","font-size":16,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
@@ -73,7 +73,7 @@ var signal_SignalInverter = CircuitFigure.extend({
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-signal_SignalInverter = signal_SignalInverter.extend({
+analog_SignalInverter = analog_SignalInverter.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);

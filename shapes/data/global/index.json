@@ -1,5 +1,33 @@
 [
   {
+    "name": "analog_SignalInverter",
+    "tags": [
+      "analog",
+      "SignalInverter"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "SignalInverter.js",
+    "displayName": "SignalInverter",
+    "basedir": "analog",
+    "shapePath": "analog/SignalInverter.shape",
+    "imagePath": "analog/SignalInverter.png"
+  },
+  {
+    "name": "analog_SignalSwitch",
+    "tags": [
+      "analog",
+      "SignalSwitch"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "SignalSwitch.js",
+    "displayName": "SignalSwitch",
+    "basedir": "analog",
+    "shapePath": "analog/SignalSwitch.shape",
+    "imagePath": "analog/SignalSwitch.png"
+  },
+  {
     "name": "arduino_Arduino",
     "tags": [
       "arduino",
@@ -661,20 +689,6 @@
     "imagePath": "math/Mean.png"
   },
   {
-    "name": "signal_SignalInverter",
-    "tags": [
-      "signal",
-      "SignalInverter"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "SignalInverter.js",
-    "displayName": "SignalInverter",
-    "basedir": "signal",
-    "shapePath": "signal/SignalInverter.shape",
-    "imagePath": "signal/SignalInverter.png"
-  },
-  {
     "name": "signal_SignalSource",
     "tags": [
       "signal",
@@ -687,20 +701,6 @@
     "basedir": "signal",
     "shapePath": "signal/SignalSource.shape",
     "imagePath": "signal/SignalSource.png"
-  },
-  {
-    "name": "signal_SignalSwitch",
-    "tags": [
-      "signal",
-      "SignalSwitch"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "SignalSwitch.js",
-    "displayName": "SignalSwitch",
-    "basedir": "signal",
-    "shapePath": "signal/SignalSwitch.shape",
-    "imagePath": "signal/SignalSwitch.png"
   },
   {
     "name": "signal_SignalTarget",
@@ -1303,18 +1303,18 @@
     "imagePath": "video/tools/VideoSelector.png"
   },
   {
-    "name": "widget_HighLow",
+    "name": "widget_Markdown",
     "tags": [
       "widget",
-      "HighLow"
+      "Markdown"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "HighLow.js",
-    "displayName": "HighLow",
+    "basename": "Markdown.js",
+    "displayName": "Markdown",
     "basedir": "widget",
-    "shapePath": "widget/HighLow.shape",
-    "imagePath": "widget/HighLow.png"
+    "shapePath": "widget/Markdown.shape",
+    "imagePath": "widget/Markdown.png"
   },
   {
     "name": "widget_PushButton",
@@ -1357,5 +1357,19 @@
     "basedir": "widget",
     "shapePath": "widget/Sparkline.shape",
     "imagePath": "widget/Sparkline.png"
+  },
+  {
+    "name": "widget_Text",
+    "tags": [
+      "widget",
+      "Text"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Text.js",
+    "displayName": "Text",
+    "basedir": "widget",
+    "shapePath": "widget/Text.shape",
+    "imagePath": "widget/Text.png"
   }
 ]
