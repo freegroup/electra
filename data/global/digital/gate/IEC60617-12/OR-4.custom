@@ -21,8 +21,9 @@ digital_gate_IEC60617_12_OR_4 = digital_gate_IEC60617_12_OR_4.extend({
         var i1 = this.getInputPort(0);
         var i2 = this.getInputPort(1);
         var i3 = this.getInputPort(2);
+        var i4 = this.getInputPort(3);
         var o1 = this.getOutputPort(0);
         
-        o1.setValue(i1.getBooleanValue() || i2.getBooleanValue() || i3.getBooleanValue());
+        o1.setValue(i1.getBooleanValue() || i2.getBooleanValue() || i3.getBooleanValue() || i4.getBooleanValue());
     }
 });
