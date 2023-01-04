@@ -1,5 +1,4 @@
-import MarkdownDialog from '../dialog/MarkdownDialog'
-import conf from '../Configuration'
+import markdownDialog from '../dialog/MarkdownDialog'
 
 export default draw2d.SetFigure.extend({
 
@@ -12,10 +11,7 @@ export default draw2d.SetFigure.extend({
     this.persistPorts = false
 
     this.on("dblclick", () => {
-      let pathToMD = conf.shapes.url + this.NAME + ".md"
-      $.get(pathToMD, function (content) {
-        new MarkdownDialog().show(content)
-      })
+        markdownDialog.show(this)
     })
   },
 
