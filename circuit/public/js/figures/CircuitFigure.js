@@ -10,9 +10,7 @@ export default draw2d.SetFigure.extend({
 
     this.persistPorts = false
 
-    this.on("dblclick", () => {
-        markdownDialog.show(this)
-    })
+    this.on("dblclick", () =>  markdownDialog.show(this) )
   },
 
 

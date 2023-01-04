@@ -91,13 +91,13 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
       }
     })
 
-    if (hit !== null && hit.getParameterSettings && hit.getParameterSettings().length > 0) {
+    if (hit?.getParameterSettings?.()?.length > 0) {
       let pos = hit.getBoundingBox().getTopLeft()
       pos = emitter.fromCanvasToDocumentCoordinate(pos.x, pos.y)
       pos.y -= 30
 
       if (this.configIcon === null) {
-        this.configIcon = $("<div id='configMenuIcon'><i class='fa fa-cog'></i></div>")
+        this.configIcon = $("<div id='configMenuIcon'>&#9881;</div>")
         $("body").append(this.configIcon)
         this.configIcon.on("click",  () => {
           FigureConfigDialog.show(hit, pos)
