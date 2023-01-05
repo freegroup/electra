@@ -21,12 +21,13 @@ export default draw2d.policy.canvas.DropInterceptorPolicy.extend({
    * drop event and delegates this drop event to another port.<br>
    *
    *
-   * @param {draw2d.Figure} connectInquirer the figure who wants connect
-   * @param {draw2d.Figure} connectIntent the potential connect target
+   * @param {draw2d.Figure} connectInquirer the figure who wants connect (dragging port)
+   * @param {draw2d.Figure} connectIntent the potential connect target (drop target port)
    *
    * @return {draw2d.Figure} the calculated connect intent or <b>null</b> if the interceptor uses the veto right
    */
   delegateTarget: function (connectInquirer, connectIntent) {
+
     // we allow that a figure with a special class is droppable to a connection
     //
     if (connectInquirer instanceof draw2d.shape.node.Node && connectIntent instanceof draw2d.Connection) {
@@ -55,12 +56,16 @@ export default draw2d.policy.canvas.DropInterceptorPolicy.extend({
       return null
     }
 
-    // consider the max possible connections for this port
-    //
-    if (connectIntent.getConnections().getSize() >= connectIntent.getMaxFanOut()) {
+    // ////////////////////////////////////////////////////////////
+    // at this stage we a sure, that we have two ports as argument
+    // ////////////////////////////////////////////////////////////
+
+    // It is not possible to create a loop back connection at the moment.
+    // Reason: no connection router implemented for this case
+    if (connectInquirer.getParent() === connectIntent.getParent()) {
       return null
     }
-
+        
     // It is not allowed to connect two output ports
     if (connectInquirer instanceof draw2d.OutputPort && connectIntent instanceof draw2d.OutputPort) {
       return null
@@ -71,19 +76,36 @@ export default draw2d.policy.canvas.DropInterceptorPolicy.extend({
       return null
     }
 
-    // It is not possible to create a loop back connection at the moment.
-    // Reason: no connection router implemented for this case
-    if ((connectInquirer instanceof draw2d.Port) && (connectIntent instanceof draw2d.Port)) {
-      //    if(connectInquirer === connectIntent){
-      //       return null;
-      // }
-    }
 
     // redirect the dragEnter handling to the hybrid port
     //
-    if ((connectInquirer instanceof draw2d.Port) && (connectIntent instanceof draw2d.shape.node.Hub)) {
-      return connectIntent.getHybridPort(0)
+    if ((connectIntent.getParent() instanceof draw2d.shape.node.Hub)) {
+
+      let inputConnections = connectIntent.getConnections().asArray().filter( con => (con.getPeerPort(connectIntent) instanceof draw2d.OutputPort))
+      let outputConnections = connectIntent.getConnections().asArray().filter( con => (con.getPeerPort(connectIntent) instanceof draw2d.InputPort))
+
+      if (connectInquirer instanceof draw2d.InputPort && outputConnections.length >= connectIntent.getMaxFanOut()) {
+        return null
+      }
+
+      if (connectInquirer instanceof draw2d.OutputPort && inputConnections.length >= connectIntent.getMaxFanIn()) {
+        return null
+      }
+
+      if (connectInquirer instanceof draw2d.HybridPort && inputConnections.length >= connectIntent.getMaxFanIn()) {
+        return null
+      }
+
+      return connectIntent
     }
+
+
+    // consider the max possible connections for this port
+    //
+    if (connectIntent.getConnections().getSize() >= connectIntent.getMaxFanOut()) {
+      return null
+    }
+
 
     // return the connectTarget determined by the framework or delegate it to another
     // figure.

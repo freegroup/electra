@@ -36,6 +36,10 @@ markdown.renderer.rules.link_open = function (tokens, idx, options, env, self) {
 };
 
 
+draw2d.Configuration.factory.createInputPort= (relatedFigure)=> new DecoratedInputPort()
+draw2d.Configuration.factory.createOutputPort= (relatedFigure)=> new DecoratedOutputPort()
+draw2d.Configuration.factory.createHybridPort= (relatedFigure)=> new DecoratedHybridPort()
+
 export default {
   ConnectionSelectionFeedbackPolicy,
   hardware,

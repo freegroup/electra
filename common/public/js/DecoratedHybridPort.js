@@ -9,13 +9,15 @@ export default draw2d.HybridPort.extend({
   NAME: "DecoratedHybridPort",
 
   init: function (attr, setter, getter) {
-    this._super($.extend(attr, {coronaWidth: 2}), setter, getter)
+    this._super({...attr, coronaWidth: 2}, setter, getter)
 
     this.installEditPolicy(growPolicy)
+
 
     let circle = new draw2d.shape.basic.Circle({radius:2, stroke:0, bgColor: "#909090"})
     circle.hitTest = () => false
     this.add(circle, locator)
+
     this.setValue(Values.DIGITAL_LOW)
   },
 
