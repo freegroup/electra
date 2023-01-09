@@ -1,3 +1,4 @@
+import { thresholdSturges } from "d3"
 import MarkerFigure from "./MarkerFigure"
 import Values from "./Values"
 
@@ -52,11 +53,19 @@ export default draw2d.InputPort.extend({
     this.add(circle, locator)
   },
 
-  useDefaultValue: function () {
-    this.decoration.setStick(true)
+  useDefaultValue: function (flag) {
+    this.decoration.setStick(flag)
   },
 
-  hasDefaultValue: function(){
+  setDefaultValue: function(value){
+    this.decoration.setDefaultValue(value)
+  },
+
+  getDefaultValue: function(){
+    return this.decoration.getDefaultValue()
+  },
+
+  useDefaultValueProvider: function(){
     return this.decoration.getStick()
   },
 
@@ -76,11 +85,11 @@ export default draw2d.InputPort.extend({
   },
 
   hasRisingEdge: function () {
-    return this.hasChangedValue() && this.getValue()
+    return this.hasChangedValue() && this.getBooleanValue()
   },
 
   hasFallingEdge: function () {
-    return this.hasChangedValue() && !this.getValue()
+    return this.hasChangedValue() && !this.getBooleanValue()
   },
 
   /**

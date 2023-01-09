@@ -116,7 +116,7 @@ export default draw2d.shape.layout.StackLayout.extend({
     setStick:function(flag)
     {
         this.stick = flag;
-        this.onMouseOver(this.isMouseOver);
+        this.onMouseOver(this.isMouseOver || flag);
 
 
         // the port has only a default value if the decoration is visible
@@ -138,6 +138,10 @@ export default draw2d.shape.layout.StackLayout.extend({
         this.stateB.setText(text);
 
         return this;
+    },
+
+    getDefaultValue: function(){
+        return this.defaultValue
     },
 
     setDefaultValue: function(value)

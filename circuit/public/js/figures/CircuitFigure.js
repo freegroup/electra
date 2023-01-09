@@ -142,7 +142,7 @@ export default draw2d.SetFigure.extend({
         locatorAttr:e.locator.attr() 
       }}),
       inputDefaults: this.inputPorts.asArray().map( p => {
-        return p.hasDefaultValue()
+        return {useDefaultValue: p.useDefaultValueProvider(), defaultValue: p.getDefaultValue() }
       })
     }
   },
@@ -167,7 +167,7 @@ export default draw2d.SetFigure.extend({
 
     // and add all children of the JSON document.
     //
-    $.each(memento.labels, $.proxy(function (i, json) {
+    $.each(memento.labels,  (i, json) => {
       // create the figure stored in the JSON
       let figure = eval("new " + json.type + "()")
       // apply all attributes
@@ -180,7 +180,18 @@ export default draw2d.SetFigure.extend({
       }
       // add the new figure as child to this figure
       this.add(figure, locator)
-    }, this))
+    })
+
+    $.each(memento.inputDefaults,  (i, d) => {
+      // create the figure stored in the JSON
+      let p = this.getInputPort(i)
+      console.log(d)
+      if(d.useDefaultValue){
+        p.useDefaultValue(true)
+        p.setDefaultValue(d.defaultValue)
+      }
+      console.log(p)
+    })
   }
 })
 
