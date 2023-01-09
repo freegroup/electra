@@ -1,0 +1,44 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+arduino_Signal = arduino_Signal.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+         this.attr({resizeable:false});
+         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+         
+         this.onChangeCallback = (emitter, event)=>{
+            this.layerAttr("circle",{fill: event.value?"#C21B7A":"#f0f0f0"});
+            // set the LED on the Arduino on/off
+            hardware.arduino.set(3, event.value);
+         }
+    },
+    
+    calculate:function(context){
+    },
+    
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getInputPort(0).on("change:value", this.onChangeCallback);
+        
+        // fire the event once to init the LED state
+        this.onChangeCallback(this.getInputPort(0), {value: this.getInputPort(0).getValue()})
+        
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     **/
+    onStop:function(context){
+        this.getInputPort(0).off(this.onChangeCallback);
+    }
+});
