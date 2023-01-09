@@ -680,6 +680,10 @@ export default draw2d.Canvas.extend({
     }
   },
 
+  calculateConnectionIntersection : function(){
+
+  },
+  
   /**
    * @method
    * Transforms a document coordinate to canvas coordinate.

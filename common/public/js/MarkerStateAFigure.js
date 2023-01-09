@@ -12,14 +12,15 @@ export default draw2d.shape.basic.Label.extend({
      */
     init : function(attr, setter, getter)
     {
-        this._super($.extend({
+        this._super({
             padding:{left:5, top:2, bottom:2, right:10},
             bgColor:null,
             stroke:1,
             color:null,
             fontColor:null,
-            fontSize:8
-        },attr),
+            fontSize:8,
+            ...attr
+        },
         setter,
         getter);
 
@@ -27,7 +28,7 @@ export default draw2d.shape.basic.Label.extend({
         // Unfortunately draw2D didn't provide event bubbling like HTML. The first shape in queue consumes the event.
         //
         // now this shape is "dead" for any mouse events and the parent must/can handle this.
-        this.hitTest = function(){return false;};
+        this.hitTest = () => false
     }
 
 });

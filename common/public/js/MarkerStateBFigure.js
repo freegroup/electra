@@ -10,45 +10,38 @@ export default draw2d.shape.layout.HorizontalLayout.extend({
     init : function(attr, setter, getter)
     {
         this.tintColor = colors.low;
+        this.solid = false;
 
-        this._super($.extend({
+        this._super({
             bgColor:"#FFFFFF",
             stroke:1,
             color:colors.low,
             radius:2,
-            padding:{left:3, top:2, bottom:0, right:8},
-            gap:5
-        },attr),
+            padding:{left:3, top:2, bottom:0, right:12},
+            gap:5,
+            ...attr
+        },
         setter,
         getter);
 
-        this.stickTick = new draw2d.shape.basic.Circle({
-            diameter:8,
-            bgColor:"#f0f0f0",
-            stroke:1,
-            resizeable:false
-        });
-        this.add(this.stickTick);
-        this.stickTick.hitTest = function(){return false;};
-        this.stickTick.addCssClass("highlightOnHover");
         
         this.label = new draw2d.shape.basic.Label({
-            text:attr? attr.text: "X",
+            text: attr.text ?? "X",
             resizeable:false,
             stroke:0,
             padding:0,
             fontSize:8,
             fontColor:"#303030"
-        });
-        this.add(this.label);
-        this.label.hitTest = function(){return false;};
+        })
+        this.add(this.label)
+        this.label.hitTest = () => false
         this.label.addCssClass("highlightOnHover");
 
         // we must override the hitTest method to ensure that the parent can receive the mouseenter/mouseleave events.
         // Unfortunately draw2D didn't provide event bubbling like HTML. The first shape in queue consumes the event.
         //
         // now this shape is "dead" for any mouse events and the parent must/can handle this.
-        this.hitTest = function(){return false;};
+        this.hitTest = () => false
     },
 
     setText: function(text)
@@ -56,26 +49,24 @@ export default draw2d.shape.layout.HorizontalLayout.extend({
         this.label.setText(text);
     },
 
+    setSolid: function(solid)
+    {
+        this.solid = solid
+        // update the visual
+        this.setTintColor(this.tintColor)
+    },
+
     setTintColor: function(color)
     {
         this.tintColor = color;
-        this.attr({color:color});
-        this.label.attr({fontColor:color});
-    },
-
-    setTick :function(flag)
-    {
-        this.stickTick.attr({bgColor:flag?this.tintColor:"#f0f0f0"});
-    },
-
-    getStickTickFigure:function()
-    {
-        return this.stickTick;
-    },
-
-    getLabelFigure:function()
-    {
-        return this.label;
+        if(this.solid){
+            this.attr({color: color, bgColor:color});
+            this.label.attr({fontColor:"#ffffff"});
+        }
+        else{
+            this.attr({color:color, bgColor: null});
+            this.label.attr({fontColor:color});
+        }
     },
 
     /**
@@ -90,9 +81,7 @@ export default draw2d.shape.layout.HorizontalLayout.extend({
             return;
         }
 
-        attributes= attributes || {};
-        attributes.path = this.calculatePath();
-        this._super(attributes);
+        this._super({ ...attributes, path: this.calculatePath()});
     },
 
 
@@ -168,6 +157,4 @@ export default draw2d.shape.layout.HorizontalLayout.extend({
         }
         return path.join("");
     }
-
-
 });

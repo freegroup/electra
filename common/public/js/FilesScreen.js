@@ -18,8 +18,8 @@ export default class Files {
     $("body").append(` 
         <script id="filesTemplate" type="text/x-jsrender">
         <div class="fileOperations">
-            <div data-folder="{{folder}}" class='fileOperationsFolderAdd material-button' ><i class="fa fa-plus"></i> ${conf.fileScreen.addFolderButton}</div>
-            <div data-folder="{{folder}}" class='fileOperationsDocumentAdd material-button' ><i class="fa fa-plus"></i> ${conf.fileScreen.addFileButton}</div>
+            <div data-folder="{{folder}}" class='fileOperationsFolderAdd material-button' >&#43; ${conf.fileScreen.addFolderButton}</div>
+            <div data-folder="{{folder}}" class='fileOperationsDocumentAdd material-button' >&#43; ${conf.fileScreen.addFileButton}</div>
         </div>
         <div>Folder: {{folder}}</div>
         <ul class="list-group col-lg-10 col-md-10 col-xs-10 ">
@@ -51,12 +51,12 @@ export default class Files {
               <div class="media-body">
                 <h4 class="media-heading">{{title}}</h4>
                 {{#update}}
-                <span class="editIcon"><i class="fa fa-edit"></i></span>
+                <span class="editIcon">&#9998;</span>
                 {{/update}}
               </div>
             </div>
             {{#delete}}
-                <div class="deleteIcon" data-toggle="confirmation"><i class="fa fa-trash"></i></div>
+                <div class="deleteIcon" data-toggle="confirmation">&#x2296;</div>
             {{/delete}}   
           </li>
         {{/files}}

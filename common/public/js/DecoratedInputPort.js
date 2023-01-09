@@ -13,7 +13,7 @@ export default draw2d.InputPort.extend({
   init: function (attr, setter, getter) {
     this.hasChanged = false
 
-    this._super($.extend(attr, {coronaWidth: 2}), setter, getter)
+    this._super( {coronaWidth: 2, ...attr}, setter, getter)
 
     this.decoration = new MarkerFigure()
 
@@ -56,6 +56,10 @@ export default draw2d.InputPort.extend({
     this.decoration.setStick(true)
   },
 
+  hasDefaultValue: function(){
+    return this.decoration.getStick()
+  },
+
   setValue: function (value = Values.DIGITAL_LOW) {
     // convert boolean values to 5volt TTL pegel logic
     //
@@ -84,7 +88,6 @@ export default draw2d.InputPort.extend({
    * v <= 1.5volt  => FALSE
    * v >  1.5volt  => TRUE
    *
-   * normally v must be greater to 2.2v to be HIGH. But the software can't handle undefined values right now.
    */
   getBooleanValue: function(){
     return this.getValue()>1.5
@@ -111,7 +114,7 @@ export default draw2d.InputPort.extend({
     }
 
 
-    this.children.each(function (i, e) {
+    this.children.each( (i, e)=>  {
       e.figure.setCanvas(canvas)
     })
 

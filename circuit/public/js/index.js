@@ -1,9 +1,5 @@
 import axios from "axios"
 import "../less/index.less"
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/solid'
-import '@fortawesome/fontawesome-free/js/regular'
-import '@fortawesome/fontawesome-free/js/brands'
 
 import UpdateSuccessDialog from "./dialog/UpdateSuccessDialog"
 import Split from 'split.js'

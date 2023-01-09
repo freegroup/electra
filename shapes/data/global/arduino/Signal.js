@@ -47,12 +47,12 @@ var arduino_Signal = CircuitFigure.extend({
        
        // Line
        shape = this.canvas.paper.path('M25.94430000000102 5.062700000001314L5.283199999999852,27.963700000000244');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","Line");
        
        // Line
        shape = this.canvas.paper.path('M5.3521000000100685 4.786000000009153L24.888199999999415,27.673900000004323');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","Line");
        
 
@@ -91,12 +91,16 @@ arduino_Signal = arduino_Signal.extend({
      **/
     onStart:function(context){
         this.getInputPort(0).on("change:value", this.onChangeCallback);
+        
+        // fire the event once to init the LED state
+        this.onChangeCallback(this.getInputPort(0), {value: this.getInputPort(0).getValue()})
+        
     },
 
     /**
      *  Called if the simulation mode is stopping
      **/
     onStop:function(context){
-        this.getInputPort(0).off("change:value", this.onChangeCallback);
+        this.getInputPort(0).off(this.onChangeCallback);
     }
 });

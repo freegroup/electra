@@ -59,7 +59,7 @@ export default draw2d.SetFigure.extend({
       })
     }
     else {
-      this.svgNodes.forEach(function (node) {
+      this.svgNodes.forEach( (node) => {
         if (node.data("name") === name) {
           if (flag) {
             node.show()
@@ -133,21 +133,18 @@ export default draw2d.SetFigure.extend({
    * @returns {Object}
    */
   getPersistentAttributes: function () {
-    let memento = this._super()
-
-    memento.value = this.value
-
-    // add all decorations to the memento
-    //
-    memento.labels = []
-    this.children.each(function (i, e) {
-      let childJSON = e.figure.getPersistentAttributes()
-      childJSON.locator = e.locator.NAME
-      childJSON.locatorAttr= e.locator.attr()
-      memento.labels.push(childJSON)
-    })
-
-    return memento
+    return {
+      ...this._super(), 
+      value : this.value,
+      labels: this.children.asArray().map( e => { return {
+        ...e.figure.getPersistentAttributes(), 
+        locator: e.locator.NAME, 
+        locatorAttr:e.locator.attr() 
+      }}),
+      inputDefaults: this.inputPorts.asArray().map( p => {
+        return p.hasDefaultValue()
+      })
+    }
   },
 
   /**

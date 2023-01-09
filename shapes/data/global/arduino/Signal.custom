@@ -29,12 +29,16 @@ arduino_Signal = arduino_Signal.extend({
      **/
     onStart:function(context){
         this.getInputPort(0).on("change:value", this.onChangeCallback);
+        
+        // fire the event once to init the LED state
+        this.onChangeCallback(this.getInputPort(0), {value: this.getInputPort(0).getValue()})
+        
     },
 
     /**
      *  Called if the simulation mode is stopping
      **/
     onStop:function(context){
-        this.getInputPort(0).off("change:value", this.onChangeCallback);
+        this.getInputPort(0).off(this.onChangeCallback);
     }
 });

@@ -23,8 +23,10 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
     init: function (attr) {
         this._super({width:30, height:300, text:"Vertical Bus",...attr});
 
+        // remove the "circle decoration" of the hybrid port.
         let port = this.getHybridPort(0)
         port.remove(port.getChildren().first())
+
         // only "1" Input connection is allowd for the circuit simulator.
         port.setMaxFanIn(1)
 
@@ -59,14 +61,6 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
     },
   
     calculate: function( context )
-    {
-    },
-
-    onStart: function(context)
-    {
-    },
-
-    onStop:function(context)
     {
     },
 

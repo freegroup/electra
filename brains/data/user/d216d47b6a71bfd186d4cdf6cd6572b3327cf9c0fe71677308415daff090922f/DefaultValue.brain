@@ -1,0 +1,65 @@
+{
+  "draw2d": [
+    {
+      "type": "arduino_Signal",
+      "id": "045dc07d-c0b5-db2c-f081-7c094eaa1c94",
+      "x": 2800.5,
+      "y": 2775.59375,
+      "width": 30,
+      "height": 32,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "file": "arduino/Signal.shape",
+        "scope": "global"
+      },
+      "cssClass": "arduino_Signal",
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "labels": [
+        {
+          "type": "draw2d.shape.basic.Label",
+          "id": "42003d37-c531-01c9-c2a0-53b943616ea3",
+          "x": -20,
+          "y": -40,
+          "width": 24.125,
+          "height": 19,
+          "alpha": 1,
+          "selectable": true,
+          "draggable": true,
+          "angle": 0,
+          "userData": {},
+          "cssClass": "draw2d_shape_basic_Label",
+          "ports": [],
+          "bgColor": "rgba(0,0,0,0)",
+          "color": "rgba(27,27,27,1)",
+          "stroke": 0,
+          "radius": 0,
+          "dasharray": null,
+          "text": "test",
+          "outlineStroke": 0,
+          "outlineColor": "rgba(0,0,0,0)",
+          "fontSize": 12,
+          "fontColor": "rgba(8,8,8,1)",
+          "fontFamily": null,
+          "editor": "LabelInplaceEditor",
+          "locator": "draw2d.layout.locator.SmartDraggableLocator",
+          "locatorAttr": {}
+        }
+      ],
+      "inputDefaults": [
+        false
+      ]
+    }
+  ],
+  "image": "data:image/png;base64,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",
+  "view": {
+    "timerBase": 10,
+    "probeWindow": false
+  }
+}
