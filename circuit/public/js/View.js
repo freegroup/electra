@@ -500,6 +500,10 @@ export default draw2d.Canvas.extend({
     })
 
     this.getFigures().each( (index, shape) => {
+      shape.onPreStart?.(this.simulationContext)
+    })
+
+    this.getFigures().each( (index, shape) => {
       shape.onStart?.(this.simulationContext)
     })
 
@@ -532,6 +536,10 @@ export default draw2d.Canvas.extend({
       shape.onStop?.(this.simulationContext)
     })
 
+    this.getFigures().each( (index, shape) =>{
+      shape.onPostStop?.(this.simulationContext)
+    })
+    
     $("#simulationStartStop")
       .addClass("play")
       .removeClass("pause")

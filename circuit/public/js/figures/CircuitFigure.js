@@ -185,12 +185,10 @@ export default draw2d.SetFigure.extend({
     $.each(memento.inputDefaults,  (i, d) => {
       // create the figure stored in the JSON
       let p = this.getInputPort(i)
-      console.log(d)
       if(d.useDefaultValue){
         p.useDefaultValue(true)
         p.setDefaultValue(d.defaultValue)
       }
-      console.log(p)
     })
   }
 })

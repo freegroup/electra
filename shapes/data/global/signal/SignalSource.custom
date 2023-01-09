@@ -50,7 +50,7 @@ signal_SignalSource = signal_SignalSource.extend({
      *  loop
      *  @required
      **/
-    calculate:function(context)
+    onStart:function(context)
     {
         var signalId = this.attr("userData.signalId")
         if(context.signalPorts && context.signalPorts[signalId]){
@@ -65,7 +65,11 @@ signal_SignalSource = signal_SignalSource.extend({
         }
     },
 
-
+    calculate:function(context)
+    {
+    
+    },
+    
     getParameterSettings: function()
     {
         return [

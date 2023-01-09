@@ -42,7 +42,7 @@ var signal_SignalSource = CircuitFigure.extend({
        
        // outline
        shape = this.canvas.paper.path('M0 0L53.81817921990478 0L65.72720000000481 10L53.81817921990478 20L0.24380000000201107 20.243800000000192Z');
-       shape.attr({"stroke":"rgba(0,120,242,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","outline");
        
        // label
@@ -107,7 +107,7 @@ signal_SignalSource = signal_SignalSource.extend({
      *  loop
      *  @required
      **/
-    calculate:function(context)
+    onStart:function(context)
     {
         var signalId = this.attr("userData.signalId")
         if(context.signalPorts && context.signalPorts[signalId]){
@@ -122,7 +122,11 @@ signal_SignalSource = signal_SignalSource.extend({
         }
     },
 
-
+    calculate:function(context)
+    {
+    
+    },
+    
     getParameterSettings: function()
     {
         return [

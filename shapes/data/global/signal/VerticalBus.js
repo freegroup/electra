@@ -21,19 +21,22 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
     VERSION: "1.0.0",
 
     init: function (attr) {
-        this._super({width:30, height:300, text:"Vertical Bus",...attr});
+        this._super({width:15, height:300, text:"Vertical Bus",...attr});
 
         // remove the "circle decoration" of the hybrid port.
         let port = this.getHybridPort(0)
         port.remove(port.getChildren().first())
 
-        // only "1" Input connection is allowd for the circuit simulator.
-        port.setMaxFanIn(1)
+        // no Input connection is allowd for the circuit simulator.
+        // it is working as a signal bus consuming fro the global signal context
+        port.setMaxFanIn(0)
 
         this.persistPorts = false
 
         this.on("change:userData.signalId",(emitter, event)=>{
             this.setLabel(event.value)
+            // reset the getValue method
+            this.getHybridPort(0).getValue = ()=> 0
         });
         this.on("added", ()=>{
             var signalId = this.attr("userData.signalId")
@@ -60,10 +63,31 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
         }
     },
   
-    calculate: function( context )
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function(context)
     {
     },
 
+    onStart:function(context)
+    {
+      var signalId = this.attr("userData.signalId")
+      if(context.signalPorts && context.signalPorts[signalId]){
+          this.getHybridPort(0).getValue = function(){ 
+              if(context.signalPorts[signalId] instanceof draw2d.Port){
+                  return context.signalPorts[signalId].getValue()
+              }
+              else {
+                  return 0
+              }
+          }
+      }
+  },
+    
     getParameterSettings: function () {
         return [
             {

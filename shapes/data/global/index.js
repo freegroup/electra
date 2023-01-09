@@ -6281,7 +6281,7 @@ var signal_SignalSource = CircuitFigure.extend({
        
        // outline
        shape = this.canvas.paper.path('M0 0L53.81817921990478 0L65.72720000000481 10L53.81817921990478 20L0.24380000000201107 20.243800000000192Z');
-       shape.attr({"stroke":"rgba(0,120,242,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","outline");
        
        // label
@@ -6346,7 +6346,7 @@ signal_SignalSource = signal_SignalSource.extend({
      *  loop
      *  @required
      **/
-    calculate:function(context)
+    onStart:function(context)
     {
         var signalId = this.attr("userData.signalId")
         if(context.signalPorts && context.signalPorts[signalId]){
@@ -6361,7 +6361,11 @@ signal_SignalSource = signal_SignalSource.extend({
         }
     },
 
-
+    calculate:function(context)
+    {
+    
+    },
+    
     getParameterSettings: function()
     {
         return [
@@ -6410,16 +6414,16 @@ signal_SignalSource = signal_SignalSource.extend({
 var signal_SignalTarget = CircuitFigure.extend({
 
    NAME: "signal_SignalTarget",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:69.55780000000595,height:22},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:69.21405000000595,height:21.525390625},attr), setter, getter);
      var port;
      // Port
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.8643487861801238, y: 48.86363636363637 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.8736080318860082, y: 49.94102168587242 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
@@ -6429,8 +6433,8 @@ var signal_SignalTarget = CircuitFigure.extend({
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 69.55780000000595;
-      this.originalHeight= 22;
+      this.originalWidth = 69.21405000000595;
+      this.originalHeight= 21.525390625;
       return shape;
    },
 
@@ -6439,18 +6443,18 @@ var signal_SignalTarget = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L69.55780000000595,0 L69.55780000000595,22 L0,22");
+       shape = this.canvas.paper.path("M0,0 L69.21405000000595,0 L69.21405000000595,21.525390625 L0,21.525390625");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // outline
        shape = this.canvas.paper.path('M0 9.932800000005955L13.10158237711039 0.75L69 0.75L69 20.75L11.482077748871234 20.75Z');
-       shape.attr({"stroke":"rgba(0,120,242,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","outline");
        
        // label
        shape = this.canvas.paper.text(0,0,'Signal_ID');
-       shape.attr({"x":13.182800000005955,"y":11,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":13.182800000005955,"y":10.7626953125,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","label");
        
 
@@ -6518,13 +6522,11 @@ signal_SignalTarget = signal_SignalTarget.extend({
      *  loop
      *  @required
      **/
-    calculate:function(context)
+    onPreStart:function(context)
     {
         var signalId = this.attr("userData.signalId")
         // first check if any object already create the signal context
-        if(!context.signalPorts){
-            context.signalPorts = { };
-        }
+        context.signalPorts ??= {}
         
         // check if my signal port is set 
         if(this.signalPort){
@@ -6537,6 +6539,11 @@ signal_SignalTarget = signal_SignalTarget.extend({
         }
     },
 
+    calculate:function(context)
+    {
+    
+    },
+    
     getParameterSettings: function()
     {
         return [
@@ -6598,19 +6605,22 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
     VERSION: "1.0.0",
 
     init: function (attr) {
-        this._super({width:30, height:300, text:"Vertical Bus",...attr});
+        this._super({width:15, height:300, text:"Vertical Bus",...attr});
 
         // remove the "circle decoration" of the hybrid port.
         let port = this.getHybridPort(0)
         port.remove(port.getChildren().first())
 
-        // only "1" Input connection is allowd for the circuit simulator.
-        port.setMaxFanIn(1)
+        // no Input connection is allowd for the circuit simulator.
+        // it is working as a signal bus consuming fro the global signal context
+        port.setMaxFanIn(0)
 
         this.persistPorts = false
 
         this.on("change:userData.signalId",(emitter, event)=>{
             this.setLabel(event.value)
+            // reset the getValue method
+            this.getHybridPort(0).getValue = ()=> 0
         });
         this.on("added", ()=>{
             var signalId = this.attr("userData.signalId")
@@ -6637,10 +6647,31 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
         }
     },
   
-    calculate: function( context )
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function(context)
     {
     },
 
+    onStart:function(context)
+    {
+      var signalId = this.attr("userData.signalId")
+      if(context.signalPorts && context.signalPorts[signalId]){
+          this.getHybridPort(0).getValue = function(){ 
+              if(context.signalPorts[signalId] instanceof draw2d.Port){
+                  return context.signalPorts[signalId].getValue()
+              }
+              else {
+                  return 0
+              }
+          }
+      }
+  },
+    
     getParameterSettings: function () {
         return [
             {
