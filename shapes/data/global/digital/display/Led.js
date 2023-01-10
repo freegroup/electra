@@ -75,11 +75,6 @@ digital_display_Led = digital_display_Led.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-        
-        this.on("added",()=>{
-            var port = this.getInputPort(0);
-            this.layerAttr("circle",{fill: port.getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        });
     },
 
     onStart: function(context)
