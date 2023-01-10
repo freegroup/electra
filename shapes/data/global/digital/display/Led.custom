@@ -14,7 +14,9 @@ digital_display_Led = digital_display_Led.extend({
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
+        // automatic stored by the framework
         this.value = false;
+        
         this.on("added",(emitter, event)=>{
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
         });
@@ -31,7 +33,6 @@ digital_display_Led = digital_display_Led.extend({
         var port = this.getInputPort(0);
         if(port.hasChangedValue()){
             this.value = port.getBooleanValue()
-            console.log(this.value)
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
         }
     }
