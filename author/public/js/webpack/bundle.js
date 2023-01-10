@@ -29983,7 +29983,6 @@ function setup(md, options) {
     options = defaults;
   }
   var useKeyword = options.useKeyword;
-  console.log(useKeyword);
 
 
   //var options = assign({}, defaults, options);
@@ -30006,8 +30005,6 @@ function setup(md, options) {
 
   md.renderer.rules.code_inline = function(tokens, idx, options, env, self) {
     var token = tokens[idx];
-
-    console.log(useKeyword);
 
     if(!useKeyword) {
       console.log("1");

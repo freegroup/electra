@@ -1,6 +1,7 @@
 import Userinfo from "../../common/js/Userinfo"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
+import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import Palette from "./Palette"
 import View from "./View"
@@ -123,8 +124,7 @@ class Application {
             }
             $(guide.screen).click()
             checkElement("#paletteElementsScroll").then(() => {
-              let anno = new Anno(guide.steps)
-              anno.show()
+              new Anno(guide.steps).show()
             })
           })
           .catch(error => {
@@ -133,7 +133,7 @@ class Application {
         return content
       })
       .catch (exc => {
-        console.log(exc)
+        notFoundDialog.show(name)
       })
   }
 
