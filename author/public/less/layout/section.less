@@ -74,7 +74,6 @@
         h2 {
           font-weight: 300;
         }
-
       }
 
       &[data-type='brain']{
@@ -86,17 +85,21 @@
       &[data-type='spacer']{
         position: relative;
         height:36px;
+        position: relative;
+        height: 36px;
         text-align: center;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+
         .material-button{
           visibility:hidden;
-          &::before{
-            padding-right:5px;
-          }
         }
       }
-
     }
-
   }
   .activeSection {
     position:relative;
