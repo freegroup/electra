@@ -76,6 +76,7 @@ digital_display_Led = digital_display_Led.extend({
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
+        this.value = false;
         this.on("added",(emitter, event)=>{
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
         });
