@@ -1,4 +1,4 @@
-@buttonSize: 18;
+@buttonSize: 26;
 
 #simulationStartStop {
   z-index: 1000;
@@ -44,7 +44,7 @@
 
   &.play{
     &>span {
-      transform: translate(unit( (@buttonSize/2) , px), 0) scale(1.6, 1);
+      transform: translate(0px, 4px) scale(1.6, 1);
 
       &>span {
         transform: rotate(-45deg) translate(unit( (-@buttonSize/2) , px), unit( (-@buttonSize/2) , px)) scale(1, 1);
@@ -53,8 +53,8 @@
   }
 
   &.pause{
-
     &>span {
+      transform: translate(-12px, 4px) scale(1, 1);
 
       &>span {
         transform: scale(0.4, 1) translate(unit( (-@buttonSize/3*2) , px), 0);

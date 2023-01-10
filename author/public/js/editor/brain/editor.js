@@ -19,13 +19,13 @@ export default class Editor {
           </div>
        `)
     menu.prepend(`
-          <a href="#" class="morph_btn play" id="simulationStartStop">
+          <div class="morph_btn play material-button" id="simulationStartStop">
             <span>
               <span class="s1"></span>
               <span class="s2"></span>
               <span class="s3"></span>
             </span>
-          </a>
+          </div>
     ` )
 
     $("#draw2dCanvasWrapper").append(menu)

@@ -25,7 +25,7 @@ body.light {
             font-size: 55px;
             white-space: nowrap;
             font-weight: 200;
-            letter-spacing: 3px; 
+            letter-spacing: 3px;
         }
 
         li {
@@ -83,42 +83,46 @@ body.light {
 
     .welcomeMessage {
 
-        background: url(../images/background.png) no-repeat ;
+        background: url(../images/background.png) no-repeat;
         background-position: center top;
         background-size: 100% 50%;
-        img{
-          background-color: white;
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-        }
-        .teaser {
-          background-color: white;
-          box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-          h2 {
-            color: #C71D3D;
-          }
-        }
-        button{
-          background-color: #C71D3D;
-          color: white;
-        }
-      }
-      
 
-    .toolbar{
+        img {
+            background-color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        .teaser {
+            background-color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+            h2 {
+                color: #C71D3D;
+            }
+        }
+
+        button {
+            background-color: #C71D3D;
+            color: white;
+        }
+    }
+
+
+    .toolbar {
         background-color: rgba(252, 202, 202, 0.42);
     }
-      
-    .shadow{
-        border:1px solid #C71D3D;
-        box-shadow: 0 5px 15px rgba(0,0,0,.2);
-        background-color:white;
-      }
-      
-      .spinner:before {
-        border-color:#ccc;
+
+    .shadow {
+        border: 1px solid #C71D3D;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
+        background-color: white;
+    }
+
+    .spinner:before {
+        border-color: #ccc;
         border-top-color: #07d;
-      }
-      
+    }
+
     .paletteContainer {
         background-color: white;
         border-right-color: rgba(74, 74, 74, 0.5);
@@ -153,6 +157,7 @@ body.light {
                 &:hover {
                     background-color: rgba(248, 248, 248, 0.6);
                 }
+
                 .page_action {
                     &:hover {
                         border-color: rgba(0, 0, 0, 0.4);
@@ -215,11 +220,12 @@ body.light {
                         color: #C71D3D;
                     }
                 }
-                &[data-type='spacer']{
-                    .material-button{
-                      color:white;
+
+                &[data-type='spacer'] {
+                    .material-button {
+                        color: white;
                     }
-                  }
+                }
             }
 
         }
@@ -229,6 +235,16 @@ body.light {
         }
     }
 
+    #draw2dCanvasWrapper {
+        .tinyFlyoverMenu {
+          div{
+            min-width: 25px;
+            text-align: center;
+          }
+        }
+      
+    }
+      
     #simulationStartStop {
         color: #9e9e9e;
 
@@ -238,20 +254,16 @@ body.light {
 
         &>span {
             &>span {
-                background-color: #C71D3D;
+                background-color: white;
             }
         }
 
         &.play {
             &>span {
                 &>span {
-                    background-color: #C71D3D;
+                    background-color: white;
                 }
             }
         }
     }
-
-
-
-
 }

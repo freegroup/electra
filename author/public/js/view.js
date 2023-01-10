@@ -360,8 +360,8 @@ export default class View {
     let menu = $(".activeSection .tinyFlyoverMenu")
 
     menu.html(`
-          <div data-id="${section.id}" id="sectionMenuCommitEdit" >&#9745;</div>
-          <div data-id="${section.id}" id="sectionMenuCancelEdit" >&#8855;</div>
+          <div data-id="${section.id}" id="sectionMenuCommitEdit" class="material-button">Save</div>
+          <div data-id="${section.id}" id="sectionMenuCancelEdit" class="material-button">Cancel</div>
         `)
     switch(type){
       case 'markdown':
