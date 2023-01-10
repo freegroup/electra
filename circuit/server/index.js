@@ -18,6 +18,7 @@ function die(msg){
 }
 
 const PORT = process.env.PORT_CIRCUIT || die("missing env variable PORT_CIRCUIT");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 
 // Create Express Server
@@ -29,6 +30,6 @@ app.use('/circuit', express.static(scriptPath+'/../public'));
 // "localhost" => Service ist nicht von ausserhalb aufrufbar.
 // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
 // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
-app.listen(PORT, "localhost", () => {
-    console.log(`Starting /circuit at http://localhost:${PORT}`);
+app.listen(PORT, LOCALHOST, () => {
+    console.log(`Starting /circuit at http://${LOCALHOST}:${PORT}`);
 });

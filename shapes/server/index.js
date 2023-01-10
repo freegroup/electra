@@ -32,6 +32,7 @@ function die(msg){
 }
 
 const PORT = process.env.PORT_SHAPES  || die("missing env variable PORT_SHAPES");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 // Tell the bodyparser middleware to accept more data
 //
@@ -57,18 +58,18 @@ async function  runServer() {
   // "localhost" => Service ist nicht von ausserhalb aufrufbar.
   // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
   // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
-  http.listen(PORT, "localhost", function () {
-    console.log(`Starting /shapes at http://localhost:${PORT}/shapes`);
+  http.listen(PORT, LOCALHOST, function () {
+    console.log(`Starting /shapes at http://${LOCALHOST}:${PORT}/shapes`);
   });
 }
 
 generator.generateShapeIndex(conf.absoluteGlobalDataDirectory(),"global")
 const { readdirSync } = require('fs')
 
-const dirs =  readdirSync(conf.absoluteUserDataDirectory(), { withFileTypes: true })
+const dirs =  readdirSync(conf.absoluteUserDataRootDirectory(), { withFileTypes: true })
                 .filter(dirent => dirent.isDirectory())
                 .map(dirent => dirent.name)
 dirs.forEach( (dir) => {
-  generator.generateShapeIndex(path.join(conf.absoluteUserDataDirectory(), dir, "/"), "user")
+  generator.generateShapeIndex(path.join(conf.absoluteUserDataRootDirectory(), dir, "/"), "user")
 })
 runServer()

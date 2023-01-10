@@ -19,6 +19,8 @@ function die(msg){
 
 const app = express();
 const PORT = process.env.PORT_USERINFO || die("missing env variable PORT_USERINFO");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
+
 
 app.get('*', (req, res) => {
   const role = req.headers['x-role'];
@@ -39,6 +41,6 @@ app.get('*', (req, res) => {
   });
 });
 
-app.listen(PORT, "localhost", () => {
-  console.log(`Starting /userinfo on http://localhost:${PORT}`);
+app.listen(PORT, LOCALHOST, () => {
+  console.log(`Starting /userinfo on http://${LOCALHOST}:${PORT}`);
 });

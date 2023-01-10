@@ -19,6 +19,7 @@ function die(msg){
 }
 
 const PORT = process.env.PORT_PERMISSIONS || die("missing env variable PORT_PERMISSIONS");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 const app = express();
 
@@ -63,6 +64,6 @@ app.get('/permissions', (req, res) => {
 // "localhost" => Service ist nicht von ausserhalb aufrufbar.
 // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
 // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
-app.listen(PORT, "localhost", () => {
-    console.log(`Starting /permissions at http://localhost:${PORT}/permissions`);
+app.listen(PORT, LOCALHOST, () => {
+    console.log(`Starting /permissions at http://${LOCALHOST}:${PORT}/permissions`);
 });

@@ -1,34 +1,30 @@
 const path = require("path")
 
+const GITHUB_DATADIR= process.env.GITHUB_DATADIR_SHAPES ||  die("Environment Varialbe GITHUB_DATADIR_SHAPES missing")
+const LOCAL_DATADIR = path.resolve(__dirname+ "/../data")
+
 module.exports = {
 
-    absoluteRootDataDirectory: () => {
-        let rootPath = process.env.DATA_DIR || (__dirname + "/../data/")
-        return path.normalize(rootPath)
+    absoluteGlobalDataDirectory: () => {
+        return path.normalize(`${LOCAL_DATADIR}/global/`)
     },
 
-    absoluteGlobalDataDirectory: () => {
-        let rootPath = process.env.DATA_DIR || (__dirname + "/../data/")
-        return path.normalize(`${rootPath}global/`)
+    absoluteUserDataRootDirectory: (  ) => {
+        return path.normalize(`${LOCAL_DATADIR}/user/`)
     },
 
     absoluteUserDataDirectory: ( req ) => {
-        if(req){
-            let hash = req.get("x-hash")
-            let rootPath = process.env.DATA_DIR || (__dirname + "/../data/")
-            return path.normalize(`${rootPath}user/${hash}/`)
-        }
-        let rootPath = process.env.DATA_DIR || (__dirname + "/../data/")
-        return path.normalize(`${rootPath}user/`)
+        let hash = req.get("x-hash")
+        return path.normalize(`${LOCAL_DATADIR}/user/${hash}/`)
     },
 
     githubGlobalDataDirectory: () => {
-        return "data/global/"
+        return `${GITHUB_DATADIR}/global/`
     },
 
     githubUserDataDirectory: ( req ) => {
         let hash = req.get("x-hash")
-        return path.normalize(`data/user/${hash}/`)
+        return path.normalize(`${GITHUB_DATADIR}/user/${hash}/`)
     }
 }
 

@@ -26,6 +26,7 @@ const die = require("./utils/die")
 console.log("serving data from :", conf.absoluteGlobalDataDirectory())
 
 const PORT = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 
 // Tell the bodyparser middleware to accept more data
@@ -54,8 +55,8 @@ async function  runServer() {
   // "localhost" => Service ist nicht von ausserhalb aufrufbar.
   // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
   // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
-  http.listen(PORT, "localhost", function () {
-    console.log('Running /sheets on http://localhost:'+PORT+'/                    ');
+  http.listen(PORT, LOCALHOST, function () {
+    console.log(`Running /sheets on http://${LOCALHOST}:${PORT}/`);
   });
 }
 

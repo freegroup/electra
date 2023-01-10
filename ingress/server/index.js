@@ -32,7 +32,6 @@ const app = express();
 
 
 // Configuration
-const HOST = "localhost";
 const PORT = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
 const PORT_COMMON = process.env.PORT_COMMON || die("missing env variable PORT_COMMON");
 const PORT_HOME = process.env.PORT_HOME || die("missing env variable PORT_HOME");
@@ -44,8 +43,9 @@ const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable POR
 const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
-const API_SERVICE_URL = "http://localhost";
+const API_SERVICE_URL = "http://"+LOCALHOST;
 
 function ensureLocalhost(req, res, next) {
 	var remote = req.ip || req.connection.remoteAddress
@@ -242,7 +242,7 @@ try {
     });
     
     http.listen(PORT, () => {
-        console.log(`Starting Ingress at http://${HOST}:${PORT}`);
+        console.log(`Starting Ingress at http://localhost:${PORT}`);
     });
 }
 catch(exc){
@@ -258,7 +258,7 @@ try{
     const https = require('https').Server(credentials, app);
     const io = require('./websocket').connect(https, {path: '/socket.io'})
     https.listen(8443, () => {
-        console.log(`Starting Ingress at http://${HOST}:8443`);
+        console.log(`Starting Ingress at http://localhost:8443`);
     });
 }
 catch(exc){

@@ -24,6 +24,7 @@ console.log("serving data from :", conf.absoluteGlobalDataDirectory())
 
 
 const PORT = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 
 // Tell the bodyparser middleware to accept more data
@@ -51,8 +52,8 @@ async function  runServer() {
   // "localhost" => Service ist nicht von ausserhalb aufrufbar.
   // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
   // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
-  http.listen(PORT, "localhost", function () {
-    console.log(`Starting /brainbs at http://localhost:${PORT}/brains`);
+  http.listen(PORT, LOCALHOST, function () {
+    console.log(`Starting /brainbs at http://${LOCALHOST}:${PORT}/brains`);
   });
 }
 
