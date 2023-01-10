@@ -11,24 +11,58 @@ digital_buttons_HighLowArray = digital_buttons_HighLowArray.extend({
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
 
-
+        this.bitCount = 8;
+        
         this.setResizeable(false);
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
-        this.on("click",function(emitter, event){
+        this.on("click",(emitter, event) => {
             var h = emitter.getHeight();
-            var modh = h/8;
+            var modh = h/this.bitCount;
             var index = (event.relY/modh)|0;
             var port = emitter.getOutputPort(index);
             port.setValue(!port.getBooleanValue());
-            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":null});
+            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+        });
+        this.on("added",(emitter, event)=>{
+            this.getOutputPorts().each( (index, port) => {
+                this.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+            })
         });
     },
     
     calculate: function()
     {
-    
-        
+    },
+
+  /**
+   * @method
+   * Return an objects with all important attributes for XML or JSON serialization
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes: function () {
+    return {
+      ...this._super(), 
+      state: this.getOutputPorts().asArray().map( p => p.getValue() )
     }
+  },
+
+  /**
+   * @method
+   * Read all attributes from the serialized properties and transfer them into the shape.
+   *
+   * @param {Object} memento
+   * @returns
+   */
+  setPersistentAttributes: function (memento) {
+    this._super(memento)
+
+    // and add all children of the JSON document.
+    //
+    $.each(memento.state,  (i, value) => {
+      this.getOutputPort(i)?.setValue(value)
+    })
+  }
 
 });

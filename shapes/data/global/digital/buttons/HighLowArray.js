@@ -7,7 +7,7 @@
 var digital_buttons_HighLowArray = CircuitFigure.extend({
 
    NAME: "digital_buttons_HighLowArray",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -84,42 +84,42 @@ var digital_buttons_HighLowArray = CircuitFigure.extend({
        
        // rect01
        shape = this.canvas.paper.path('M20 20L0 20L0 0L20 0Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect01");
        
        // rect02
        shape = this.canvas.paper.path('M20 40L0 40L0 20L20 20Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect02");
        
        // rect03
        shape = this.canvas.paper.path('M20 60L0 60L0 40L20 40Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect03");
        
        // rect04
        shape = this.canvas.paper.path('M20 80L0 80L0 60L20 60Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect04");
        
        // rect05
        shape = this.canvas.paper.path('M20 100L0 100L0 80L20 80Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect05");
        
        // rect06
        shape = this.canvas.paper.path('M20 120L0 120L0 100L20 100Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect06");
        
        // rect07
        shape = this.canvas.paper.path('M20 140L0 140L0 120L20 120Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect07");
        
        // rect08
        shape = this.canvas.paper.path('M20 160L0 160L0 140L20 140Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect08");
        
 
@@ -140,24 +140,58 @@ digital_buttons_HighLowArray = digital_buttons_HighLowArray.extend({
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
 
-
+        this.bitCount = 8;
+        
         this.setResizeable(false);
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
-        this.on("click",function(emitter, event){
+        this.on("click",(emitter, event) => {
             var h = emitter.getHeight();
-            var modh = h/8;
+            var modh = h/this.bitCount;
             var index = (event.relY/modh)|0;
             var port = emitter.getOutputPort(index);
             port.setValue(!port.getBooleanValue());
-            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":null});
+            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+        });
+        this.on("added",(emitter, event)=>{
+            this.getOutputPorts().each( (index, port) => {
+                this.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+            })
         });
     },
     
     calculate: function()
     {
-    
-        
+    },
+
+  /**
+   * @method
+   * Return an objects with all important attributes for XML or JSON serialization
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes: function () {
+    return {
+      ...this._super(), 
+      state: this.getOutputPorts().asArray().map( p => p.getValue() )
     }
+  },
+
+  /**
+   * @method
+   * Read all attributes from the serialized properties and transfer them into the shape.
+   *
+   * @param {Object} memento
+   * @returns
+   */
+  setPersistentAttributes: function (memento) {
+    this._super(memento)
+
+    // and add all children of the JSON document.
+    //
+    $.each(memento.state,  (i, value) => {
+      this.getOutputPort(i)?.setValue(value)
+    })
+  }
 
 });
