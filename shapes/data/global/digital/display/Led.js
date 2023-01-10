@@ -7,7 +7,7 @@
 var digital_display_Led = CircuitFigure.extend({
 
    NAME: "digital_display_Led",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -47,12 +47,12 @@ var digital_display_Led = CircuitFigure.extend({
        
        // Line
        shape = this.canvas.paper.path('M5.522100000000137 5.682400000001508L15.138100000001941,16.496800000000803L24.754100000001927,27.31119999999919');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","Line");
        
        // Line
        shape = this.canvas.paper.path('M25.94430000000102 5.062700000001314L5.283199999999852,27.963700000000244');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","Line");
        
 
@@ -75,6 +75,12 @@ digital_display_Led = digital_display_Led.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    onStart: function(context)
+    {
+        var port = this.getInputPort(0);
+        this.layerAttr("circle",{fill: port.getBooleanValue()?"#C21B7A":"#f0f0f0"});
     },
     
     calculate: function()
