@@ -98,13 +98,15 @@ module.exports = {
           "let pkg='" + pkg + "';\n" +
           code;
 
-        let browser = await puppeteer.launch({ headless: true, args: [
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--disable-setuid-sandbox",
-            "--no-sandbox",
-          ]})
-        // let browser = await puppeteer.launch( DEBUGGING ? { headless: false, devtools: true,slowMo: 250}: {})
+
+        let browser = await puppeteer.launch( DEBUGGING ? 
+          { headless: false, devtools: true,slowMo: 250}: 
+          { headless: true, args: [
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-setuid-sandbox",
+          "--no-sandbox",
+        ]})
   
         const page = await browser.newPage()
        

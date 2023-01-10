@@ -1,5 +1,6 @@
 //app.fileNew();
 app.view.clear()
+app.view.hideWelcomeMessage();
 var reader = new draw2d.io.json.Reader();
 reader.unmarshal(app.view,json);
 
@@ -20,7 +21,7 @@ try {
             throw exc;
         }
         var splash = $(
-            '<div class="overlay-scale">' +
+            '<div class="overlay">' +
             '<div id="test_canvas" >' +
             '</div>' +
             '<div>');
@@ -28,7 +29,7 @@ try {
         // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfügen
         // wenn das canvas nicht sichtbar ist. In diesen Fall mach ich das Canvas "leicht" sichtbar und raphael ist
         // zufrieden.
-        $("body").append(splash);
+        $("body").prepend(splash);
         var canvas = new draw2d.Canvas("test_canvas");
         var test = eval("new "+pkg+"()");
         canvas.add(test, 400, 60);
@@ -55,7 +56,6 @@ try {
 
         new draw2d.io.png.Writer().marshal(canvas, function (imageDataUrl, base64) {
             img = base64;
-            splash.remove();
         }, canvas.getBoundingBox().scale(10, 10));
     });
 }
