@@ -1,3 +1,4 @@
+const die = require("./utils/die")
 const path = require("path")
 
 const GITHUB_DATADIR= process.env.GITHUB_DATADIR_SHAPES ||  die("Environment Varialbe GITHUB_DATADIR_SHAPES missing")

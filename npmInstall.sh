@@ -1,28 +1,39 @@
 set -x
 
-(cd ./author && npm install --force )  
+(cd ./author && rm -rf ./node-modules )  
+(cd ./author && npm install )  
 (cd ./author && npm run build )
 
-(cd ./brains && npm install --force )
+(cd ./brains && rm -rf ./node-modules )  
+(cd ./brains && npm install )
 
-(cd ./circuit && npm install --force )
+(cd ./circuit && rm -rf node-modules )  
+(cd ./circuit && npm install )
 (cd ./circuit && npm run build)
 
-(cd ./common && npm install --force )
+(cd ./common && rm -rf node-modules )  
+(cd ./common && npm install )
 
-(cd ./designer && npm install --force )
+(cd ./designer && rm -rf node-modules )  
+(cd ./designer && npm install )
 (cd ./designer && npm run build)
 
-(cd ./home && npm install --force )
+(cd ./home && rm -rf node-modules )  
+(cd ./home && npm install )
 (cd ./home && npm run build)
 
-(cd ./ingress && npm install --force )
+(cd ./ingress && rm -rf node-modules )  
+(cd ./ingress && npm install )
 
-(cd ./permissions && npm install --force )
+(cd ./permissions && rm -rf node-modules )  
+(cd ./permissions && npm install )
 
-(cd ./shapes && npm install --force )
+(cd ./shapes && rm -rf node-modules )  
+(cd ./shapes && npm install )
 
-(cd ./sheets && npm install --force )
+(cd ./sheets && rm -rf node-modules )  
+(cd ./sheets && npm install )
 
-(cd ./userinfo && npm install --force )
+(cd ./userinfo && rm -rf node-modules )  
+(cd ./userinfo && npm install )
 
