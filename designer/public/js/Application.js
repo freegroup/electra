@@ -3,6 +3,7 @@ import Userinfo from "../../common/js/Userinfo"
 import AuthorPage from "../../common/js/AuthorPage"
 import AppSwitch from "../../common/js/AppSwitch"
 import toast from "../../common/js/toast"
+import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import View from "./View"
 import Toolbar from "./Toolbar"
@@ -244,6 +245,9 @@ class Application {
         this.currentFile = { name, scope}
 
         return content
+      })
+      .catch( error => {
+        notFoundDialog.show(name)
       })
   }
 
