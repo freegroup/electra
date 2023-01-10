@@ -331,8 +331,8 @@ export default class View {
         <div class='tinyFlyoverMenu'>
           <div data-id="${section.id}" id="sectionMenuUp"     class='fa fa-caret-square-o-up' ></div>
           <div data-id="${section.id}" id="sectionMenuDown"   class='fa fa-caret-square-o-down' ></div>
-          <div data-id="${section.id}" id="sectionMenuEdit"   class='fa fa-edit' ></div>
-          <div data-id="${section.id}" id="sectionMenuDelete" class='fa fa-trash-o' ></div>
+          <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
+          <div data-id="${section.id}" id="sectionMenuDelete" >&#8854;</div>
         </div>`)
   }
 

@@ -65,15 +65,20 @@
 
   #paletteElementsScroll{
     .pageElement{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
       padding:10px;
-      text-align: left;
       cursor:pointer;
       border-left-width:2px;
       border-left-style:solid;
       border-bottom-width: 1px;
       border-bottom-style: solid;
       position: relative;
-      padding-right: 45px;
+      .spacer {
+        flex-grow: 1;
+      }
       &.selected{
         border-left-width:2px;
         border-left-style:solid;
@@ -83,26 +88,10 @@
           visibility: initial;
         }
       }
-      .fa{
-        padding:4px;
-        border-radius: 2px;
-        border-width:1px;
-        border-style:solid;
-        &:hover{
-          border-width:1px;
-          border-style:solid;
-        }
-      }
       .page_action {
-        position: absolute;
-        top: 10px;
         visibility: hidden;
-      }
-      .page_delete{
-        right: 0px;
-      }
-      .page_edit_name{
-        right: 20px;
+        font-size:20px;
+        min-width:25px;
       }
     }
   }

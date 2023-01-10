@@ -81,13 +81,10 @@ export default class Palette {
         pages.forEach((page) => {
           this.html.append(`
           <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" >
-            ${page.name}
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page" class="page_action page_delete pull-right" >
-                <span class="fa fa-trash"/>
-            </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action page_edit_name pull-right" >
-                <span class="fa fa-edit"/>
-            </span>
+            <span>${page.name}</span>
+            <span class="spacer"></span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action page_edit_name" >&#9998; </span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page" class="page_action page_delete" >&#8854;</span>
           </div>`)
         }, true)
       } else {
@@ -95,7 +92,7 @@ export default class Palette {
         pages.forEach((page) => {
           this.html.append(`
           <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" >
-            ${page.name}
+            <span>${page.name}</span>
           </div>`)
         }, true)
       }
