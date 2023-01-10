@@ -75,6 +75,10 @@ digital_display_Led = digital_display_Led.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.on("added",(emitter, event)=>{
+            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+        });
     },
 
     onStart: function(context)
@@ -87,7 +91,8 @@ digital_display_Led = digital_display_Led.extend({
     {
         var port = this.getInputPort(0);
         if(port.hasChangedValue()){
-            this.layerAttr("circle",{fill: port.getBooleanValue()?"#C21B7A":"#f0f0f0"});
+            this.value = port.getBooleanValue()
+            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
         }
     }
 });
