@@ -31,6 +31,7 @@ digital_display_Led = digital_display_Led.extend({
         var port = this.getInputPort(0);
         if(port.hasChangedValue()){
             this.value = port.getBooleanValue()
+            console.log(this.value)
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
         }
     }
