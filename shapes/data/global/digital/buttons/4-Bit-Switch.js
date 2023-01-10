@@ -60,22 +60,22 @@ var digital_buttons_4_Bit_Switch = CircuitFigure.extend({
        
        // rect01
        shape = this.canvas.paper.path('M20 20L0 20L0 0L20 0Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect01");
        
        // rect02
        shape = this.canvas.paper.path('M20 40L0 40L0 20L20 20Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect02");
        
        // rect03
        shape = this.canvas.paper.path('M20 60L0 60L0 40L20 40Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect03");
        
        // rect04
        shape = this.canvas.paper.path('M20 80L0 80L0 60L20 60Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","rect04");
        
 
@@ -113,8 +113,35 @@ digital_buttons_4_Bit_Switch = digital_buttons_4_Bit_Switch.extend({
     
     calculate: function()
     {
-    
-        
-    }
+    },
 
+  /**
+   * @method
+   * Return an objects with all important attributes for XML or JSON serialization
+   *
+   * @returns {Object}
+   */
+  getPersistentAttributes: function () {
+    return {
+      ...this._super(), 
+      state: this.getOutputPorts().asArray().map( p => p.getValue() )
+    }
+  },
+
+  /**
+   * @method
+   * Read all attributes from the serialized properties and transfer them into the shape.
+   *
+   * @param {Object} memento
+   * @returns
+   */
+  setPersistentAttributes: function (memento) {
+    this._super(memento)
+
+    // and add all children of the JSON document.
+    //
+    $.each(memento.state,  (i, value) => {
+      this.getOutputPort(i)?.setValue(value)
+    })
+  }
 });
