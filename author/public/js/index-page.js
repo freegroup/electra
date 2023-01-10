@@ -1,4 +1,4 @@
-import "font-awesome/css/font-awesome.css"
+
 import "../less/index-page.less"
 const axios = require("axios")
 const md = require('markdown-it')()

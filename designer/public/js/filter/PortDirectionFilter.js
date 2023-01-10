@@ -11,7 +11,8 @@ export default shape_designer.filter.PortDirectionFilter = class PortDirectionFi
     var dir = figure.getConnectionDirection()
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '     Connection Direction' +
+      '     <span>Connection Direction</span>' +
+      '    <span class="spacer"></span>' +
       '</div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

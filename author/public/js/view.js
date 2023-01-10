@@ -304,9 +304,9 @@ export default class View {
     this.html.find(".sections").append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
-            <div data-index="${index}" id="sectionMenuInsertMarkdown"  class='material-button' ><i class="fa fa-plus"></i> Text</div>
-            <div data-index="${index}" id="sectionMenuInsertBrain"     class='material-button' ><i class="fa fa-plus"></i> Diagram</div>
-            <div data-index="${index}" id="sectionMenuInsertImage"     class='material-button' ><i class="fa fa-plus"></i> Picture</div>
+            <div data-index="${index}" id="sectionMenuInsertMarkdown"  class='material-button' >&#8853; Text</div>
+            <div data-index="${index}" id="sectionMenuInsertBrain"     class='material-button' >&#8853; Diagram</div>
+            <div data-index="${index}" id="sectionMenuInsertImage"     class='material-button' >&#8853; Picture</div>
           </div>
         </div>
       `)
@@ -329,10 +329,10 @@ export default class View {
     this.activeSection.addClass('activeSection')
     $(".sections .activeSection").prepend(`
         <div class='tinyFlyoverMenu'>
-          <div data-id="${section.id}" id="sectionMenuUp"     class='fa fa-caret-square-o-up' ></div>
-          <div data-id="${section.id}" id="sectionMenuDown"   class='fa fa-caret-square-o-down' ></div>
+          <div data-id="${section.id}" id="sectionMenuUp"     >&#8657;</div>
+          <div data-id="${section.id}" id="sectionMenuDown"   >&#8659</div>
           <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
-          <div data-id="${section.id}" id="sectionMenuDelete" >&#8854;</div>
+          <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
         </div>`)
   }
 
@@ -360,8 +360,8 @@ export default class View {
     let menu = $(".activeSection .tinyFlyoverMenu")
 
     menu.html(`
-          <div data-id="${section.id}" id="sectionMenuCommitEdit" class='fa fa-check-square-o' ></div>
-          <div data-id="${section.id}" id="sectionMenuCancelEdit" class='fa fa-minus-square-o' ></div>
+          <div data-id="${section.id}" id="sectionMenuCommitEdit" >&#9745;</div>
+          <div data-id="${section.id}" id="sectionMenuCancelEdit" >&#8855;</div>
         `)
     switch(type){
       case 'markdown':

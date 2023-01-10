@@ -1,6 +1,5 @@
 import axios from "axios"
 import "../less/index.less"
-import "font-awesome/css/font-awesome.css"
 import conf from "./configuration"
 
 require('js-treeview/dist/treeview.min.css')

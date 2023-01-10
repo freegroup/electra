@@ -18,8 +18,9 @@ export default shape_designer.filter.TextLinearGradientFilter = class TextLinear
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '     Linear Gradient' +
-      '    <span id="button_remove_' + this.cssScope + '"><i class="pull-right">&#8854;</i></span>' +
+      '    <span>Linear Gradient</span>' +
+      '    <span class="spacer"></span>' +
+      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
       '</div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

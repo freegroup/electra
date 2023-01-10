@@ -13,8 +13,9 @@ export default shape_designer.filter.OutlineStrokeFilter = class OutlineStrokeFi
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '     Outline Stroke' +
-      '    <span id="button_remove_' + this.cssScope + '"><i class="pull-right">&#8854;</i></span>' +
+      '    <span>Outline Stroke</span>' +
+      '    <span class="spacer"></span>' +
+      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
       '</div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

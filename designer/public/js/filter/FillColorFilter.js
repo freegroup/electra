@@ -12,8 +12,9 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    Color Fill' +
-      '    <span id="button_remove_' + this.cssScope + '"><i class="pull-right">&#8854;</i></span>' +
+      '    <span>Color Fill</span>' +
+      '    <span class="spacer"></span>' +
+      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
       ' </div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

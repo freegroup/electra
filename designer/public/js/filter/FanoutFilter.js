@@ -10,8 +10,9 @@ export default shape_designer.filter.FanoutFilter = class FanoutFilter extends F
     $parent.append(` 
       <div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-           Maximal fan out
-      </div>
+           <span>Maximal fan out</span>
+           <span class="spacer"></span>
+           </div>
 
        <div class="panel-body collapse in" id="${this.cssScope }_panel">
          <div class="form-group">

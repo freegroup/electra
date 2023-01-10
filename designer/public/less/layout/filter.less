@@ -107,6 +107,11 @@
     }
 
     .filter-heading{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+
       font-size: 12px;
       padding-right:10px !important;
       padding-top:1px !important;
@@ -120,6 +125,9 @@
       font-weight:300;
       .icon {
         width: 15px;
+      }
+      .spacer{
+        flex-grow: 1;
       }
     }
 

@@ -84,7 +84,7 @@ export default class Palette {
             <span>${page.name}</span>
             <span class="spacer"></span>
             <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action page_edit_name" >&#9998; </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page" class="page_action page_delete" >&#8854;</span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page" class="page_action page_delete" >&#8855;</span>
           </div>`)
         }, true)
       } else {

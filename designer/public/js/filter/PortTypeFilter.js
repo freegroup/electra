@@ -11,7 +11,8 @@ export default shape_designer.filter.PortTypeFilter = class PortTypeFilter exten
     let type = figure.getInputType()
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '     Port Type' +
+      '     <span>Port Type</span>' +
+      '    <span class="spacer"></span>' +
       '</div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

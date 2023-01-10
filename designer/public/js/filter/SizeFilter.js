@@ -10,7 +10,8 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">' +
-      '     Size' +
+      '     <span>Size</span>' +
+      '    <span class="spacer"></span>' +
       ' </div>' +
       ' <div class="panel-body  collapse in" id="size_width_panel">' +
       '   <div class="form-group">' +

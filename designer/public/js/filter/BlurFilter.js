@@ -10,8 +10,9 @@ export default shape_designer.filter.BlurFilter = class BlurFilter extends Filte
   insertPane(figure, $parent) {
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '     Blur' +
-      '    <span id="button_remove_' + this.cssScope + '"><i class="pull-right">&#8854;</i></span>' +
+      '    <span>Blur</span>' +
+      '    <span class="spacer"></span>' +
+      '    <span id="button_remove_' + this.cssScope + '">&#8855;/span>' +
       '</div>' +
 
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +

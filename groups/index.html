@@ -149,21 +149,21 @@
         <h3>Tutor: <span>YOU</span></h3>
       </div>
       <div class="groupContent">
-        <h3>Members  <i class="inviteGroupMember fa fa-plus-square-o"></i></h3>
+        <h3>Members  <span class="inviteGroupMember">&#8862;</span></h3>
         <table>
         {{#record.members}}
             <tr>
               <td>{{displayName}}</td>
-              <td><i class="deleteGroupMember">&#8854;</i></td>
+              <td><span class="deleteGroupMember">&#8855;</span></td>
             </tr>
         {{/record.members}}
         </table>
-        <h3>Assignments  <i class="addGroupAssignment fa fa-plus-square-o"></i></h3>
+        <h3>Assignments  <span class="addGroupAssignment">&#8862;</span></h3>
         <table>
         {{#record.assignments}}
             <tr>
               <td><a href="../author?shared={{shared}}" target="author">{{name}}</a></td>
-              <td><i class="deleteGroupAssignment" data-id="{{id}}">&#8854;</i></td>
+              <td><span class="deleteGroupAssignment" data-id="{{id}}">&#8855;</span></td>
             </tr>
         {{/record.assignments}}
         </table>

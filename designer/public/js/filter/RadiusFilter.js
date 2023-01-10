@@ -10,8 +10,9 @@ export default shape_designer.filter.RadiusFilter = class RadiusFilter extends F
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    Corner Radius' +
-      '    <span id="button_remove_' + this.cssScope + '"><i class="pull-right">&#8854;</i></span>' +
+      '    <span>Corner Radius</span>' +
+      '    <span class="spacer"></span>' +
+      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
       '</div>' +
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
       '   <div class="form-group">' +

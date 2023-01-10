@@ -10,7 +10,8 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
 
     $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
       ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">' +
-      '     Position' +
+      '     <span>Position</span>' +
+      '    <span class="spacer"></span>' +
       '</div>' +
       ' <div class="panel-body  collapse in" id="position_width_panel">' +
       '   <div class="form-group">' +
