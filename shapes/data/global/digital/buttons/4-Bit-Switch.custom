@@ -24,6 +24,11 @@ digital_buttons_4_Bit_Switch = digital_buttons_4_Bit_Switch.extend({
             port.setValue(!port.getBooleanValue());
             emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
         });
+        this.on("added",(emitter, event)=>{
+            this.getOutputPorts().each( (index, port) => {
+                this.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+            })
+        });
     },
     
     calculate: function()
