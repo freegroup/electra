@@ -124,7 +124,7 @@
             <div id="paletteFilter"></div>
           </div>
           <div id="paletteElementsScroll">
-            <div id="paletteElements" class="row">
+            <div id="paletteElements">
             </div>
             <div id="paletteElementsOverlay"></div>
           </div>
@@ -235,11 +235,9 @@
 
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}
-    <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="mix palette_item">
-      <div>
-          <img loading="lazy" data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
-          <div>{{displayName}}</div>
-      </div>
+    <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="palette_item">
+      <img loading="lazy" data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+      <div>{{displayName}}</div>
     </div>
 {{/shapes}}
 </script>
@@ -482,8 +480,6 @@
 <script src="../common/js/bootbox/bootbox.min.js"></script>
 <script src="../common/js/bootstrap-slider/bootstrap-slider.js"></script>
 <script src="../common/js/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-<script src="../common/js/shufflejs/jquery.shuffle.modernizr.min.js"></script>
-
 
 <script src="../common/js/draw2d.js"></script>
 <script src="../socket.io/socket.io.js"></script>

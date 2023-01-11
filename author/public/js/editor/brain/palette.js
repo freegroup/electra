@@ -112,22 +112,26 @@ export default class Palette {
     //
 
     new TreeView(tree, 'paletteFilter');
-    $("#paletteElements").shuffle()
+
     $(".tree-leaf-content").on("click", (event) => {
       try {
         $(".tree-leaf-content").removeClass("selected")
         let target = $(event.currentTarget)
         target.addClass("selected")
         let path = target.data("item").path.toLowerCase()
-        let $grid = $("#paletteElements")
+        let items = $("#paletteElements .palette_item")
 
-        $grid.shuffle('shuffle', function ($el, shuffle) {
-          return $el.data("dir").trim().toLowerCase()===path
+        items.each( (i, e) => {
+          e = $(e)
+          if(e.data("dir").trim().toLowerCase().startsWith(path)){
+            e.removeClass("hidden-item")
+          }
+          else{
+            e.addClass("hidden-item")
+          }
         })
-
         return false
-      }
-      catch(e){
+      } catch (e) {
         console.log(e)
       }
     })

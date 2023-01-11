@@ -110,12 +110,56 @@ body {
               &::-webkit-scrollbar-thumb {
                 background: #666;
               }
+
               #paletteElements {
                 position: absolute;
                 width: 100%;
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: flex-start;
+                gap:2px;
+                padding:2px;
+
+                .palette_item{
+                  width: unit( (@leftPaneWidth / 2 - 8 ) , px);
+                  height: unit( (@leftPaneWidth / 2 - 8) , px);
+                  border-width: 1px;
+                  border-style: solid;
+                  display: flex;
+                  justify-content: center;
+                  flex-direction: column;
+                  flex-wrap: nowrap;
+                  align-items: center;
+
+                  &.hidden-item {
+                    display: none;
+                  }
+              
+                  img{
+                    max-width: unit( (@leftPaneWidth / 2 - 15 ) , px);
+                    max-height: unit( (@leftPaneWidth / 2 - 55) , px);
+                    margin: auto;
+                  }
+
+                  div{
+                    align-self: flex-end;
+                    padding-bottom: 2px;
+                    padding-top: 2px;
+                    width: 100%;
+                    text-align: center;
+                    cursor:default;
+                  }
+
+                  .glowBorder{
+                    border-width: 1px;
+                    border-style: solid;
+                  }
+                }
               }
             }
           }

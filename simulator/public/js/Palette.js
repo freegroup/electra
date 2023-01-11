@@ -13,54 +13,70 @@ export default class Palette {
    * @param {Object} permissions The permissions of the current loggedin user
    */
   constructor(permissions) {
+    this.refreshUI();
+
+    // Add an "loader" icon to a shape whenn the backend is calculating the thumbnail
+    let startGenerateEventMethod = (msg) => {
+      $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
+    }
+    socket.on("shape/global/generating", startGenerateEventMethod)
+    socket.on("shape/user/generating", startGenerateEventMethod)
+
+    // Update the shape thumbnail if the backend fineshed the calculation
+    //
+    let endGenerateEventMethod = (msg) => {
+      $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
+      let img = $("div[data-file='" + msg.filePath + "'] img")
+      if (img.length === 0) {
+        // insert a new shape
+        this.refreshUI()
+      }
+      else {
+        // update existing shape
+        $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.user.image(msg.imagePath)})
+      }
+    }
+    socket.on("shape/global/generated", endGenerateEventMethod)
+    socket.on("shape/user/generated", endGenerateEventMethod)
+  }
+
+  refreshUI(){
     $.getJSON(conf.shapes.jsonUrl, (data) => {
-      let tmpl = Hogan.compile($("#shapeTemplate").html());
       data = data.map( shape=> {
         shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath)
         return shape
       })
-      let html = tmpl.render({ shapes: data })
 
-      $("#paletteElements").html(html)
+      this.buildPalette(data)
       this.buildTree(data)
-
-      // Create the jQuery-Draggable for the palette -> canvas drag&drop interaction
-      //
-      $(".draw2d_droppable").draggable({
-        appendTo: "body",
-        helper: "clone",
-        drag: function (event, ui) {
-          event = app.view._getEvent(event)
-          let pos = app.view.fromDocumentToCanvasCoordinate(event.clientX, event.clientY)
-          app.view.onDrag(ui.draggable, pos.getX(), pos.getY(), event.shiftKey, event.ctrlKey)
-        },
-        stop: function (e, ui) {
-        },
-        start: function (e, ui) {
-          $(ui.helper).addClass("shadow")
-        }
-      })
-
-      $('.draw2d_droppable')
-        .on('mouseover', () => {
-          $(this).parent().addClass('glowBorder')
-        })
-        .on('mouseout', () => {
-          $(this).parent().removeClass('glowBorder')
-        })
     })
+  }
 
-    // Add an "loader" icon to a shape whenn the backend is calculating the thumbnail
-    socket.on("shape/user/generating", (msg) => {
-      $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
-    })
+  buildPalette(data){
+    let tmpl = Hogan.compile($("#shapeTemplate").html());
+    let html = tmpl.render({ shapes: data })
+    $("#paletteElements").html(html)
 
-    // Update the shape thumbnail if the backend fineshed the calculation
+    // Create the jQuery-Draggable for the palette -> canvas drag&drop interaction
     //
-    socket.on("shape/user/generated", (msg) => {
-      $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
-      $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.user.image(msg.imagePath)})
+    $(".draw2d_droppable").draggable({
+      appendTo: "body",
+      helper: "clone",
+      drag: function (event, ui) {
+        event = app.view._getEvent(event)
+        let pos = app.view.fromDocumentToCanvasCoordinate(event.clientX, event.clientY)
+        app.view.onDrag(ui.draggable, pos.getX(), pos.getY(), event.shiftKey, event.ctrlKey)
+      },
+      stop: function (e, ui) {
+      },
+      start: function (e, ui) {
+        $(ui.helper).addClass("shadow")
+      }
     })
+
+    $('.draw2d_droppable')
+      .on('mouseover',() => { $(this).parent().addClass('glowBorder') })
+      .on('mouseout', () => { $(this).parent().removeClass('glowBorder') })
   }
 
   buildTree(data) {
@@ -114,21 +130,25 @@ export default class Palette {
     //
     // Create tree
     //
-
     new TreeView(tree, 'paletteFilter')
-    $("#paletteElements").shuffle(true)
+
     $(".tree-leaf-content").on("click", (event) => {
       try {
         $(".tree-leaf-content").removeClass("selected")
         let target = $(event.currentTarget)
         target.addClass("selected")
         let path = target.data("item").path.toLowerCase()
-        let $grid = $("#paletteElements")
+        let items = $("#paletteElements .palette_item")
 
-        $grid.shuffle('shuffle', function ($el, shuffle) {
-          return $el.data("dir").trim().toLowerCase().startsWith(path)
+        items.each( (i, e) => {
+          e = $(e)
+          if(e.data("dir").trim().toLowerCase().startsWith(path)){
+            e.removeClass("hidden-item")
+          }
+          else{
+            e.addClass("hidden-item")
+          }
         })
-
         return false
       } catch (e) {
         console.log(e)

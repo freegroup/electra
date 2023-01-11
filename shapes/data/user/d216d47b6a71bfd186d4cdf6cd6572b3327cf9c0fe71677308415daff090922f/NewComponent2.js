@@ -4,9 +4,9 @@
 // created with http://www.draw2d.org
 //
 //
-var NewComponent = CircuitFigure.extend({
+var NewComponent2 = CircuitFigure.extend({
 
-   NAME: "NewComponent",
+   NAME: "NewComponent2",
    VERSION: "local-version",
 
    init:function(attr, setter, getter)
@@ -56,7 +56,7 @@ var NewComponent = CircuitFigure.extend({
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-NewComponent = NewComponent.extend({
+NewComponent2 = NewComponent2.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);

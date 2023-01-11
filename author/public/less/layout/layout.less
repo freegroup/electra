@@ -75,7 +75,7 @@ body {
                 padding: 10px;
                 overflow-x: hidden;
                 position: absolute;
-                top: 64px;
+                top: 0;
                 bottom: 0;
                 left: 0;
                 right: 0;
@@ -136,15 +136,51 @@ body {
               #paletteElements {
                 position: absolute;
                 width: 100%;
-                min-height:100%;
                 margin: 0;
                 padding: 0;
                 overflow: hidden;
-                .mix {
-                  height: unit( (@leftPaneWidth / 2), px);
-                  border: 1px solid #f0f0f0;
-                  /* to avoid doubling the border of the grid */
-                  margin: -1px 0 0 -1px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: flex-start;
+                gap:2px;
+                padding:2px;
+
+                .palette_item{
+                  width: unit( (@leftPaneWidth / 2 - 8 ) , px);
+                  height: unit( (@leftPaneWidth / 2 - 8) , px);
+                  border-width: 1px;
+                  border-style: solid;
+                  display: flex;
+                  justify-content: center;
+                  flex-direction: column;
+                  flex-wrap: nowrap;
+                  align-items: center;
+
+                  &.hidden-item {
+                    display: none;
+                  }
+              
+                  img{
+                    max-width: unit( (@leftPaneWidth / 2 - 15 ) , px);
+                    max-height: unit( (@leftPaneWidth / 2 - 55) , px);
+                    margin: auto;
+                  }
+
+                  div{
+                    align-self: flex-end;
+                    padding-bottom: 2px;
+                    padding-top: 2px;
+                    width: 100%;
+                    text-align: center;
+                    cursor:default;
+                  }
+
+                  .glowBorder{
+                    border-width: 1px;
+                    border-style: solid;
+                  }
                 }
               }
             }

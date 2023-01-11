@@ -52,13 +52,7 @@ $(window).load(function () {
   document.title = conf.appName
 
   socket = io( { path: '/socket.io'})
-
-  socket.on("shape:updated", () => {
-    console.log("socketio")
-    new UpdateSuccessDialog().show()
-  })
   
-
   // Init the UI after we have receive the UI/UX permissions of this kind of installation
   // (fake event from the socket.io mock )
   //

@@ -74,7 +74,6 @@ export default class Editor {
   _resetDOM(){
     this.view.simulationStop()
     this.splitter.destroy()
-    $("#paletteElements").shuffle("destroy")
     $("#paletteElements").html("")
     $("#paletteFilter").html("")
   }

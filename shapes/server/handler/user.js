@@ -10,6 +10,7 @@ const generator = require("../thumbnails")
 const conf = require("../configuration")
 
 const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 function nocache(req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -189,7 +190,7 @@ module.exports = {
                 }}                    
                 request(
                     {
-                        url: `http://localhost:${PORT_INGRESS}/broadcast`,
+                        url: `http://${LOCALHOST}:${PORT_INGRESS}/broadcast`,
                         method: "POST",
                         json: body
                     })
@@ -217,7 +218,7 @@ module.exports = {
                     }}                    
                     return request(
                         {
-                            url: `http://localhost:${PORT_INGRESS}/broadcast`,
+                            url: `http://${LOCALHOST}:${PORT_INGRESS}/broadcast`,
                             method: "POST",
                             json: body
                         })

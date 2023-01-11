@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const glob = require("glob")
+const request = require('request');
 
 const filesystem = require("../utils/file")
 const github = require('../utils/github')
@@ -22,6 +23,9 @@ function ensureAdminLoggedIn (req, res, next) {
     }
     next();
 }
+
+const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
+const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 module.exports = {
     init: function (app) {
@@ -171,6 +175,22 @@ module.exports = {
             let content = req.body.content
             let reason = req.body.commitMessage || "-empty-"
             filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
+                .then( (sanitizedRelativePath) => {
+                    let body = { 
+                    topic: "shape/global/generating",
+                    event :{
+                        filePath: shapeRelativePath,
+                        imagePath: shapeRelativePath.replace(".shape", ".png"),
+                        jsPath: shapeRelativePath.replace(".shape", ".js")
+                    }}                    
+                    request(
+                        {
+                            url: `http://${LOCALHOST}:${PORT_INGRESS}/broadcast`,
+                            method: "POST",
+                            json: body
+                        })
+                    return sanitizedRelativePath
+                })
                 .then((sanitizedRelativePath) => {
                     return generator.thumbnail(conf.absoluteGlobalDataDirectory(), sanitizedRelativePath)
                 })
@@ -181,6 +201,22 @@ module.exports = {
                     // and rebuild the shape index.js
                     return generator.generateShapeIndex(conf.absoluteGlobalDataDirectory(),"global")
                 })
+                .then( () => {
+                    let body = { 
+                    topic: "shape/global/generated",
+                    event :{
+                        filePath: shapeRelativePath,
+                        imagePath: shapeRelativePath.replace(".shape", ".png"),
+                        jsPath: shapeRelativePath.replace(".shape", ".js")
+                    }}                    
+                    return request(
+                        {
+                            url: `http://${LOCALHOST}:${PORT_INGRESS}/broadcast`,
+                            method: "POST",
+                            json: body
+                        })
+                })
+
                 .catch(reason => {
                     console.log(reason)
                 })

@@ -168,11 +168,9 @@
   -->
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}
-  <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="mix palette_item">
-    <div>
-        <img loading="lazy" data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
-        <div>{{displayName}}</div>
-    </div>
+  <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="palette_item">
+    <img loading="lazy" data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+    <div>{{displayName}}</div>
   </div>
 {{/shapes}}
 </script>
@@ -225,7 +223,6 @@
 <script src="../common/js/ASCIIMathTeXImg.js"></script>
 <script src="../common/js/jquery/jquery.js"></script>
 <script src="../common/js/jquery/jquery-ui.js"></script>
-<script src="../common/js/shufflejs/jquery.shuffle.modernizr.min.js"></script>
 
 <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
 <script src="../common/js/bootbox/bootbox.min.js"></script>
