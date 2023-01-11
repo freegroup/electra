@@ -19,7 +19,7 @@ export default class Editor {
           </div>
        `)
     menu.prepend(`
-          <div class="morph_btn play material-button" id="simulationStartStop">
+          <div class="playButton play material-button" id="simulationStartStop">
             <span>
               <span class="s1"></span>
               <span class="s2"></span>

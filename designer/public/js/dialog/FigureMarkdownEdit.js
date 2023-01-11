@@ -37,8 +37,8 @@ export default class FigureMarkdownEdit {
              <span class="right">HTML Preview</span>
           </div>
           <div class="tinyFlyoverMenu">
-            <div id="test_commit" class="fa-regular fa-check-square"></div>
-            <div id="test_cancel" class='fa-regular fa-minus-square' ></div>
+            <div id="test_commit" class="material-button">Save</div>
+            <div id="test_cancel" class='material-button'>Close</div>
           </div>
       <div>
       `)

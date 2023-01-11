@@ -13,9 +13,9 @@ export default class FigureCodeEdit {
             <pre class="codeContainer">
             </pre>
               <div class="tinyFlyoverMenu codeOverlay">
-                <i id="test_run"    class="fa-regular fa-play-circle"></i> 
-                <i id="test_commit" class="fa-regular fa-check-square"></i>
-                <i id="test_cancel" class='fa-regular fa-minus-square' ></i>
+                <div id="test_run"    class="material-button">&#9654;</div>
+                <div id="test_commit" class="material-button">Save</div>
+                <div id="test_cancel" class='material-button'>Close</div>
               </div>
           </div>
             `

@@ -31,7 +31,7 @@ export default class FigureTest {
           </div>
           <div  class="testInfo" >Test page for your designed and coded draw2d shape.</div>
           <div class="tinyFlyoverMenu">
-            <div id="test_close" >&#8863;</div>
+            <div id="test_close" class="material-button">Close</div>
           </div>
         <div>
         `)
