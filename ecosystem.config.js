@@ -13,8 +13,8 @@ module.exports = {
             args: "./server/index",
           },          
           {
-            name   : "circuit",
-            cwd : "./circuit",
+            name   : "simulator",
+            cwd : "./simulator",
             script: "node",
             args: "./server/index",
           },          

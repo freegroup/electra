@@ -7,9 +7,9 @@ set -x
 (cd ./brains && rm -rf ./node-modules )  
 (cd ./brains && npm install )
 
-(cd ./circuit && rm -rf node-modules )  
-(cd ./circuit && npm install )
-(cd ./circuit && npm run build)
+(cd ./simulator && rm -rf node-modules )  
+(cd ./simulator && npm install )
+(cd ./simulator && npm run build)
 
 (cd ./common && rm -rf node-modules )  
 (cd ./common && npm install )

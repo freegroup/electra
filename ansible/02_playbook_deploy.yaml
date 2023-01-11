@@ -27,11 +27,11 @@
     community.general.npm:
       path: /home/electra/server/brains
 
-  - name: Install packages in /circuit
+  - name: Install packages in /simulator
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/circuit
+      path: /home/electra/server/simulator
 
   - name: Install packages in /common
     become: true
@@ -95,12 +95,12 @@
     args:
       chdir: /home/electra/server/author
 
-  - name: Build /circuit
+  - name: Build /simulator
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/circuit
+      chdir: /home/electra/server/simulator
 
   - name: Build /designer
     become: true

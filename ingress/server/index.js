@@ -36,7 +36,7 @@ const PORT = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS"
 const PORT_COMMON = process.env.PORT_COMMON || die("missing env variable PORT_COMMON");
 const PORT_HOME = process.env.PORT_HOME || die("missing env variable PORT_HOME");
 const PORT_PERMISSIONS = process.env.PORT_PERMISSIONS || die("missing env variable PORT_PERMISSIONS");
-const PORT_CIRCUIT = process.env.PORT_CIRCUIT || die("missing env variable PORT_CIRCUIT");
+const PORT_SIMULATOR = process.env.PORT_SIMULATOR || die("missing env variable PORT_SIMULATOR");
 const PORT_SHAPES = process.env.PORT_SHAPES || die("missing env variable PORT_SHAPES");
 const PORT_BRAINS = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
 const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable PORT_USERINFO");
@@ -158,8 +158,8 @@ app.use('/shapes', createProxyMiddleware({
     onProxyReq: onProxyReq
 }));
 
-app.use('/circuit', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_CIRCUIT,
+app.use('/simulator', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
     changeOrigin: true,
     pathRewrite: {},
     onProxyReq: onProxyReq

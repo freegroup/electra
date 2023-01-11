@@ -3,7 +3,7 @@ export default {
   fileSuffix: ".brain",
   fileNew: "NewCircuit",
   appName: "Simulator",
-  loginRedirect: "circuit",
+  loginRedirect: "simulator",
 
   fileScreen: {
     title: "Circuit Library",

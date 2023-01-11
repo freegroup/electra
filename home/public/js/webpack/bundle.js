@@ -42,7 +42,7 @@ var AppSwitch = /*#__PURE__*/_createClass(function AppSwitch(permissions) {
     window.open("../author", "author");
   });
   $(".applicationSwitchSimulator").off("click").on("click", function () {
-    window.open("../circuit", "circuit");
+    window.open("../simulator", "simulator");
   });
   $(".applicationSwitchHome").off("click").on("click", function () {
     window.open("../home", "home");

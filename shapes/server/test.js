@@ -20,8 +20,8 @@ let hash = (async ()=> await bcrypt.hash("blah", 10))()
 console.log(hash)
 
 /*
-let fromFiles = "data/circuit/digital333"
-let toFiles = "data/circuit/digital3"
+let fromFiles = "data/simulator/digital333"
+let toFiles = "data/simulator/digital3"
     
 github.deleteDirectory( fromFiles, "blah")
 */

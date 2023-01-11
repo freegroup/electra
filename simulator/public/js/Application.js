@@ -30,7 +30,7 @@ class Application {
     this.filePane = new Files(this, conf, permissions.brains)
 
     this.userinfo = new Userinfo(permissions)
-    this.indexPane = new AuthorPage("#home", "readme/en/circuit/Readme.sheet")
+    this.indexPane = new AuthorPage("#home", "readme/en/simulator/Readme.sheet")
     this.appSwitch = new AppSwitch(permissions)
 
     this.indexPane.render()

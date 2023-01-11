@@ -63,7 +63,7 @@ export default class AppSwitch {
       window.open("../author", "author")
     })
     $(".applicationSwitchSimulator").off("click").on("click", () => {
-      window.open("../circuit", "circuit")
+      window.open("../simulator", "simulator")
     })
     $(".applicationSwitchHome").off("click").on("click", () => {
       window.open("../home", "home")
