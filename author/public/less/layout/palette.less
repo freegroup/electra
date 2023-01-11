@@ -1,97 +1,106 @@
 .paletteContainer {
-  position:absolute;
+  position: absolute;
   height: 100%;
   width: @leftPaneWidth;
   padding: 0;
   border: 0;
   text-align: center;
   z-index: 1;
-  border-right-width: 1px ;
+  border-right-width: 1px;
   border-right-style: solid;
   border-left-width: 1px;
   border-left-style: solid;
 
-  .palette_item{
-    padding:0;
-    text-align:center;
-    width: unit( (@leftPaneWidth / 2) , px);
-    height: unit( (@leftPaneWidth / 2) , px);
+  .palette_item {
+    padding: 0;
+    text-align: center;
+    width: unit((@leftPaneWidth / 2), px);
+    height: unit((@leftPaneWidth / 2), px);
     border-width: 1px;
     border-style: solid;
 
-    >div{
-      width:100%;
-      height:100%;
-      text-align:center;
+    >div {
+      width: 100%;
+      height: 100%;
+      text-align: center;
       border-width: 1px;
       border-style: solid;
-      img{
+
+      img {
         position: absolute;
         top: 0;
         bottom: 0;
         margin: auto;
         left: 50%;
-        transform: translate(-50%,-10px);
+        transform: translate(-50%, -10px);
       }
-      div{
+
+      div {
         position: absolute;
         padding-bottom: 2px;
         width: 100%;
         bottom: 0;
         padding-top: 2px;
-        cursor:default;
+        cursor: default;
       }
     }
-    .glowBorder{
+
+    .glowBorder {
       border-style: solid;
       border-width: 1px;
     }
   }
-  .draw2d_droppable{
-    cursor:move;
-    max-height:80px;
+
+  .draw2d_droppable {
+    cursor: move;
+    max-height: 80px;
   }
-  
+
   #paletteHeader {
     #paletteFilter {
       .toc {
         padding: 5px;
-        padding-top:0px;
-        margin-top:20px;
-        line-height:30px;
+        padding-top: 0px;
+        margin-top: 20px;
+        line-height: 30px;
       }
     }
   }
 
-  #paletteElementsScroll{
-    .pageElement{
+  #paletteElementsScroll {
+    .pageElement {
       display: flex;
       flex-direction: row;
       align-items: center;
+      width: 100%;
 
-      padding:10px;
-      cursor:pointer;
-      border-left-width:2px;
-      border-left-style:solid;
+      padding: 10px;
+      cursor: pointer;
+      border-left-width: 2px;
+      border-left-style: solid;
       border-bottom-width: 1px;
       border-bottom-style: solid;
       position: relative;
+
       .spacer {
         flex-grow: 1;
       }
-      &.selected{
-        border-left-width:2px;
-        border-left-style:solid;
+
+      &.selected {
+        border-left-width: 2px;
+        border-left-style: solid;
       }
-      &:hover{
+
+      &:hover {
         .page_action {
           visibility: initial;
         }
       }
+
       .page_action {
         visibility: hidden;
-        font-size:20px;
-        min-width:25px;
+        font-size: 20px;
+        min-width: 25px;
       }
     }
   }
@@ -99,7 +108,7 @@
 
 
 
-#paletteElementsOverlay{
+#paletteElementsOverlay {
   bottom: 0;
   position: absolute;
   top: 0;
@@ -113,10 +122,10 @@
   top: @leftPaneTitleHeight !important;
 }
 
-#paletteFilter.pages{
+#paletteFilter.pages {
   box-shadow: none !important;
   top: 64px !important;
-  padding:0 !important;
+  padding: 0 !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
@@ -131,6 +140,6 @@
     min-width: auto;
     line-height: initial;
     margin-left: 16px;
-    float:right;
+    float: right;
   }
 }
