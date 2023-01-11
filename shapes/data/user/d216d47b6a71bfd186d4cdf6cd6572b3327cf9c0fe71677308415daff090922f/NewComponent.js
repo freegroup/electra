@@ -98,5 +98,3 @@ NewComponent = NewComponent.extend({
     }
 
 });
-
-
