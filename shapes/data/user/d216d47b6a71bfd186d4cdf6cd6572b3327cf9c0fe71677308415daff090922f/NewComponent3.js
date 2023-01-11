@@ -15,12 +15,6 @@ var NewComponent3 = CircuitFigure.extend({
 
      this._super( $.extend({stroke:0, bgColor:null, width:61,height:67},attr), setter, getter);
      var port;
-     // Port
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.819672131147541, y: 50 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
-     port.setMaxFanOut(20);
    },
 
    createShapeElement : function()
