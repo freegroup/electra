@@ -13,15 +13,15 @@ var NewComponent = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:74,height:88},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:75,height:96},attr), setter, getter);
      var port;
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 74;
-      this.originalHeight= 88;
+      this.originalWidth = 75;
+      this.originalHeight= 96;
       return shape;
    },
 
@@ -30,18 +30,18 @@ var NewComponent = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L74,0 L74,88 L0,88");
+       shape = this.canvas.paper.path("M0,0 L75,0 L75,96 L0,96");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M13 21L13 88L31.54283510886671 88L29.69140293311648 84.02959088624903L28.500329264702486 79.58444344016971L28.09924243511159 75L28.500329264702486 70.4155565598312L29.69140293311648 65.97040911375097L31.63627326965252 61.799621217555796L34.275846373286186 58.02992015095151L37.52992015095151 54.775846373286186L41.299621217555796 52.13627326965252L45.470409113750975 50.19140293311648L49.91555655983029 49.000329264702486L54.5 48.59924243511159L59.0844434401688 49.000329264702486L63.529590886249025 50.19140293311648L67.7003787824442 52.13627326965252L71.47007984904849 54.775846373286186L74 57.3057665242377L74 21L13 21Z');
+       shape = this.canvas.paper.path('M0 0L0 67L18.54283510886671 67L16.69140293311648 63.029590886249025L15.500329264702486 58.58444344016971L15.099242435111591 54L15.500329264702486 49.4155565598312L16.69140293311648 44.970409113750975L18.63627326965252 40.799621217555796L21.275846373286186 37.02992015095151L24.52992015095151 33.775846373286186L28.299621217555796 31.13627326965252L32.470409113750975 29.19140293311648L36.91555655983029 28.000329264702486L41.5 27.59924243511159L46.0844434401688 28.000329264702486L50.529590886249025 29.19140293311648L54.700378782444204 31.13627326965252L58.47007984904849 33.775846373286186L61 36.3057665242377L61 0L0 0Z');
        shape.attr({});
        shape.data("name","Rectangle");
        
        // Circle
        shape = this.canvas.paper.ellipse();
-       shape.attr({"rx":34,"ry":34,"cx":34,"cy":34,"stroke":"none","stroke-width":0,"fill":"rgba(149,192,106,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({"rx":34,"ry":34,"cx":41,"cy":62,"stroke":"none","stroke-width":0,"fill":"rgba(149,192,106,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Circle");
        
 
