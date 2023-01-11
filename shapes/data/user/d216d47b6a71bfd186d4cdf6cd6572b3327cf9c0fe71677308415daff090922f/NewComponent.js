@@ -13,15 +13,15 @@ var NewComponent = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:10,height:10},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:61,height:67},attr), setter, getter);
      var port;
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 10;
-      this.originalHeight= 10;
+      this.originalWidth = 61;
+      this.originalHeight= 67;
       return shape;
    },
 
@@ -30,9 +30,14 @@ var NewComponent = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L10,0 L10,10 L0,10");
+       shape = this.canvas.paper.path("M0,0 L61,0 L61,67 L0,67");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 0L0 67L18.54283510886671 67L16.69140293311648 63.029590886249025L15.500329264702486 58.58444344016971L15.099242435111591 54L15.500329264702486 49.4155565598312L16.69140293311648 44.970409113750975L18.63627326965252 40.799621217555796L21.275846373286186 37.02992015095151L24.52992015095151 33.775846373286186L28.299621217555796 31.13627326965252L32.470409113750975 29.19140293311648L36.91555655983029 28.000329264702486L41.5 27.59924243511159L46.0844434401688 28.000329264702486L50.529590886249025 29.19140293311648L54.700378782444204 31.13627326965252L58.47007984904849 33.775846373286186L61 36.3057665242377L61 0L0 0Z');
+       shape.attr({});
+       shape.data("name","Rectangle");
        
 
        return this.canvas.paper.setFinish();
