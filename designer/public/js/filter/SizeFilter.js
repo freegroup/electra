@@ -60,7 +60,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
     })
   }
 
-  apply(figure, attributes) {
+  apply(figure, attributes, lastAttributes) {
     if (this.block === true) {
       return
     }

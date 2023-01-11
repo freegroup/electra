@@ -62,7 +62,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
     })
   }
 
-  apply(figure, attributes) {
+  apply(figure, attributes, lastAttributes) {
     if (this.block === true) {
       return
     }

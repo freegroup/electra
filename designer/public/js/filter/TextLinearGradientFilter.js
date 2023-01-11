@@ -80,8 +80,8 @@ export default shape_designer.filter.TextLinearGradientFilter = class TextLinear
     })
   }
 
-  apply(figure, attributes, lattr) {
-    lattr.fill = this.angle + "-" + this.endColor + "-" + this.startColor
+  apply(figure, attributes, lastAttributes) {
+    lastAttributes.fill = this.angle + "-" + this.endColor + "-" + this.startColor
   }
 
   removePane() {

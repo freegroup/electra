@@ -8,9 +8,8 @@ export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
     this.isExtFigure = true
 
     // set some good defaults
-    if (typeof radius === "undefined") {
-      radius = 10
-    }
+    radius ??= 10
+    
 
     this._super({stroke: 0, bgColor: "95C06A", width: radius * 2, height: radius * 2})
 
@@ -77,11 +76,10 @@ export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
       return
     }
 
-    this.filters.each($.proxy(function (i, filter) {
+    this.filters.each( (i, filter) => {
       filter.apply(this, attributes)
-    }, this))
+    })
 
-//        this.shape.blur(this.blur);
     this._super(attributes)
   },
 
@@ -107,10 +105,10 @@ export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
 
     memento.blur = this.blur
     memento.filters = []
-    this.filters.each($.proxy(function (i, e) {
+    this.filters.each((i, e) => {
       var filterMemento = e.getPersistentAttributes(this)
       memento.filters.push(filterMemento)
-    }, this))
+    })
 
     return memento
   },
@@ -123,11 +121,11 @@ export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
 
     if (typeof memento.filters !== "undefined") {
       this.filters = new draw2d.util.ArrayList()
-      $.each(memento.filters, $.proxy(function (i, e) {
+      $.each(memento.filters,(i, e) => {
         var filter = eval("new " + e.name + "()")
         filter.setPersistentAttributes(this, e)
         this.filters.add(filter)
-      }, this))
+      })
     }
   }
 })

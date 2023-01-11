@@ -75,11 +75,10 @@ export default shape_designer.figure.ExtLine = draw2d.shape.basic.PolyLine.exten
       attributes = {}
     }
 
-    this.filters.each($.proxy(function (i, filter) {
+    this.filters.each((i, filter) => {
       filter.apply(this, attributes)
-    }, this))
+    })
 
-//        this.shape.blur(this.blur);
     this._super(attributes)
   },
 

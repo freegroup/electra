@@ -8,7 +8,7 @@ export default class Filter {
   }
 
 
-  apply(figure, attributes) {
+  apply(figure, attributes, lastAttributes) {
   }
 
   onInstall(figure) {

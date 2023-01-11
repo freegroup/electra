@@ -10,7 +10,6 @@ import conf from "./Configuration"
 import Connection from "./figures/Connection"
 import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
-import designerDialog from "../../common/js/DesignerDialog"
 import colors from "../../common/js/Colors"
 import CodeDialog from "./dialog/CodeDialog"
 import WebUSBHelpDialog from "./dialog/WebUSBHelpDialog"
@@ -269,22 +268,22 @@ export default draw2d.Canvas.extend({
         if (figure instanceof CircuitFigure) {
           if(this.permissions.shapes.global.update) {
             items = {
-              "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
-              "delete": {name: "Delete", icon: "x ion-ios-close-outline"},
+              "label": {name: "Attach Label"},
+              "delete": {name: "Delete"},
               "sep1": "---------",
-              "design": {name: "Open in Component Editor", icon: "x ion-ios-compose-outline"},
-              "code": {name: "Show JS Code", icon: "x ion-code"},
-              "help": {name: "Description", icon: "x ion-ios-information-outline"}
+              "design": {name: "Open in Component Editor"},
+              "code": {name: "Show JS Code"},
+              "help": {name: "Description"}
             }
           }
           else {
             items = {
-              "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
-              "delete": {name: "Delete", icon: "x ion-ios-close-outline"},
+              "label": {name: "Attach Label"},
+              "delete": {name: "Delete"},
               "sep1": "---------",
-              "design": {name: "Open in Component Editor (readonly)", icon: "x ion-ios-compose-outline"},
-              "code": {name: "Show JS Code", icon: "x ion-code"},
-              "help": {name: "Description", icon: "x ion-ios-information-outline"}
+              "design": {name: "Open in Component Editor (readonly)"},
+              "code": {name: "Show JS Code"},
+              "help": {name: "Description"}
             }
           }
 
@@ -294,16 +293,16 @@ export default draw2d.Canvas.extend({
           }
         } else if (figure instanceof draw2d.shape.basic.Label) {
           items = {
-            "delete": {name: "Delete", icon: "x ion-ios-close-outline"}
+            "delete": {name: "Delete"}
           }
         } else if (figure instanceof draw2d.Port) {
           return
         } else {
           items = {
-            "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
-            "help": {name: "Description", icon: "x ion-ios-information-outline"},
+            "label": {name: "Attach Label"},
+            "help": {name: "Description"},
             "sep1": "---------",
-            "delete": {name: "Delete", icon: "x ion-ios-close-outline"}
+            "delete": {name: "Delete"}
           }
         }
 
@@ -330,7 +329,9 @@ export default draw2d.Canvas.extend({
                 }
                 break
               case "design":
-                designerDialog.show(figure)
+                let scope = figure.attr("userData.scope")
+                let shapeName = figure.attr("userData.file")
+                window.open(`../designer?${scope}=${shapeName}`, "designer")
                 break
               case "help":
                 markdownDialog.show(figure)

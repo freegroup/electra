@@ -106,9 +106,9 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
     lattr.stroke = this.outlineColor.hash()
     lattr["stroke-width"] = this.outlineStroke
 
-    this.filters.each($.proxy(function (i, filter) {
+    this.filters.each( (i, filter) => {
       filter.apply(this, attributes, lattr)
-    }, this))
+    })
 
     this.svgNodes.attr(lattr)
     // set of the x/y must be done AFTER the font-size and bold has been set.

@@ -55,9 +55,9 @@ export default shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.ext
   addFilter: function (filter) {
     var alreadyIn = false
 
-    this.filters.each($.proxy(function (i, e) {
+    this.filters.each((i, e) => {
       alreadyIn = alreadyIn || (e.NAME === filter.NAME)
-    }, this))
+    })
 
     if (alreadyIn === true) {
       return // silently
@@ -101,25 +101,17 @@ export default shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.ext
       this.calculatePath()
     }
 
-    if (typeof attributes === "undefined") {
-      attributes = {}
-    }
+    // It is important, that we keep the original "attributes" object and mutating them
+    // if possible. The caller needs the modified 'attributes' object
+    // Won't work: attributes = {...attributes ,  path: this.svgPathString})
+    //
+    attributes ??={}
+    Object.assign(attributes, { path: this.svgPathString})
 
-
-    attributes.path = this.svgPathString
-
-    this.filters.each($.proxy(function (i, filter) {
+    this.filters.each( (i, filter) => {
       filter.apply(this, attributes)
-    }, this))
+    })
 
-    //this.shape.blur(this.blur===0?-1:this.blur);
-    /*
-            if(this.filter)
-            this.filter = this.canvas.paper.createFilter();
-            filter.addShiftToColor("red");
-            filter.addBlur(7);
-            this.shape.filter(filter);
-    */
     this._super(attributes)
   },
 
@@ -128,10 +120,10 @@ export default shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.ext
 
     memento.blur = this.blur
     memento.filters = []
-    this.filters.each($.proxy(function (i, e) {
+    this.filters.each( (i, e)=> {
       var filterMemento = e.getPersistentAttributes(this)
       memento.filters.push(filterMemento)
-    }, this))
+    })
 
     return memento
   },

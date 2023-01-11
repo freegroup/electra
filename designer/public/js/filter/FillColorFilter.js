@@ -28,19 +28,20 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
       ' </div>' +
       '</div>')
 
-    var picker = this.colorPicker = new jscolor.color(document.getElementById('filter_color_fill'), {})
+    this.colorPicker = new jscolor.color(document.getElementById('filter_color_fill'), {})
     this.colorPicker.fromString(figure.getBackgroundColor().hash())
-    this.colorPicker.onImmediateChange = $.proxy(function () {
-      this.setBackgroundColor("#" + picker.toString())
-    }, figure)
+    this.colorPicker.onImmediateChange = () => {
+      debugger
+      figure.setBackgroundColor("#" + this.colorPicker.toString())
+    }
 
-    $("#button_remove_" + this.cssScope).on("click", $.proxy(function () {
+    $("#button_remove_" + this.cssScope).on("click", () => {
       figure.removeFilter(this)
       figure.setBackgroundColor(null)
-      $("#"+this.containerId).animate({"height": "0", "opacity": 0, "margin-bottom": 0}, 500, function () {
+      $("#"+this.containerId).animate({"height": "0", "opacity": 0, "margin-bottom": 0}, 500, () => {
         $('#'+this.containerId).remove()
       })
-    }, this))
+    })
   }
 
   onInstall(figure) {
@@ -48,9 +49,7 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
   }
 
   removePane() {
-    if (this.colorPicker !== null) {
-      this.colorPicker.hidePicker()
-    }
+    this.colorPicker?.hidePicker()
   }
 }
 
