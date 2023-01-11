@@ -356,13 +356,19 @@ export default draw2d.Canvas.extend({
       $("#figureConfigDialog").hide()
     })
 
+    // only responsible to reload the code and the current document
+    // (the palette.js did its own job and refresh palette entry if required)
     socket.on("shape/global/generated", msg => {
+      console.log("got event", msg)
       $.getScript(conf.shapes.global.file(msg.jsPath),
         this.reloadFromCache.bind(this)
       )
     })
 
+    // only responsible to reload the code and the current document
+    // (the palette.js did its own job and refresh palette entry if required)
     socket.on("shape/user/generated", msg => {
+      console.log("got event", msg)
       $.getScript(conf.shapes.user.file(msg.jsPath),
         this.reloadFromCache.bind(this)
       )

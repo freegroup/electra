@@ -44,11 +44,11 @@ export default {
     jsUrl:     "../shapes/index.js",
     jsonUrl:   "../shapes/index.json",
     user: {
-      image:  file => `../shapes/user/get?filePath=${file}`, // deprecated
+      image: file => `../shapes/user/get?filePath=${file}`, // deprecated
       file:  file => `../shapes/user/get?filePath=${file}`
     },
     global :{
-      image:  file => `../shapes/global/get?filePath=${file}`, // deprecated
+      image: file => `../shapes/global/get?filePath=${file}`, // deprecated
       file:  file => `../shapes/global/get?filePath=${file}`
     },
     version: "0.0.0" // updated during after loading from the index.json file

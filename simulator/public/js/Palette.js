@@ -51,16 +51,15 @@ export default class Palette {
     })
 
     // Add an "loader" icon to a shape whenn the backend is calculating the thumbnail
-    socket.on("shape:generating", (msg) => {
+    socket.on("shape/user/generating", (msg) => {
       $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
     })
 
     // Update the shape thumbnail if the backend fineshed the calculation
     //
-    socket.on("shape:generated", (msg) => {
-      console.log(msg)
+    socket.on("shape/user/generated", (msg) => {
       $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
-      $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.imageUrl + msg.imagePath})
+      $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.user.image(msg.imagePath)})
     })
   }
 
