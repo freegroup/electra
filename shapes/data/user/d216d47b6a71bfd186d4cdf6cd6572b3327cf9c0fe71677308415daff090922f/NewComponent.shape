@@ -2,11 +2,11 @@
   "draw2d": [
     {
       "type": "shape_designer.figure.ExtPolygon",
-      "id": "cc6320a6-6bd7-1c20-6452-6abf14b17ae3",
-      "x": 7880.5,
-      "y": 7802.5,
-      "width": 61,
-      "height": 67,
+      "id": "58ebdbfe-f526-6beb-4592-a73d850da543",
+      "x": 7942,
+      "y": 7934,
+      "width": 87,
+      "height": 93,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -16,133 +16,6 @@
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n         // your special code here\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n    },\n\n    /**\n     * Get the simulator a hint which kind of hardware the shapes requires or supports\n     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost\n     * and your are running a circuit which needs this kind of hardware...\n     **/\n    getRequiredHardware: function(){\n      return {\n        arduino: false\n      }\n    }\n\n});"
       },
-      "cssClass": "shape_designer_figure_PolyRect",
-      "ports": [],
-      "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(48,48,48,1)",
-      "stroke": 1,
-      "radius": 0,
-      "dasharray": null,
-      "vertices": [
-        {
-          "x": 7880.5,
-          "y": 7802.5
-        },
-        {
-          "x": 7880.5,
-          "y": 7869.5
-        },
-        {
-          "x": 7899.042835108867,
-          "y": 7869.5
-        },
-        {
-          "x": 7897.1914029331165,
-          "y": 7865.529590886249
-        },
-        {
-          "x": 7896.0003292647025,
-          "y": 7861.08444344017
-        },
-        {
-          "x": 7895.599242435112,
-          "y": 7856.5
-        },
-        {
-          "x": 7896.0003292647025,
-          "y": 7851.915556559831
-        },
-        {
-          "x": 7897.1914029331165,
-          "y": 7847.470409113751
-        },
-        {
-          "x": 7899.1362732696525,
-          "y": 7843.299621217556
-        },
-        {
-          "x": 7901.775846373286,
-          "y": 7839.5299201509515
-        },
-        {
-          "x": 7905.0299201509515,
-          "y": 7836.275846373286
-        },
-        {
-          "x": 7908.799621217556,
-          "y": 7833.6362732696525
-        },
-        {
-          "x": 7912.970409113751,
-          "y": 7831.6914029331165
-        },
-        {
-          "x": 7917.41555655983,
-          "y": 7830.5003292647025
-        },
-        {
-          "x": 7922,
-          "y": 7830.099242435112
-        },
-        {
-          "x": 7926.584443440169,
-          "y": 7830.5003292647025
-        },
-        {
-          "x": 7931.029590886249,
-          "y": 7831.6914029331165
-        },
-        {
-          "x": 7935.200378782444,
-          "y": 7833.6362732696525
-        },
-        {
-          "x": 7938.9700798490485,
-          "y": 7836.275846373286
-        },
-        {
-          "x": 7941.5,
-          "y": 7838.805766524238
-        },
-        {
-          "x": 7941.5,
-          "y": 7802.5
-        },
-        {
-          "x": 7880.5,
-          "y": 7802.5
-        }
-      ],
-      "blur": 0,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.SizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.StrokeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.PolyCircle",
-      "id": "58ebdbfe-f526-6beb-4592-a73d850da543",
-      "x": 7861.5,
-      "y": 7787.5,
-      "width": 68,
-      "height": 68,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "Circle"
-      },
       "cssClass": "shape_designer_figure_PolyCircle",
       "ports": [],
       "bgColor": "rgba(149,192,106,1)",
@@ -150,6 +23,204 @@
       "stroke": 0,
       "radius": 0,
       "dasharray": null,
+      "vertices": [
+        {
+          "x": 7987.139769925513,
+          "y": 8000.080553472087
+        },
+        {
+          "x": 7987.628684873072,
+          "y": 7999.949549106721
+        },
+        {
+          "x": 7993,
+          "y": 7997.4448637286705
+        },
+        {
+          "x": 7997.854778729342,
+          "y": 7994.045511066045
+        },
+        {
+          "x": 8002.045511066045,
+          "y": 7989.854778729342
+        },
+        {
+          "x": 8002.981060283085,
+          "y": 7988.518675979817
+        },
+        {
+          "x": 8004.91555655983,
+          "y": 7988.0003292647025
+        },
+        {
+          "x": 8009.5,
+          "y": 7987.599242435112
+        },
+        {
+          "x": 8014.084443440169,
+          "y": 7988.0003292647025
+        },
+        {
+          "x": 8018.529590886249,
+          "y": 7989.1914029331165
+        },
+        {
+          "x": 8022.700378782444,
+          "y": 7991.1362732696525
+        },
+        {
+          "x": 8026.4700798490485,
+          "y": 7993.775846373286
+        },
+        {
+          "x": 8029,
+          "y": 7996.305766524238
+        },
+        {
+          "x": 8029,
+          "y": 7960
+        },
+        {
+          "x": 8008.921852288048,
+          "y": 7960
+        },
+        {
+          "x": 8007.949549106721,
+          "y": 7956.371315126928
+        },
+        {
+          "x": 8005.4448637286705,
+          "y": 7951
+        },
+        {
+          "x": 8002.045511066045,
+          "y": 7946.145221270657
+        },
+        {
+          "x": 7997.854778729342,
+          "y": 7941.954488933955
+        },
+        {
+          "x": 7993,
+          "y": 7938.5551362713295
+        },
+        {
+          "x": 7987.628684873072,
+          "y": 7936.050450893279
+        },
+        {
+          "x": 7981.904038040676,
+          "y": 7934.516536397585
+        },
+        {
+          "x": 7976,
+          "y": 7934
+        },
+        {
+          "x": 7970.095961959324,
+          "y": 7934.516536397585
+        },
+        {
+          "x": 7964.371315126928,
+          "y": 7936.050450893279
+        },
+        {
+          "x": 7959,
+          "y": 7938.5551362713295
+        },
+        {
+          "x": 7954.145221270657,
+          "y": 7941.954488933955
+        },
+        {
+          "x": 7949.954488933955,
+          "y": 7946.145221270658
+        },
+        {
+          "x": 7946.5551362713295,
+          "y": 7951
+        },
+        {
+          "x": 7944.050450893279,
+          "y": 7956.371315126928
+        },
+        {
+          "x": 7942.516536397585,
+          "y": 7962.095961959324
+        },
+        {
+          "x": 7942,
+          "y": 7968
+        },
+        {
+          "x": 7942.516536397585,
+          "y": 7973.904038040676
+        },
+        {
+          "x": 7944.050450893279,
+          "y": 7979.628684873072
+        },
+        {
+          "x": 7946.5551362713295,
+          "y": 7985
+        },
+        {
+          "x": 7949.954488933955,
+          "y": 7989.854778729343
+        },
+        {
+          "x": 7954.145221270658,
+          "y": 7994.045511066045
+        },
+        {
+          "x": 7959,
+          "y": 7997.4448637286705
+        },
+        {
+          "x": 7964.371315126928,
+          "y": 7999.949549106721
+        },
+        {
+          "x": 7968,
+          "y": 8000.921852288048
+        },
+        {
+          "x": 7968,
+          "y": 8027
+        },
+        {
+          "x": 7986.542835108867,
+          "y": 8027
+        },
+        {
+          "x": 7984.6914029331165,
+          "y": 8023.029590886249
+        },
+        {
+          "x": 7983.5003292647025,
+          "y": 8018.58444344017
+        },
+        {
+          "x": 7983.099242435112,
+          "y": 8014
+        },
+        {
+          "x": 7983.5003292647025,
+          "y": 8009.415556559831
+        },
+        {
+          "x": 7984.6914029331165,
+          "y": 8004.970409113751
+        },
+        {
+          "x": 7986.6362732696525,
+          "y": 8000.799621217556
+        },
+        {
+          "x": 7987.139769925513,
+          "y": 8000.080553472087
+        }
+      ],
       "blur": 0,
       "filters": [
         {
