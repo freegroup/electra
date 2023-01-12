@@ -1,9 +1,3 @@
-/**
- *
- * The **GraphicalEditor** is responsible for layout and dialog handling.
- *
- * @author Andreas Herz
- */
 import ConnectionRouter from "./ConnectionRouter"
 import DropInterceptorPolicy from "./DropInterceptorPolicy"
 import EditEditPolicy from "./EditEditPolicy"
@@ -175,13 +169,13 @@ export default draw2d.Canvas.extend({
 
         if (figure instanceof CircuitFigure) {
             items = {
-              "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
-              "delete": {name: "Delete", icon: "x ion-ios-close-outline"},
+              "label": {name: "Attach Label"},
+              "delete": {name: "Delete"},
             }
         }
         else if (figure instanceof draw2d.shape.basic.Label) {
           items = {
-            "delete": {name: "Delete", icon: "x ion-ios-close-outline"}
+            "delete": {name: "Delete"}
           }
         }
         else if (figure instanceof draw2d.Port) {
@@ -189,8 +183,8 @@ export default draw2d.Canvas.extend({
         }
         else {
           items = {
-            "label": {name: "Attach Label", icon: "x ion-ios-pricetag-outline"},
-            "delete": {name: "Delete", icon: "x ion-ios-close-outline"}
+            "label": {name: "Attach Label"},
+            "delete": {name: "Delete"}
           }
         }
 
@@ -325,7 +319,11 @@ export default draw2d.Canvas.extend({
     })
 
     this.getFigures().each( (index, shape) => {
-      shape.onStart(this.simulationContext)
+      shape.onPreStart?.(this.simulationContext)
+    })
+
+    this.getFigures().each( (index, shape) => {
+      shape.onStart?.(this.simulationContext)
     })
 
     this._calculate()
@@ -349,7 +347,7 @@ export default draw2d.Canvas.extend({
     this.installEditPolicy(this.coronaFeedback)
 
     this.getFigures().each( (index, shape) =>{
-      shape.onStop(this.simulationContext)
+      shape.onStop?.(this.simulationContext)
     })
 
     $("#simulationStartStop")
@@ -362,7 +360,7 @@ export default draw2d.Canvas.extend({
     // call the "calculate" method if given to calculate the output-port values
     //
     this.getFigures().each( (i, figure)=> {
-      figure.calculate(this.simulationContext)
+      figure.calculate?.(this.simulationContext)
     })
 
     // transport the value from outputPort to inputPort
