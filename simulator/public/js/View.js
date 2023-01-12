@@ -463,13 +463,9 @@ export default draw2d.Canvas.extend({
     let name = $(droppedDomNode).data("name")
     let file = $(droppedDomNode).data("file")
     let scope = $(droppedDomNode).data("scope")
-    let figure = new draw2d.shape.basic.Label({
-      text: `Unable to load shape '${name}'`,
-      color: "#ff0000"
-    })
+    let figure = null
     try {
-      figure = eval("new " + name + "();") // jshint ignore:line
-
+      figure = eval(`new ${name}();`) // jshint ignore:line
       // required to calculate the filepath for markdown/js/shape
       //
       figure.attr("userData.file", file)
@@ -477,13 +473,14 @@ export default draw2d.Canvas.extend({
     }
     catch(exc){
       console.log(exc)
+      figure = new draw2d.shape.basic.Label({
+        text: `Unable to load shape '${name}'`,
+        color: "#ff0000"
+      })
     }
-
-    // create a command for the undo/redo support
-    let command = new draw2d.command.CommandAdd(this, figure, x, y)
-    this.getCommandStack().execute(command)
+    this.getCommandStack().execute(new draw2d.command.CommandAdd(this, figure, x, y))
   },
-
+  
   simulationToggle: function () {
     if (this.simulate === true) {
       this.simulationStop()

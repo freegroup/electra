@@ -2591,24 +2591,24 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    **/
   onDrop: function onDrop(droppedDomNode, x, y, shiftKey, ctrlKey) {
-    var type = $(droppedDomNode).data("shape");
+    var name = $(droppedDomNode).data("name");
     var file = $(droppedDomNode).data("file");
-    var figure = new draw2d.shape.basic.Label({
-      text: "Unable to load shape '".concat(type, "'"),
-      color: "#ff0000"
-    });
+    var scope = $(droppedDomNode).data("scope");
+    var figure = null;
     try {
-      figure = eval("new " + type + "();"); // jshint ignore:line
+      figure = eval("new ".concat(name, "();")); // jshint ignore:line
       // required to calculate the filepath for markdown/js/shape
       //
       figure.attr("userData.file", file);
+      figure.attr("userData.scope", scope);
     } catch (exc) {
       console.log(exc);
+      figure = new draw2d.shape.basic.Label({
+        text: "Unable to load shape '".concat(name, "'"),
+        color: "#ff0000"
+      });
     }
-
-    // create a command for the undo/redo support
-    var command = new draw2d.command.CommandAdd(this, figure, x, y);
-    this.getCommandStack().execute(command);
+    this.getCommandStack().execute(new draw2d.command.CommandAdd(this, figure, x, y));
   },
   simulationToggle: function simulationToggle() {
     if (this.simulate === true) {

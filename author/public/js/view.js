@@ -282,6 +282,7 @@ export default class View {
     }
   }
 
+
   renderImage(section) {
     if (section.content) {
       this.html.find(".sections").append(`
