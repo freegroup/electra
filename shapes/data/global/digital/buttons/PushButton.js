@@ -7,7 +7,7 @@
 var digital_buttons_PushButton = CircuitFigure.extend({
 
    NAME: "digital_buttons_PushButton",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -88,14 +88,14 @@ digital_buttons_PushButton = digital_buttons_PushButton.extend({
         
         this.value = false;
         this.on("mousedown",()=>{            
-            this.layerShow("low" , false, 100);
-            this.layerShow("high", true,  100);
+            this.layerShow("low" , false);
+            this.layerShow("high", true);
             this.getOutputPort(0).setValue(true);
         });
         this.on("mouseup",()=>{            
             this.value = !this.value;
-            this.layerShow("low" , true,  100);
-            this.layerShow("high", false, 100);
+            this.layerShow("low" , true);
+            this.layerShow("high", false);
             this.getOutputPort(0).setValue(false);
         });
 
