@@ -1,40 +1,45 @@
+
 body.light {
+  --toolbar-bg-color: 178, 226, 242;
+  --tint-color:       199, 29, 61;
+  --tint-color-dark:  158, 27, 52;
+
+  --lefttab-font-color: 178, 226, 242;
+  --lefttab-bg-color:  199, 29, 61;
+
+  .toolbar {
+    background-color:rgb(var(--toolbar-bg-color));
+  }
+
   #leftTabStrip {
-    background-color: #C71D3D;
+    background-color: rgb(var(--lefttab-bg-color));
 
     &:after {
-      color: #eeeeee45;
-      content: "Editor";
-      transform: rotate(-90deg) translate(-52px, -39px);
-      font-size: 55px;
-      white-space: nowrap;
-      font-weight: 200;
-      letter-spacing: 3px; 
+      color: rgb(var(--toolbar-bg-color));
     }
 
     li {
       &.active {
-        a {
-          &:hover {
-            background-color: white;
-          }
-        }
+        a{
+            &:hover {
+                background-color: white;
+            }
 
-        svg {
+            svg {
+                path[stroke],
+                rect[stroke],
+                g[stroke],
+                line[stroke],
+                circle[stroke],
+                polyline[stroke] {
+                    stroke: rgb(var(--lefttab-bg-color))  !important;
+                }
 
-          path[stroke],
-          rect[stroke],
-          g[stroke],
-          line[stroke],
-          circle[stroke],
-          polyline[stroke] {
-            stroke: #C71D3D !important;
-          }
-
-          circle[fill],
-          rect[fill] {
-            fill: #C71D3D !important;
-          }
+                circle[fill],
+                rect[fill] {
+                    fill: rgb(var(--lefttab-bg-color))  !important;
+                }
+            }
         }
       }
 
@@ -43,8 +48,6 @@ body.light {
           background-color: rgba(0, 0, 0, 0.1);
         }
 
-        padding: 4px;
-
         svg {
 
           path[stroke],
@@ -53,12 +56,12 @@ body.light {
           line[stroke],
           circle[stroke],
           polyline[stroke] {
-            stroke: white !important;
+            stroke:rgb(var(--lefttab-font-color)) !important;
           }
 
           circle[fill],
           rect[fill] {
-            fill: white !important;
+            fill:rgb(var(--lefttab-font-color)) !important;
           }
         }
       }
@@ -113,11 +116,11 @@ body.light {
 
   #canvas_config {
     border-color: transparent;
-    background-color: fadeout(#B2E2F2, 70%);
+    background-color: rgba(val(--toolbar-bg-color), 0.7);
 
     &:hover {
-      border-color: #C71D3D !important;
-      color: #C71D3D;
+      border-color:rgb(var(--tint-color)) !important;
+      color: rgb(var(--tint-color));
     }
   }
 
@@ -132,12 +135,12 @@ body.light {
       background-color: white;
 
       .left {
-        color: #CC4F5A;
+        color: rgb(var(--tint-color));
         background-color: rgba(0, 0, 0, 0.1);
       }
 
       .right {
-        color: #CC4F5A;
+        color: rgb(var(--tint-color));
         background-color: rgba(0, 0, 0, 0.05);
       }
     }
@@ -161,7 +164,7 @@ body.light {
     .tinyFlyoverMenu {
       svg {
         :hover {
-          color: red !important;
+          color: rgb(var(--tint-color)) !important;
         }
       }
     }
@@ -175,7 +178,7 @@ body.light {
 
     & label>input:checked+span {
       /* (CHECKED) IMAGE STYLES */
-      color: #C71D3D !important;
+      color:rgb(var(--tint-color)) !important;
     }
   }
 
@@ -192,7 +195,7 @@ body.light {
 
     & label>input:checked+span {
       /* (CHECKED) IMAGE STYLES */
-      color: #C71D3D !important;
+      color:rgb(var(--tint-color)) !important;
     }
   }
 
@@ -210,7 +213,7 @@ body.light {
       background: none repeat scroll 0 0 #303030;
 
       #add_filter_button {
-        color: #C71D3D;
+        color: rgb(var(--tint-color));
       }
     }
 
@@ -218,8 +221,8 @@ body.light {
       .panel-body {
         .btn-primary {
           color: #fff;
-          background-color: #C71D3D;
-          border-color: #C71D3D;
+          background-color: rgb(var(--tint-color));
+          border-color: rgb(var(--tint-color));
         }
       }
 
@@ -229,7 +232,7 @@ body.light {
         color: rgba(255, 255, 255, 0.25);
 
         &:hover {
-          color: #C71D3D;
+          color: rgb(var(--tint-color));
         }
       }
 
@@ -253,7 +256,7 @@ body.light {
     }
 
     .panel-default {
-      background-color: fade(#C71D3D, 2%);
+      background-color: rgba(var(--tint-color), 0.2);
       border-top-color: #303030;
       border-bottom-color: #202525;
     }
@@ -263,22 +266,22 @@ body.light {
   .layer-name-prompt {
 
     .modal-header {
-      border-bottom-color: #C71D3D;
+      border-bottom-color:rgb(var(--tint-color));
     }
 
     input {
       background-color: rgba(0, 0, 0, 0.02) !important;
 
       &:focus {
-        border: 1px solid #C71D3D;
+        border: 1px solid rgb(var(--tint-color));
       }
     }
 
     .btn-primary {
-      background-color: #C71D3D;
+      background-color: rgb(var(--tint-color));
 
       &:hover {
-        background-color: darken(#C71D3D, 10%);
+        background-color: rgb(val(--tint-color-dark));
       }
     }
   }
@@ -287,7 +290,7 @@ body.light {
 
     .panetitle {
       border-bottom-color: #222222;
-      color: #C71D3D;
+      color:rgb(var(--tint-color));
       box-shadow: 0 4px 2px -2px rgba(31, 73, 125, 0.3);
     }
 
@@ -335,7 +338,7 @@ body.light {
 
           &:hover {
             * {
-              stroke: #C71D3D !important;
+              stroke:rgb(var(--tint-color))!important;
             }
           }
         }
@@ -344,14 +347,14 @@ body.light {
       .layerSelectedElement {
         background-color: darken(#ffffff, 4%);
         color: #000000;
-        border-color: #C71D3D;
+        border-color:rgb(var(--tint-color));
       }
     }
   }
 
 
   .shadow {
-    border: 1px solid #C71D3D;
+    border: 1px solid rgb(var(--tint-color));
     box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
     background-color: white;
   }
@@ -362,7 +365,7 @@ body.light {
 
   #configMenuIcon {
     &:hover {
-      color: #C71D3D;
+      color:rgb(var(--tint-color));
     }
   }
 
@@ -375,16 +378,16 @@ body.light {
   #figureConfigDialog {
     background-color: white;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-left-color: #C71D3D;
+    border-left-color: rgb(var(--tint-color));
 
     .figureAddLabel {
       &:hover {
-        color: #C71D3D;
+        color:rgb(var(--tint-color));
       }
     }
 
     &:after {
-      border-right-color: #C71D3D;
+      border-right-color:rgb(var(--tint-color));
       border-top-color: transparent;
       border-left-color: transparent;
       border-bottom-color: transparent;
@@ -400,7 +403,7 @@ body.light {
       .title {
         div {
           h2 {
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
           }
         }
       }
@@ -415,12 +418,12 @@ body.light {
         }
 
         .glowBorder {
-          border-color: #C71D3D;
+          border-color:rgb(var(--tint-color));
         }
       }
 
       .request {
-        color: #C71D3D;
+        color:rgb(var(--tint-color));
       }
     }
   }
@@ -451,12 +454,12 @@ body.light {
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
       h2 {
-        color: #C71D3D;
+        color: rgb(var(--tint-color));
       }
     }
 
     button {
-      background-color: #C71D3D;
+      background-color: rgb(var(--tint-color));
       color: white;
     }
   }

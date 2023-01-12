@@ -1,4 +1,24 @@
 body.light {
+    --toolbar-bg-color: 161, 224, 224;
+    --tint-color:       199, 29, 61;
+    --tint-color-dark:  158, 27, 52;
+  
+    --lefttab-font-color: 161, 224, 224;
+    --lefttab-bg-color:  199, 29, 61;
+  
+    .toolbar {
+        background-color:rgb(var(--toolbar-bg-color));
+
+        .slider-handle {
+            background-color: rgb(var(--tint-color));
+        }
+
+        .simulationBase {
+            label {
+                opacity: 0.5;
+            }
+        }
+    }
 
     #draw2dCanvasWrapper {
         .draw2d_tooltip {
@@ -22,13 +42,13 @@ body.light {
         ellipse.draw2d_shape_basic_LineStartResizeHandle,
         ellipse.draw2d_shape_basic_LineEndResizeHandle,
         rect.draw2d_policy_line_OrthogonalSelectionFeedbackPolicy_ResizeHandle {
-            fill: #C71D3D;
+            fill: rgb(var(--tint-color));
         }
     }
 
 
     .shadow {
-        border-color: #C71D3D;
+        border-color: rgb(var(--tint-color));
         box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
         background-color: white;
     }
@@ -41,7 +61,7 @@ body.light {
             .paletteTitle {
                 div {
                     h2 {
-                        color: #C71D3D;
+                        color: rgb(var(--tint-color));
                     }
                 }
             }
@@ -57,7 +77,7 @@ body.light {
                 }
 
                 .glowBorder {
-                    border-color: #C71D3D;
+                    border-color: rgb(var(--tint-color));
                 }
 
                 &[data-scope="user"] {
@@ -72,54 +92,33 @@ body.light {
     }
 
 
-    .toolbar {
-        background-color: #B2E2F2;
-
-        .slider-handle {
-            background-color: #C71D3D;
-        }
-
-        .simulationBase {
-            label {
-                opacity: 0.5;
-            }
-        }
-    }
-
     #leftTabStrip {
-        background-color: #C71D3D;
-
+        background-color: rgb(var(--tint-color));
         &:after {
-            content: "Simulator";
-            color: #eeeeee45;
-            transform: rotate(-90deg) translate(-98px, -90px);
-            font-size: 55px;
-            white-space: nowrap;
-            font-weight: 200;
-            letter-spacing: 3px; 
+            color:rgb(var(--lefttab-font-color));
         }
 
         li {
             &.active {
-                a {
+                a{
                     &:hover {
                         background-color: white;
                     }
-                }
 
-                svg {
-                    path[stroke],
-                    rect[stroke],
-                    g[stroke],
-                    line[stroke],
-                    circle[stroke],
-                    polyline[stroke] {
-                        stroke: #C71D3D !important;
-                    }
+                    svg {
+                        path[stroke],
+                        rect[stroke],
+                        g[stroke],
+                        line[stroke],
+                        circle[stroke],
+                        polyline[stroke] {
+                            stroke: rgb(var(--lefttab-bg-color))  !important;
+                        }
 
-                    circle[fill],
-                    rect[fill] {
-                        fill: #C71D3D !important;
+                        circle[fill],
+                        rect[fill] {
+                            fill: rgb(var(--lefttab-bg-color))  !important;
+                        }
                     }
                 }
             }
@@ -129,8 +128,6 @@ body.light {
                     background-color: rgba(0, 0, 0, 0.1);
                 }
 
-                padding: 4px;
-
                 svg {
 
                     path[stroke],
@@ -139,12 +136,12 @@ body.light {
                     line[stroke],
                     circle[stroke],
                     polyline[stroke] {
-                        stroke: white !important;
+                        stroke:rgb(var(--lefttab-font-color)) !important;
                     }
 
                     circle[fill],
                     rect[fill] {
-                        fill: white !important;
+                        fill: rgb(var(--lefttab-font-color)) !important;
                     }
                 }
             }
@@ -206,7 +203,7 @@ body.light {
 
         &>span {
             &>span {
-                background-color: #C71D3D;
+                background-color: rgb(var(--tint-color));
                 border-color: transparent;
             }
         }
@@ -214,7 +211,7 @@ body.light {
         &.play {
             &>span {
                 &>span {
-                    background-color: #C71D3D;
+                    background-color: rgb(var(--tint-color));
                 }
             }
         }

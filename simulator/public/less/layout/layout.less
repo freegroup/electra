@@ -5,6 +5,13 @@ body {
   padding: 0;
   overflow:hidden;
 
+  #leftTabStrip {
+    &:after {
+        content: "Simulator";
+        transform: rotate(-90deg) translate(-98px, -100px);
+    }
+  }
+
   #layout {
     width: 100%;
     height: 100%;
