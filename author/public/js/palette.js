@@ -39,7 +39,7 @@ export default class Palette {
       .off("click", ".pageElement")
       .on("click", ".pageElement", (event) => {
         $(".pageElement").removeClass("selected")
-        let element = $(event.target)
+        let element = $(event.currentTarget)
         let id = element.data("page")
         let page = this.app.getDocument().getPage(id)
         this.app.view.setPage(page)
