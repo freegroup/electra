@@ -158,8 +158,8 @@ var digital_register_8_BitRegister = CircuitFigure.extend({
        shape.data("name","Rectangle");
        
        // enable
-       shape = this.canvas.paper.text(0,0,'Enable');
-       shape.attr({"x":4.5,"y":10.6796875,"text-anchor":"start","text":"Enable","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'load');
+       shape.attr({"x":6.5,"y":10.6796875,"text-anchor":"start","text":"load","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","enable");
        
        // q4
