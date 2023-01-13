@@ -1,0 +1,39 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_display_8_Led = digital_display_8_Led.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        // automatic stored by the framework
+        this.value = false;
+        
+        this.on("added",(emitter, event)=>{
+            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+        });
+    },
+
+    onStart: function(context)
+    {
+        this.value = this.getInputPort(0).getBooleanValue()
+        this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+    },
+    
+    calculate: function()
+    {
+        var port = this.getInputPort(0);
+        //if(port.hasChangedValue()){
+            this.value = port.getBooleanValue()
+            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+        //}
+    }
+});
