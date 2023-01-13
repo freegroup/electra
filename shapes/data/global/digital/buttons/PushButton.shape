@@ -146,84 +146,6 @@
       ]
     },
     {
-      "type": "shape_designer.figure.ExtPolygon",
-      "id": "ba8f078d-3ff3-529c-5b92-298033420975",
-      "x": 7982.7778125,
-      "y": 7993.0315,
-      "width": 32,
-      "height": 13.735999999999876,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "high"
-      },
-      "cssClass": "shape_designer_figure_PolyRect",
-      "ports": [],
-      "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(48,48,48,1)",
-      "stroke": 1,
-      "radius": 2,
-      "dasharray": null,
-      "vertices": [
-        {
-          "x": 8002.980212500001,
-          "y": 8001.7675
-        },
-        {
-          "x": 8006.6042125,
-          "y": 7993.0315
-        },
-        {
-          "x": 7991.6042125,
-          "y": 7993.0315
-        },
-        {
-          "x": 7993.8692125,
-          "y": 8001.7675
-        },
-        {
-          "x": 7982.7778125,
-          "y": 8001.7675
-        },
-        {
-          "x": 7982.7778125,
-          "y": 8006.7675
-        },
-        {
-          "x": 8014.7778125,
-          "y": 8006.7675
-        },
-        {
-          "x": 8014.7778125,
-          "y": 8001.7675
-        },
-        {
-          "x": 8006.6042125,
-          "y": 8001.7675
-        }
-      ],
-      "blur": 0,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.SizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.StrokeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
-        },
-        {
-          "name": "shape_designer.filter.RadiusFilter"
-        }
-      ]
-    },
-    {
       "type": "shape_designer.figure.ExtPort",
       "id": "4d53e23d-6df9-95e0-ba94-5fae534bfb23",
       "x": 8023.6563,
@@ -296,6 +218,84 @@
       "filters": [
         {
           "name": "shape_designer.filter.StrokeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPolygon",
+      "id": "dca7ddd9-a7f2-4aeb-9be0-916ed88b6c2c",
+      "x": 7982.7778125,
+      "y": 7991.7795,
+      "width": 32,
+      "height": 13.735999999999876,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "high"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 2,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 8006.6042125,
+          "y": 8000.5154999999995
+        },
+        {
+          "x": 8006.6042125,
+          "y": 7991.7795
+        },
+        {
+          "x": 7991.6042125,
+          "y": 7991.7795
+        },
+        {
+          "x": 7991.6042125,
+          "y": 8000.5154999999995
+        },
+        {
+          "x": 7982.7778125,
+          "y": 8000.5154999999995
+        },
+        {
+          "x": 7982.7778125,
+          "y": 8005.5154999999995
+        },
+        {
+          "x": 8014.7778125,
+          "y": 8005.5154999999995
+        },
+        {
+          "x": 8014.7778125,
+          "y": 8000.5154999999995
+        },
+        {
+          "x": 8006.6042125,
+          "y": 8000.5154999999995
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        },
+        {
+          "name": "shape_designer.filter.RadiusFilter"
         }
       ]
     }
