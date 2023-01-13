@@ -1,0 +1,35 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.last_clk = false;
+    },
+    
+    calculate:function()
+    {
+        var enable = this.getInputPort("input_enable").getBooleanValue();
+        var clk = this.getInputPort("input_clk").getBooleanValue();
+        
+        var rising = this.last_clk===false && clk===true; 
+        if(rising===true && enable===true){
+            console.log("clk and rising flag")
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1").getValue())
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2").getValue())
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3").getValue())
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_d4").getValue())
+        }
+        this.last_clk = clk;
+    }
+});
