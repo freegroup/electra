@@ -185,6 +185,7 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
         
         var rising = this.last_clk===false && clk===true; 
         if(rising===true && enable===true){
+            console.log("clk and rising flag")
             this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1"))
             this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2"))
             this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3"))
