@@ -178,7 +178,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
-      "x": 8015.8049461669925,
+      "x": 8015.3049461669925,
       "y": 8040.5,
       "width": 28.328125,
       "height": 21.359375,
@@ -260,46 +260,6 @@
         },
         {
           "name": "shape_designer.filter.StrokeFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.ExtPort",
-      "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
-      "x": 8034.1445,
-      "y": 8045.8940125,
-      "width": 10,
-      "height": 10,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "output_q",
-        "type": "Output",
-        "direction": 1
-      },
-      "cssClass": "shape_designer_figure_ExtPort",
-      "ports": [],
-      "bgColor": "rgba(55,177,222,1)",
-      "color": "rgba(27,27,27,1)",
-      "stroke": 1,
-      "dasharray": null,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.FanoutFilter"
-        },
-        {
-          "name": "shape_designer.filter.PortDirectionFilter"
-        },
-        {
-          "name": "shape_designer.filter.PortTypeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
         }
       ]
     },
@@ -426,7 +386,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "6e035f01-7c56-702f-c12e-c6c964423aa8",
-      "x": 8016.3049461669925,
+      "x": 8015.3049461669925,
       "y": 8059.3940125,
       "width": 28.328125,
       "height": 21.359375,
@@ -466,8 +426,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "51482e08-6a74-7746-bbe9-93d6b5fb19fd",
-      "x": 8016.3049461669925,
-      "y": 8081.7533875,
+      "x": 8015.3049461669925,
+      "y": 8079.7533875,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -484,7 +444,7 @@
       "stroke": 0,
       "radius": 0,
       "dasharray": null,
-      "text": "Q2",
+      "text": "Q3",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 10,
@@ -507,7 +467,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "2312c1ee-6d27-f0df-a644-8b55fd8c087a",
       "x": 8034.1445,
-      "y": 8084.8552,
+      "y": 8085.3552,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -555,7 +515,87 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "output_q_not",
+        "name": "output_q4",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "1d2c32de-9441-dac3-cd55-cc8406714361",
+      "x": 8015.3049461669925,
+      "y": 8102.1127625,
+      "width": 28.328125,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "q4"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Q4",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
+      "x": 8034.1445,
+      "y": 8045.8940125,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "output_q1",
         "type": "Output",
         "direction": 1
       },

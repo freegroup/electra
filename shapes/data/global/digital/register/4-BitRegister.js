@@ -15,12 +15,6 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
 
      this._super( $.extend({stroke:0, bgColor:null, width:59,height:138.84450000000015},attr), setter, getter);
      var port;
-     // output_q
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 47.0987417578657 }));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("output_q");
-     port.setMaxFanOut(20);
      // output_q_not
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 60.91253164511365 }));
      port.setConnectionDirection(1);
@@ -40,16 +34,22 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
      port.setName("input_enable");
      port.setMaxFanOut(20);
      // output_q_not
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 75.15976506091337 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 75.51988015369702 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q_not");
      port.setMaxFanOut(20);
-     // output_q_not
+     // output_q4
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 91.42112219065233 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("output_q_not");
+     port.setName("output_q4");
+     port.setMaxFanOut(20);
+     // output_q1
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 47.0987417578657 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q1");
      port.setMaxFanOut(20);
    },
 
@@ -87,7 +87,7 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q1');
-       shape.attr({"x":39.55494616699252,"y":65.6796875,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":39.05494616699252,"y":65.6796875,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Rectangle
@@ -97,13 +97,18 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q2');
-       shape.attr({"x":40.05494616699252,"y":84.57369999999992,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":39.05494616699252,"y":84.57369999999992,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'Q2');
-       shape.attr({"x":40.05494616699252,"y":106.93307499999992,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'Q3');
+       shape.attr({"x":39.05494616699252,"y":104.93307499999992,"text-anchor":"start","text":"Q3","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
+       
+       // q4
+       shape = this.canvas.paper.text(0,0,'Q4');
+       shape.attr({"x":39.05494616699252,"y":127.29244999999992,"text-anchor":"start","text":"Q4","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q4");
        
 
        return this.canvas.paper.setFinish();
