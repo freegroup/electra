@@ -14,23 +14,21 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
-        this.last_t = false;
+        this.last_clk = false;
     },
     
     calculate:function()
     {
-        var d = this.getInputPort("input_d").getBooleanValue();
-        var t = this.getInputPort("input_t").getBooleanValue();
+        var enable = this.getInputPort("input_enable").getBooleanValue();
+        var clk = this.getInputPort("input_clk").getBooleanValue();
         
-        var q = this.getOutputPort("output_q");
-        var q_ = this.getOutputPort("output_q_not");
-        
-        var rising = this.last_t===false && t===true; 
-        
-        if(rising===true){
-            q.setValue(d);
-            q_.setValue(!d)
+        var rising = this.last_clk===false && clk===true; 
+        if(rising===true && enable===true){
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1"))
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2"))
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3"))
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_d4"))
         }
-        this.last_t = t;
+        this.last_clk = clk;
     }
 });
