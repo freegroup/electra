@@ -24,11 +24,14 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
         
         var rising = this.last_clk===false && clk===true; 
         if(rising===true && enable===true){
-            console.log("clk and rising flag")
             this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1").getValue())
             this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2").getValue())
             this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3").getValue())
             this.getOutputPort("output_q4").setValue(this.getInputPort("input_d4").getValue())
+            this.getOutputPort("output_q5").setValue(this.getInputPort("input_d5").getValue())
+            this.getOutputPort("output_q6").setValue(this.getInputPort("input_d6").getValue())
+            this.getOutputPort("output_q7").setValue(this.getInputPort("input_d7").getValue())
+            this.getOutputPort("output_q8").setValue(this.getInputPort("input_d8").getValue())
         }
         this.last_clk = clk;
     }
