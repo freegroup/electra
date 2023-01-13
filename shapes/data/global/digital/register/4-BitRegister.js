@@ -96,17 +96,17 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
        
        // Rectangle
        shape = this.canvas.paper.path('M53.099999999997635 40.34270880496297L59 40.34270880496297L59 0L0 0L0 40.34270880496297L5.900000000002365 40.34270880496297L5.900000000002365 53L53.099999999997635 53L53.099999999997635 40.34270880496297Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Rectangle
        shape = this.canvas.paper.path('M0 48.84450000000015L59 48.84450000000015L59 138.84450000000015L0 138.84450000000015Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Rectangle
        shape = this.canvas.paper.path('M0.5 25.10051249999924L12.541999999999462 30.00651249999828L0.5 35.35851249999905Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(0,0,0,0)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // enable
