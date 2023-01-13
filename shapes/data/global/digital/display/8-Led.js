@@ -84,42 +84,42 @@ var digital_display_8_Led = CircuitFigure.extend({
        
        // circle
        shape = this.canvas.paper.path('M0 0L25 0L25 25L0 25Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","circle");
        
        // led1
        shape = this.canvas.paper.path('M0 25L25 25L25 50L0 50Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led1");
        
        // led2
        shape = this.canvas.paper.path('M0 50L25 50L25 75L0 75Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led2");
        
        // led3
        shape = this.canvas.paper.path('M0 75L25 75L25 100L0 100Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led3");
        
        // led4
        shape = this.canvas.paper.path('M0 100L25 100L25 125L0 125Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led4");
        
        // led5
        shape = this.canvas.paper.path('M0 125L25 125L25 150L0 150Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led5");
        
        // led6
        shape = this.canvas.paper.path('M0 150L25 150L25 175L0 175Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led6");
        
        // led7
        shape = this.canvas.paper.path('M0 175L25 175L25 200L0 200Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.attr({});
        shape.data("name","led7");
        
 
@@ -142,27 +142,32 @@ digital_display_8_Led = digital_display_8_Led.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-        
-        // automatic stored by the framework
-        this.value = false;
-        
+
         this.on("added",(emitter, event)=>{
-            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+            this.updateLayer()
         });
     },
 
-    onStart: function(context)
+    updateLayer: function ()
     {
-        this.value = this.getInputPort(0).getBooleanValue()
-        this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led0",{fill: this.getInputPort("port0").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led1",{fill: this.getInputPort("port1").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led2",{fill: this.getInputPort("port2").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led3",{fill: this.getInputPort("port3").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led4",{fill: this.getInputPort("port4").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led5",{fill: this.getInputPort("port5").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led6",{fill: this.getInputPort("port6").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led7",{fill: this.getInputPort("port7").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        
     },
     
-    calculate: function()
+    onStart: function(context)
     {
-        var port = this.getInputPort(0);
-        //if(port.hasChangedValue()){
-            this.value = port.getBooleanValue()
-            this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
-        //}
+        this.updateLayer();
+    },
+    
+    calculate: function(context)
+    {
+        this.updateLayer()
     }
 });
