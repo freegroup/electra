@@ -82,15 +82,15 @@ var digital_display_8_Led = CircuitFigure.extend({
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
-       // led1
-       shape = this.canvas.paper.path('M0 25L25 25L25 50L0 50Z');
-       shape.attr({});
-       shape.data("name","led1");
-       
        // led0
        shape = this.canvas.paper.path('M0 0L25 0L25 25L0 25Z');
        shape.attr({});
        shape.data("name","led0");
+       
+       // led1
+       shape = this.canvas.paper.path('M0 25L25 25L25 50L0 50Z');
+       shape.attr({});
+       shape.data("name","led1");
        
        // led2
        shape = this.canvas.paper.path('M0 50L25 50L25 75L0 75Z');
@@ -150,7 +150,6 @@ digital_display_8_Led = digital_display_8_Led.extend({
 
     updateLayer: function ()
     {
-        // comment
         this.layerAttr("led0",{fill: this.getInputPort("port0").getBooleanValue()?"#C21B7A":"#f0f0f0"});
         this.layerAttr("led1",{fill: this.getInputPort("port1").getBooleanValue()?"#C21B7A":"#f0f0f0"});
         this.layerAttr("led2",{fill: this.getInputPort("port2").getBooleanValue()?"#C21B7A":"#f0f0f0"});
