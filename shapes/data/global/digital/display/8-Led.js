@@ -82,10 +82,10 @@ var digital_display_8_Led = CircuitFigure.extend({
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
-       // circle
+       // led1
        shape = this.canvas.paper.path('M0 25L25 25L25 50L0 50Z');
        shape.attr({});
-       shape.data("name","circle");
+       shape.data("name","led1");
        
        // led0
        shape = this.canvas.paper.path('M0 0L25 0L25 25L0 25Z');
