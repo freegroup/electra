@@ -99,6 +99,30 @@ var digital_register_8_BitRegister = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d8");
      port.setMaxFanOut(20);
+     // output_q5
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 65.99309098469439 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q5");
+     port.setMaxFanOut(20);
+     // output_q6
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 75.13200011880559 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q6");
+     port.setMaxFanOut(20);
+     // output_q7
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 84.2709092529168 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q7");
+     port.setMaxFanOut(20);
+     // output_q8
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 93.409818387028 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q8");
+     port.setMaxFanOut(20);
    },
 
    createShapeElement : function()
