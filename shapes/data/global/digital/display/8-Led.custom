@@ -1,0 +1,44 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_display_8_Led = digital_display_8_Led.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.on("added",(emitter, event)=>{
+            this.updateLayer()
+        });
+    },
+
+    updateLayer: function ()
+    {
+        this.layerAttr("led0",{fill: this.getInputPort("port0").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led1",{fill: this.getInputPort("port1").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led2",{fill: this.getInputPort("port2").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led3",{fill: this.getInputPort("port3").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led4",{fill: this.getInputPort("port4").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led5",{fill: this.getInputPort("port5").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led6",{fill: this.getInputPort("port6").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        this.layerAttr("led7",{fill: this.getInputPort("port7").getBooleanValue()?"#C21B7A":"#f0f0f0"});
+        
+    },
+    
+    onStart: function(context)
+    {
+        this.updateLayer();
+    },
+    
+    calculate: function(context)
+    {
+        this.updateLayer()
+    }
+});

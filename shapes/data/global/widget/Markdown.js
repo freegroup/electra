@@ -42,7 +42,7 @@ var widget_Markdown = draw2d.shape.basic.Rectangle.extend({
             })
             .on("removed", (emitter, event) => {
                 this.overlay.remove()
-                event.canvas.off(zoomCallback)
+                event.canvas.off(updateOverlay)
             })
             .on("change:dimension", (emitter, event) => {
                 updateOverlay( emitter, {value: this.canvas.getZoom()})
