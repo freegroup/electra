@@ -19,9 +19,8 @@ export default class Palette {
     let startGenerateEventMethod = (msg) => {
       $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
     }
-    socket.on("shape/global/generating", startGenerateEventMethod)
-    socket.on("shape/user/generating", startGenerateEventMethod)
-
+    socket.on("shape/generating", startGenerateEventMethod)
+ 
     // Update the shape thumbnail if the backend fineshed the calculation
     //
     let endGenerateEventMethod = (msg) => {
@@ -33,11 +32,10 @@ export default class Palette {
       }
       else {
         // update existing shape
-        $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes.user.image(msg.imagePath)})
+        $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes[msg.scope]?.image(msg.imagePath)})
       }
     }
-    socket.on("shape/global/generated", endGenerateEventMethod)
-    socket.on("shape/user/generated", endGenerateEventMethod)
+   socket.on("shape/generated", endGenerateEventMethod)
   }
 
   refreshUI(){

@@ -48,11 +48,7 @@ export default draw2d.shape.basic.Label.extend({
      */
     getPersistentAttributes : function()
     {
-        var memento = this._super();
-
-        memento.index = this.index;
-
-        return memento;
+        return {...this._super(), index: this.index};
     },
 
     /**

@@ -182,8 +182,9 @@ module.exports = {
             filesystem.writeFile(conf.absoluteUserDataDirectory(req), shapeRelativePath, content, res)
             .then( (sanitizedRelativePath) => {
                 let body = { 
-                topic: "shape/user/generating",
+                topic: "shape/generating",
                 event :{
+                    scope: "user",
                     filePath: shapeRelativePath,
                     imagePath: shapeRelativePath.replace(".shape", ".png"),
                     jsPath: shapeRelativePath.replace(".shape", ".js")
@@ -210,8 +211,9 @@ module.exports = {
                 })
                 .then( () => {
                     let body = { 
-                    topic: "shape/user/generated",
+                    topic: "shape/generated",
                     event :{
+                        scope: "user",
                         filePath: shapeRelativePath,
                         imagePath: shapeRelativePath.replace(".shape", ".png"),
                         jsPath: shapeRelativePath.replace(".shape", ".js")

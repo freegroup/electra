@@ -47,12 +47,12 @@ var digital_display_Led = CircuitFigure.extend({
        
        // Line
        shape = this.canvas.paper.path('M5.522100000000137 5.682400000001508L15.138100000001941,16.496800000000803L24.754100000001927,27.31119999999919');
-       shape.attr({});
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
        shape = this.canvas.paper.path('M25.94430000000102 5.062700000001314L5.283199999999852,27.963700000000244');
-       shape.attr({});
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
 
@@ -93,9 +93,9 @@ digital_display_Led = digital_display_Led.extend({
     calculate: function()
     {
         var port = this.getInputPort(0);
-        if(port.hasChangedValue()){
+        //if(port.hasChangedValue()){
             this.value = port.getBooleanValue()
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
-        }
+        //}
     }
 });

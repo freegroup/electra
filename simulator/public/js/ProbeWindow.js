@@ -51,12 +51,7 @@ export default class ProbeWindow {
     this.yScale = d3.scaleLinear().domain([0, 5]).range([this.channelHeight, 0])
 
     $("#probe_window_stick").on("click", () => {
-      if (this.visible) {
-        this.hide()
-      }
-      else {
-        this.show()
-      }
+      this.visible?this.hide():this.show()
     })
   }
 
@@ -82,7 +77,7 @@ export default class ProbeWindow {
     $("#probeSortable").remove()
     $("#probe_window").append('<ul id="probeSortable"></ul>')
 
-    probes.forEach( (probe) => this.addProbe(probe))
+    probes.forEach( probe => this.addProbe(probe))
 
     if (probes.length > 0)
       $("#probe_hint").hide()

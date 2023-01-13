@@ -359,21 +359,13 @@ export default draw2d.Canvas.extend({
 
     // only responsible to reload the code and the current document
     // (the palette.js did its own job and refresh palette entry if required)
-    socket.on("shape/global/generated", msg => {
+    socket.on("shape/generated", msg => {
       console.log("got event", msg)
-      $.getScript(conf.shapes.global.file(msg.jsPath),
+      $.getScript(conf.shapes[msg.scope].file(msg.jsPath),
         this.reloadFromCache.bind(this)
       )
     })
 
-    // only responsible to reload the code and the current document
-    // (the palette.js did its own job and refresh palette entry if required)
-    socket.on("shape/user/generated", msg => {
-      console.log("got event", msg)
-      $.getScript(conf.shapes.user.file(msg.jsPath),
-        this.reloadFromCache.bind(this)
-      )
-    })
 
     this.slider = $('#simulationBaseTimer')
       .slider({

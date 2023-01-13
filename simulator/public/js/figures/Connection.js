@@ -53,10 +53,8 @@ export default draw2d.Connection.extend({
     // This is a design flaw. the router creates the decoration and the connection must remove them :-/
     // Unfortunately the Router didn't have a callback when a connection is removed from the canvas.
     //
-    if (typeof this.vertexNodes !== "undefined" && this.vertexNodes !== null) {
-      this.vertexNodes.remove()
-      delete this.vertexNodes
-    }
+    this.vertexNodes?.remove()
+    delete this.vertexNodes
   },
 
   add: function (figure) {
@@ -88,7 +86,7 @@ export default draw2d.Connection.extend({
     // add all decorations to the memento
     //
     memento.labels = []
-    this.children.each(function (i, e) {
+    this.children.each( (i, e) => {
       let labelJSON = e.figure.getPersistentAttributes()
       labelJSON.locator = e.locator.NAME
       memento.labels.push(labelJSON)
@@ -118,19 +116,19 @@ export default draw2d.Connection.extend({
     // and add all children of the JSON document.
     //
     if (memento.labels) {
-      $.each(memento.labels, $.proxy(function (i, json) {
+      $.each(memento.labels, (i, json) => {
         // create the figure stored in the JSON
-        let figure = eval("new " + json.type + "()")
+        let figure = eval(`new ${json.type}()`)
 
         // apply all attributes
         figure.setPersistentAttributes(json)
 
         // instantiate the locator
-        let locator = eval("new " + json.locator + "()")
+        let locator = eval(`new ${json.locator}()`)
 
         // add the new figure as child to this figure
         this.add(figure, locator)
-      }, this))
+      })
     }
   }
 

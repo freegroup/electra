@@ -177,8 +177,9 @@ module.exports = {
             filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
                 .then( (sanitizedRelativePath) => {
                     let body = { 
-                    topic: "shape/global/generating",
+                    topic: "shape/generating",
                     event :{
+                        scope: "global",
                         filePath: shapeRelativePath,
                         imagePath: shapeRelativePath.replace(".shape", ".png"),
                         jsPath: shapeRelativePath.replace(".shape", ".js")
@@ -203,8 +204,9 @@ module.exports = {
                 })
                 .then( () => {
                     let body = { 
-                    topic: "shape/global/generated",
+                    topic: "shape/generated",
                     event :{
+                        scope: "global",
                         filePath: shapeRelativePath,
                         imagePath: shapeRelativePath.replace(".shape", ".png"),
                         jsPath: shapeRelativePath.replace(".shape", ".js")

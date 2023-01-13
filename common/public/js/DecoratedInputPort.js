@@ -69,6 +69,13 @@ export default draw2d.InputPort.extend({
     return this.decoration.getStick()
   },
 
+  getValue: function (){
+    if ( this.getConnections().getSize()>0){
+      return this.getConnections().first().getValue()
+    }
+    return this.getValue()
+  },
+
   setValue: function (value = Values.DIGITAL_LOW) {
     // convert boolean values to 5volt TTL pegel logic
     //

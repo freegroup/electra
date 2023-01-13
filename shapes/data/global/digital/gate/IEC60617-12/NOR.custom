@@ -18,10 +18,9 @@ digital_gate_IEC60617_12_NOR = digital_gate_IEC60617_12_NOR.extend({
     
     calculate:function()
     {
-        var i1 = this.getInputPort(0);
-        var i2 = this.getInputPort(1);
-        var o1 = this.getOutputPort(0);
-        
+        let i1 = this.getInputPort(0);
+        let i2 = this.getInputPort(1);
+        let o1 = this.getOutputPort(0);
         o1.setValue(!(i1.getBooleanValue() || i2.getBooleanValue()));
     }
 });

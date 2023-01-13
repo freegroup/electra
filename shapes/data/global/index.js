@@ -1799,7 +1799,7 @@ digital_buttons_HighLowArray = digital_buttons_HighLowArray.extend({
 var digital_buttons_PushButton = CircuitFigure.extend({
 
    NAME: "digital_buttons_PushButton",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -1847,15 +1847,15 @@ var digital_buttons_PushButton = CircuitFigure.extend({
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","low");
        
-       // high
-       shape = this.canvas.paper.path('M22.31382500000109,16.235999999999876Q20.50182500000119,16.235999999999876 21.26817190867568, 14.388647187036133L23.359478091326498,9.347352812963743Q24.125825000000987,7.5 22.125825000000987, 7.5L11.125825000000987,7.5Q9.125825000000987,7.5 9.627772390073126, 9.4359878144244L10.888877609928265,14.300012185575476Q11.390825000000405,16.235999999999876 9.390825000000405, 16.235999999999876L2.299425000001065,16.235999999999876Q0.2994250000010652,16.235999999999876 0.2994250000010652, 18.235999999999876L0.2994250000010652,19.235999999999876Q0.2994250000010652,21.235999999999876 2.299425000001065, 21.235999999999876L30.299425000001065,21.235999999999876Q32.299425000001065,21.235999999999876 32.299425000001065, 19.235999999999876L32.299425000001065,18.235999999999876Q32.299425000001065,16.235999999999876 30.299425000001065, 16.235999999999876L26.125825000000987,16.235999999999876Q24.125825000000987,16.235999999999876 22.31382500000109, 16.235999999999876L22.31382500000109,16.235999999999876');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","high");
-       
        // Line
        shape = this.canvas.paper.path('M30.043225000000348 23.93699999999899L37.699524999999994,23.93699999999899L45.35582500000055,23.93699999999899');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
+       
+       // high
+       shape = this.canvas.paper.path('M26.125825000000987,14.983999999999469Q24.125825000000987,14.983999999999469 24.125825000000987, 12.983999999999469L24.125825000000987,8.247999999999593Q24.125825000000987,6.2479999999995925 22.125825000000987, 6.2479999999995925L11.125825000000987,6.2479999999995925Q9.125825000000987,6.2479999999995925 9.125825000000987, 8.247999999999593L9.125825000000987,12.983999999999469Q9.125825000000987,14.983999999999469 7.125825000000987, 14.983999999999469L2.299425000001065,14.983999999999469Q0.2994250000010652,14.983999999999469 0.2994250000010652, 16.98399999999947L0.2994250000010652,17.98399999999947Q0.2994250000010652,19.98399999999947 2.299425000001065, 19.98399999999947L30.299425000001065,19.98399999999947Q32.299425000001065,19.98399999999947 32.299425000001065, 17.98399999999947L32.299425000001065,16.98399999999947Q32.299425000001065,14.983999999999469 30.299425000001065, 14.983999999999469L26.125825000000987,14.983999999999469');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","high");
        
 
        return this.canvas.paper.setFinish();
@@ -1879,15 +1879,18 @@ digital_buttons_PushButton = digital_buttons_PushButton.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.value = false;
+        
+        this.layerShow("high", !this.value);
+        this.layerShow("low", this.value);
         this.on("mousedown",()=>{            
-            this.layerShow("low" , false, 100);
-            this.layerShow("high", true,  100);
+            this.layerShow("low" , false);
+            this.layerShow("high", true);
             this.getOutputPort(0).setValue(true);
         });
         this.on("mouseup",()=>{            
             this.value = !this.value;
-            this.layerShow("low" , true,  100);
-            this.layerShow("high", false, 100);
+            this.layerShow("low" , true);
+            this.layerShow("high", false);
             this.getOutputPort(0).setValue(false);
         });
 
@@ -2540,12 +2543,12 @@ var digital_display_Led = CircuitFigure.extend({
        
        // Line
        shape = this.canvas.paper.path('M5.522100000000137 5.682400000001508L15.138100000001941,16.496800000000803L24.754100000001927,27.31119999999919');
-       shape.attr({});
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
        shape = this.canvas.paper.path('M25.94430000000102 5.062700000001314L5.283199999999852,27.963700000000244');
-       shape.attr({});
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
 
@@ -2586,9 +2589,138 @@ digital_display_Led = digital_display_Led.extend({
     calculate: function()
     {
         var port = this.getInputPort(0);
-        if(port.hasChangedValue()){
+        //if(port.hasChangedValue()){
             this.value = port.getBooleanValue()
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
+        //}
+    }
+});
+
+
+// Generated Code for the Draw2D touch HTML5 lib.
+// File will be generated if you save the *.shape file.
+//
+// created with http://www.draw2d.org
+//
+//
+var digital_flipflop_D_Latch = CircuitFigure.extend({
+
+   NAME: "digital_flipflop_D_Latch",
+   VERSION: "local-version",
+
+   init:function(attr, setter, getter)
+   {
+     var _this = this;
+
+     this._super( $.extend({stroke:0, bgColor:null, width:40,height:53.052974999999606},attr), setter, getter);
+     var port;
+     // output_q
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 20.526652840864077 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q");
+     port.setMaxFanOut(20);
+     // output_q_not
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 79.98738525030996 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_q_not");
+     port.setMaxFanOut(20);
+     // input_d
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.75, y: 20.526652840864077 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input_d");
+     port.setMaxFanOut(20);
+     // input_e
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.75, y: 79.98738525030996 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input_e");
+     port.setMaxFanOut(20);
+   },
+
+   createShapeElement : function()
+   {
+      var shape = this._super();
+      this.originalWidth = 40;
+      this.originalHeight= 53.052974999999606;
+      return shape;
+   },
+
+   createSet: function()
+   {
+       this.canvas.paper.setStart();
+       var shape = null;
+       // BoundingBox
+       shape = this.canvas.paper.path("M0,0 L40,0 L40,53.052974999999606 L0,53.052974999999606");
+       shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
+       shape.data("name","BoundingBox");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0,2Q0,1 1, 1L39,1Q40,1 40, 2L40,50Q40,51 39, 51L1,51Q0,51 0, 50L0,2');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'D');
+       shape.attr({"x":4.5,"y":10.6796875,"text-anchor":"start","text":"D","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'Q');
+       shape.attr({"x":26.78125,"y":11.1796875,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'Q');
+       shape.attr({"x":26.28125,"y":42.373287499999606,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Line
+       shape = this.canvas.paper.path('M26.347999999999956 36.49839999999767L33.874799999999595,36.49839999999767');
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Line");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'E');
+       shape.attr({"x":5,"y":42.373287499999606,"text-anchor":"start","text":"E","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+
+       return this.canvas.paper.setFinish();
+   }
+});
+
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+    
+    calculate:function()
+    {
+        var d = this.getInputPort("input_d").getBooleanValue();
+        var e = this.getInputPort("input_e").getBooleanValue();
+        
+        var q = this.getOutputPort("output_q");
+        var q_ = this.getOutputPort("output_q_not");
+        
+      
+        if(e===true){
+            q.setValue(d);
+            q_.setValue(!d)
         }
     }
 });
@@ -3080,34 +3212,34 @@ digital_flipflop_JKRFlipFlop = digital_flipflop_JKRFlipFlop.extend({
 var digital_flipflop_SRFlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SRFlipFlop",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:40,height:63.12239999999838},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:40,height:63.065120000000206},attr), setter, getter);
      var port;
      // output_q
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 16.919013694029815 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 16.843553932826566 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q");
      port.setMaxFanOut(20);
      // output_q_not
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 81.57637779932148 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 81.55964422171755 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q_not");
      port.setMaxFanOut(20);
      // input_s
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.717999999996664, y: 16.919013694029815 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 81.65908508538081 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_s");
      port.setMaxFanOut(1);
      // input_r
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 81.57637779932148 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 16.843553932826566 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_r");
@@ -3118,7 +3250,7 @@ var digital_flipflop_SRFlipFlop = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 40;
-      this.originalHeight= 63.12239999999838;
+      this.originalHeight= 63.065120000000206;
       return shape;
    },
 
@@ -3127,37 +3259,37 @@ var digital_flipflop_SRFlipFlop = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L40,0 L40,63.12239999999838 L0,63.12239999999838");
+       shape = this.canvas.paper.path("M0,0 L40,0 L40,63.065120000000206 L0,63.065120000000206");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0,1.122399999998379Q0,0.12239999999837892 1, 0.12239999999837892L39,0.12239999999837892Q40,0.12239999999837892 40, 1.122399999998379L40,62.12239999999838Q40,63.12239999999838 39, 63.12239999999838L1,63.12239999999838Q0,63.12239999999838 0, 62.12239999999838L0,1.122399999998379');
+       shape = this.canvas.paper.path('M0,1.0651200000002063Q0,0.06512000000020635 1, 0.06512000000020635L39,0.06512000000020635Q40,0.06512000000020635 40, 1.0651200000002063L40,62.065120000000206Q40,63.065120000000206 39, 63.065120000000206L1,63.065120000000206Q0,63.065120000000206 0, 62.065120000000206L0,1.0651200000002063');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q');
-       shape.attr({"x":26.28125,"y":51.43056749999869,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":26.28125,"y":51.373287500000515,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q');
-       shape.attr({"x":26.28125,"y":10.736967499998173,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":26.28125,"y":10.6796875,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'S');
-       shape.attr({"x":8.0078125,"y":10.6796875,"text-anchor":"start","text":"S","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":5.978880000001482,"y":50.373287500000515,"text-anchor":"start","text":"S","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'R');
-       shape.attr({"x":7.978880000001482,"y":51.43056749999869,"text-anchor":"start","text":"R","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":5.701536250001482,"y":11.122407500001827,"text-anchor":"start","text":"R","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M26.347999999999956 45.555679999995846L33.874799999999595,45.555679999995846');
+       shape = this.canvas.paper.path('M26.347999999999956 45.49839999999767L33.874799999999595,45.49839999999767');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
@@ -4613,7 +4745,7 @@ digital_gate_IEC60617_12_NAND = digital_gate_IEC60617_12_NAND.extend({
 var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_NOR",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -4703,10 +4835,9 @@ digital_gate_IEC60617_12_NOR = digital_gate_IEC60617_12_NOR.extend({
     
     calculate:function()
     {
-        var i1 = this.getInputPort(0);
-        var i2 = this.getInputPort(1);
-        var o1 = this.getOutputPort(0);
-        
+        let i1 = this.getInputPort(0);
+        let i2 = this.getInputPort(1);
+        let o1 = this.getOutputPort(0);
         o1.setValue(!(i1.getBooleanValue() || i2.getBooleanValue()));
     }
 });
