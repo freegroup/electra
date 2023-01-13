@@ -119,7 +119,7 @@ digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
         var q_ = this.getOutputPort("output_q_not");
         
       
-        if(w===true){
+        if(e===true){
             q.setValue(d);
             q_.setValue(!d)
         }
