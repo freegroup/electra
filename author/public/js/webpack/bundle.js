@@ -4501,6 +4501,12 @@ growPolicy.growFactor = 1.5;
   useDefaultValueProvider: function useDefaultValueProvider() {
     return this.decoration.getStick();
   },
+  getValue: function getValue() {
+    if (this.getConnections().getSize() > 0) {
+      return this.getConnections().first().getValue();
+    }
+    return this._super();
+  },
   setValue: function setValue() {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _Values__WEBPACK_IMPORTED_MODULE_2__["default"].DIGITAL_LOW;
     // convert boolean values to 5volt TTL pegel logic
