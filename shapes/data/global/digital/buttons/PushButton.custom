@@ -15,6 +15,9 @@ digital_buttons_PushButton = digital_buttons_PushButton.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.value = false;
+        
+        this.layerShow("high", !this.value);
+        this.layerShow("low", this.value);
         this.on("mousedown",()=>{            
             this.layerShow("low" , false);
             this.layerShow("high", true);
