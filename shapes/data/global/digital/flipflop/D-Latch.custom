@@ -13,24 +13,20 @@ digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-
-        this.last_t = false;
     },
     
     calculate:function()
     {
         var d = this.getInputPort("input_d").getBooleanValue();
-        var t = this.getInputPort("input_t").getBooleanValue();
+        var e = this.getInputPort("input_e").getBooleanValue();
         
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         
-        var rising = this.last_t===false && t===true; 
-        
-        if(rising===true){
+      
+        if(w===true){
             q.setValue(d);
             q_.setValue(!d)
         }
-        this.last_t = t;
     }
 });
