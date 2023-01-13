@@ -21,12 +21,6 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_clk");
      port.setMaxFanOut(20);
-     // input_enable
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.694915254237288, y: 7.691833309925844 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("input_enable");
-     port.setMaxFanOut(20);
      // output_q4
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 91.42112219065233 }));
      port.setConnectionDirection(1);
@@ -50,6 +44,12 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q1");
+     port.setMaxFanOut(20);
+     // input_enable
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.694915254237288, y: 7.691833309925844 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input_enable");
      port.setMaxFanOut(20);
      // input_d1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.847457627118644, y: 47.0987417578657 }));
@@ -134,25 +134,25 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
        shape.attr({"x":39.05494616699252,"y":65.6796875,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","q1");
        
-       // q1
+       // d1
        shape = this.canvas.paper.text(0,0,'D1');
        shape.attr({"x":7,"y":65.1796875,"text-anchor":"start","text":"D1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q1");
+       shape.data("name","d1");
        
-       // q1
+       // d2
        shape = this.canvas.paper.text(0,0,'D2');
        shape.attr({"x":7,"y":84.57369999999992,"text-anchor":"start","text":"D2","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q1");
+       shape.data("name","d2");
        
-       // q1
+       // d3
        shape = this.canvas.paper.text(0,0,'D3');
        shape.attr({"x":7,"y":104.93307499999992,"text-anchor":"start","text":"D3","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q1");
+       shape.data("name","d3");
        
-       // q1
+       // d4
        shape = this.canvas.paper.text(0,0,'D4');
        shape.attr({"x":7,"y":126.53488749999997,"text-anchor":"start","text":"D4","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q1");
+       shape.data("name","d4");
        
 
        return this.canvas.paper.setFinish();
