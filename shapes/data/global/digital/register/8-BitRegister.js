@@ -202,6 +202,26 @@ var digital_register_8_BitRegister = CircuitFigure.extend({
        shape.attr({"x":7,"y":125.10193749999962,"text-anchor":"start","text":"D4","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","d4");
        
+       // q4
+       shape = this.canvas.paper.text(0,0,'Q5');
+       shape.attr({"x":39.05494616699252,"y":145.10193749999962,"text-anchor":"start","text":"Q5","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q4");
+       
+       // q4
+       shape = this.canvas.paper.text(0,0,'Q6');
+       shape.attr({"x":39.05494616699252,"y":165.10193749999962,"text-anchor":"start","text":"Q6","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q4");
+       
+       // q4
+       shape = this.canvas.paper.text(0,0,'Q7');
+       shape.attr({"x":39.05494616699252,"y":185.10193749999962,"text-anchor":"start","text":"Q7","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q4");
+       
+       // q4
+       shape = this.canvas.paper.text(0,0,'Q8');
+       shape.attr({"x":39.05494616699252,"y":205.10193749999962,"text-anchor":"start","text":"Q8","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q4");
+       
 
        return this.canvas.paper.setFinish();
    }
