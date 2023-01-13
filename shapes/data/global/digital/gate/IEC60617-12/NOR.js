@@ -100,7 +100,7 @@ digital_gate_IEC60617_12_NOR = digital_gate_IEC60617_12_NOR.extend({
         let i1 = this.getInputPort(0);
         let i2 = this.getInputPort(1);
         let o1 = this.getOutputPort(0);
-        
+        console.log(i1.getValue(), i2.getValue())
         o1.setValue(!(i1.getBooleanValue() || i2.getBooleanValue()));
     }
 });
