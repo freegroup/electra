@@ -79,7 +79,7 @@ class Application {
     // automatic add the configuration to the very first shape
     // in the document as userData
     //
-    this.documentConfiguration = $.extend({}, this.documentConfigurationTempl)
+    this.documentConfiguration = { ...this.documentConfigurationTempl}
 
     this.storage = storage
     this.view = new View(this, "canvas", permissions)
@@ -254,7 +254,7 @@ class Application {
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
     this.view.reset()
-    this.documentConfiguration = $.extend({}, this.documentConfigurationTempl)
+    this.documentConfiguration = {...this.documentConfigurationTempl}
     if (name) {
       this.currentFile = { name, scope }
     } else {
@@ -280,7 +280,7 @@ class Application {
   getConfiguration(key) {
     let figures = this.view.getExtFigures()
     if (figures.getSize() > 0) {
-      this.documentConfiguration = $.extend({}, this.documentConfiguration, figures.first().getUserData())
+      this.documentConfiguration = {...this.documentConfiguration, ...figures.first().getUserData()}
     }
 
     function pick (obj, var_keys) {
@@ -300,11 +300,12 @@ class Application {
   }
 
   setConfiguration(conf) {
-    this.documentConfiguration = $.extend({}, this.documentConfiguration, conf)
+    this.documentConfiguration = {...this.documentConfiguration, ...conf}
     let figures = this.view.getExtFigures()
     if (figures.getSize() > 0) {
       let userData = figures.first().attr("userData")
-      figures.first().attr("userData",$.extend(userData, this.documentConfiguration))
+      delete this.documentConfiguration.name
+      figures.first().attr("userData",{...userData, ...this.documentConfiguration})
     }
   }
 

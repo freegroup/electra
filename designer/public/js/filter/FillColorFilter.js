@@ -31,7 +31,6 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
     this.colorPicker = new jscolor.color(document.getElementById('filter_color_fill'), {})
     this.colorPicker.fromString(figure.getBackgroundColor().hash())
     this.colorPicker.onImmediateChange = () => {
-      debugger
       figure.setBackgroundColor("#" + this.colorPicker.toString())
     }
 

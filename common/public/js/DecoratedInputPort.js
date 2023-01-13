@@ -71,9 +71,9 @@ export default draw2d.InputPort.extend({
 
   getValue: function (){
     if ( this.getConnections().getSize()>0){
-      return this.getConnections().first().getValue()
+      return this.getConnections().first().getSource().getValue()
     }
-    return this.getValue()
+    return this._super()
   },
 
   setValue: function (value = Values.DIGITAL_LOW) {

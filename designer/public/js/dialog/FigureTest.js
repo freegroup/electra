@@ -65,7 +65,7 @@ export default class FigureTest {
           //
           new draw2d.policy.connection.OrthogonalConnectionCreatePolicy({
             createConnection: function () {
-              return new draw2d.Connection({
+              let con = new draw2d.Connection({
                 radius: 3,
                 stroke: 2,
                 color: "#129CE4",
@@ -73,6 +73,9 @@ export default class FigureTest {
                 outlineColor: "#ffffff",
                 router: router
               })
+              con.getValue = () => con.getSource().getValue()
+              console.log(con)
+              return con
             }
           })
         ])
