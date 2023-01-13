@@ -31,9 +31,9 @@ digital_display_Led = digital_display_Led.extend({
     calculate: function()
     {
         var port = this.getInputPort(0);
-        if(port.hasChangedValue()){
+        //if(port.hasChangedValue()){
             this.value = port.getBooleanValue()
             this.layerAttr("circle",{fill: this.value?"#C21B7A":"#f0f0f0"});
-        }
+        //}
     }
 });
