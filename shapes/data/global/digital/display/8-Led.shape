@@ -2,6 +2,66 @@
   "draw2d": [
     {
       "type": "shape_designer.figure.PolyRect",
+      "id": "3061f453-f3b6-d87c-592f-d388294037de",
+      "x": 7987.5,
+      "y": 7925,
+      "width": 25,
+      "height": 25,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "circle",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"added\",(emitter, event)=>{\n            this.updateLayer()\n        });\n    },\n\n    updateLayer: function ()\n    {\n        this.layerAttr(\"led0\",{fill: this.getInputPort(\"port0\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led1\",{fill: this.getInputPort(\"port1\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led2\",{fill: this.getInputPort(\"port2\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led3\",{fill: this.getInputPort(\"port3\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led4\",{fill: this.getInputPort(\"port4\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led5\",{fill: this.getInputPort(\"port5\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led6\",{fill: this.getInputPort(\"port6\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led7\",{fill: this.getInputPort(\"port7\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        \n    },\n    \n    onStart: function(context)\n    {\n        this.updateLayer();\n    },\n    \n    calculate: function(context)\n    {\n        this.updateLayer()\n    }\n});",
+        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7987.5,
+          "y": 7925
+        },
+        {
+          "x": 8012.5,
+          "y": 7925
+        },
+        {
+          "x": 8012.5,
+          "y": 7950
+        },
+        {
+          "x": 7987.5,
+          "y": 7950
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
       "id": "c89174a4-65e4-ee3e-a306-5791aced9e4f",
       "x": 7987.5,
       "y": 7900,
@@ -12,7 +72,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "circle",
+        "name": "led0",
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"added\",(emitter, event)=>{\n            this.updateLayer()\n        });\n    },\n\n    updateLayer: function ()\n    {\n        this.layerAttr(\"led0\",{fill: this.getInputPort(\"port0\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led1\",{fill: this.getInputPort(\"port1\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led2\",{fill: this.getInputPort(\"port2\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led3\",{fill: this.getInputPort(\"port3\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led4\",{fill: this.getInputPort(\"port4\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led5\",{fill: this.getInputPort(\"port5\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led6\",{fill: this.getInputPort(\"port6\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led7\",{fill: this.getInputPort(\"port7\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        \n    },\n    \n    onStart: function(context)\n    {\n        this.updateLayer();\n    },\n    \n    calculate: function(context)\n    {\n        this.updateLayer()\n    }\n});",
         "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray",
@@ -42,61 +102,6 @@
         {
           "x": 7987.5,
           "y": 7925
-        }
-      ],
-      "blur": 0,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.SizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.StrokeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.PolyRect",
-      "id": "3061f453-f3b6-d87c-592f-d388294037de",
-      "x": 7987.5,
-      "y": 7925,
-      "width": 25,
-      "height": 25,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "led1"
-      },
-      "cssClass": "shape_designer_figure_PolyRect",
-      "ports": [],
-      "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(48,48,48,1)",
-      "stroke": 1,
-      "radius": 0,
-      "dasharray": null,
-      "vertices": [
-        {
-          "x": 7987.5,
-          "y": 7925
-        },
-        {
-          "x": 8012.5,
-          "y": 7925
-        },
-        {
-          "x": 8012.5,
-          "y": 7950
-        },
-        {
-          "x": 7987.5,
-          "y": 7950
         }
       ],
       "blur": 0,
