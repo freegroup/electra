@@ -7,7 +7,7 @@
 var digital_pulse_Delay = CircuitFigure.extend({
 
    NAME: "digital_pulse_Delay",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -26,7 +26,7 @@ var digital_pulse_Delay = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
    },
 
    createShapeElement : function()
