@@ -46,10 +46,10 @@ signal_SignalTarget = signal_SignalTarget.extend({
         // get the connected port and forward the port to the related party ( SignalSource shape)
         //
         this.getInputPort(0).on("connect", (emitter, event)=>{
-           this.signalPort = event.connection.getSource()
+           this.signalSourcePort = event.connection.getSource()
         })
         this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalPort
+            delete this.signalSourcePort
         })
     },
 
@@ -67,13 +67,13 @@ signal_SignalTarget = signal_SignalTarget.extend({
     calculate:function(context)
     {
         // either signalPort can be undefined of the result of getValue...
-        let value = this.signalPort?.getValue()
+        let value = this.signalSourcePort?.getValue()
         
         // override the source of the signal if we have a "connected" source. 
         // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
         // to the bus.
         if(value !==null && value!==undefined){
-            context.signalPorts[this.signalId] ??= this.signalPort;
+            context.signalPorts[this.signalId] ??= this.signalSourcePort;
         }
     },
     
