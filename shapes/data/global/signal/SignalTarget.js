@@ -130,9 +130,16 @@ signal_SignalTarget = signal_SignalTarget.extend({
         // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
         // to the bus.
         
-        if(value !==null && value!==undefined && context.signalPorts[this.signalId] !== this.signalSourcePort){
-            console.log("set new port....", this.signalSourcePort.id)
-            context.signalPorts[this.signalId] = this.signalSourcePort;
+        if(value !==null && value!==undefined ){
+            if(context.signalPorts[this.signalId] !== this.signalSourcePort){
+                console.log("set new port....", this.signalSourcePort.id)
+                context.signalPorts[this.signalId] = this.signalSourcePort;
+            }
+        }
+        // it is "undefined". In this case remove it from the bus
+        else if (context.signalPorts[this.signalId] === this.signalSourcePort){
+            console.log("remove it from the bus", this.signalSourcePort?.id)
+             delete context.signalPorts[this.signalId]
         }
     },
     
