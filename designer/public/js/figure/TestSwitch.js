@@ -1,3 +1,5 @@
+import colors from "../../../common/js/Colors"
+
 export default shape_designer.figure.TestSwitch = draw2d.shape.basic.Label.extend({
 
   NAME: "shape_designer.figure.TestSwitch",
@@ -18,8 +20,23 @@ export default shape_designer.figure.TestSwitch = draw2d.shape.basic.Label.exten
   },
 
   toggleValue: function () {
-    this.value = !this.value
-    this.attr({text: this.value ? "High" : "Low"})
+    switch(this.value){
+      case true:
+        this.value = false
+        break
+      case false:
+        this.value = null
+        break
+      case null:
+        this.value = true
+        break
+    }
+    if(this.value === undefined ||  this.value === null){
+      this.attr({text: "NC"})
+    }
+    else {
+      this.attr({text: this.value ? "High": "Low"})
+    }
   }
 })
 

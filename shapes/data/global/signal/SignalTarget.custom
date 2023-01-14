@@ -34,22 +34,22 @@ signal_SignalTarget = signal_SignalTarget.extend({
         });
         
         this.on("added", ()=>{
-            var signalId = this.attr("userData.signalId")
-            if(!signalId){
-                signalId = "Signal_Id"
-                this.attr("userData.signalId", signalId)
+            this.signalId = this.attr("userData.signalId")
+            if(!this.signalId){
+                this.signalId = "Signal_Id"
+                this.attr("userData.signalId", this.signalId)
             }            
-            this.layerAttr("label", {text: signalId})
+            this.layerAttr("label", {text: this.signalId})
             adjustWidth()
         })
         
         // get the connected port and forward the port to the related party ( SignalSource shape)
         //
         this.getInputPort(0).on("connect", (emitter, event)=>{
-           this.signalPort = event.connection.getSource()
+           this.signalSourcePort = event.connection.getSource()
         })
         this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalPort
+            delete this.signalSourcePort
         })
     },
 
@@ -60,24 +60,28 @@ signal_SignalTarget = signal_SignalTarget.extend({
      **/
     onPreStart:function(context)
     {
-        var signalId = this.attr("userData.signalId")
         // first check if any object already create the signal context
         context.signalPorts ??= {}
-        
-        // check if my signal port is set 
-        if(this.signalPort){
-            if(!(signalId in context.signalPorts)){
-                context.signalPorts[signalId] = this.signalPort;
-            }
-        }
-        else{
-            delete context.signalPorts[signalId]
-        }
     },
 
     calculate:function(context)
     {
-    
+        // either signalPort can be undefined of the result of getValue...
+        let value = this.signalSourcePort?.getValue()
+        
+        // override the source of the signal if we have a "connected" source. 
+        // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
+        // to the bus.
+        
+        if(value !==null && value!==undefined ){
+            if(context.signalPorts[this.signalId] !== this.signalSourcePort){
+                context.signalPorts[this.signalId] = this.signalSourcePort;
+            }
+        }
+        // it is "undefined". In this case remove it from the bus
+        else if (context.signalPorts[this.signalId] === this.signalSourcePort){
+             delete context.signalPorts[this.signalId]
+        }
     },
     
     getParameterSettings: function()

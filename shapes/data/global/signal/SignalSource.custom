@@ -29,20 +29,18 @@ signal_SignalSource = signal_SignalSource.extend({
         }
         this.on("change:userData.signalId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
+            this.signalId = event.value
             adjustWidth()
         });
         this.on("added", ()=>{
-            var signalId = this.attr("userData.signalId")
-            if(!signalId){
-                signalId = "Signal_Id"
-                this.attr("userData.signalId", signalId)
+            this.signalId = this.attr("userData.signalId")
+            if(!this.signalId){
+                this.signalId = "Signal_Id"
+                this.attr("userData.signalId", this.signalId)
             }            
-            this.layerAttr("label", {text: signalId})
+            this.layerAttr("label", {text: this.signalId})
             adjustWidth()
         })
-        
-        // override the "getValue" method of the port and delegate them to the related party (SourceTarget port)
-        this.originalGetValue = this.getOutputPort(0).getValue
     },
 
     /**
@@ -52,22 +50,11 @@ signal_SignalSource = signal_SignalSource.extend({
      **/
     onStart:function(context)
     {
-        var signalId = this.attr("userData.signalId")
-        if(context.signalPorts && context.signalPorts[signalId]){
-            this.getOutputPort(0).getValue = function(){ 
-                if(context.signalPorts[signalId] instanceof draw2d.Port){
-                    return context.signalPorts[signalId].getValue()
-                }
-                else {
-                    return false
-                }
-            }
-        }
+        this.getOutputPort(0).getValue = ()=>context.signalPorts[this.signalId]?.getValue()
     },
 
     calculate:function(context)
     {
-    
     },
     
     getParameterSettings: function()

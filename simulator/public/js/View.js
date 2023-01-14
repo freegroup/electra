@@ -563,8 +563,17 @@ export default draw2d.Canvas.extend({
     this.getLines().each( (i, line) => {
       let outPort = line.getSource()
       let inPort = line.getTarget()
-      inPort.setValue(outPort.getValue())
-      line.setColor(outPort.getBooleanValue() ? colors.high : colors.low)
+
+      let value = outPort.getValue()
+
+      if(value === undefined ||  value === null){
+        // do not transfer the value if the source is "disconnected"
+        line.setColor(colors.unconnected)
+      }
+      else {
+        inPort.setValue(value)
+        line.setColor(value ? colors.high : colors.low)
+      }
     })
 
     if (this.simulate === true) {
@@ -572,7 +581,6 @@ export default draw2d.Canvas.extend({
       setTimeout(this.animationFrameFunc, this.timerBase)
     }
 
-    
     this.probeWindow.tick(this.timerBase)
   },
 

@@ -70,13 +70,16 @@ export default draw2d.InputPort.extend({
   },
 
   getValue: function (){
-    if ( this.getConnections().getSize()>0){
-      return this.getConnections().first().getSource().getValue()
-    }
-    return this._super()
+    // return the value direct from the one and only connection, if some connection exists.
+    // else return the value from the base implementation
+    return this.getConnections().first()?.getValue() ?? this._super()
   },
 
-  setValue: function (value = Values.DIGITAL_LOW) {
+  /**
+   * 
+   * @param {*} value Can be any ztype of object. Even `null`or `undefined`. This is required for a "bus" implementation for unconnected state
+   */
+  setValue: function (value) {
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean"){
@@ -100,14 +103,17 @@ export default draw2d.InputPort.extend({
   },
 
   /**
-   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
-   * v <= 1.5volt  => FALSE
-   * v >  1.5volt  => TRUE
-   *
+   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE/undefined)
+   * 
+   * v <= 1.5volt           => FALSE
+   * v >  1.5volt           => TRUE
+   * v =  null or undefined => undefined
    */
   getBooleanValue: function(){
     return this.getValue()>1.5
   },
+
+
 
   /**
    *

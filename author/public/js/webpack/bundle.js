@@ -4503,7 +4503,7 @@ growPolicy.growFactor = 1.5;
   },
   getValue: function getValue() {
     if (this.getConnections().getSize() > 0) {
-      return this.getConnections().first().getValue();
+      return this.getConnections().first().getSource().getValue();
     }
     return this._super();
   },

@@ -16,17 +16,17 @@ var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:37,height:40},attr), setter, getter);
      var port;
      // input01
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.3513513513513513, y: 20 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.3513513513513513, y: 18.75 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input02
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.7027027027027026, y: 80 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.7027027027027026, y: 81.25 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.64864864864865, y: 50 }));
      port.setConnectionDirection(1);
@@ -59,7 +59,7 @@ var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'>1');
-       shape.attr({"x":4,"y":20,"text-anchor":"start","text":">1","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4,"y":17.5,"text-anchor":"start","text":">1","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Circle
@@ -68,7 +68,7 @@ var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
        shape.data("name","Circle");
        
        // Line
-       shape = this.canvas.paper.path('M5.158499999999549 26.21140000000014L9.793649999999616,26.09254999999939L14.428799999999683,25.973699999999553');
+       shape = this.canvas.paper.path('M5.158499999999549 23.71140000000014L9.793649999999616,23.59254999999939L14.428799999999683,23.473699999999553');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

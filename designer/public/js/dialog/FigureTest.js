@@ -1,5 +1,6 @@
 import FigureWriter from "./../io/FigureWriter"
 import toast from "../../../common/js/toast";
+import colors from "../../../common/js/Colors"
 
 export default class FigureTest {
 
@@ -8,17 +9,15 @@ export default class FigureTest {
   }
 
   show() {
-    let _this = this
     this.animationFrameFunc = this._calculate.bind(this)
 
     this.simulationContext = {}
 
     let writer = new FigureWriter()
     let testShape = null
-    writer.marshal(shape_designer.app.view, "testShape", function (js) {
+    writer.marshal(shape_designer.app.view, "testShape", (js) => {
       try {
         js = /*$("#decoratedport-template").text().trim() +*/ js
-        //console.log(js)
         testShape = eval(js)
       }
       catch (exc) {
@@ -42,7 +41,7 @@ export default class FigureTest {
       $("body").append(splash)
 
       let canvas = new draw2d.Canvas("testCanvas")
-      _this.canvas = canvas
+      this.canvas = canvas
       canvas.installEditPolicy(new draw2d.policy.canvas.ShowDotEditPolicy(20, 1, "#FF4981"))
       let router = new draw2d.layout.connection.InteractiveManhattanConnectionRouter()
       canvas.installEditPolicy(new draw2d.policy.connection.ComposedConnectionCreatePolicy(
@@ -50,21 +49,7 @@ export default class FigureTest {
           // create a connection via Drag&Drop of ports
           //
           new draw2d.policy.connection.DragConnectionCreatePolicy({
-            createConnection: function () {
-              return new draw2d.Connection({
-                radius: 3,
-                stroke: 2,
-                color: "#129CE4",
-                outlineStroke: 1,
-                outlineColor: "#ffffff",
-                router: router
-              })
-            }
-          }),
-          // or via click and point
-          //
-          new draw2d.policy.connection.OrthogonalConnectionCreatePolicy({
-            createConnection: function () {
+            createConnection: () => {
               let con = new draw2d.Connection({
                 radius: 3,
                 stroke: 2,
@@ -74,7 +59,22 @@ export default class FigureTest {
                 router: router
               })
               con.getValue = () => con.getSource().getValue()
-              console.log(con)
+              return con
+            }
+          }),
+          // or via click and point
+          //
+          new draw2d.policy.connection.OrthogonalConnectionCreatePolicy({
+            createConnection: () => {
+              let con = new draw2d.Connection({
+                radius: 3,
+                stroke: 2,
+                color: "#129CE4",
+                outlineStroke: 1,
+                outlineColor: "#ffffff",
+                router: router
+              })
+              con.getValue = () => con.getSource().getValue()
               return con
             }
           })
@@ -97,34 +97,30 @@ export default class FigureTest {
       canvas.add(end, 630, 250)
 
       canvas.setCurrentSelection(test)
-      let removeDialog = function () {
-
-        _this.simulate = false
+      let removeDialog = () =>{
+        this.simulate = false
         splash.removeClass("open")
         setTimeout(function () {
           splash.remove()
-          test.onStop(_this.simulationContext)
+          test.onStop(this.simulationContext)
         }, 400)
       }
 
       $(".tinyFlyoverMenu").on("click", "#test_close", removeDialog)
       splash.addClass("open")
 
-      test.onStart(_this.simulationContext)
+      test.onStart(this.simulationContext)
 
-      _this.simulate = true
-      requestAnimationFrame(_this.animationFrameFunc)
+      this.simulate = true
+      requestAnimationFrame(this.animationFrameFunc)
     })
   }
 
   _calculate() {
     // call the "calculate" method if given to calculate the output-port values
     //
-    let figures = this.canvas.getFigures().clone().grep( (f) => {
-      return f.calculate
-    })
-    figures.each( (i, figure) => {
-      figure.calculate(this.simulationContext)
+    this.canvas.getFigures().each( (i, figure) => {
+      figure.calculate?.(this.simulationContext)
     })
 
     // transport the value from oututPort to inputPort
@@ -132,8 +128,16 @@ export default class FigureTest {
     this.canvas.getLines().each( (i, line) => {
       let outPort = line.getSource()
       let inPort = line.getTarget()
-      inPort.setValue(outPort.getValue())
-      line.setColor(outPort.getValue() ? "#ff5252" : "#0000ff")
+
+      let value = outPort.getValue()
+      inPort.setValue(value)
+
+      if(value === undefined ||  value === null){
+        line.setColor(colors.unconnected)
+      }
+      else {
+        line.setColor(value ? colors.high : colors.low)
+      }
     })
 
     if (this.simulate === true) {

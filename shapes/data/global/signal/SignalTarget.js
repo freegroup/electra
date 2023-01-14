@@ -20,7 +20,7 @@ var signal_SignalTarget = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
    },
 
    createShapeElement : function()
@@ -42,7 +42,7 @@ var signal_SignalTarget = CircuitFigure.extend({
        
        // outline
        shape = this.canvas.paper.path('M0 9.932800000005955L13.10158237711039 0.75L69 0.75L69 20.75L11.482077748871234 20.75Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(0,120,242,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","outline");
        
        // label
@@ -91,22 +91,22 @@ signal_SignalTarget = signal_SignalTarget.extend({
         });
         
         this.on("added", ()=>{
-            var signalId = this.attr("userData.signalId")
-            if(!signalId){
-                signalId = "Signal_Id"
-                this.attr("userData.signalId", signalId)
+            this.signalId = this.attr("userData.signalId")
+            if(!this.signalId){
+                this.signalId = "Signal_Id"
+                this.attr("userData.signalId", this.signalId)
             }            
-            this.layerAttr("label", {text: signalId})
+            this.layerAttr("label", {text: this.signalId})
             adjustWidth()
         })
         
         // get the connected port and forward the port to the related party ( SignalSource shape)
         //
         this.getInputPort(0).on("connect", (emitter, event)=>{
-           this.signalPort = event.connection.getSource()
+           this.signalSourcePort = event.connection.getSource()
         })
         this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalPort
+            delete this.signalSourcePort
         })
     },
 
@@ -117,24 +117,28 @@ signal_SignalTarget = signal_SignalTarget.extend({
      **/
     onPreStart:function(context)
     {
-        var signalId = this.attr("userData.signalId")
         // first check if any object already create the signal context
         context.signalPorts ??= {}
-        
-        // check if my signal port is set 
-        if(this.signalPort){
-            if(!(signalId in context.signalPorts)){
-                context.signalPorts[signalId] = this.signalPort;
-            }
-        }
-        else{
-            delete context.signalPorts[signalId]
-        }
     },
 
     calculate:function(context)
     {
-    
+        // either signalPort can be undefined of the result of getValue...
+        let value = this.signalSourcePort?.getValue()
+        
+        // override the source of the signal if we have a "connected" source. 
+        // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
+        // to the bus.
+        
+        if(value !==null && value!==undefined ){
+            if(context.signalPorts[this.signalId] !== this.signalSourcePort){
+                context.signalPorts[this.signalId] = this.signalSourcePort;
+            }
+        }
+        // it is "undefined". In this case remove it from the bus
+        else if (context.signalPorts[this.signalId] === this.signalSourcePort){
+             delete context.signalPorts[this.signalId]
+        }
     },
     
     getParameterSettings: function()

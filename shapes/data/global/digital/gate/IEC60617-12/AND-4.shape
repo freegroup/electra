@@ -4,7 +4,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "c55dd135-15db-7c71-5efa-f6761c073e66",
       "x": 7985,
-      "y": 7980,
+      "y": 7960,
       "width": 30,
       "height": 80,
       "alpha": 1,
@@ -29,19 +29,19 @@
       "vertices": [
         {
           "x": 7985,
-          "y": 7980
+          "y": 7960
         },
         {
           "x": 8015,
-          "y": 7980
+          "y": 7960
         },
         {
           "x": 8015,
-          "y": 8060
+          "y": 8040
         },
         {
           "x": 7985,
-          "y": 8060
+          "y": 8040
         }
       ],
       "blur": 0,
@@ -67,7 +67,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "0a4705bb-c6fd-7a26-332f-6972e8683949",
       "x": 7990.5,
-      "y": 8004,
+      "y": 7984,
       "width": 30.350000381469727,
       "height": 23,
       "alpha": 1,
@@ -107,7 +107,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "9b959129-88c0-7b28-7d5e-4a61bb3f635b",
       "x": 7979.86125,
-      "y": 8044.47,
+      "y": 8025,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -118,7 +118,7 @@
         "name": "input04",
         "type": "Input",
         "direction": 3,
-        "fanout": 20
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -145,7 +145,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "f3c5812c-2630-0998-40f7-b6c42629287f",
       "x": 7979.72375,
-      "y": 8024.9725,
+      "y": 8004.9725,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -156,7 +156,7 @@
         "name": "input03",
         "type": "Input",
         "direction": 3,
-        "fanout": 20
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -183,7 +183,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7979.5,
-      "y": 8004.5,
+      "y": 7984.5,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -193,7 +193,8 @@
       "userData": {
         "name": "input02",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -223,7 +224,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
       "x": 7979.5,
-      "y": 7984,
+      "y": 7965,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -233,7 +234,8 @@
       "userData": {
         "name": "input01",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -263,7 +265,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8011.328125,
-      "y": 8014.5,
+      "y": 7994.5,
       "width": 10,
       "height": 10,
       "alpha": 1,

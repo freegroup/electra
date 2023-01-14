@@ -48,7 +48,6 @@ export default shape_designer.FigureWriter = draw2d.io.Writer.extend({
       figure.translate(-x, -y)
       // paint the element and fill the "attr" object with the current
       // settings
-      debugger
       figure.repaint(attr)
       delete attr.path
       delete attr.x

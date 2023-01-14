@@ -7,7 +7,7 @@
 var digital_gate_IEC60617_12_NOT = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_NOT",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -20,7 +20,7 @@ var digital_gate_IEC60617_12_NOT = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100, y: 47.5 }));
      port.setConnectionDirection(1);

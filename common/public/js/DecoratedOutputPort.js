@@ -19,7 +19,11 @@ export default draw2d.OutputPort.extend({
     this.setValue(Values.DIGITAL_LOW)
   },
 
-  setValue: function (value = Values.DIGITAL_LOW) {
+  /**
+   * 
+   * @param {*} value Can be any ztype of object. Even `null`or `undefined`. This is required for a "bus" implementation for unconnected state
+   */
+  setValue: function (value) {
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean"){
@@ -29,11 +33,11 @@ export default draw2d.OutputPort.extend({
   },
 
   /**
-   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
-   * v <= 1.5volt  => FALSE
-   * v >  1.5volt  => TRUE
-   *
-   * normally v must be greater to 2.2v to be HIGH. But the software can'T handle undefined values right now.
+   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE/undefined)
+   * 
+   * v <= 1.5volt           => FALSE
+   * v >  1.5volt           => TRUE
+   * v =  null or undefined => undefined
    */
   getBooleanValue: function(){
     return this.getValue()>1.5

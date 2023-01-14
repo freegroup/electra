@@ -14,7 +14,7 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(rising===true && enable===true){\n            console.log(\"clk and rising flag\")\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
         "markdown": "# D-FlipFlop\n\n## Description\n\nThe D FlipFLop is widely used. It is also known as a \n*data* or *delay* flip-flop.\n\nThe D flip-flop captures the value of the `D` input \nat a definite portion of the clock cycle (such \nas the rising edge of the clock). That captured \nvalue becomes the `Q` output. At other times, the \noutput Q does not change. The `D flip-flop` \ncan be viewed as a memory cell, a zero-order hold, \nor a delay line.\n\n\n## Logic table\n\n| Clock        | D       |  **Q***next*   |\n|:------------:|:-------:|:----------:|\n| Rising edge  | Low     |  **Low**       |\n| Rising edge  | High    |  **High**      |\n| non rising   | *       |  **Q***last*   |\n\n",
         "type": "Output",
         "direction": 1
@@ -197,7 +197,8 @@
       "userData": {
         "name": "input_clk",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -226,7 +227,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
-      "x": 7971,
+      "x": 7975,
       "y": 7930.57775,
       "width": 39.140625,
       "height": 21.359375,
@@ -244,7 +245,7 @@
       "stroke": 0,
       "radius": 0,
       "dasharray": null,
-      "text": "Enable",
+      "text": "load",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 10,
@@ -267,7 +268,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "1d2c32de-9441-dac3-cd55-cc8406714361",
       "x": 8005.5549461669925,
-      "y": 8047.1905125,
+      "y": 8045,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -347,7 +348,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6e035f01-7c56-702f-c12e-c6c964423aa8",
       "x": 8005.5549461669925,
-      "y": 8004.4717625,
+      "y": 8005,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -387,7 +388,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
       "x": 8005.5549461669925,
-      "y": 7985.57775,
+      "y": 7985,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -427,7 +428,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "d3e905b8-6eea-db8a-cda8-ad588074826e",
       "x": 8024.3945,
-      "y": 8052.510950000001,
+      "y": 8050,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -547,7 +548,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8024.3945,
-      "y": 7990.9717625,
+      "y": 7990,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -597,7 +598,8 @@
       "userData": {
         "name": "input_enable",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -627,7 +629,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "fc1f9521-b31f-564b-0f49-af8742bc08d9",
       "x": 7965,
-      "y": 7990.9717625,
+      "y": 7990,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -637,7 +639,8 @@
       "userData": {
         "name": "input_d1",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -677,7 +680,8 @@
       "userData": {
         "name": "input_d2",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -717,7 +721,8 @@
       "userData": {
         "name": "input_d3",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -747,7 +752,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5ce54fcb-3e73-34cb-1248-578f41a65671",
       "x": 7965,
-      "y": 8052.510950000001,
+      "y": 8050,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -757,7 +762,8 @@
       "userData": {
         "name": "input_d4",
         "type": "Input",
-        "direction": 3
+        "direction": 3,
+        "fanout": 1
       },
       "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
@@ -827,7 +833,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6ef96142-a11a-ef8c-a145-31706fa76a6a",
       "x": 7973.5,
-      "y": 8004.4717625,
+      "y": 8005,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -867,7 +873,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "a550dba3-7e4a-e7f7-5a72-6628ce0ace97",
       "x": 7973.5,
-      "y": 8024.8311375,
+      "y": 8025,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -907,7 +913,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "47954b00-f1ec-9439-dadf-445578e3d073",
       "x": 7973.5,
-      "y": 8046.43295,
+      "y": 8045,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,

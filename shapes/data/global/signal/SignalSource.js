@@ -42,7 +42,7 @@ var signal_SignalSource = CircuitFigure.extend({
        
        // outline
        shape = this.canvas.paper.path('M0 0L53.81817921990478 0L65.72720000000481 10L53.81817921990478 20L0.24380000000201107 20.243800000000192Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(0,120,242,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","outline");
        
        // label
@@ -86,20 +86,18 @@ signal_SignalSource = signal_SignalSource.extend({
         }
         this.on("change:userData.signalId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
+            this.signalId = event.value
             adjustWidth()
         });
         this.on("added", ()=>{
-            var signalId = this.attr("userData.signalId")
-            if(!signalId){
-                signalId = "Signal_Id"
-                this.attr("userData.signalId", signalId)
+            this.signalId = this.attr("userData.signalId")
+            if(!this.signalId){
+                this.signalId = "Signal_Id"
+                this.attr("userData.signalId", this.signalId)
             }            
-            this.layerAttr("label", {text: signalId})
+            this.layerAttr("label", {text: this.signalId})
             adjustWidth()
         })
-        
-        // override the "getValue" method of the port and delegate them to the related party (SourceTarget port)
-        this.originalGetValue = this.getOutputPort(0).getValue
     },
 
     /**
@@ -109,22 +107,11 @@ signal_SignalSource = signal_SignalSource.extend({
      **/
     onStart:function(context)
     {
-        var signalId = this.attr("userData.signalId")
-        if(context.signalPorts && context.signalPorts[signalId]){
-            this.getOutputPort(0).getValue = function(){ 
-                if(context.signalPorts[signalId] instanceof draw2d.Port){
-                    return context.signalPorts[signalId].getValue()
-                }
-                else {
-                    return false
-                }
-            }
-        }
+        this.getOutputPort(0).getValue = ()=>context.signalPorts[this.signalId]?.getValue()
     },
 
     calculate:function(context)
     {
-    
     },
     
     getParameterSettings: function()
