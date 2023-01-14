@@ -20,7 +20,7 @@ var signal_SignalTarget = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
    },
 
    createShapeElement : function()
