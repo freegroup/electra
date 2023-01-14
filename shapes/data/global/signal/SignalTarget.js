@@ -130,7 +130,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
         // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
         // to the bus.
         if(value !==null && value!==undefined){
-            context.signalPorts[this.signalId] ??= this.signalSourcePort;
+            context.signalPorts[this.signalId] = this.signalSourcePort;
         }
     },
     
