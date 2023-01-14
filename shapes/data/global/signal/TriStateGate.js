@@ -16,19 +16,19 @@ var signal_TriStateGate = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:44.542599999998856,height:41.085149999999885},attr), setter, getter);
      var port;
      // input
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -12.347730038210928, y: 51.27462036161518 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -8.980167300517039, y: 51.27462036161518 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input");
      port.setMaxFanOut(20);
      // output
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 114.49713308159224, y: 51.27462036161518 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.39444486851058, y: 53.7085898128646 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
      // input_enable
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 50, y: -11.962594757473513 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 50, y: -5.877671129349952 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_enable");
