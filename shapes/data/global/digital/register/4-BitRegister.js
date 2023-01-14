@@ -20,7 +20,7 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_clk");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // output_q4
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.82118644067853, y: 89.61266020620154 }));
      port.setConnectionDirection(1);
@@ -50,31 +50,31 @@ var digital_register_4_BitRegister = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_enable");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input_d1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.847457627118644, y: 46.398849072163145 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d1");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input_d2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.847457627118644, y: 60.91253164511365 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d2");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input_d3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.847457627118644, y: 75.51988015369702 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d3");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input_d4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.847457627118644, y: 89.61266020620154 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d4");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
    },
 
    createShapeElement : function()
@@ -185,6 +185,7 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
         
         var rising = this.last_clk===false && clk===true; 
         if(rising===true && enable===true){
+            console.log("rising flag")
             this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1").getValue())
             this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2").getValue())
             this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3").getValue())
