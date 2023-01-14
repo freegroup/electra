@@ -31,6 +31,16 @@ signal_TriStateGate = signal_TriStateGate.extend({
 
     calculate:function(context)
     {
+        let input = this.getInputPort("input");
+        let enable = this.getInputPort("input_enable")
+        let output = this.getOutputPort("output")
+        
+        if(enable.getBooleanValue()){
+            output.setValue(input.getValue())
+        }
+        else {
+            output.setValue(null)
+        }
     },
     
     getParameterSettings: function()
