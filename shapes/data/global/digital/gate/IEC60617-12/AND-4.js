@@ -16,29 +16,29 @@ var digital_gate_IEC60617_12_AND_4 = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:30,height:80},attr), setter, getter);
      var port;
      // input04
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.46250000000024255, y: 86.83750000000032 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.46250000000024255, y: 87.5 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input04");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input03
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9208333333329696, y: 62.46562499999982 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input03");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input02
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.6666666666666667, y: 36.875 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input01
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.6666666666666667, y: 11.25 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.6666666666666667, y: 12.5 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // out
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.42708333333334, y: 49.375 }));
      port.setConnectionDirection(1);
