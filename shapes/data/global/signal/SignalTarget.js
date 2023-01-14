@@ -117,17 +117,8 @@ signal_SignalTarget = signal_SignalTarget.extend({
      **/
     onPreStart:function(context)
     {
-        this.signalId = this.attr("userData.signalId")
         // first check if any object already create the signal context
         context.signalPorts ??= {}
-        
-        // check if my signal port is set 
-        if(this.signalPort){
-            context.signalPorts[this.signalId] ??= this.signalPort;
-        }
-        else{
-            delete context.signalPorts[this.signalId]
-        }
     },
 
     calculate:function(context)
