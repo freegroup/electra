@@ -1,0 +1,59 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+signal_8_TriStateGate = signal_8_TriStateGate.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    onStart:function(context)
+    {
+    },
+
+    calculate:function(context)
+    {
+        let input = this.getInputPort("input");
+        let enable = this.getInputPort("input_enable")
+        let output = this.getOutputPort("output")
+        
+        if(enable.getBooleanValue()){
+            output.setValue(input.getValue())
+        }
+        else {
+            output.setValue(null)
+        }
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"signalId",
+            label:"Signal Id",
+            property:{
+                type: "string"
+            }
+        }];
+    }
+
+
+});
