@@ -20,7 +20,7 @@ var analog_SignalInverter = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // output_port1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.8051628723133, y: 49.770490463256465 }));
      port.setConnectionDirection(1);
