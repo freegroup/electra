@@ -108,7 +108,7 @@ signal_SignalSource = signal_SignalSource.extend({
     onStart:function(context)
     {
         this.getOutputPort(0).getValue = ()=>{ 
-            console.log(context.signalPorts[this.signalId]?.id)
+          //  console.log(context.signalPorts[this.signalId]?.id)
             context.signalPorts[this.signalId]?.getValue()
         }
     },
