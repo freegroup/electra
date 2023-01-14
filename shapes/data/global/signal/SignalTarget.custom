@@ -72,7 +72,8 @@ signal_SignalTarget = signal_SignalTarget.extend({
         // override the source of the signal if we have a "connected" source. 
         // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
         // to the bus.
-        if(value !==null && value!==undefined ?? context.signalPorts[this.signalId] !== this.signalSourcePort){
+        
+        if(value !==null && value!==undefined && context.signalPorts[this.signalId] !== this.signalSourcePort){
             console.log("set new port....", this.signalSourcePort.id)
             context.signalPorts[this.signalId] = this.signalSourcePort;
         }
