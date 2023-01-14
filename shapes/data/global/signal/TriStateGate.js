@@ -13,22 +13,22 @@ var signal_TriStateGate = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:44.542599999998856,height:41.085149999999885},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:44.542599999998856,height:40.085149999999885},attr), setter, getter);
      var port;
      // input
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -8.980167300517039, y: 50.00000000000111 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -8.980167300517039, y: 51.24734471493922 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input");
      port.setMaxFanOut(20);
      // output
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.39444486851058, y: 50.00000000000111 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.39444486851058, y: 51.24734471493922 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
      // input_enable
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 50, y: -5.877671129349952 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 50, y: -6.024300769736728 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_enable");
@@ -39,7 +39,7 @@ var signal_TriStateGate = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 44.542599999998856;
-      this.originalHeight= 41.085149999999885;
+      this.originalHeight= 40.085149999999885;
       return shape;
    },
 
@@ -48,12 +48,12 @@ var signal_TriStateGate = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L44.542599999998856,0 L44.542599999998856,41.085149999999885 L0,41.085149999999885");
+       shape = this.canvas.paper.path("M0,0 L44.542599999998856,0 L44.542599999998856,40.085149999999885 L0,40.085149999999885");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0 1.085149999999885L44.542599999998856 21.582956557377656L0 41.085149999999885Z');
+       shape = this.canvas.paper.path('M0 0.08514999999988504L44.542599999998856 20.582956557377656L0 40.085149999999885Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
