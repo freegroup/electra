@@ -117,16 +117,16 @@ signal_SignalTarget = signal_SignalTarget.extend({
      **/
     onPreStart:function(context)
     {
-        var signalId = this.attr("userData.signalId")
+        this.signalId = this.attr("userData.signalId")
         // first check if any object already create the signal context
         context.signalPorts ??= {}
         
         // check if my signal port is set 
         if(this.signalPort){
-            context.signalPorts[signalId] ??= this.signalPort;
+            context.signalPorts[this.signalId] ??= this.signalPort;
         }
         else{
-            delete context.signalPorts[signalId]
+            delete context.signalPorts[this.signalId]
         }
     },
 
@@ -139,7 +139,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
         // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
         // to the bus.
         if(value !==null && value!==undefined){
-            context.signalPorts[signalId] ??= this.signalPort;
+            context.signalPorts[this.signalId] ??= this.signalPort;
         }
     },
     
