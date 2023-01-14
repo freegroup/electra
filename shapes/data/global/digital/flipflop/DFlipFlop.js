@@ -7,7 +7,7 @@
 var digital_flipflop_DFlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_DFlipFlop",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -32,13 +32,13 @@ var digital_flipflop_DFlipFlop = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_d");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
      // input_t
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 79.98738525030996 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_t");
-     port.setMaxFanOut(20);
+     port.setMaxFanOut(1);
    },
 
    createShapeElement : function()
