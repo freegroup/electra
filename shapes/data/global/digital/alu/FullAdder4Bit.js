@@ -15,12 +15,6 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
 
      this._super( $.extend({stroke:0, bgColor:null, width:80.015625,height:223.078125},attr), setter, getter);
      var port;
-     // output_as
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 8.965468936050991 }));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("output_as");
-     port.setMaxFanOut(20);
      // output_c
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.23022847100175, y: 91.89605659452266 }));
      port.setConnectionDirection(1);
@@ -33,29 +27,29 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a1");
      port.setMaxFanOut(1);
-     // input_b1
+     // input_s2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8093419254054925, y: 17.738202703649346 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_b1");
+     port.setName("input_s2");
      port.setMaxFanOut(1);
-     // input_c1
+     // input_a3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9053231790666632, y: 26.896406808152975 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_c1");
+     port.setName("input_a3");
      port.setMaxFanOut(1);
-     // input_d1
+     // input_a4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8093419254054925, y: 35.861875744203964 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d1");
+     port.setName("input_a4");
      port.setMaxFanOut(1);
-     // input_a2
+     // input_b1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9053231790666632, y: 49.31007914828045 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_a2");
+     port.setName("input_b1");
      port.setMaxFanOut(1);
      // input_b2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.909322397969354, y: 58.27554808433144 }));
@@ -63,17 +57,17 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_b2");
      port.setMaxFanOut(1);
-     // input_c2
+     // input_b3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.909322397969354, y: 67.24101702038243 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_c2");
+     port.setName("input_b3");
      port.setMaxFanOut(1);
-     // input_d2
+     // input_b4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.909322397969354, y: 76.20648595643343 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d2");
+     port.setName("input_b4");
      port.setMaxFanOut(1);
      // input_cin
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.909322397969354, y: 91.89605659452266 }));
@@ -81,23 +75,29 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_cin");
      port.setMaxFanOut(1);
-     // output_bs
+     // output_s1
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 8.965468936050991 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output_s1");
+     port.setMaxFanOut(20);
+     // output_s2
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 17.930937872101982 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("output_bs");
+     port.setName("output_s2");
      port.setMaxFanOut(20);
-     // output_cs
+     // output_s3
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 26.61592211248839 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("output_cs");
+     port.setName("output_s3");
      port.setMaxFanOut(20);
-     // output_ds
+     // output_s4
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 35.861875744203964 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("output_ds");
+     port.setName("output_s4");
      port.setMaxFanOut(20);
    },
 
@@ -139,6 +139,11 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
+       shape = this.canvas.paper.text(0,0,'out');
+       shape.attr({"x":62.109375,"y":212.6328125,"text-anchor":"start","text":"out","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
        shape = this.canvas.paper.text(0,0,'S1');
        shape.attr({"x":59.11934999999994,"y":20.25,"text-anchor":"start","text":"S1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
@@ -154,13 +159,28 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'4 Bit');
-       shape.attr({"x":27.5,"y":97.09675000000061,"text-anchor":"start","text":"4 Bit","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'S3');
+       shape.attr({"x":58.96309999999994,"y":59.124299999999494,"text-anchor":"start","text":"S3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'A4');
-       shape.attr({"x":6.27559999999994,"y":80.47956250000061,"text-anchor":"start","text":"A4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'S2');
+       shape.attr({"x":58.96309999999994,"y":39.8125,"text-anchor":"start","text":"S2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'in');
+       shape.attr({"x":17.772399999999834,"y":212.7109375,"text-anchor":"start","text":"in","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'B2');
+       shape.attr({"x":6.27559999999994,"y":131.1875,"text-anchor":"start","text":"B2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'Σ');
+       shape.attr({"x":24.60811424255371,"y":126.22956250000061,"text-anchor":"start","text":"Σ","font-family":"\"Arial\"","font-size":50,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -169,8 +189,13 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'B2');
-       shape.attr({"x":6.27559999999994,"y":131.1875,"text-anchor":"start","text":"B2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'A4');
+       shape.attr({"x":6.27559999999994,"y":80.47956250000061,"text-anchor":"start","text":"A4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'C');
+       shape.attr({"x":8.27559999999994,"y":205.390625,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -184,38 +209,13 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'C');
-       shape.attr({"x":8.27559999999994,"y":205.390625,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'in');
-       shape.attr({"x":17.772399999999834,"y":212.7109375,"text-anchor":"start","text":"in","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'out');
-       shape.attr({"x":62.109375,"y":212.6328125,"text-anchor":"start","text":"out","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'S2');
-       shape.attr({"x":58.96309999999994,"y":39.8125,"text-anchor":"start","text":"S2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'S3');
-       shape.attr({"x":58.96309999999994,"y":59.124299999999494,"text-anchor":"start","text":"S3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
        shape = this.canvas.paper.text(0,0,'S4');
        shape.attr({"x":59.11934999999994,"y":79.97956250000061,"text-anchor":"start","text":"S4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'Σ');
-       shape.attr({"x":24.60811424255371,"y":126.22956250000061,"text-anchor":"start","text":"Σ","font-family":"\"Arial\"","font-size":50,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'4 Bit');
+       shape.attr({"x":27.5,"y":97.09675000000061,"text-anchor":"start","text":"4 Bit","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
