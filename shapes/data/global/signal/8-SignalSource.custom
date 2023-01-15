@@ -18,28 +18,17 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
-        // calculate the outer frame/shape in the correct size in relation to the length of the text
-        //
-        var adjustWidth = ()=>{
-            var width = this.layerGet("label").getBBox().width+15
-
-            this.setWidth(width+5);
-            this.layerAttr("BoundingBox", { path: `M0 0 L${width} 0 L${width} 20 L0 20 Z`})
-            this.layerAttr("outline",     { path: `M0 0 L${width-13} 0 L${width} 10 L${width-13} 20 L0 20 Z`})
-        }
-        this.on("change:userData.signalId",(emitter, event)=>{
+        this.on("change:userData.busId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
             this.signalId = event.value
-            adjustWidth()
         });
         this.on("added", ()=>{
-            this.signalId = this.attr("userData.signalId")
+            this.signalId = this.attr("userData.busId")
             if(!this.signalId){
-                this.signalId = "Signal_Id"
-                this.attr("userData.signalId", this.signalId)
+                this.signalId = "Bus_Id"
+                this.attr("userData.busId", this.signalId)
             }            
             this.layerAttr("label", {text: this.signalId})
-            adjustWidth()
         })
     },
 
@@ -50,7 +39,14 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
      **/
     onStart:function(context)
     {
-        this.getOutputPort(0).getValue = ()=>context.signalPorts[this.signalId]?.getValue()
+        this.getOutputPort("out1").getValue = ()=>context.signalPorts[this.busId+":1"]?.getValue()
+        this.getOutputPort("out2").getValue = ()=>context.signalPorts[this.busId+":2"]?.getValue()
+        this.getOutputPort("out3").getValue = ()=>context.signalPorts[this.busId+":3"]?.getValue()
+        this.getOutputPort("out4").getValue = ()=>context.signalPorts[this.busId+":4"]?.getValue()
+        this.getOutputPort("out5").getValue = ()=>context.signalPorts[this.busId+":5"]?.getValue()
+        this.getOutputPort("out6").getValue = ()=>context.signalPorts[this.busId+":6"]?.getValue()
+        this.getOutputPort("out7").getValue = ()=>context.signalPorts[this.busId+":7"]?.getValue()
+        this.getOutputPort("out8").getValue = ()=>context.signalPorts[this.busId+":8"]?.getValue()
     },
 
     calculate:function(context)
@@ -61,36 +57,12 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
     {
         return [
         {
-            name:"signalId",
-            label:"Signal Id",
+            name:"busId",
+            label:"Bus Id",
             property:{
                 type: "string"
             }
         }];
-    },
-    
-  /**
-   * @private
-   */
-  applyTransformation: function () {
-    let s =
-      // override the base implementation and do not scale the internal SVG elements....this let the arrow looks a like streche...we
-      // calculate the path in the event handler. A lot more code....but the result is much cleaner
-      //"S" + this.scaleX + "," + this.scaleY + ",0,0 " +
-      "R" + this.rotationAngle + "," + ((this.getWidth() / 2) | 0) + "," + ((this.getHeight() / 2) | 0) +
-      "T" + this.getAbsoluteX() + "," + this.getAbsoluteY() +
-      ""
-    this.svgNodes.transform(s)
-    if (this.rotationAngle === 90 || this.rotationAngle === 270) {
-      let before = this.svgNodes.getBBox(true)
-      let ratio = before.height / before.width
-      let reverseRatio = before.width / before.height
-      let rs = "...S" + ratio + "," + reverseRatio + "," + (this.getAbsoluteX() + this.getWidth() / 2) + "," + (this.getAbsoluteY() + this.getHeight() / 2)
-      this.svgNodes.transform(rs)
     }
-
-    return this
-  }
-
 
 });
