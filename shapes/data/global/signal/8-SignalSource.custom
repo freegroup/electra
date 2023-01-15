@@ -40,7 +40,7 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
     onStart:function(context)
     {
         this.getOutputPort("out1").getValue = ()=> {
-            console.log(this.busId, context.signalPorts )
+            console.log("bus", this.busId, context.signalPorts )
             return context.signalPorts[this.busId+":1"]?.getValue()
         }
         this.getOutputPort("out2").getValue = ()=>context.signalPorts[this.busId+":2"]?.getValue()
