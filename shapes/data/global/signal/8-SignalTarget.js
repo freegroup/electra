@@ -251,6 +251,7 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
                  delete context.signalPorts[this.busId+":"+(i+1)]
             }            
         }
+        console.log(context)
     },
     
     getParameterSettings: function()
