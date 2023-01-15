@@ -77,7 +77,6 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
         for (var i = 0; i<8; i++){
             // either signalPort can be undefined of the result of getValue...
             let value = this.signalSourcePort[i]?.getValue()
-            console.log(value)
             // override the source of the signal if we have a "connected" source. 
             // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
             // to the bus.
@@ -89,10 +88,9 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
             }
             // it is "undefined". In this case remove it from the bus
             else if (context.signalPorts[this.busId+":"+(i+1)] === this.signalSourcePort[i]){
-                 delete context.signalPorts[this.busId+":"+(i+1)]
+                context.signalPorts[this.busId+":"+(i+1)] = null
             }            
         }
-        console.log(context)
     },
     
     getParameterSettings: function()
