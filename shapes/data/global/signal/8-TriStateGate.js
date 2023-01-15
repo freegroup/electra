@@ -15,29 +15,23 @@ var signal_8_TriStateGate = CircuitFigure.extend({
 
      this._super( $.extend({stroke:0, bgColor:null, width:80,height:193.4889749999984},attr), setter, getter);
      var port;
-     // output1
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 19.95917338442648 }));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("output1");
-     port.setMaxFanOut(20);
      // enable
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 5.77323591692931 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("enable");
      port.setMaxFanOut(20);
-     // inpu1
+     // input1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 19.95917338442648 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("inpu1");
+     port.setName("input1");
      port.setMaxFanOut(20);
-     // inpu2
+     // input2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 30.295679637560628 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("inpu2");
+     port.setName("input2");
      port.setMaxFanOut(20);
      // input3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 40.63218589069478 }));
@@ -74,6 +68,12 @@ var signal_8_TriStateGate = CircuitFigure.extend({
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input8");
+     port.setMaxFanOut(20);
+     // output1
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 19.95917338442648 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output1");
      port.setMaxFanOut(20);
      // output2
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 30.295679637560628 }));
