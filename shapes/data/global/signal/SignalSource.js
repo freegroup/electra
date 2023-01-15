@@ -100,6 +100,11 @@ signal_SignalSource = signal_SignalSource.extend({
         })
     },
 
+    onPreStart: function(context)
+    {
+        context.signalPorts ??={}
+    },
+    
     /**
      *  Called by the simulator for every calculation
      *  loop
@@ -107,13 +112,12 @@ signal_SignalSource = signal_SignalSource.extend({
      **/
     onStart:function(context)
     {
-        this.getOutputPort(0).getValue = ()=>context.signalPorts[this.signalId]?.getValue()
+        this.getOutputPort(0).getValue = ()=> {
+            console.log(context.signalPorts[this.signalId])
+            return context.signalPorts[this.signalId]?.getValue()
+        }
     },
 
-    calculate:function(context)
-    {
-    },
-    
     getParameterSettings: function()
     {
         return [
