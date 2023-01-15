@@ -16,7 +16,7 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:80.015625,height:223.078125},attr), setter, getter);
      var port;
      // output_c
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.23022847100175, y: 91.89605659452266 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 91.89605659452266 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_c");
@@ -69,11 +69,11 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_b4");
      port.setMaxFanOut(1);
-     // input_cin
+     // input_c
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.909322397969354, y: 91.89605659452266 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_cin");
+     port.setName("input_c");
      port.setMaxFanOut(1);
      // output_s1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 101.35670376879524, y: 8.965468936050991 }));
@@ -251,16 +251,16 @@ digital_alu_FullAdder4Bit = digital_alu_FullAdder4Bit.extend({
         var output = [];
         
         input.push(this.getInputPort("input_a1").getBooleanValue());
-        input.push(this.getInputPort("input_b1").getBooleanValue());
-        input.push(this.getInputPort("input_c1").getBooleanValue());
-        input.push(this.getInputPort("input_d1").getBooleanValue());
-        
         input.push(this.getInputPort("input_a2").getBooleanValue());
+        input.push(this.getInputPort("input_a3").getBooleanValue());
+        input.push(this.getInputPort("input_a4").getBooleanValue());
+        
+        input.push(this.getInputPort("input_b1").getBooleanValue());
         input.push(this.getInputPort("input_b2").getBooleanValue());
-        input.push(this.getInputPort("input_c2").getBooleanValue());
-        input.push(this.getInputPort("input_d2").getBooleanValue());
+        input.push(this.getInputPort("input_b3").getBooleanValue());
+        input.push(this.getInputPort("input_b4").getBooleanValue());
  
-        input.push(this.getInputPort("input_cin").getBooleanValue());
+        input.push(this.getInputPort("input_c").getBooleanValue());
  
         var carry = input[8];
        
@@ -293,10 +293,10 @@ digital_alu_FullAdder4Bit = digital_alu_FullAdder4Bit.extend({
         }
         output[4]=carry;
         
-        this.getOutputPort("output_as").setValue(output[0]);
-        this.getOutputPort("output_bs").setValue(output[1]);
-        this.getOutputPort("output_cs").setValue(output[2]);
-        this.getOutputPort("output_ds").setValue(output[3]);
+        this.getOutputPort("output_s1").setValue(output[0]);
+        this.getOutputPort("output_s2").setValue(output[1]);
+        this.getOutputPort("output_s3").setValue(output[2]);
+        this.getOutputPort("output_s4").setValue(output[3]);
         this.getOutputPort("output_c").setValue(output[4]);
     },
 
