@@ -247,7 +247,7 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
                 }
             }
             // it is "undefined". In this case remove it from the bus
-            else if (context.signalPorts[this.busId] === this.signalSourcePort[i]){
+            else if (context.signalPorts[this.busId+":"+(i+1)] === this.signalSourcePort[i]){
                  delete context.signalPorts[this.busId+":"+(i+1)]
             }            
         }

@@ -3,8 +3,8 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "58af70e2-4b09-a01f-d819-172d2e3a83c7",
-      "x": 7969.984375,
-      "y": 7908.2626953125,
+      "x": 7973.893238067627,
+      "y": 7919.5394953125,
       "width": 50,
       "height": 180,
       "alpha": 1,
@@ -14,7 +14,7 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n         // your special code here\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n\n        this.on(\"change:userData.busId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n        });\n        \n        this.on(\"added\", ()=>{\n            this.busId = this.attr(\"userData.busId\")\n            if(!this.busId){\n                this.busId = \"Bus_Id\"\n                this.attr(\"userData.busId\", this.busId)\n            }            \n            this.layerAttr(\"label\", {text: this.busId})\n        })\n        \n        // get the connected port and forward the port to the related party ( SignalSource shape)\n        //\n        this.signalSourcePort = []\n        this.getInputPort(\"in1\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[0] = event.connection.getSource() })\n        this.getInputPort(\"in1\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[0] = null })\n        \n        this.getInputPort(\"in2\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[1] = event.connection.getSource() })\n        this.getInputPort(\"in2\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[1] = null })\n        \n        this.getInputPort(\"in3\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[2] = event.connection.getSource() })\n        this.getInputPort(\"in3\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[2] = null })\n        \n        this.getInputPort(\"in4\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[3] = event.connection.getSource() })\n        this.getInputPort(\"in4\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[3] = null })\n        \n        this.getInputPort(\"in5\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[4] = event.connection.getSource() })\n        this.getInputPort(\"in5\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[4] = null })\n        \n        this.getInputPort(\"in6\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[5] = event.connection.getSource() })\n        this.getInputPort(\"in6\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[5] = null })\n        \n        this.getInputPort(\"in7\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[6] = event.connection.getSource() })\n        this.getInputPort(\"in7\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[6] = null })\n        \n        this.getInputPort(\"in8\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[7] = event.connection.getSource() })\n        this.getInputPort(\"in8\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[7] = null })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    onPreStart:function(context)\n    {\n        // first check if any object already create the signal context\n        context.signalPorts ??= {}\n    },\n\n    calculate:function(context)\n    {\n        for (var i = 0; i<8; i++){\n            // either signalPort can be undefined of the result of getValue...\n            let value = this.signalSourcePort[i]?.getValue()\n            \n            // override the source of the signal if we have a \"connected\" source. \n            // This is the semantic of a \"bus\". Only connected (tri state sources) ports can transfer data\n            // to the bus.\n            \n            if(value !==null && value!==undefined ){\n                if(context.signalPorts[this.busId+\":\"+(i+1)] !== this.signalSourcePort[i]){\n                    context.signalPorts[this.busId+\":\"+(i+1)] = this.signalSourcePort[i];\n                }\n            }\n            // it is \"undefined\". In this case remove it from the bus\n            else if (context.signalPorts[this.busId] === this.signalSourcePort[i]){\n                 delete context.signalPorts[this.busId+\":\"+(i+1)]\n            }            \n        }\n    },\n    \n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"busId\",\n            label:\"Bus Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    }\n});",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n         // your special code here\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n\n        this.on(\"change:userData.busId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n        });\n        \n        this.on(\"added\", ()=>{\n            this.busId = this.attr(\"userData.busId\")\n            if(!this.busId){\n                this.busId = \"Bus_Id\"\n                this.attr(\"userData.busId\", this.busId)\n            }            \n            this.layerAttr(\"label\", {text: this.busId})\n        })\n        \n        // get the connected port and forward the port to the related party ( SignalSource shape)\n        //\n        this.signalSourcePort = []\n        this.getInputPort(\"in1\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[0] = event.connection.getSource() })\n        this.getInputPort(\"in1\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[0] = null })\n        \n        this.getInputPort(\"in2\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[1] = event.connection.getSource() })\n        this.getInputPort(\"in2\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[1] = null })\n        \n        this.getInputPort(\"in3\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[2] = event.connection.getSource() })\n        this.getInputPort(\"in3\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[2] = null })\n        \n        this.getInputPort(\"in4\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[3] = event.connection.getSource() })\n        this.getInputPort(\"in4\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[3] = null })\n        \n        this.getInputPort(\"in5\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[4] = event.connection.getSource() })\n        this.getInputPort(\"in5\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[4] = null })\n        \n        this.getInputPort(\"in6\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[5] = event.connection.getSource() })\n        this.getInputPort(\"in6\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[5] = null })\n        \n        this.getInputPort(\"in7\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[6] = event.connection.getSource() })\n        this.getInputPort(\"in7\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[6] = null })\n        \n        this.getInputPort(\"in8\").on(\"connect\",    (emitter, event)=>{ this.signalSourcePort[7] = event.connection.getSource() })\n        this.getInputPort(\"in8\").on(\"disconnect\", (emitter, event)=>{ this.signalSourcePort[7] = null })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    onPreStart:function(context)\n    {\n        // first check if any object already create the signal context\n        context.signalPorts ??= {}\n    },\n\n    calculate:function(context)\n    {\n        for (var i = 0; i<8; i++){\n            // either signalPort can be undefined of the result of getValue...\n            let value = this.signalSourcePort[i]?.getValue()\n            \n            // override the source of the signal if we have a \"connected\" source. \n            // This is the semantic of a \"bus\". Only connected (tri state sources) ports can transfer data\n            // to the bus.\n            \n            if(value !==null && value!==undefined ){\n                if(context.signalPorts[this.busId+\":\"+(i+1)] !== this.signalSourcePort[i]){\n                    context.signalPorts[this.busId+\":\"+(i+1)] = this.signalSourcePort[i];\n                }\n            }\n            // it is \"undefined\". In this case remove it from the bus\n            else if (context.signalPorts[this.busId+\":\"+(i+1)] === this.signalSourcePort[i]){\n                 delete context.signalPorts[this.busId+\":\"+(i+1)]\n            }            \n        }\n    },\n    \n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"busId\",\n            label:\"Bus Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    }\n});",
         "markdown": "# Signal Target\n\nWhen you don’t want to route too many wires, how about trying `signal` elements.\n\n\nA `signal` shape is an electrical design primitive. It is used to make an electrical \nconnection between one schematic group and another group, or sheet symbol in a \ndesign. The name of the `signal` defines the connection. \n\nA `signal target` on a schematic sheet connects to `signals source`\nor sheet entries with the **same name** in the project.",
         "type": "Output",
         "direction": 1
@@ -28,20 +28,20 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7969.984375,
-          "y": 7908.2626953125
+          "x": 7973.893238067627,
+          "y": 7919.5394953125
         },
         {
-          "x": 8019.984375,
-          "y": 7908.2626953125
+          "x": 8023.893238067627,
+          "y": 7919.5394953125
         },
         {
-          "x": 8019.984375,
-          "y": 8088.2626953125
+          "x": 8023.893238067627,
+          "y": 8099.5394953125
         },
         {
-          "x": 7969.984375,
-          "y": 8088.2626953125
+          "x": 7973.893238067627,
+          "y": 8099.5394953125
         }
       ],
       "blur": 0,
@@ -63,8 +63,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "2369ca87-43d5-837d-cc3e-448f9f9747e4",
-      "x": 7966.075511932373,
-      "y": 7889.1837046875,
+      "x": 7969.984375,
+      "y": 7900.460504687499,
       "width": 51.375,
       "height": 21.25,
       "alpha": 1,
@@ -103,8 +103,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "fd38272c-22f5-46fb-3f8d-2d70036a8113",
-      "x": 7964.558999999997,
-      "y": 7931.7076,
+      "x": 7968.4678630676235,
+      "y": 7942.984399999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -141,8 +141,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "5b6dea7c-5af9-59eb-10df-c2286a09c029",
-      "x": 7964.655175,
-      "y": 7951.7202953125,
+      "x": 7968.564038067627,
+      "y": 7962.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -179,8 +179,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "cd195c67-4320-8eb6-3a93-c245082e5af1",
-      "x": 7964.558999999997,
-      "y": 7971.7202953125,
+      "x": 7968.4678630676235,
+      "y": 7982.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -217,8 +217,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "d55e4953-0e28-e9fa-0878-5d59b3a9a527",
-      "x": 7964.558999999997,
-      "y": 7991.7202953125,
+      "x": 7968.4678630676235,
+      "y": 8002.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -255,8 +255,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "89c351ab-d4b8-b953-54dc-e7d58aaba4bc",
-      "x": 7964.558999999997,
-      "y": 8011.7202953125,
+      "x": 7968.4678630676235,
+      "y": 8022.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -293,8 +293,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "bf796294-065c-0abb-1cd8-947b1e704102",
-      "x": 7964.558999999997,
-      "y": 8031.7202953125,
+      "x": 7968.4678630676235,
+      "y": 8042.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -331,8 +331,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "a8a695ae-fe8f-15f9-101d-41fc51582cca",
-      "x": 7964.558999999997,
-      "y": 8051.7202953125,
+      "x": 7968.4678630676235,
+      "y": 8062.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -369,8 +369,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "927b7876-8755-516d-6551-e1347e7a5226",
-      "x": 7964.558999999997,
-      "y": 8071.7202953125,
+      "x": 7968.4678630676235,
+      "y": 8082.997095312499,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -407,9 +407,9 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "5b8214dc-53c8-645e-cb56-87e89fbbdc1b",
-      "x": 7966.087045669556,
-      "y": 7904.8850953125,
-      "width": 28.339500427246094,
+      "x": 7969.995908737183,
+      "y": 7916.1618953125,
+      "width": 55.8125,
       "height": 21.25960063934326,
       "alpha": 1,
       "selectable": true,
@@ -462,12 +462,12 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 7997.0456,
-          "y": 7953.7132
+          "x": 8000.954463067627,
+          "y": 7964.99
         },
         {
-          "x": 7997.045600000003,
-          "y": 8058.8028
+          "x": 8000.95446306763,
+          "y": 8070.0796
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -496,12 +496,12 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 8003.4104,
-          "y": 7992.1507999999985
+          "x": 8007.319263067627,
+          "y": 8003.427599999998
         },
         {
-          "x": 7989.762400000005,
-          "y": 8014.670000000002
+          "x": 7993.671263067632,
+          "y": 8025.9468000000015
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -515,8 +515,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "cc0d8b2b-c805-5f7b-2a79-d064bc509732",
-      "x": 7982.087045669556,
-      "y": 7917.6618953125,
+      "x": 7985.995908737183,
+      "y": 7928.9386953124995,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -555,8 +555,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "c709cd55-b1d4-a7b2-0ebc-55fd27769952",
-      "x": 7972.558999999997,
-      "y": 7925.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 7936.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -595,8 +595,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "0fcc1c6b-9580-3b51-6c3d-86da20b3317e",
-      "x": 7972.558999999997,
-      "y": 7946.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 7957.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -635,8 +635,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "2b01cd6a-4a82-217f-ce66-55398c2b6d9b",
-      "x": 7972.558999999997,
-      "y": 7966.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 7977.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -675,8 +675,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e817e124-b492-935c-e634-f9b753366a9c",
-      "x": 7972.558999999997,
-      "y": 7986.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 7997.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -715,8 +715,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "3b45d2bc-688f-e614-09fe-5222adaa1599",
-      "x": 7972.558999999997,
-      "y": 8006.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 8017.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -755,8 +755,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e8a92104-c589-7935-6744-f9ad75e704b3",
-      "x": 7972.558999999997,
-      "y": 8026.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 8037.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -795,8 +795,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "bb20ccff-ddf0-7f11-9b87-7e92526c69a2",
-      "x": 7972.558999999997,
-      "y": 8046.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 8057.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
@@ -835,8 +835,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "00e4697a-be1a-3f0f-f8ab-bd0eb448193b",
-      "x": 7972.558999999997,
-      "y": 8066.2013909362795,
+      "x": 7976.4678630676235,
+      "y": 8077.478190936279,
       "width": 55.79465866088867,
       "height": 21.25960063934326,
       "alpha": 1,
