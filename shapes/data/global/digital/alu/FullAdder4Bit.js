@@ -27,11 +27,11 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a1");
      port.setMaxFanOut(1);
-     // input_s2
+     // input_a2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8093419254054925, y: 17.738202703649346 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_s2");
+     port.setName("input_a2");
      port.setMaxFanOut(1);
      // input_a3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9053231790666632, y: 26.896406808152975 }));
