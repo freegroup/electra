@@ -83,7 +83,7 @@ var signal_8_SignalSource = CircuitFigure.extend({
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M3.631000000000313 22.525390625L54.63100000000031 22.525390625L54.63100000000031 202.525390625L3.631000000000313 202.525390625Z');
+       shape = this.canvas.paper.path('M5.131000000000313 22.525390625L55.13100000000031 22.525390625L55.13100000000031 202.525390625L5.131000000000313 202.525390625Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
@@ -139,7 +139,7 @@ var signal_8_SignalSource = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Signal Bus');
-       shape.attr({"x":4.631000000000313,"y":29.174392223358154,"text-anchor":"start","text":"Signal Bus","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":6.131000000000313,"y":29.174392223358154,"text-anchor":"start","text":"Signal Bus","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
