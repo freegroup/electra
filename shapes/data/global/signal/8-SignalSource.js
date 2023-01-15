@@ -208,10 +208,6 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
         this.getOutputPort("out8").getValue = ()=>context.signalPorts[this.busId+":8"]?.getValue()
     },
 
-    calculate:function(context)
-    {
-    },
-    
     getParameterSettings: function()
     {
         return [

@@ -3,8 +3,8 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "cacb5475-4161-0fd0-d9ef-bf2fd5bb361c",
-      "x": 7975.115375,
-      "y": 7909.2626953125,
+      "x": 7975.847508248901,
+      "y": 7920.829769513321,
       "width": 50,
       "height": 180,
       "alpha": 1,
@@ -14,7 +14,7 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.on(\"change:userData.busId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n            this.signalId = event.value\n        });\n        this.on(\"added\", ()=>{\n            this.signalId = this.attr(\"userData.busId\")\n            if(!this.signalId){\n                this.signalId = \"Bus_Id\"\n                this.attr(\"userData.busId\", this.signalId)\n            }            \n            this.layerAttr(\"label\", {text: this.signalId})\n        })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    onStart:function(context)\n    {\n        this.getOutputPort(\"out1\").getValue = ()=>context.signalPorts[this.busId+\":1\"]?.getValue()\n        this.getOutputPort(\"out2\").getValue = ()=>context.signalPorts[this.busId+\":2\"]?.getValue()\n        this.getOutputPort(\"out3\").getValue = ()=>context.signalPorts[this.busId+\":3\"]?.getValue()\n        this.getOutputPort(\"out4\").getValue = ()=>context.signalPorts[this.busId+\":4\"]?.getValue()\n        this.getOutputPort(\"out5\").getValue = ()=>context.signalPorts[this.busId+\":5\"]?.getValue()\n        this.getOutputPort(\"out6\").getValue = ()=>context.signalPorts[this.busId+\":6\"]?.getValue()\n        this.getOutputPort(\"out7\").getValue = ()=>context.signalPorts[this.busId+\":7\"]?.getValue()\n        this.getOutputPort(\"out8\").getValue = ()=>context.signalPorts[this.busId+\":8\"]?.getValue()\n    },\n\n    calculate:function(context)\n    {\n    },\n    \n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"busId\",\n            label:\"Bus Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    }\n\n});",
+        "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.on(\"change:userData.busId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n            this.signalId = event.value\n        });\n        this.on(\"added\", ()=>{\n            this.signalId = this.attr(\"userData.busId\")\n            if(!this.signalId){\n                this.signalId = \"Bus_Id\"\n                this.attr(\"userData.busId\", this.signalId)\n            }            \n            this.layerAttr(\"label\", {text: this.signalId})\n        })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    onStart:function(context)\n    {\n        this.getOutputPort(\"out1\").getValue = ()=>context.signalPorts[this.busId+\":1\"]?.getValue()\n        this.getOutputPort(\"out2\").getValue = ()=>context.signalPorts[this.busId+\":2\"]?.getValue()\n        this.getOutputPort(\"out3\").getValue = ()=>context.signalPorts[this.busId+\":3\"]?.getValue()\n        this.getOutputPort(\"out4\").getValue = ()=>context.signalPorts[this.busId+\":4\"]?.getValue()\n        this.getOutputPort(\"out5\").getValue = ()=>context.signalPorts[this.busId+\":5\"]?.getValue()\n        this.getOutputPort(\"out6\").getValue = ()=>context.signalPorts[this.busId+\":6\"]?.getValue()\n        this.getOutputPort(\"out7\").getValue = ()=>context.signalPorts[this.busId+\":7\"]?.getValue()\n        this.getOutputPort(\"out8\").getValue = ()=>context.signalPorts[this.busId+\":8\"]?.getValue()\n    },\n\n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"busId\",\n            label:\"Bus Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    }\n\n});",
         "markdown": "# Signal Source\n\nWhen you don’t want to route too many wires, how about trying `signal` elements.\n\n\nA `signal` shape is an electrical design primitive. It is used to make an electrical \nconnection between one schematic group and another group, or sheet symbol in a \ndesign. The name of the `signal` defines the connection. \n\nA `signal target` on a schematic sheet connects to `signals source`\nor sheet entries with the **same name** in the project.",
         "type": "Output",
         "direction": 1
@@ -28,20 +28,20 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7975.115375,
-          "y": 7909.2626953125
+          "x": 7975.847508248901,
+          "y": 7920.829769513321
         },
         {
-          "x": 8025.115375,
-          "y": 7909.2626953125
+          "x": 8025.847508248901,
+          "y": 7920.829769513321
         },
         {
-          "x": 8025.115375,
-          "y": 8089.2626953125
+          "x": 8025.847508248901,
+          "y": 8100.829769513321
         },
         {
-          "x": 7975.115375,
-          "y": 8089.2626953125
+          "x": 7975.847508248901,
+          "y": 8100.829769513321
         }
       ],
       "blur": 0,
@@ -63,8 +63,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "0806e52a-93ec-5cc9-6e46-4949ca623d6e",
-      "x": 7985.260054251099,
-      "y": 7917.662543714142,
+      "x": 7985.9921875,
+      "y": 7929.229617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -103,8 +103,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "bfe54d06-1345-57d1-e4bc-a7cf016313cd",
-      "x": 8010.288474999997,
-      "y": 7929.662543714142,
+      "x": 8011.020608248898,
+      "y": 7941.229617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -143,8 +143,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "2369ca87-43d5-837d-cc3e-448f9f9747e4",
-      "x": 7969.252241751099,
-      "y": 7886.4053046875,
+      "x": 7969.984375,
+      "y": 7897.97237888832,
       "width": 51.375,
       "height": 21.25,
       "alpha": 1,
@@ -183,8 +183,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "5cb8ec28-349b-9076-64e0-afef2d84c440",
-      "x": 8010.288474999997,
-      "y": 7989.662543714142,
+      "x": 8011.020608248898,
+      "y": 8001.229617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -223,8 +223,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "8a089d8d-1ce9-7551-3e09-4e159e6ff67e",
-      "x": 8010.288474999997,
-      "y": 8009.162543714142,
+      "x": 8011.020608248898,
+      "y": 8020.729617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -263,8 +263,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "811f326e-c6e5-1812-73bb-8b9ecfb9e431",
-      "x": 8010.288474999997,
-      "y": 7969.662543714142,
+      "x": 8011.020608248898,
+      "y": 7981.229617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -318,16 +318,16 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 7998.240874999995,
-          "y": 8002.316595312494
+          "x": 7998.973008248896,
+          "y": 8013.883669513315
         },
         {
-          "x": 7991.767624999997,
-          "y": 8010.5160453125
+          "x": 7992.499758248898,
+          "y": 8022.0831195133205
         },
         {
-          "x": 7985.294374999998,
-          "y": 8018.715495312505
+          "x": 7986.026508248899,
+          "y": 8030.282569513325
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -341,8 +341,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "cde6732e-5271-4757-38ad-9b4df3c9d08f",
-      "x": 8010.288474999997,
-      "y": 8069.162543714142,
+      "x": 8011.020608248898,
+      "y": 8080.729617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -381,8 +381,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "f92205f7-496f-63ee-7410-39a5dfbac21b",
-      "x": 8010.288474999997,
-      "y": 8029.162543714142,
+      "x": 8011.020608248898,
+      "y": 8040.729617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -421,8 +421,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "72514620-aaf6-68c3-76a3-069347e8d2f7",
-      "x": 8010.288474999997,
-      "y": 8049.162543714142,
+      "x": 8011.020608248898,
+      "y": 8060.729617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -461,8 +461,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e1311543-02b9-9ac1-7945-a01c92cfb2b8",
-      "x": 7972.115375,
-      "y": 7904.7626953125,
+      "x": 7972.847508248901,
+      "y": 7916.329769513321,
       "width": 55.8125,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -501,8 +501,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "3f5e4e9d-6b33-fb82-b7c3-95b3d9c5ec8d",
-      "x": 8010.288474999997,
-      "y": 7949.662543714142,
+      "x": 8011.020608248898,
+      "y": 7961.229617914963,
       "width": 28.339080810546875,
       "height": 21.29800319671631,
       "alpha": 1,
@@ -556,12 +556,12 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 7992.288474999997,
-          "y": 7956.777295312494
+          "x": 7993.020608248898,
+          "y": 7968.344369513315
         },
         {
-          "x": 7992.2884749999985,
-          "y": 8082.641395312503
+          "x": 7993.020608248899,
+          "y": 8094.2084695133235
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -575,8 +575,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "cee37069-73e9-307a-8f07-776304767c53",
-      "x": 8021.152024999998,
-      "y": 7934.8115453125,
+      "x": 8021.8841582488985,
+      "y": 7946.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -613,8 +613,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "7f17c53c-2595-2597-2369-33ce0bc69c30",
-      "x": 8021.152024999998,
-      "y": 7954.8115453125,
+      "x": 8021.8841582488985,
+      "y": 7966.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -651,8 +651,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "165c2529-f2a7-9f09-a873-1574ea2a6da9",
-      "x": 8021.152024999998,
-      "y": 7974.8115453125,
+      "x": 8021.8841582488985,
+      "y": 7986.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -689,8 +689,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "53edd286-3e82-6f55-f806-1cd4de15afc4",
-      "x": 8021.152024999998,
-      "y": 7994.8115453125,
+      "x": 8021.8841582488985,
+      "y": 8006.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -727,8 +727,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "2e1ea16e-68c4-a261-2312-7f27d7a058c5",
-      "x": 8021.152024999998,
-      "y": 8014.8115453125,
+      "x": 8021.8841582488985,
+      "y": 8026.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -765,8 +765,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "6a684e8b-d5bb-8aa7-bede-069ef7601ff8",
-      "x": 8021.152024999998,
-      "y": 8034.8115453125,
+      "x": 8021.8841582488985,
+      "y": 8046.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -803,8 +803,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "fd38272c-22f5-46fb-3f8d-2d70036a8113",
-      "x": 8021.152024999998,
-      "y": 8054.8115453125,
+      "x": 8021.8841582488985,
+      "y": 8066.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -841,8 +841,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "d2c49eef-e0e2-f131-7cbe-a8ceb9b0dda2",
-      "x": 8021.152024999998,
-      "y": 8074.8115453125,
+      "x": 8021.8841582488985,
+      "y": 8086.378619513321,
       "width": 10,
       "height": 10,
       "alpha": 1,
