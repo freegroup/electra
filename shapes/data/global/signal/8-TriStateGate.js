@@ -21,11 +21,11 @@ var signal_8_TriStateGate = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("output1");
      port.setMaxFanOut(20);
-     // input_enable
+     // enable
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 5.77323591692931 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_enable");
+     port.setName("enable");
      port.setMaxFanOut(20);
      // inpu1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 19.95917338442648 }));
@@ -196,8 +196,8 @@ signal_8_TriStateGate = signal_8_TriStateGate.extend({
 
     calculate:function(context)
     {
-        let enable = this.getInputPort("input_enable")
-
+        let enable = this.getInputPort("enable")
+    console.log(enable.getBooleanValue())
         if(enable.getBooleanValue()){
             this.getOutputPort("output1").setValue(this.getInputPort("input1").getValue())
             this.getOutputPort("output2").setValue(this.getInputPort("input2").getValue())
