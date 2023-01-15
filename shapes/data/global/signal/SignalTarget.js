@@ -137,7 +137,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
         }
         // it is "undefined". In this case remove it from the bus
         else if (context.signalPorts[this.signalId] === this.signalSourcePort){
-             delete context.signalPorts[this.signalId]
+              context.signalPorts[this.signalId] = null
         }
     },
     
