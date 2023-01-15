@@ -118,7 +118,7 @@ var signal_8_SignalSource = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M28.988633248895894 115.91129062499476L22.515383248897706,124.11074062500029L16.042133248898608,132.3101906250049');
+       shape = this.canvas.paper.path('M33.988633248895894 115.91129062499476L27.515383248897706,124.11074062500029L21.042133248898608,132.3101906250049');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
@@ -148,7 +148,7 @@ var signal_8_SignalSource = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M23.036233248897588 70.3719906249944L23.036233248899407,196.23609062500327');
+       shape = this.canvas.paper.path('M28.036233248897588 61.371990624994396L28.036233248899407,187.23609062500327');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
