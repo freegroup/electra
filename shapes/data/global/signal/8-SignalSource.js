@@ -179,15 +179,15 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
         
         this.on("change:userData.busId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
-            this.signalId = event.value
+            this.busId = event.value
         });
         this.on("added", ()=>{
-            this.signalId = this.attr("userData.busId")
-            if(!this.signalId){
-                this.signalId = "Bus_Id"
-                this.attr("userData.busId", this.signalId)
+            this.busId = this.attr("userData.busId")
+            if(!this.busId){
+                this.busId = "Bus_Id"
+                this.attr("userData.busId", this.busId)
             }            
-            this.layerAttr("label", {text: this.signalId})
+            this.layerAttr("label", {text: this.busId})
         })
     },
 
