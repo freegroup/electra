@@ -35,12 +35,30 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
         
         // get the connected port and forward the port to the related party ( SignalSource shape)
         //
-        this.getInputPort(0).on("connect", (emitter, event)=>{
-           this.signalSourcePort = event.connection.getSource()
-        })
-        this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalSourcePort
-        })
+        this.signalSourcePort = []
+        this.getInputPort("in1").on("connect",    (emitter, event)=>{ this.signalSourcePort[0] = event.connection.getSource() })
+        this.getInputPort("in1").on("disconnect", (emitter, event)=>{ this.signalSourcePort[0] = null })
+        
+        this.getInputPort("in2").on("connect",    (emitter, event)=>{ this.signalSourcePort[1] = event.connection.getSource() })
+        this.getInputPort("in2").on("disconnect", (emitter, event)=>{ this.signalSourcePort[1] = null })
+        
+        this.getInputPort("in3").on("connect",    (emitter, event)=>{ this.signalSourcePort[2] = event.connection.getSource() })
+        this.getInputPort("in3").on("disconnect", (emitter, event)=>{ this.signalSourcePort[2] = null })
+        
+        this.getInputPort("in4").on("connect",    (emitter, event)=>{ this.signalSourcePort[3] = event.connection.getSource() })
+        this.getInputPort("in4").on("disconnect", (emitter, event)=>{ this.signalSourcePort[3] = null })
+        
+        this.getInputPort("in5").on("connect",    (emitter, event)=>{ this.signalSourcePort[4] = event.connection.getSource() })
+        this.getInputPort("in5").on("disconnect", (emitter, event)=>{ this.signalSourcePort[4] = null })
+        
+        this.getInputPort("in6").on("connect",    (emitter, event)=>{ this.signalSourcePort[5] = event.connection.getSource() })
+        this.getInputPort("in6").on("disconnect", (emitter, event)=>{ this.signalSourcePort[5] = null })
+        
+        this.getInputPort("in7").on("connect",    (emitter, event)=>{ this.signalSourcePort[6] = event.connection.getSource() })
+        this.getInputPort("in7").on("disconnect", (emitter, event)=>{ this.signalSourcePort[6] = null })
+        
+        this.getInputPort("in8").on("connect",    (emitter, event)=>{ this.signalSourcePort[7] = event.connection.getSource() })
+        this.getInputPort("in8").on("disconnect", (emitter, event)=>{ this.signalSourcePort[7] = null })
     },
 
     /**
@@ -56,21 +74,23 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
 
     calculate:function(context)
     {
-        // either signalPort can be undefined of the result of getValue...
-        let value = this.signalSourcePort?.getValue()
-        
-        // override the source of the signal if we have a "connected" source. 
-        // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
-        // to the bus.
-        
-        if(value !==null && value!==undefined ){
-            if(context.signalPorts[this.signalId] !== this.signalSourcePort){
-                context.signalPorts[this.signalId] = this.signalSourcePort;
+        for (var i = 0; i<8; i++){
+            // either signalPort can be undefined of the result of getValue...
+            let value = this.signalSourcePort[i]?.getValue()
+            
+            // override the source of the signal if we have a "connected" source. 
+            // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
+            // to the bus.
+            
+            if(value !==null && value!==undefined ){
+                if(context.signalPorts[this.busId+":"+(i+1)] !== this.signalSourcePort[i]){
+                    context.signalPorts[this.busId+":"+(i+1)] = this.signalSourcePort[i];
+                }
             }
-        }
-        // it is "undefined". In this case remove it from the bus
-        else if (context.signalPorts[this.signalId] === this.signalSourcePort){
-             delete context.signalPorts[this.signalId]
+            // it is "undefined". In this case remove it from the bus
+            else if (context.signalPorts[this.busId] === this.signalSourcePort[i]){
+                 delete context.signalPorts[this.busId+":"+(i+1)]
+            }            
         }
     },
     
@@ -78,35 +98,11 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
     {
         return [
         {
-            name:"signalId",
-            label:"Signal Id",
+            name:"busId",
+            label:"Bus Id",
             property:{
                 type: "string"
             }
         }];
-    },
-    
-  /**
-   * @private
-   */
-  applyTransformation: function () {
-    let s =
-      // override the base implementation and do not scale the internal SVG elements....this let the arrow looks a like streche...we
-      // calculate the path in the event handler. A lot more code....but the result is much cleaner
-      //"S" + this.scaleX + "," + this.scaleY + ",0,0 " +
-      "R" + this.rotationAngle + "," + ((this.getWidth() / 2) | 0) + "," + ((this.getHeight() / 2) | 0) +
-      "T" + this.getAbsoluteX() + "," + this.getAbsoluteY() +
-      ""
-    this.svgNodes.transform(s)
-    if (this.rotationAngle === 90 || this.rotationAngle === 270) {
-      let before = this.svgNodes.getBBox(true)
-      let ratio = before.height / before.width
-      let reverseRatio = before.width / before.height
-      let rs = "...S" + ratio + "," + reverseRatio + "," + (this.getAbsoluteX() + this.getWidth() / 2) + "," + (this.getAbsoluteY() + this.getHeight() / 2)
-      this.svgNodes.transform(rs)
     }
-
-    return this
-  }
-
 });
