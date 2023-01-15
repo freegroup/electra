@@ -134,8 +134,8 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'B1');
-       shape.attr({"x":6.27559999999994,"y":40.375,"text-anchor":"start","text":"B1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'A2');
+       shape.attr({"x":6.27559999999994,"y":40.375,"text-anchor":"start","text":"A2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -149,8 +149,8 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'C1');
-       shape.attr({"x":6.27559999999994,"y":60.484375,"text-anchor":"start","text":"C1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'A3');
+       shape.attr({"x":6.27559999999994,"y":60.484375,"text-anchor":"start","text":"A3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -159,13 +159,13 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D1');
-       shape.attr({"x":6.27559999999994,"y":80.47956250000061,"text-anchor":"start","text":"D1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'A4');
+       shape.attr({"x":6.27559999999994,"y":80.47956250000061,"text-anchor":"start","text":"A4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'A2');
-       shape.attr({"x":6.27559999999994,"y":110.953125,"text-anchor":"start","text":"A2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B1');
+       shape.attr({"x":6.27559999999994,"y":110.953125,"text-anchor":"start","text":"B1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -174,13 +174,13 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'C2');
-       shape.attr({"x":6.27559999999994,"y":150.921875,"text-anchor":"start","text":"C2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B3');
+       shape.attr({"x":6.27559999999994,"y":150.921875,"text-anchor":"start","text":"B3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D2');
-       shape.attr({"x":6.852399999999761,"y":171.15625,"text-anchor":"start","text":"D2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B4');
+       shape.attr({"x":6.852399999999761,"y":171.15625,"text-anchor":"start","text":"B4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
