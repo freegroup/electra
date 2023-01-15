@@ -10,7 +10,7 @@ export default draw2d.SetFigure.extend({
 
     this.persistPorts = false
 
-    this.on("dblclick", () =>  markdownDialog.show(this) )
+    this.on("dblclick", () => markdownDialog.show(this) )
   },
 
 
@@ -18,23 +18,11 @@ export default draw2d.SetFigure.extend({
   },
 
   layerGet: function (name) {
-    if (this.svgNodes === null) return null
-    let found = null
-    this.svgNodes.forEach(function (shape) {
-      if (found ===null && shape.data("name") === name) {
-        found = shape
-      }
-    })
-    return found
+    return this.svgNodes?.items.find( shape => shape.data("name") === name) 
   },
 
   layerAttr: function (name, attributes) {
-    if (this.svgNodes === null) return
-
-    // rewrite pure RED to the brainbox "HIGH" color
-    // rewrite pure BLUE to the brainbox "LOW" color
-    // without affecting the original JSON Object
-    this.svgNodes.forEach(function (shape) {
+    this.svgNodes?.forEach( (shape) => {
       if (shape.data("name") === name) {
         shape.attr(attributes)
       }
@@ -61,12 +49,7 @@ export default draw2d.SetFigure.extend({
     else {
       this.svgNodes.forEach( (node) => {
         if (node.data("name") === name) {
-          if (flag) {
-            node.show()
-          }
-          else {
-            node.hide()
-          }
+          flag?node.show():node.hide()
         }
       })
     }

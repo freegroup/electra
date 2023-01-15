@@ -16,13 +16,13 @@ var digital_buttons_HighLowArray = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:20,height:160},attr), setter, getter);
      var port;
      // port01
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 5.93131249999999 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 6.25 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port01");
      port.setMaxFanOut(20);
      // port02
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 19.0625 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 18.75 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port02");
@@ -84,42 +84,42 @@ var digital_buttons_HighLowArray = CircuitFigure.extend({
        
        // rect01
        shape = this.canvas.paper.path('M20 20L0 20L0 0L20 0Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect01");
        
        // rect02
        shape = this.canvas.paper.path('M20 40L0 40L0 20L20 20Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect02");
        
        // rect03
        shape = this.canvas.paper.path('M20 60L0 60L0 40L20 40Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect03");
        
        // rect04
        shape = this.canvas.paper.path('M20 80L0 80L0 60L20 60Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect04");
        
        // rect05
        shape = this.canvas.paper.path('M20 100L0 100L0 80L20 80Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect05");
        
        // rect06
        shape = this.canvas.paper.path('M20 120L0 120L0 100L20 100Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect06");
        
        // rect07
        shape = this.canvas.paper.path('M20 140L0 140L0 120L20 120Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect07");
        
        // rect08
        shape = this.canvas.paper.path('M20 160L0 160L0 140L20 140Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect08");
        
 

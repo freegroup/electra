@@ -1,0 +1,62 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+signal_8_TriStateGate = signal_8_TriStateGate.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+    },
+
+
+    calculate:function(context)
+    {
+        let enable = this.getInputPort("enable")
+        if(enable.getBooleanValue()){
+            this.getOutputPort("output1").setValue(this.getInputPort("input1").getValue())
+            this.getOutputPort("output2").setValue(this.getInputPort("input2").getValue())
+            this.getOutputPort("output3").setValue(this.getInputPort("input3").getValue())
+            this.getOutputPort("output4").setValue(this.getInputPort("input4").getValue())
+            this.getOutputPort("output5").setValue(this.getInputPort("input5").getValue())
+            this.getOutputPort("output6").setValue(this.getInputPort("input6").getValue())
+            this.getOutputPort("output7").setValue(this.getInputPort("input7").getValue())
+            this.getOutputPort("output8").setValue(this.getInputPort("input8").getValue())
+        }
+        else {
+            this.getOutputPort("output1").setValue(null)
+            this.getOutputPort("output2").setValue(null)
+            this.getOutputPort("output3").setValue(null)
+            this.getOutputPort("output4").setValue(null)
+            this.getOutputPort("output5").setValue(null)
+            this.getOutputPort("output6").setValue(null)
+            this.getOutputPort("output7").setValue(null)
+            this.getOutputPort("output8").setValue(null)
+        }
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"signalId",
+            label:"Signal Id",
+            property:{
+                type: "string"
+            }
+        }];
+    }
+
+
+});
