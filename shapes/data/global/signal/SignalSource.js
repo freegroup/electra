@@ -112,10 +112,7 @@ signal_SignalSource = signal_SignalSource.extend({
      **/
     onStart:function(context)
     {
-        this.getOutputPort(0).getValue = ()=> {
-            console.log(this.signalId, context.signalPorts[this.signalId])
-            return context.signalPorts[this.signalId]?.getValue()
-        }
+        this.getOutputPort(0).getValue = ()=> context.signalPorts[this.signalId]?.getValue()
     },
 
     getParameterSettings: function()
