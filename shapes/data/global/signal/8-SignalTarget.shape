@@ -2,19 +2,19 @@
   "draw2d": [
     {
       "type": "shape_designer.figure.PolyRect",
-      "id": "722d9720-c010-73b7-4026-b9e994a271b3",
-      "x": 7965.392974999997,
-      "y": 7989.9873046875,
-      "width": 69,
-      "height": 20,
+      "id": "58af70e2-4b09-a01f-d819-172d2e3a83c7",
+      "x": 7965.425375000003,
+      "y": 7984.5424,
+      "width": 60,
+      "height": 180,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
       "angle": 0,
       "userData": {
+        "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n         // your special code here\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        // handle the size of the shape if the label has changed\n        //\n        var adjustWidth = ()=>{\n            var width = this.layerGet(\"label\").getBBox().width+15\n            this.setWidth(width+5);\n            this.layerAttr(\"BoundingBox\", { path: `M0 0 L${width} 0 L${width} 20 L0 20 Z`})\n            this.layerAttr(\"outline\",     { path: `M0 10 L13 0 L${width} 0 L${width} 20 L13 20 Z`})\n        }\n        \n        this.on(\"change:userData.signalId\",(emitter, event)=>{\n            this.layerAttr(\"label\", {text: event.value})\n            adjustWidth()\n        });\n        \n        this.on(\"added\", ()=>{\n            this.signalId = this.attr(\"userData.signalId\")\n            if(!this.signalId){\n                this.signalId = \"Signal_Id\"\n                this.attr(\"userData.signalId\", this.signalId)\n            }            \n            this.layerAttr(\"label\", {text: this.signalId})\n            adjustWidth()\n        })\n        \n        // get the connected port and forward the port to the related party ( SignalSource shape)\n        //\n        this.getInputPort(0).on(\"connect\", (emitter, event)=>{\n           this.signalSourcePort = event.connection.getSource()\n        })\n        this.getInputPort(0).on(\"disconnect\", (emitter, event)=>{\n            delete this.signalSourcePort\n        })\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    onPreStart:function(context)\n    {\n        // first check if any object already create the signal context\n        context.signalPorts ??= {}\n    },\n\n    calculate:function(context)\n    {\n        // either signalPort can be undefined of the result of getValue...\n        let value = this.signalSourcePort?.getValue()\n        \n        // override the source of the signal if we have a \"connected\" source. \n        // This is the semantic of a \"bus\". Only connected (tri state sources) ports can transfer data\n        // to the bus.\n        \n        if(value !==null && value!==undefined ){\n            if(context.signalPorts[this.signalId] !== this.signalSourcePort){\n                context.signalPorts[this.signalId] = this.signalSourcePort;\n            }\n        }\n        // it is \"undefined\". In this case remove it from the bus\n        else if (context.signalPorts[this.signalId] === this.signalSourcePort){\n             delete context.signalPorts[this.signalId]\n        }\n    },\n    \n    getParameterSettings: function()\n    {\n        return [\n        {\n            name:\"signalId\",\n            label:\"Signal Id\",\n            property:{\n                type: \"string\"\n            }\n        }];\n    },\n    \n  /**\n   * @private\n   */\n  applyTransformation: function () {\n    let s =\n      // override the base implementation and do not scale the internal SVG elements....this let the arrow looks a like streche...we\n      // calculate the path in the event handler. A lot more code....but the result is much cleaner\n      //\"S\" + this.scaleX + \",\" + this.scaleY + \",0,0 \" +\n      \"R\" + this.rotationAngle + \",\" + ((this.getWidth() / 2) | 0) + \",\" + ((this.getHeight() / 2) | 0) +\n      \"T\" + this.getAbsoluteX() + \",\" + this.getAbsoluteY() +\n      \"\"\n    this.svgNodes.transform(s)\n    if (this.rotationAngle === 90 || this.rotationAngle === 270) {\n      let before = this.svgNodes.getBBox(true)\n      let ratio = before.height / before.width\n      let reverseRatio = before.width / before.height\n      let rs = \"...S\" + ratio + \",\" + reverseRatio + \",\" + (this.getAbsoluteX() + this.getWidth() / 2) + \",\" + (this.getAbsoluteY() + this.getHeight() / 2)\n      this.svgNodes.transform(rs)\n    }\n\n    return this\n  }\n\n});",
-        "name": "outline",
         "markdown": "# Signal Target\n\nWhen you don’t want to route too many wires, how about trying `signal` elements.\n\n\nA `signal` shape is an electrical design primitive. It is used to make an electrical \nconnection between one schematic group and another group, or sheet symbol in a \ndesign. The name of the `signal` defines the connection. \n\nA `signal target` on a schematic sheet connects to `signals source`\nor sheet entries with the **same name** in the project.",
         "type": "Output",
         "direction": 1
@@ -22,30 +22,26 @@
       "cssClass": "shape_designer_figure_PolyRect",
       "ports": [],
       "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(0,120,242,1)",
+      "color": "rgba(48,48,48,1)",
       "stroke": 1,
       "radius": 0,
       "dasharray": null,
       "vertices": [
         {
-          "x": 7965.392974999997,
-          "y": 7999.170104687506
+          "x": 7965.425375000003,
+          "y": 7984.5424
         },
         {
-          "x": 7978.494557377107,
-          "y": 7989.9873046875
+          "x": 8025.425375000003,
+          "y": 7984.5424
         },
         {
-          "x": 8034.392974999997,
-          "y": 7989.9873046875
+          "x": 8025.425375000003,
+          "y": 8164.5424
         },
         {
-          "x": 8034.392974999997,
-          "y": 8009.9873046875
-        },
-        {
-          "x": 7976.875052748868,
-          "y": 8009.9873046875
+          "x": 7965.425375000003,
+          "y": 8164.5424
         }
       ],
       "blur": 0,
@@ -67,8 +63,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "2369ca87-43d5-837d-cc3e-448f9f9747e4",
-      "x": 7974.575775000003,
-      "y": 7989.2373046875,
+      "x": 7965.425375000003,
+      "y": 7962.017009375,
       "width": 51.375,
       "height": 21.25,
       "alpha": 1,
@@ -107,7 +103,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "fd38272c-22f5-46fb-3f8d-2d70036a8113",
-      "x": 7959.096175000003,
+      "x": 7960,
       "y": 7994.9873046875,
       "width": 10,
       "height": 10,
@@ -116,7 +112,273 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Port",
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "5b6dea7c-5af9-59eb-10df-c2286a09c029",
+      "x": 7960.096175000003,
+      "y": 8015,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "cd195c67-4320-8eb6-3a93-c245082e5af1",
+      "x": 7960,
+      "y": 8035,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "d55e4953-0e28-e9fa-0878-5d59b3a9a527",
+      "x": 7960,
+      "y": 8055,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "89c351ab-d4b8-b953-54dc-e7d58aaba4bc",
+      "x": 7960,
+      "y": 8075,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "bf796294-065c-0abb-1cd8-947b1e704102",
+      "x": 7960,
+      "y": 8095,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "a8a695ae-fe8f-15f9-101d-41fc51582cca",
+      "x": 7960,
+      "y": 8115,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "927b7876-8755-516d-6551-e1347e7a5226",
+      "x": 7960,
+      "y": 8135,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "in1",
         "type": "Input",
         "direction": 3,
         "fanout": 1
