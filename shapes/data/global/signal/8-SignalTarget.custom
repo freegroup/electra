@@ -70,7 +70,6 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
     {
         // first check if any object already create the signal context
         context.signalPorts ??= {}
-        console.log(this.signalSourcePort)
     },
 
     calculate:function(context)
