@@ -44,19 +44,5 @@ signal_8_TriStateGate = signal_8_TriStateGate.extend({
             this.getOutputPort("output7").setValue(null)
             this.getOutputPort("output8").setValue(null)
         }
-    },
-    
-    getParameterSettings: function()
-    {
-        return [
-        {
-            name:"signalId",
-            label:"Signal Id",
-            property:{
-                type: "string"
-            }
-        }];
     }
-
-
 });
