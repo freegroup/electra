@@ -13,33 +13,117 @@ var signal_8_TriStateGate = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:44.542599999998856,height:41.085149999999885},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:80,height:193.4889749999984},attr), setter, getter);
      var port;
-     // input
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.2450418251292596, y: 52.43396945125053 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("input");
-     port.setMaxFanOut(20);
-     // output
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.39444486851058, y: 52.43396945125053 }));
+     // output1
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 19.95917338442648 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("output");
+     port.setName("output1");
      port.setMaxFanOut(20);
      // input_enable
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 50, y: -3.4437016781005276 }));
-     port.setConnectionDirection(0);
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 5.77323591692931 }));
+     port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_enable");
+     port.setMaxFanOut(20);
+     // inpu1
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 19.95917338442648 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("inpu1");
+     port.setMaxFanOut(20);
+     // inpu2
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 30.295679637560628 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("inpu2");
+     port.setMaxFanOut(20);
+     // input3
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 40.63218589069478 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input3");
+     port.setMaxFanOut(20);
+     // input4
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 50.968692143828925 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input4");
+     port.setMaxFanOut(20);
+     // input5
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 61.30519839696307 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input5");
+     port.setMaxFanOut(20);
+     // input6
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 71.64170465009722 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input6");
+     port.setMaxFanOut(20);
+     // input7
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 81.97821090323137 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input7");
+     port.setMaxFanOut(20);
+     // input8
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5772499999991396, y: 92.31471715636552 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input8");
+     port.setMaxFanOut(20);
+     // output2
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 30.295679637560628 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output2");
+     port.setMaxFanOut(20);
+     // output3
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 40.63218589069478 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output3");
+     port.setMaxFanOut(20);
+     // output4
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 51.24910863784337 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output4");
+     port.setMaxFanOut(20);
+     // output5
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 61.30519839696307 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output5");
+     port.setMaxFanOut(20);
+     // output6
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 71.64170465009722 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output6");
+     port.setMaxFanOut(20);
+     // output7
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 81.97821090323137 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output7");
+     port.setMaxFanOut(20);
+     // output8
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.26662500000157, y: 92.31471715636552 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output8");
      port.setMaxFanOut(20);
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 44.542599999998856;
-      this.originalHeight= 41.085149999999885;
+      this.originalWidth = 80;
+      this.originalHeight= 193.4889749999984;
       return shape;
    },
 
@@ -48,19 +132,39 @@ var signal_8_TriStateGate = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L44.542599999998856,0 L44.542599999998856,41.085149999999885 L0,41.085149999999885");
+       shape = this.canvas.paper.path("M0,0 L80,0 L80,193.4889749999984 L0,193.4889749999984");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0 1.085149999999885L44.542599999998856 21.582956557377656L0 41.085149999999885Z');
+       shape = this.canvas.paper.path('M70.0550000000012 22L80 22L80 0L0 0L0 22L9.225000000001273 22L9.225000000001273 32.641999999999825L70.0550000000012 32.641999999999825L70.0550000000012 22Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 28.48897499999839L80 28.48897499999839L80 193.4889749999984L0 193.4889749999984Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Line
-       shape = this.canvas.paper.path('M22.084149999998772 0L22.084149999998772,11.173400000002403');
+       shape = this.canvas.paper.path('M38.50900000000274 79.04920000000038L38.509000000000924,96.42919999999958');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
+       
+       // Line
+       shape = this.canvas.paper.path('M69.34100000000308 98.47200000000339L14.072599999998602,99.51479999999992');
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Line");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M25.23820000000069 84.61879999999928L61.23820000000069 98.45481942622973L25.23820000000069 111.61879999999928Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'enable');
+       shape.attr({"x":6.238200000000688,"y":10.561600685119629,"text-anchor":"start","text":"enable","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
        
 
        return this.canvas.paper.setFinish();
