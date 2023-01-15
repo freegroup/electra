@@ -4,9 +4,9 @@
       "type": "shape_designer.figure.ExtPolygon",
       "id": "7dda3cd2-e288-1bb8-4c62-8a2bf5627661",
       "x": 7970.5,
-      "y": 7890.57775,
+      "y": 7884.27275,
       "width": 59,
-      "height": 53,
+      "height": 64,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -29,39 +29,39 @@
       "vertices": [
         {
           "x": 8023.599999999998,
-          "y": 7930.920458804963
+          "y": 7932.988473839956
         },
         {
           "x": 8029.5,
-          "y": 7930.920458804963
+          "y": 7932.988473839956
         },
         {
           "x": 8029.5,
-          "y": 7890.57775
+          "y": 7884.27275
         },
         {
           "x": 7970.5,
-          "y": 7890.57775
+          "y": 7884.27275
         },
         {
           "x": 7970.5,
-          "y": 7930.920458804963
+          "y": 7932.988473839956
         },
         {
           "x": 7976.400000000002,
-          "y": 7930.920458804963
+          "y": 7932.988473839956
         },
         {
           "x": 7976.400000000002,
-          "y": 7943.57775
+          "y": 7948.27275
         },
         {
           "x": 8023.599999999998,
-          "y": 7943.57775
+          "y": 7948.27275
         },
         {
           "x": 8023.599999999998,
-          "y": 7930.920458804963
+          "y": 7932.988473839956
         }
       ],
       "blur": 0,
@@ -139,7 +139,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "0b5993de-527b-2309-20d4-4519d5414943",
       "x": 7971,
-      "y": 7915.6782625,
+      "y": 7922.6782625,
       "width": 12.041999999999462,
       "height": 10.25799999999981,
       "alpha": 1,
@@ -159,15 +159,15 @@
       "vertices": [
         {
           "x": 7971,
-          "y": 7915.6782625
+          "y": 7922.6782625
         },
         {
           "x": 7983.0419999999995,
-          "y": 7920.584262499999
+          "y": 7927.584262499999
         },
         {
           "x": 7971,
-          "y": 7925.936262499999
+          "y": 7932.936262499999
         }
       ],
       "blur": 0,
@@ -187,7 +187,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7964.5,
-      "y": 7915.07775,
+      "y": 7923.07775,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -227,8 +227,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
-      "x": 7973,
-      "y": 7890.57775,
+      "x": 7981,
+      "y": 7899.57775,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
@@ -588,7 +588,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
       "x": 7964.5,
-      "y": 7896.2574375,
+      "y": 7904.2574375,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1575,6 +1575,86 @@
       "radius": 0,
       "dasharray": null,
       "text": "D4",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "a63269a5-6793-9e6e-9e3f-e6fb8e43c97a",
+      "x": 7974,
+      "y": 7880.27275,
+      "width": 28.338090896606445,
+      "height": 21.007502555847168,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "Label"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "Register",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 11,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "83edab1a-d2d8-b956-672a-4d2277b29606",
+      "x": 7981.0419999999995,
+      "y": 7916.2574375,
+      "width": 39.140625,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "enable"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "clk",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 10,
