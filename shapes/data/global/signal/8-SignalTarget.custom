@@ -19,28 +19,18 @@ signal_8_SignalTarget = signal_8_SignalTarget.extend({
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
-        // handle the size of the shape if the label has changed
-        //
-        var adjustWidth = ()=>{
-            var width = this.layerGet("label").getBBox().width+15
-            this.setWidth(width+5);
-            this.layerAttr("BoundingBox", { path: `M0 0 L${width} 0 L${width} 20 L0 20 Z`})
-            this.layerAttr("outline",     { path: `M0 10 L13 0 L${width} 0 L${width} 20 L13 20 Z`})
-        }
-        
-        this.on("change:userData.signalId",(emitter, event)=>{
+
+        this.on("change:userData.busId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
-            adjustWidth()
         });
         
         this.on("added", ()=>{
-            this.signalId = this.attr("userData.signalId")
-            if(!this.signalId){
-                this.signalId = "Signal_Id"
-                this.attr("userData.signalId", this.signalId)
+            this.busId = this.attr("userData.busId")
+            if(!this.busId){
+                this.busId = "Bus_Id"
+                this.attr("userData.busId", this.busId)
             }            
-            this.layerAttr("label", {text: this.signalId})
-            adjustWidth()
+            this.layerAttr("label", {text: this.busId})
         })
         
         // get the connected port and forward the port to the related party ( SignalSource shape)
