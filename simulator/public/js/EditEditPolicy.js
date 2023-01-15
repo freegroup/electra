@@ -6,7 +6,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
   init: function () {
     this._super()
     this.mouseMoveProxy = this._onMouseMoveCallback.bind(this)
-    this.configIcon = null
+    this.configIcon  = null
+    this.configFigure = null
   },
 
   /**
@@ -48,8 +49,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     if (shiftKey === true && this.mouseDownElement === null) {
       let rx = Math.min(x, this.x)
       let ry = Math.min(y, this.y)
-      let rh = Math.abs(y - this.y)
-      let rw = Math.abs(x - this.x)
+      let rh = Math.min(30, Math.abs(y - this.y))
+      let rw = Math.min(30, Math.abs(x - this.x))
       let raftFigure = new Raft()
       raftFigure.attr({
         x: rx,
@@ -76,36 +77,27 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
       if (this.configIcon !== null) {
         this.configIcon.remove()
         this.configIcon = null
+        this.configFigure = null
       }
       return
     }
 
-    let hit = null
-
-    emitter.getFigures().each( (index, figure) =>{
-      if (figure.getParameterSettings &&
-          figure.getParameterSettings().length>0 &&
-          figure.hitTest(event.x, event.y, 40)) {
-        hit = figure
-        return false
-      }
+    let hit =  emitter.getFigures().find( (figure) => {
+      return false || (figure.getParameterSettings?.().length>0 && figure.hitTest(event.x, event.y, 40))
     })
 
-    if (hit?.getParameterSettings?.()?.length > 0) {
+    if (hit) {
       let pos = hit.getBoundingBox().getTopLeft()
       pos = emitter.fromCanvasToDocumentCoordinate(pos.x, pos.y)
       pos.y -= 30
-
+      this.configFigure = hit
       if (this.configIcon === null) {
         this.configIcon = $("<div id='configMenuIcon'>&#9881;</div>")
         $("body").append(this.configIcon)
         this.configIcon.on("click",  () => {
-          FigureConfigDialog.show(hit, pos)
-          this.configFigure = hit
-          if (this.configIcon !== null) {
-            this.configIcon.remove()
-            this.configIcon = null
-          }
+          FigureConfigDialog.show(this.configFigure, pos)
+          this.configIcon?.remove()
+          this.configIcon = null
         })
       }
       this.configIcon.css({top: pos.y, left: pos.x, position: 'absolute'})
@@ -114,6 +106,7 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
       if (this.configIcon !== null) {
         let x = this.configIcon
         this.configIcon = null
+        this.configFigure = null
         x.fadeOut(500, () => x.remove())
       }
     }
