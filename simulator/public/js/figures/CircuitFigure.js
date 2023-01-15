@@ -80,7 +80,6 @@ export default draw2d.SetFigure.extend({
   },
 
   executeContextMenuEntry: function(key, x, y){
-
   },
 
   onDrop: function (dropTarget, x, y, shiftKey, ctrlKey) {

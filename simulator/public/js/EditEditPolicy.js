@@ -49,8 +49,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     if (shiftKey === true && this.mouseDownElement === null) {
       let rx = Math.min(x, this.x)
       let ry = Math.min(y, this.y)
-      let rh = Math.min(30, Math.abs(y - this.y))
-      let rw = Math.min(30, Math.abs(x - this.x))
+      let rh = Math.max(30, Math.abs(y - this.y))
+      let rw = Math.max(30, Math.abs(x - this.x))
       let raftFigure = new Raft()
       raftFigure.attr({
         x: rx,
@@ -74,15 +74,14 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     // there is no benefit to show decorations during Drag&Drop of an shape
     //
     if (this.mouseMovedDuringMouseDown === true) {
-      if (this.configIcon !== null) {
-        this.configIcon.remove()
-        this.configIcon = null
-        this.configFigure = null
-      }
+      this.configIcon?.remove()
+      this.configIcon = null
+      this.configFigure = null
       return
     }
 
     let hit =  emitter.getFigures().find( (figure) => {
+      // "cast" undefined to false
       return false || (figure.getParameterSettings?.().length>0 && figure.hitTest(event.x, event.y, 40))
     })
 

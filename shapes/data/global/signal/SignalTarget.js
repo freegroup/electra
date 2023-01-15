@@ -106,7 +106,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
            this.signalSourcePort = event.connection.getSource()
         })
         this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalSourcePort
+           this.signalSourcePort = null
         })
     },
 
@@ -137,7 +137,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
         }
         // it is "undefined". In this case remove it from the bus
         else if (context.signalPorts[this.signalId] === this.signalSourcePort){
-             delete context.signalPorts[this.signalId]
+              context.signalPorts[this.signalId] = null
         }
     },
     

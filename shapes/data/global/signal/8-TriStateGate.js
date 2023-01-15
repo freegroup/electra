@@ -147,7 +147,7 @@ var signal_8_TriStateGate = CircuitFigure.extend({
        shape.data("name","Rectangle");
        
        // Line
-       shape = this.canvas.paper.path('M38.50900000000274 79.04920000000038L38.509000000000924,96.42919999999958');
+       shape = this.canvas.paper.path('M32.55059999999958 10.998000000001412L39.292999999999665,11.063999999994849L38.509000000000924,96.42919999999958');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
@@ -217,19 +217,5 @@ signal_8_TriStateGate = signal_8_TriStateGate.extend({
             this.getOutputPort("output7").setValue(null)
             this.getOutputPort("output8").setValue(null)
         }
-    },
-    
-    getParameterSettings: function()
-    {
-        return [
-        {
-            name:"signalId",
-            label:"Signal Id",
-            property:{
-                type: "string"
-            }
-        }];
     }
-
-
 });
