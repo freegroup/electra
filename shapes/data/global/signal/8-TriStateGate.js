@@ -197,7 +197,6 @@ signal_8_TriStateGate = signal_8_TriStateGate.extend({
     calculate:function(context)
     {
         let enable = this.getInputPort("enable")
-    console.log(enable.getBooleanValue())
         if(enable.getBooleanValue()){
             this.getOutputPort("output1").setValue(this.getInputPort("input1").getValue())
             this.getOutputPort("output2").setValue(this.getInputPort("input2").getValue())
