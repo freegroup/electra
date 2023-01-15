@@ -106,7 +106,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
            this.signalSourcePort = event.connection.getSource()
         })
         this.getInputPort(0).on("disconnect", (emitter, event)=>{
-            delete this.signalSourcePort
+           this.signalSourcePort = null
         })
     },
 
