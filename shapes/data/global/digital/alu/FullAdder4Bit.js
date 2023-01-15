@@ -215,7 +215,7 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Σ');
-       shape.attr({"x":22.60811424255371,"y":126.22956250000061,"text-anchor":"start","text":"Σ","font-family":"\"Arial\"","font-size":50,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":24.60811424255371,"y":126.22956250000061,"text-anchor":"start","text":"Σ","font-family":"\"Arial\"","font-size":50,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
