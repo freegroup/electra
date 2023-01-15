@@ -198,6 +198,7 @@ signal_8_SignalSource = signal_8_SignalSource.extend({
      **/
     onStart:function(context)
     {
+        console.log("on start bus out")
         this.getOutputPort("out1").getValue = ()=> {
             console.log("bus", this.busId, context.signalPorts )
             return context.signalPorts[this.busId+":1"]?.getValue()
