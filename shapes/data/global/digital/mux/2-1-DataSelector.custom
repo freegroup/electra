@@ -13,8 +13,6 @@ digital_mux_2_1_DataSelector = digital_mux_2_1_DataSelector.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-        
-        this.ram = new Uint8Array(16)
     },
 
     /**
@@ -24,25 +22,17 @@ digital_mux_2_1_DataSelector = digital_mux_2_1_DataSelector.extend({
      **/
     calculate:function()
     {
-        let rw = this.getInputPort("input_rw").getBooleanValue();
-        
-        let addr =   this.getInputPort("input_a1").getBooleanValue();
-        addr    += 2*this.getInputPort("input_a2").getBooleanValue();
-        addr    += 4*this.getInputPort("input_a3").getBooleanValue();
-        addr    += 8*this.getInputPort("input_a4").getBooleanValue();
-
-        let data = this.ram[addr]
-        if(rw){
-            data =   this.getInputPort("input_d1").getBooleanValue();
-            data    += 2*this.getInputPort("input_d2").getBooleanValue();
-            data    += 4*this.getInputPort("input_d3").getBooleanValue();
-            data    += 8*this.getInputPort("input_d4").getBooleanValue();
-            this.ram[addr] = data
+        if(this.getInputPort("input_select").getBooleanValue()){
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_b1").getBooleanValue());
+        } else {
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_a1").getBooleanValue());
         }
 
-        this.getOutputPort("output_q1").setValue(data & 1);
-        this.getOutputPort("output_q2").setValue(data & 2);
-        this.getOutputPort("output_q3").setValue(data & 4);
-        this.getOutputPort("output_q4").setValue(data & 8);
     }
 });

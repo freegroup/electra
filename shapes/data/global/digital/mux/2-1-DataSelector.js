@@ -39,59 +39,59 @@ var digital_mux_2_1_DataSelector = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
      port.setMaxFanOut(1);
-     // input_d1
+     // input_b1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.2287421875000746, y: 63.81909547738693 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d1");
+     port.setName("input_b1");
      port.setMaxFanOut(1);
-     // input_d2
+     // input_b2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.2327421875002074, y: 73.86934673366834 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d2");
+     port.setName("input_b2");
      port.setMaxFanOut(1);
-     // input_d3
+     // input_b3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.2327421875002074, y: 83.91959798994974 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d3");
+     port.setName("input_b3");
      port.setMaxFanOut(1);
-     // input_d4
+     // input_b4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.2327421875002074, y: 93.96984924623115 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_d4");
+     port.setName("input_b4");
      port.setMaxFanOut(1);
      // output_q1
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.3115234375, y: 63.81909547738693 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.3115234375, y: 39.698492462311556 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q1");
      port.setMaxFanOut(20);
      // output_q2
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 73.86934673366834 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 49.74874371859296 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q2");
      port.setMaxFanOut(20);
      // output_q3
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 83.91959798994974 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 59.79899497487437 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q3");
      port.setMaxFanOut(20);
      // output_q4
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 93.96984924623115 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6865234375, y: 69.84924623115577 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q4");
      port.setMaxFanOut(20);
-     // input_rw
+     // input_select
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.26725781249979264, y: 6.030150753768844 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_rw");
+     port.setName("input_select");
      port.setMaxFanOut(1);
    },
 
@@ -129,7 +129,7 @@ var digital_mux_2_1_DataSelector = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q1');
-       shape.attr({"x":57.40450624999994,"y":126.9140625,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":55,"y":78.9140625,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -139,22 +139,22 @@ var digital_mux_2_1_DataSelector = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q3');
-       shape.attr({"x":57.40450624999994,"y":167.0852374999995,"text-anchor":"start","text":"Q3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":55,"y":119.0852374999995,"text-anchor":"start","text":"Q3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q2');
-       shape.attr({"x":57.40450624999994,"y":146.9609375,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":55,"y":98.9609375,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D2');
-       shape.attr({"x":6.21700624999994,"y":146.9609375,"text-anchor":"start","text":"D2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B2');
+       shape.attr({"x":6.21700624999994,"y":147.9609375,"text-anchor":"start","text":"B2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D1');
-       shape.attr({"x":6.21700624999994,"y":126.4140625,"text-anchor":"start","text":"D1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B1');
+       shape.attr({"x":6.21700624999994,"y":127.4140625,"text-anchor":"start","text":"B1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -163,33 +163,28 @@ var digital_mux_2_1_DataSelector = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D3');
-       shape.attr({"x":6.21700624999994,"y":167.0852374999995,"text-anchor":"start","text":"D3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B3');
+       shape.attr({"x":6.21700624999994,"y":168.0852374999995,"text-anchor":"start","text":"B3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'D4');
-       shape.attr({"x":6.293806249999761,"y":186.6171875,"text-anchor":"start","text":"D4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'B4');
+       shape.attr({"x":6.293806249999761,"y":187.6171875,"text-anchor":"start","text":"B4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q4');
-       shape.attr({"x":57.56075624999994,"y":186.4405000000006,"text-anchor":"start","text":"Q4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":55,"y":138.4405000000006,"text-anchor":"start","text":"Q4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'16x4');
-       shape.attr({"x":21.59765625,"y":79.4453125,"text-anchor":"start","text":"16x4","font-family":"\"Arial\"","font-size":18,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'MUX');
+       shape.attr({"x":29.91427187499994,"y":36.860198974609375,"text-anchor":"start","text":"MUX","font-family":"\"Arial\"","font-size":15,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'RAM');
-       shape.attr({"x":25.41427187499994,"y":62.8359375,"text-anchor":"start","text":"RAM","font-family":"\"Arial\"","font-size":15,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'write');
-       shape.attr({"x":7.713806249999834,"y":10.75,"text-anchor":"start","text":"write","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'select');
+       shape.attr({"x":7.713806249999834,"y":10.75,"text-anchor":"start","text":"select","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
@@ -212,8 +207,6 @@ digital_mux_2_1_DataSelector = digital_mux_2_1_DataSelector.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-        
-        this.ram = new Uint8Array(16)
     },
 
     /**
@@ -223,25 +216,17 @@ digital_mux_2_1_DataSelector = digital_mux_2_1_DataSelector.extend({
      **/
     calculate:function()
     {
-        let rw = this.getInputPort("input_rw").getBooleanValue();
-        
-        let addr =   this.getInputPort("input_a1").getBooleanValue();
-        addr    += 2*this.getInputPort("input_a2").getBooleanValue();
-        addr    += 4*this.getInputPort("input_a3").getBooleanValue();
-        addr    += 8*this.getInputPort("input_a4").getBooleanValue();
-
-        let data = this.ram[addr]
-        if(rw){
-            data =   this.getInputPort("input_d1").getBooleanValue();
-            data    += 2*this.getInputPort("input_d2").getBooleanValue();
-            data    += 4*this.getInputPort("input_d3").getBooleanValue();
-            data    += 8*this.getInputPort("input_d4").getBooleanValue();
-            this.ram[addr] = data
+        if(this.getInputPort("input_select").getBooleanValue()){
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_b1").getBooleanValue());
+        } else {
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_a1").getBooleanValue());
         }
 
-        this.getOutputPort("output_q1").setValue(data & 1);
-        this.getOutputPort("output_q2").setValue(data & 2);
-        this.getOutputPort("output_q3").setValue(data & 4);
-        this.getOutputPort("output_q4").setValue(data & 8);
     }
 });
