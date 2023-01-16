@@ -4,9 +4,9 @@
 // created with http://www.draw2d.org
 //
 //
-var digital_flipflop_SRFlipFlop = CircuitFigure.extend({
+var digital_flipflop_SR_Latch = CircuitFigure.extend({
 
-   NAME: "digital_flipflop_SRFlipFlop",
+   NAME: "digital_flipflop_SR_Latch",
    VERSION: "local-version",
 
    init:function(attr, setter, getter)
@@ -101,7 +101,7 @@ var digital_flipflop_SRFlipFlop = CircuitFigure.extend({
  *
  *
  */
-digital_flipflop_SRFlipFlop = digital_flipflop_SRFlipFlop.extend({
+digital_flipflop_SR_Latch = digital_flipflop_SR_Latch.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
@@ -112,8 +112,8 @@ digital_flipflop_SRFlipFlop = digital_flipflop_SRFlipFlop.extend({
     
     calculate:function(context)
     {
-        var s = !!this.getInputPort("input_s").getBooleanValue();
-        var r = !!this.getInputPort("input_r").getBooleanValue();
+        var s = this.getInputPort("input_s").getBooleanValue();
+        var r = this.getInputPort("input_r").getBooleanValue();
 
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");

@@ -1,0 +1,398 @@
+{
+  "draw2d": [
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "c89174a4-65e4-ee3e-a306-5791aced9e4f",
+      "x": 7990,
+      "y": 7920.0497,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "led0",
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"added\",(emitter, event)=>{\n            this.updateLayer()\n        });\n    },\n\n    updateLayer: function ()\n    {\n        this.layerAttr(\"led0\",{fill: this.getInputPort(\"port0\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led1\",{fill: this.getInputPort(\"port1\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led2\",{fill: this.getInputPort(\"port2\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led3\",{fill: this.getInputPort(\"port3\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n    },\n    \n    onStart: function(context)\n    {\n        this.updateLayer();\n    },\n    \n    calculate: function(context)\n    {\n        this.updateLayer()\n    }\n});",
+        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7990,
+          "y": 7920.0497
+        },
+        {
+          "x": 8010,
+          "y": 7920.0497
+        },
+        {
+          "x": 8010,
+          "y": 7940.0497
+        },
+        {
+          "x": 7990,
+          "y": 7940.0497
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "4270f55d-fea9-68c6-5bcb-04744670ae51",
+      "x": 7990,
+      "y": 7960.0497,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "led2"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7990,
+          "y": 7960.0497
+        },
+        {
+          "x": 8010,
+          "y": 7960.0497
+        },
+        {
+          "x": 8010,
+          "y": 7980.0497
+        },
+        {
+          "x": 7990,
+          "y": 7980.0497
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "48ac8cb4-b1b3-2c99-212a-c13bdc370653",
+      "x": 7990,
+      "y": 7980.0497,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "led3"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7990,
+          "y": 7980.0497
+        },
+        {
+          "x": 8010,
+          "y": 7980.0497
+        },
+        {
+          "x": 8010,
+          "y": 8000.0497
+        },
+        {
+          "x": 7990,
+          "y": 8000.0497
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "f4d5683a-7c42-8771-5df4-e4e9da5b8b46",
+      "x": 7979.5,
+      "y": 7925.0497,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "port0",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "d4c3d983-9aa9-878b-63f5-c2f8bded2d45",
+      "x": 7979.722299999999,
+      "y": 7944.8804,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "port1",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "3b515c4a-9421-ea76-6114-6b71e77e8285",
+      "x": 7979.722299999999,
+      "y": 7965.0562,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "port2",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "baf5f53f-0861-3e99-eaf2-e3de23ed7332",
+      "x": 7979.722299999999,
+      "y": 7985.0497,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "port3",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "78f9956a-8ce5-e362-0d1d-df072f8f8506",
+      "x": 7990,
+      "y": 7940.0497,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "baseClass": "draw2d.SetFigure",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.on(\"added\",(emitter, event)=>{\n            this.updateLayer()\n        });\n    },\n\n    updateLayer: function ()\n    {\n        // comment\n        this.layerAttr(\"led0\",{fill: this.getInputPort(\"port0\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led1\",{fill: this.getInputPort(\"port1\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led2\",{fill: this.getInputPort(\"port2\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led3\",{fill: this.getInputPort(\"port3\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led4\",{fill: this.getInputPort(\"port4\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led5\",{fill: this.getInputPort(\"port5\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led6\",{fill: this.getInputPort(\"port6\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        this.layerAttr(\"led7\",{fill: this.getInputPort(\"port7\").getBooleanValue()?\"#C21B7A\":\"#f0f0f0\"});\n        \n    },\n    \n    onStart: function(context)\n    {\n        this.updateLayer();\n    },\n    \n    calculate: function(context)\n    {\n        this.updateLayer()\n    }\n});",
+        "name": "led1",
+        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray",
+        "type": "Output",
+        "direction": 1
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7990,
+          "y": 7940.0497
+        },
+        {
+          "x": 8010,
+          "y": 7940.0497
+        },
+        {
+          "x": 8010,
+          "y": 7960.0497
+        },
+        {
+          "x": 7990,
+          "y": 7960.0497
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    }
+  ]
+}

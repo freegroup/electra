@@ -4,10 +4,10 @@
 // created with http://www.draw2d.org
 //
 //
-var digital_flipflop_JKRFlipFlop = CircuitFigure.extend({
+var digital_flipflop_JKR_FlipFlop = CircuitFigure.extend({
 
-   NAME: "digital_flipflop_JKRFlipFlop",
-   VERSION: "2.0.343_1136",
+   NAME: "digital_flipflop_JKR_FlipFlop",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -123,7 +123,7 @@ var digital_flipflop_JKRFlipFlop = CircuitFigure.extend({
  *
  *
  */
-digital_flipflop_JKRFlipFlop = digital_flipflop_JKRFlipFlop.extend({
+digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
@@ -144,15 +144,15 @@ digital_flipflop_JKRFlipFlop = digital_flipflop_JKRFlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         
-        var rising = this.last_t===false && t===true; 
+        var falling = this.last_t===true && t===false; 
         
         if(r === false){
-            rising = true;
+            falling = true;
             j = false;
             k = true;
         }
         
-        if(rising===true){
+        if(falling===true){
             // do nothing
             if(j===false && k ===false){
                

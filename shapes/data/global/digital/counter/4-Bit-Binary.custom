@@ -1,0 +1,56 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+         // your special code here
+         this.last_clk=false;
+         this.counter=0;
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function()
+    {
+        var clk    = this.getInputPort("input_clk").getBooleanValue();
+        var load   = this.getInputPort("input_load").getBooleanValue();
+        var enable = this.getInputPort("input_enable").getBooleanValue();
+        
+        var rising = this.last_clk===false && clk===true;
+
+        // Load the new data from the input if we have a RISING clock and ENABLE is set
+        //
+        if(rising && load) {
+           this.counter  =   this.getInputPort("input_d1").getBooleanValue();
+           this.counter += 2*this.getInputPort("input_d2").getBooleanValue();
+           this.counter += 4*this.getInputPort("input_d3").getBooleanValue();
+           this.counter += 8*this.getInputPort("input_d4").getBooleanValue();
+           this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
+           this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
+           this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
+           this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+        }
+        
+        if(enable && rising && clk ){
+            this.counter= (this.counter+1)%16;
+            this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
+            this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
+            this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
+            this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+        }
+        this.last_clk = clk;
+    }
+});

@@ -6,7 +6,7 @@
  *
  *
  */
-digital_flipflop_JKFlipFlop = digital_flipflop_JKFlipFlop.extend({
+digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
@@ -15,6 +15,13 @@ digital_flipflop_JKFlipFlop = digital_flipflop_JKFlipFlop.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
         this.last_t = false;
+    },
+    
+    onStart(context)
+    {
+        var q = this.getOutputPort("output_q");
+        var q_ = this.getOutputPort("output_q_not");
+        q_.setValue(!q.getBooleanValue())
     },
     
     calculate:function()
@@ -26,9 +33,9 @@ digital_flipflop_JKFlipFlop = digital_flipflop_JKFlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         
-        var rising = this.last_t===false && t===true; 
+        var falling = this.last_t===true && t===false; 
         
-        if(rising===true){
+        if(falling===true){
             // do nothing
             if(j===false && k ===false){
                

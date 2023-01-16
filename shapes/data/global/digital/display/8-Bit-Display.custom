@@ -1,0 +1,30 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_display_8_Bit_Display = digital_display_8_Bit_Display.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+    },
+    
+    calculate:function(context)
+    {
+        let val = this.getInputPort("input_bit1").getBooleanValue()?1:0;
+        val    += this.getInputPort("input_bit2").getBooleanValue()?2:0;
+        val    += this.getInputPort("input_bit3").getBooleanValue()?4:0;
+        val    += this.getInputPort("input_bit4").getBooleanValue()?8:0;
+        val    += this.getInputPort("input_bit5").getBooleanValue()?16:0;
+        val    += this.getInputPort("input_bit6").getBooleanValue()?32:0;
+        val    += this.getInputPort("input_bit7").getBooleanValue()?64:0;
+        val    += this.getInputPort("input_bit8").getBooleanValue()?128:0;
+        this.layerAttr("digit", {text: val.toString(10).padStart(3, '0')});
+
+    }
+
+});

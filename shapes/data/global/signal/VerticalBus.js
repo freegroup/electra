@@ -64,28 +64,14 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
     },
   
 
-    /**
-     *  Called by the simulator for every calculation
-     *  loop
-     *  @required
-     **/
-    calculate:function(context)
-    {
+    onPreStart:function(context) {
+        context.signalPorts &&= {}
     },
 
     onStart:function(context)
     {
-      var signalId = this.attr("userData.signalId")
-      if(context.signalPorts && context.signalPorts[signalId]){
-          this.getHybridPort(0).getValue = function(){ 
-              if(context.signalPorts[signalId] instanceof draw2d.Port){
-                  return context.signalPorts[signalId].getValue()
-              }
-              else {
-                  return 0
-              }
-          }
-      }
+        var signalId = this.attr("userData.signalId")
+        this.getHybridPort(0).getValue = () => context.signalPorts[signalId]?.getValue()
   },
     
     getParameterSettings: function () {

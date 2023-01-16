@@ -148,6 +148,23 @@
     "imagePath": "digital/buttons/PushButton.png"
   },
   {
+    "name": "digital_counter_4_Bit_Binary",
+    "tags": [
+      "digital",
+      "counter",
+      "4",
+      "Bit",
+      "Binary"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-Bit-Binary.js",
+    "displayName": "4-Bit-Binary",
+    "basedir": "digital/counter",
+    "shapePath": "digital/counter/4-Bit-Binary.shape",
+    "imagePath": "digital/counter/4-Bit-Binary.png"
+  },
+  {
     "name": "digital_counter_BCDCounter",
     "tags": [
       "digital",
@@ -178,6 +195,37 @@
     "imagePath": "digital/decoder/BCDto7Seg.png"
   },
   {
+    "name": "digital_decoder_Binaryto7Seg",
+    "tags": [
+      "digital",
+      "decoder",
+      "Binaryto7Seg"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Binaryto7Seg.js",
+    "displayName": "Binaryto7Seg",
+    "basedir": "digital/decoder",
+    "shapePath": "digital/decoder/Binaryto7Seg.shape",
+    "imagePath": "digital/decoder/Binaryto7Seg.png"
+  },
+  {
+    "name": "digital_display_4_Led",
+    "tags": [
+      "digital",
+      "display",
+      "4",
+      "Led"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-Led.js",
+    "displayName": "4-Led",
+    "basedir": "digital/display",
+    "shapePath": "digital/display/4-Led.shape",
+    "imagePath": "digital/display/4-Led.png"
+  },
+  {
     "name": "digital_display_7Segment",
     "tags": [
       "digital",
@@ -191,6 +239,23 @@
     "basedir": "digital/display",
     "shapePath": "digital/display/7Segment.shape",
     "imagePath": "digital/display/7Segment.png"
+  },
+  {
+    "name": "digital_display_8_Bit_Display",
+    "tags": [
+      "digital",
+      "display",
+      "8",
+      "Bit",
+      "Display"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "8-Bit-Display.js",
+    "displayName": "8-Bit-Display",
+    "basedir": "digital/display",
+    "shapePath": "digital/display/8-Bit-Display.shape",
+    "imagePath": "digital/display/8-Bit-Display.png"
   },
   {
     "name": "digital_display_8_Led",
@@ -224,6 +289,22 @@
     "imagePath": "digital/display/Led.png"
   },
   {
+    "name": "digital_flipflop_D_FlipFlop",
+    "tags": [
+      "digital",
+      "flipflop",
+      "D",
+      "FlipFlop"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "D-FlipFlop.js",
+    "displayName": "D-FlipFlop",
+    "basedir": "digital/flipflop",
+    "shapePath": "digital/flipflop/D-FlipFlop.shape",
+    "imagePath": "digital/flipflop/D-FlipFlop.png"
+  },
+  {
     "name": "digital_flipflop_D_Latch",
     "tags": [
       "digital",
@@ -240,64 +321,68 @@
     "imagePath": "digital/flipflop/D-Latch.png"
   },
   {
-    "name": "digital_flipflop_DFlipFlop",
+    "name": "digital_flipflop_JK_FlipFlop",
     "tags": [
       "digital",
       "flipflop",
-      "DFlipFlop"
+      "JK",
+      "FlipFlop"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "DFlipFlop.js",
-    "displayName": "DFlipFlop",
+    "basename": "JK-FlipFlop.js",
+    "displayName": "JK-FlipFlop",
     "basedir": "digital/flipflop",
-    "shapePath": "digital/flipflop/DFlipFlop.shape",
-    "imagePath": "digital/flipflop/DFlipFlop.png"
+    "shapePath": "digital/flipflop/JK-FlipFlop.shape",
+    "imagePath": "digital/flipflop/JK-FlipFlop.png"
   },
   {
-    "name": "digital_flipflop_JKFlipFlop",
+    "name": "digital_flipflop_JKR_FlipFlop",
     "tags": [
       "digital",
       "flipflop",
-      "JKFlipFlop"
+      "JKR",
+      "FlipFlop"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "JKFlipFlop.js",
-    "displayName": "JKFlipFlop",
+    "basename": "JKR-FlipFlop.js",
+    "displayName": "JKR-FlipFlop",
     "basedir": "digital/flipflop",
-    "shapePath": "digital/flipflop/JKFlipFlop.shape",
-    "imagePath": "digital/flipflop/JKFlipFlop.png"
+    "shapePath": "digital/flipflop/JKR-FlipFlop.shape",
+    "imagePath": "digital/flipflop/JKR-FlipFlop.png"
   },
   {
-    "name": "digital_flipflop_JKRFlipFlop",
+    "name": "digital_flipflop_SR_FlipFlop",
     "tags": [
       "digital",
       "flipflop",
-      "JKRFlipFlop"
+      "SR",
+      "FlipFlop"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "JKRFlipFlop.js",
-    "displayName": "JKRFlipFlop",
+    "basename": "SR-FlipFlop.js",
+    "displayName": "SR-FlipFlop",
     "basedir": "digital/flipflop",
-    "shapePath": "digital/flipflop/JKRFlipFlop.shape",
-    "imagePath": "digital/flipflop/JKRFlipFlop.png"
+    "shapePath": "digital/flipflop/SR-FlipFlop.shape",
+    "imagePath": "digital/flipflop/SR-FlipFlop.png"
   },
   {
-    "name": "digital_flipflop_SRFlipFlop",
+    "name": "digital_flipflop_SR_Latch",
     "tags": [
       "digital",
       "flipflop",
-      "SRFlipFlop"
+      "SR",
+      "Latch"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "SRFlipFlop.js",
-    "displayName": "SRFlipFlop",
+    "basename": "SR-Latch.js",
+    "displayName": "SR-Latch",
     "basedir": "digital/flipflop",
-    "shapePath": "digital/flipflop/SRFlipFlop.shape",
-    "imagePath": "digital/flipflop/SRFlipFlop.png"
+    "shapePath": "digital/flipflop/SR-Latch.shape",
+    "imagePath": "digital/flipflop/SR-Latch.png"
   },
   {
     "name": "digital_flipflop_TFlipFlop",
@@ -602,6 +687,40 @@
     "imagePath": "digital/gate/IEC60617-12/XOR.png"
   },
   {
+    "name": "digital_memory_16x4_RAM",
+    "tags": [
+      "digital",
+      "memory",
+      "16x4",
+      "RAM"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "16x4-RAM.js",
+    "displayName": "16x4-RAM",
+    "basedir": "digital/memory",
+    "shapePath": "digital/memory/16x4-RAM.shape",
+    "imagePath": "digital/memory/16x4-RAM.png"
+  },
+  {
+    "name": "digital_mux_Quad_2_1_DataSelector",
+    "tags": [
+      "digital",
+      "mux",
+      "Quad",
+      "2",
+      "1",
+      "DataSelector"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Quad-2-1-DataSelector.js",
+    "displayName": "Quad-2-1-DataSelector",
+    "basedir": "digital/mux",
+    "shapePath": "digital/mux/Quad-2-1-DataSelector.shape",
+    "imagePath": "digital/mux/Quad-2-1-DataSelector.png"
+  },
+  {
     "name": "digital_pulse_10hz",
     "tags": [
       "digital",
@@ -821,6 +940,51 @@
     "basedir": "math",
     "shapePath": "math/Mean.shape",
     "imagePath": "math/Mean.png"
+  },
+  {
+    "name": "signal_4_SignalSource",
+    "tags": [
+      "signal",
+      "4",
+      "SignalSource"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-SignalSource.js",
+    "displayName": "4-SignalSource",
+    "basedir": "signal",
+    "shapePath": "signal/4-SignalSource.shape",
+    "imagePath": "signal/4-SignalSource.png"
+  },
+  {
+    "name": "signal_4_SignalTarget",
+    "tags": [
+      "signal",
+      "4",
+      "SignalTarget"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-SignalTarget.js",
+    "displayName": "4-SignalTarget",
+    "basedir": "signal",
+    "shapePath": "signal/4-SignalTarget.shape",
+    "imagePath": "signal/4-SignalTarget.png"
+  },
+  {
+    "name": "signal_4_TriStateGate",
+    "tags": [
+      "signal",
+      "4",
+      "TriStateGate"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-TriStateGate.js",
+    "displayName": "4-TriStateGate",
+    "basedir": "signal",
+    "shapePath": "signal/4-TriStateGate.shape",
+    "imagePath": "signal/4-TriStateGate.png"
   },
   {
     "name": "signal_8_SignalSource",

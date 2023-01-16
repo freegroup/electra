@@ -4,7 +4,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "c55dd135-15db-7c71-5efa-f6761c073e66",
       "x": 7980,
-      "y": 7968.561199999999,
+      "y": 7968.5,
       "width": 40,
       "height": 63,
       "alpha": 1,
@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_t = false;\n    },\n    \n    calculate:function()\n    {\n        var j = this.getInputPort(\"input_j\").getBooleanValue();\n        var k = this.getInputPort(\"input_k\").getBooleanValue();\n        var t = this.getInputPort(\"input_t\").getBooleanValue();\n        \n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        \n        var rising = this.last_t===false && t===true; \n        \n        if(rising===true){\n            // do nothing\n            if(j===false && k ===false){\n               \n            }\n            // reset\n            else if(j===false && k===true){\n                q.setValue(false);\n                q_.setValue(true);\n            }\n            // set\n            else if(j===true && k===false){\n                q.setValue(true);\n                q_.setValue(false);\n            }\n            // toggle\n            else if(j===true && k===true){\n                var v = q.getBooleanValue();\n                q.setValue( !v);\n                q_.setValue( v);\n            }\n        }\n        this.last_t = t;\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_t = false;\n    },\n    \n    onStart(context)\n    {\n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        q_.setValue(!q.getBooleanValue())\n    },\n    \n    calculate:function()\n    {\n        var j = this.getInputPort(\"input_j\").getBooleanValue();\n        var k = this.getInputPort(\"input_k\").getBooleanValue();\n        var t = this.getInputPort(\"input_t\").getBooleanValue();\n        \n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        \n        var falling = this.last_t===true && t===false; \n        \n        if(falling===true){\n            // do nothing\n            if(j===false && k ===false){\n               \n            }\n            // reset\n            else if(j===false && k===true){\n                q.setValue(false);\n                q_.setValue(true);\n            }\n            // set\n            else if(j===true && k===false){\n                q.setValue(true);\n                q_.setValue(false);\n            }\n            // toggle\n            else if(j===true && k===true){\n                var v = q.getBooleanValue();\n                q.setValue( !v);\n                q_.setValue( v);\n            }\n        }\n        this.last_t = t;\n    }\n});",
         "name": "Rectangle",
         "markdown": "# JK-FlipFlop\n\n## Description\n\nThe `JK flip-flop` is a simple enhancement of the SR flip-flop \nwhere the state J=K=1 is not forbidden. It works just like a \nSR flip-flop where J is serving as set input and K serving \nas reset. The only difference is that for the formerly \n*forbidden* combination **J=K=1** this flip-flop now performs \nan action: it inverts its state. As the behavior of the \nJK flip-flop is completely predictable under all conditions,\nthis is the preferred type of flip-flop for most logic\ncircuit designs. But there is still a problem i.e. both \nthe outputs are same when one tests the circuit practically.\n\nThis is because of the internal toggling on every propagation\nelapse completion. The main remedy is going for master-slave\njk flip-flop,this flip-flop overrides the self(internal) \nrecurring toggling through the pulsed clocking feature \nincorporated.",
         "type": "Output",
@@ -29,19 +29,19 @@
       "vertices": [
         {
           "x": 7980,
-          "y": 7968.561199999999
+          "y": 7968.5
         },
         {
           "x": 8020,
-          "y": 7968.561199999999
+          "y": 7968.5
         },
         {
           "x": 8020,
-          "y": 8031.561199999999
+          "y": 8031.5
         },
         {
           "x": 7980,
-          "y": 8031.561199999999
+          "y": 8031.5
         }
       ],
       "blur": 0,
@@ -67,7 +67,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
       "x": 8002.28125,
-      "y": 8009.1896799999995,
+      "y": 8009.12848,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -107,7 +107,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "0b5993de-527b-2309-20d4-4519d5414943",
       "x": 7980,
-      "y": 7994.132254999999,
+      "y": 7994.571054999999,
       "width": 12.041999999999462,
       "height": 10.25799999999981,
       "alpha": 1,
@@ -127,15 +127,15 @@
       "vertices": [
         {
           "x": 7980,
-          "y": 7994.132254999999
+          "y": 7994.571054999999
         },
         {
           "x": 7992.0419999999995,
-          "y": 7999.038254999998
+          "y": 7999.4770549999985
         },
         {
           "x": 7980,
-          "y": 8004.390254999998
+          "y": 8004.829054999999
         }
       ],
       "blur": 0,
@@ -155,7 +155,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8016.008125,
-      "y": 7974.118487500001,
+      "y": 7974.938800000001,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -195,7 +195,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "078497de-04ae-57d8-a141-a3d4afacfe39",
       "x": 8016.008125,
-      "y": 8014.931767499998,
+      "y": 8014.870567499999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -235,7 +235,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7972.9788800000015,
-      "y": 7994.261254999999,
+      "y": 7994.938800000001,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -276,7 +276,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "e7b9ebe8-3f2a-b126-49ce-dae5447c5010",
       "x": 8002.28125,
-      "y": 7968.496079999999,
+      "y": 7969.43488,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -316,7 +316,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5d090264-9572-d0a8-61be-b62664ed1ca6",
       "x": 7973.512800000001,
-      "y": 7974.118487500001,
+      "y": 7974.938800000001,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -357,7 +357,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "0a965270-f177-032a-013c-38bd8ca7ddae",
       "x": 7972.9788800000015,
-      "y": 8014.931767499998,
+      "y": 8014.870567499999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -397,8 +397,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "65ab38d3-1bc2-1a52-0748-3cfd06b1e05d",
-      "x": 7984.0078125,
-      "y": 7968.438800000001,
+      "x": 7982.5078125,
+      "y": 7968.877600000002,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -437,8 +437,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "d3932694-11f2-f623-4928-efaee06136ce",
-      "x": 7983.9788800000015,
-      "y": 8009.1896799999995,
+      "x": 7982.4788800000015,
+      "y": 8009.12848,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -493,11 +493,11 @@
       "vertex": [
         {
           "x": 8006.348,
-          "y": 8013.994479999997
+          "y": 8013.9332799999975
         },
         {
           "x": 8013.8748,
-          "y": 8013.994479999997
+          "y": 8013.9332799999975
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
