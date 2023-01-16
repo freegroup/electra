@@ -23,7 +23,7 @@ digital_display_8_Bit_Display = digital_display_8_Bit_Display.extend({
         val    += this.getInputPort("input_bit6").getBooleanValue()?32:0;
         val    += this.getInputPort("input_bit7").getBooleanValue()?64:0;
         val    += this.getInputPort("input_bit8").getBooleanValue()?128:0;
-        this.layerAttr("digit", {text: val.toString(10).padStart(3, '0'})
+        this.layerAttr("digit", {text: val.toString(10).padStart(3, '0')});
 
     }
 
