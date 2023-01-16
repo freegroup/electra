@@ -13,55 +13,31 @@ var digital_display_4_Led = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:20,height:159.90060000000085},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:20,height:80},attr), setter, getter);
      var port;
      // port0
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -27.5, y: 6.253885226196742 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -27.5, y: 12.5 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("port0");
      port.setMaxFanOut(1);
      // port1
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 18.655777401710985 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 37.28837500000054 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("port1");
      port.setMaxFanOut(1);
      // port2
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 31.273491156380995 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 62.50812500000052 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("port2");
      port.setMaxFanOut(1);
      // port3
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 43.77719658337719 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 87.5 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("port3");
-     port.setMaxFanOut(1);
-     // port4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -27.5, y: 56.25388522619674 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("port4");
-     port.setMaxFanOut(1);
-     // port5
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 68.79273748816415 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("port5");
-     port.setMaxFanOut(1);
-     // port6
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 81.16805065146734 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("port6");
-     port.setMaxFanOut(1);
-     // port7
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -26.38850000000275, y: 93.74611477380326 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("port7");
      port.setMaxFanOut(1);
    },
 
@@ -69,7 +45,7 @@ var digital_display_4_Led = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 20;
-      this.originalHeight= 159.90060000000085;
+      this.originalHeight= 80;
       return shape;
    },
 
@@ -78,7 +54,7 @@ var digital_display_4_Led = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L20,0 L20,159.90060000000085 L0,159.90060000000085");
+       shape = this.canvas.paper.path("M0,0 L20,0 L20,80 L0,80");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -96,26 +72,6 @@ var digital_display_4_Led = CircuitFigure.extend({
        shape = this.canvas.paper.path('M0 60L20 60L20 80L0 80Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","led3");
-       
-       // led4
-       shape = this.canvas.paper.path('M0 80L20 80L20 100L0 100Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","led4");
-       
-       // led5
-       shape = this.canvas.paper.path('M0 100L20 100L20 120L0 120Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","led5");
-       
-       // led6
-       shape = this.canvas.paper.path('M0 120L20 120L20 140L0 140Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","led6");
-       
-       // led7
-       shape = this.canvas.paper.path('M0 139.90060000000085L20 139.90060000000085L20 159.90060000000085L0 159.90060000000085Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","led7");
        
        // led1
        shape = this.canvas.paper.path('M0 20L20 20L20 40L0 40Z');
@@ -154,11 +110,6 @@ digital_display_4_Led = digital_display_4_Led.extend({
         this.layerAttr("led1",{fill: this.getInputPort("port1").getBooleanValue()?"#C21B7A":"#f0f0f0"});
         this.layerAttr("led2",{fill: this.getInputPort("port2").getBooleanValue()?"#C21B7A":"#f0f0f0"});
         this.layerAttr("led3",{fill: this.getInputPort("port3").getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        this.layerAttr("led4",{fill: this.getInputPort("port4").getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        this.layerAttr("led5",{fill: this.getInputPort("port5").getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        this.layerAttr("led6",{fill: this.getInputPort("port6").getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        this.layerAttr("led7",{fill: this.getInputPort("port7").getBooleanValue()?"#C21B7A":"#f0f0f0"});
-        
     },
     
     onStart: function(context)
