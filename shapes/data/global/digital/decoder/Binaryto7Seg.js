@@ -101,7 +101,7 @@ var digital_decoder_Binaryto7Seg = CircuitFigure.extend({
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0,6.25Q0,3.25 3, 3.25L67,3.25Q70,3.25 70, 6.25L70,140.25Q70,143.25 67, 143.25L3,143.25Q0,143.25 0, 140.25L0,6.25');
+       shape = this.canvas.paper.path('M0,5.25Q0,3.25 2, 3.25L68,3.25Q70,3.25 70, 5.25L70,141.25Q70,143.25 68, 143.25L2,143.25Q0,143.25 0, 141.25L0,5.25');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
