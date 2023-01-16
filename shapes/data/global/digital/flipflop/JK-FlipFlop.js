@@ -139,9 +139,9 @@ digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         
-        var rising = this.last_t===false && t===true; 
+        var falling = this.last_t===true && t===false; 
         
-        if(rising===true){
+        if(falling===true){
             // do nothing
             if(j===false && k ===false){
                
