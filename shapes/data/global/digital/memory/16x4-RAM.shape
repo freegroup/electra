@@ -3,17 +3,17 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "e72b4754-e04e-21df-6937-669d31471b19",
-      "x": 7961.05078125,
-      "y": 7853.4609375,
+      "x": 7960,
+      "y": 7910.0390625,
       "width": 80,
-      "height": 219,
+      "height": 199,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.ram = new Uint8Array(16)\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        var input = [];\n        var output = [];\n        \n        let addr =   this.getInputPort(\"input_a1\").getBooleanValue();\n        addr    += 2*this.getInputPort(\"input_a2\").getBooleanValue();\n        addr    += 4*this.getInputPort(\"input_a3\").getBooleanValue();\n        addr    += 8*this.getInputPort(\"input_a4\").getBooleanValue();\n\n        input.push(this.getInputPort(\"input_d1\").getBooleanValue());\n        input.push(this.getInputPort(\"input_d2\").getBooleanValue());\n        input.push(this.getInputPort(\"input_d3\").getBooleanValue());\n        input.push(this.getInputPort(\"input_d4\").getBooleanValue());\n \n         input.push(this.getInputPort(\"input_c\").getBooleanValue());\n \n        this.getOutputPort(\"output_s1\").setValue(output[0]);\n        this.getOutputPort(\"output_s2\").setValue(output[1]);\n        this.getOutputPort(\"output_s3\").setValue(output[2]);\n        this.getOutputPort(\"output_s4\").setValue(output[3]);\n        this.getOutputPort(\"output_c\").setValue(output[4]);\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function()\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function()\n    {\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.ram = new Uint8Array(16)\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        let rw = this.getInputPort(\"input_rw\").getBooleanValue();\n        \n        let addr =   this.getInputPort(\"input_a1\").getBooleanValue();\n        addr    += 2*this.getInputPort(\"input_a2\").getBooleanValue();\n        addr    += 4*this.getInputPort(\"input_a3\").getBooleanValue();\n        addr    += 8*this.getInputPort(\"input_a4\").getBooleanValue();\n\n        let data = this.ram[addr]\n        if(rw){\n            data =   this.getInputPort(\"input_d1\").getBooleanValue();\n            data    += 2*this.getInputPort(\"input_d2\").getBooleanValue();\n            data    += 4*this.getInputPort(\"input_d3\").getBooleanValue();\n            data    += 8*this.getInputPort(\"input_d4\").getBooleanValue();\n            this.ram[addr] = data\n        }\n\n        this.getOutputPort(\"output_q1\").setValue(data & 1);\n        this.getOutputPort(\"output_q2\").setValue(data & 2);\n        this.getOutputPort(\"output_q3\").setValue(data & 4);\n        this.getOutputPort(\"output_q4\").setValue(data & 8);\n    }\n});",
         "name": "Rectangle",
         "markdown": "## 4 bit Full Adder\n\nA full adder adds binary numbers and accounts for values \ncarried in as well as out. A one-bit full adder adds \nthree one-bit numbers, often written as A, B, and Cin; \nA and B are the operands, and Cin is a bit carried in \nfrom the previous less-significant stage.[2] The full \nadder is usually a component in a cascade of adders, \nwhich add 4, 8, 16, 32, etc. bit binary numbers. \n\n\n|  A    |    B    |  Cin     |    S    |    C   |\n|:-----:|:-------:|:--------:|:--------:|:-------|\n|   0   |    0    |     0    |     0    |     0  |\n|   0   |    0    |     1    |     1    |     0  |\n|   0   |    1    |     0    |     1    |     0  |\n|   0   |    1    |     1    |     0    |     1  |\n|   1   |    0    |     0    |     0    |     1  |\n|   1   |    0    |     1    |     0    |     1  |\n|   1   |    1    |     0    |     0    |     1  |\n|   1   |    1    |     1    |     0    |     1  |\n"
       },
@@ -26,20 +26,20 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7961.05078125,
-          "y": 7853.4609375
+          "x": 7960,
+          "y": 7910.0390625
         },
         {
-          "x": 8041.05078125,
-          "y": 7853.4609375
+          "x": 8040,
+          "y": 7910.0390625
         },
         {
-          "x": 8041.05078125,
-          "y": 8072.4609375
+          "x": 8040,
+          "y": 8109.0390625
         },
         {
-          "x": 7961.05078125,
-          "y": 8072.4609375
+          "x": 7960,
+          "y": 8109.0390625
         }
       ],
       "blur": 0,
@@ -64,8 +64,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e7565a76-9e96-5cb7-3a96-f888e06f053c",
-      "x": 7963.2677875,
-      "y": 7899.4609375,
+      "x": 7962.21700625,
+      "y": 7936.5,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -104,8 +104,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "511fb62f-8edb-1b20-4894-3a53b4d1949b",
-      "x": 7963.2677875,
-      "y": 7919.5859375,
+      "x": 7962.21700625,
+      "y": 7956.625,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -144,8 +144,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "8a2d55b6-32a0-fdfd-68b7-d3df1035e143",
-      "x": 8014.4552875,
-      "y": 7989.1640625,
+      "x": 8013.40450625,
+      "y": 8026.203125,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -184,8 +184,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "508db277-22e0-1fbf-9d91-9daa2b47801d",
-      "x": 7963.2677875,
-      "y": 7939.1953125,
+      "x": 7962.21700625,
+      "y": 7976.234375,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -224,8 +224,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "b6317047-fef6-c857-01d8-97b243fe6d1c",
-      "x": 8014.4552875,
-      "y": 8029.3352374999995,
+      "x": 8013.40450625,
+      "y": 8066.3742999999995,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -264,8 +264,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "99fee759-967d-2fa2-528a-ecc51f013aac",
-      "x": 8014.4552875,
-      "y": 8009.2109375,
+      "x": 8013.40450625,
+      "y": 8046.25,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -304,8 +304,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "27ab3138-046c-bed8-5abf-91cb0e83a9e6",
-      "x": 7963.2677875,
-      "y": 8009.2109375,
+      "x": 7962.21700625,
+      "y": 8046.25,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -344,8 +344,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e78bb048-47ff-2374-b9b8-2a8d9478cd1d",
-      "x": 7963.2677875,
-      "y": 7988.6640625,
+      "x": 7962.21700625,
+      "y": 8025.703125,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -384,8 +384,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "75afc518-2cab-6c00-e52b-166de8538855",
-      "x": 7963.2677875,
-      "y": 7959.690500000001,
+      "x": 7962.21700625,
+      "y": 7996.729562500001,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -424,8 +424,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "8ec01936-1173-c7b4-9307-cf97cadbf1b5",
-      "x": 7963.2677875,
-      "y": 8029.3352374999995,
+      "x": 7962.21700625,
+      "y": 8066.3742999999995,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -464,8 +464,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "50b39a0d-d0fe-ee45-811f-4b60b94a564e",
-      "x": 7963.3445875,
-      "y": 8048.8671875,
+      "x": 7962.29380625,
+      "y": 8085.90625,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -504,8 +504,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "8c906f02-de90-4d57-668f-a8eae477943a",
-      "x": 8014.6115375,
-      "y": 8048.690500000001,
+      "x": 8013.56075625,
+      "y": 8085.729562500001,
       "width": 28.328125,
       "height": 20.734375,
       "alpha": 1,
@@ -544,8 +544,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "8e27bc18-042f-0bca-219c-707e417126c3",
-      "x": 7978.6484375,
-      "y": 7938.1953125,
+      "x": 7977.59765625,
+      "y": 7975.234375,
       "width": 34.828125,
       "height": 21,
       "alpha": 1,
@@ -584,8 +584,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "a4825e75-c25c-5cca-36d3-7aad8c012d1a",
-      "x": 7954,
-      "y": 7905,
+      "x": 7952.94921875,
+      "y": 7942.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -622,8 +622,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "eed37de1-e11c-3573-2e0c-74b7ce7b718e",
-      "x": 7954.3445875,
-      "y": 7925,
+      "x": 7953.29380625,
+      "y": 7962.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -660,8 +660,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "075d8dac-2bf8-35d5-c3b1-5c6f9f8116ec",
-      "x": 7954.2677875,
-      "y": 7945,
+      "x": 7953.21700625,
+      "y": 7982.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -698,8 +698,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "8c503528-51fd-0c99-4c39-e5d5e2593546",
-      "x": 7954.3445875,
-      "y": 7965,
+      "x": 7953.29380625,
+      "y": 8002.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -736,8 +736,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "14941e83-3dad-ffed-0ad8-09ca280dfbbb",
-      "x": 7954.2677875,
-      "y": 7995,
+      "x": 7953.21700625,
+      "y": 8032.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -774,8 +774,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "12e29987-cdb2-0eb8-8fde-e5af309bfe9f",
-      "x": 7954.2645875,
-      "y": 8015,
+      "x": 7953.21380625,
+      "y": 8052.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -812,8 +812,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "73a1e5f4-02ff-09fa-345b-ff24649ac6b5",
-      "x": 7954.2645875,
-      "y": 8035,
+      "x": 7953.21380625,
+      "y": 8072.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -850,8 +850,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "9684ca59-dcad-4272-fae4-908b5c34f1e5",
-      "x": 7954.2645875,
-      "y": 8055,
+      "x": 7953.21380625,
+      "y": 8092.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -887,47 +887,9 @@
     },
     {
       "type": "shape_designer.figure.ExtPort",
-      "id": "9dbdc1af-c1c2-b354-fd8f-64171fea7388",
-      "x": 7956.2645875,
-      "y": 7860,
-      "width": 10,
-      "height": 10,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "input_enable",
-        "type": "Input",
-        "direction": 3,
-        "fanout": 1
-      },
-      "cssClass": "shape_designer_figure_ExtPort",
-      "ports": [],
-      "bgColor": "rgba(55,177,222,1)",
-      "color": "rgba(27,27,27,1)",
-      "stroke": 1,
-      "dasharray": null,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.FanoutFilter"
-        },
-        {
-          "name": "shape_designer.filter.PortDirectionFilter"
-        },
-        {
-          "name": "shape_designer.filter.PortTypeFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.ExtPort",
       "id": "3e46095d-560c-8139-3ea0-f44e93718983",
-      "x": 8035.5,
-      "y": 7995,
+      "x": 8034.44921875,
+      "y": 8032.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -964,8 +926,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "7d746e44-d387-5392-5d65-9639372ed0a2",
-      "x": 8035,
-      "y": 8015,
+      "x": 8033.94921875,
+      "y": 8052.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1002,8 +964,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "c93f40e2-1a05-e113-4236-011dca8a8879",
-      "x": 8035,
-      "y": 8035,
+      "x": 8033.94921875,
+      "y": 8072.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1040,8 +1002,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "4c990ab1-b90b-15f1-15f9-3f571182d073",
-      "x": 8035,
-      "y": 8055,
+      "x": 8033.94921875,
+      "y": 8092.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1077,49 +1039,9 @@
     },
     {
       "type": "shape_designer.figure.ExtLabel",
-      "id": "a5989aff-939f-344b-8dfe-69a99c8df15e",
-      "x": 7964.269145055389,
-      "y": 7853.9657375,
-      "width": 28.328125,
-      "height": 20.734375,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "Label"
-      },
-      "cssClass": "shape_designer_figure_ExtLabel",
-      "ports": [],
-      "bgColor": "rgba(0,0,0,0)",
-      "color": "rgba(27,27,27,1)",
-      "stroke": 0,
-      "radius": 0,
-      "dasharray": null,
-      "text": "enable",
-      "outlineStroke": 0,
-      "outlineColor": "rgba(0,0,0,0)",
-      "fontSize": 12,
-      "fontColor": "rgba(8,8,8,1)",
-      "fontFamily": null,
-      "editor": "LabelInplaceEditor",
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.FontSizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FontColorFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.ExtLabel",
       "id": "a4c81db6-779d-4c3a-59af-8c739c254f32",
-      "x": 7982.465053125,
-      "y": 7923.5859375,
+      "x": 7981.414271875,
+      "y": 7960.625,
       "width": 34.828125,
       "height": 21,
       "alpha": 1,
@@ -1158,8 +1080,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "9e3e4181-fc61-dccc-e1d4-d8af67afe33a",
-      "x": 7956.2645875,
-      "y": 7880,
+      "x": 7955.21380625,
+      "y": 7917.0390625,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1196,8 +1118,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "066b04e6-d07d-63ec-4130-3bd42a5357c1",
-      "x": 7964.7645875,
-      "y": 7873,
+      "x": 7963.71380625,
+      "y": 7910.0390625,
       "width": 38.02475166320801,
       "height": 20.734375,
       "alpha": 1,

@@ -24,42 +24,25 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
      **/
     calculate:function()
     {
-        var input = [];
-        var output = [];
+        let rw = this.getInputPort("input_rw").getBooleanValue();
         
         let addr =   this.getInputPort("input_a1").getBooleanValue();
         addr    += 2*this.getInputPort("input_a2").getBooleanValue();
         addr    += 4*this.getInputPort("input_a3").getBooleanValue();
         addr    += 8*this.getInputPort("input_a4").getBooleanValue();
 
-        input.push(this.getInputPort("input_d1").getBooleanValue());
-        input.push(this.getInputPort("input_d2").getBooleanValue());
-        input.push(this.getInputPort("input_d3").getBooleanValue());
-        input.push(this.getInputPort("input_d4").getBooleanValue());
- 
-         input.push(this.getInputPort("input_c").getBooleanValue());
- 
-        this.getOutputPort("output_s1").setValue(output[0]);
-        this.getOutputPort("output_s2").setValue(output[1]);
-        this.getOutputPort("output_s3").setValue(output[2]);
-        this.getOutputPort("output_s4").setValue(output[3]);
-        this.getOutputPort("output_c").setValue(output[4]);
-    },
+        let data = this.ram[addr]
+        if(rw){
+            data =   this.getInputPort("input_d1").getBooleanValue();
+            data    += 2*this.getInputPort("input_d2").getBooleanValue();
+            data    += 4*this.getInputPort("input_d3").getBooleanValue();
+            data    += 8*this.getInputPort("input_d4").getBooleanValue();
+            this.ram[addr] = data
+        }
 
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function()
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function()
-    {
+        this.getOutputPort("output_q1").setValue(data & 1);
+        this.getOutputPort("output_q2").setValue(data & 2);
+        this.getOutputPort("output_q3").setValue(data & 4);
+        this.getOutputPort("output_q4").setValue(data & 8);
     }
 });
