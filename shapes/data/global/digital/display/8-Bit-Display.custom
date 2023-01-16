@@ -1,0 +1,27 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_display_8_Bit_Display = digital_display_8_Bit_Display.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+    },
+    
+    calculate:function(context)
+    {
+        var _this = this;
+        this.portLockup.forEach(function(element, index){
+            _this.layerAttr(element.s, { 
+                fill  : element.p.getBooleanValue()?"#C21B7A":null,
+                stroke: element.p.getBooleanValue()?"#000000":"#f4f4f9"
+            });
+        });
+    }
+
+});
