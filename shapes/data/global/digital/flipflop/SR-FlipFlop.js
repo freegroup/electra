@@ -16,13 +16,13 @@ var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
      this._super( $.extend({stroke:0, bgColor:null, width:40,height:63.065120000000206},attr), setter, getter);
      var port;
      // output_q
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 16.843553932826566 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 18.286748681362393 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q");
      port.setMaxFanOut(20);
      // output_q_not
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.52031250000073, y: 81.55964422171755 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 81.71325131863617 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q_not");
@@ -34,10 +34,16 @@ var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
      port.setName("input_s");
      port.setMaxFanOut(1);
      // input_r
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 16.843553932826566 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 18.286748681362393 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_r");
+     port.setMaxFanOut(1);
+     // input_clk
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.052799999996296, y: 49.99999999999928 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input_clk");
      port.setMaxFanOut(1);
    },
 
