@@ -15,13 +15,11 @@ digital_display_8_Bit_Display = digital_display_8_Bit_Display.extend({
     
     calculate:function(context)
     {
-        var _this = this;
-        this.portLockup.forEach(function(element, index){
-            _this.layerAttr(element.s, { 
-                fill  : element.p.getBooleanValue()?"#C21B7A":null,
-                stroke: element.p.getBooleanValue()?"#000000":"#f4f4f9"
-            });
-        });
+        let val = this.getInputPort("input_a1").getBooleanValue()?1:0;
+        val    += this.getInputPort("input_a2").getBooleanValue()?2:0;
+        val    += this.getInputPort("input_a3").getBooleanValue()?4:0;
+        val    += this.getInputPort("input_a4").getBooleanValue()?8:0;
+
     }
 
 });
