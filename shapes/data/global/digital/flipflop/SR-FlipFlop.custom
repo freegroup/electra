@@ -13,33 +13,36 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.last_clk = false;
     },
     
     calculate:function(context)
     {
-        var s = !!this.getInputPort("input_s").getBooleanValue();
-        var r = !!this.getInputPort("input_r").getBooleanValue();
+        let s   = this.getInputPort("input_s").getBooleanValue();
+        let r   = this.getInputPort("input_r").getBooleanValue();
+        let clk = this.getInputPort("input_clk").getBooleanValue();
 
-        var q = this.getOutputPort("output_q");
-        var q_ = this.getOutputPort("output_q_not");
-        // do nothing
-        if(s===false && r===false){
-           
+        let rising = this.last_clk===false && clk===true; 
+    
+        if(rising){
+            let q = this.getOutputPort("output_q");
+            let q_ = this.getOutputPort("output_q_not");
+            if(s===false && r===true){
+                q.setValue(false);
+                q_.setValue(true);
+            }
+            // set
+            else if(s===true && r===false){
+                q.setValue(true);
+                q_.setValue(false);
+            }
+            // invalid
+            else if(s===true && r===true){
+                q.setValue( false);
+                q_.setValue( false);
+            }
         }
-        // reset
-        else if(s===false && r===true){
-            q.setValue(false);
-            q_.setValue(true);
-        }
-        // set
-        else if(s===true && r===false){
-            q.setValue(true);
-            q_.setValue(false);
-        }
-        // invalid
-        else if(s===true && r===true){
-            q.setValue( false);
-            q_.setValue( false);
-        }
+        this.last_clk = clk;
     }
 });
