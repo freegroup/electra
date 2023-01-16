@@ -223,6 +223,8 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
 
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.ram = new Uint8Array(16)
     },
 
     /**
@@ -235,49 +237,18 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         var input = [];
         var output = [];
         
-        input.push(this.getInputPort("input_a1").getBooleanValue());
-        input.push(this.getInputPort("input_a2").getBooleanValue());
-        input.push(this.getInputPort("input_a3").getBooleanValue());
-        input.push(this.getInputPort("input_a4").getBooleanValue());
-        
-        input.push(this.getInputPort("input_b1").getBooleanValue());
-        input.push(this.getInputPort("input_b2").getBooleanValue());
-        input.push(this.getInputPort("input_b3").getBooleanValue());
-        input.push(this.getInputPort("input_b4").getBooleanValue());
+        let addr =   this.getInputPort("input_a1").getBooleanValue();
+        addr    += 2*this.getInputPort("input_a2").getBooleanValue();
+        addr    += 4*this.getInputPort("input_a3").getBooleanValue();
+        addr    += 8*this.getInputPort("input_a4").getBooleanValue();
+
+        input.push(this.getInputPort("input_d1").getBooleanValue());
+        input.push(this.getInputPort("input_d2").getBooleanValue());
+        input.push(this.getInputPort("input_d3").getBooleanValue());
+        input.push(this.getInputPort("input_d4").getBooleanValue());
  
-        input.push(this.getInputPort("input_c").getBooleanValue());
+         input.push(this.getInputPort("input_c").getBooleanValue());
  
-        var carry = input[8];
-       
-        for (var i=0; i<4 ; i++){
-            // calculate with the carry
-            if(carry){
-                if(input[i] && input[i+4]){
-                    output[i]=true;
-                }
-                else if(input[i] || input[i+4]){
-                    output[i]=false;
-                }
-                else{
-                    output[i]=true;
-                    carry=false;
-                }
-            }
-            else{
-                if(input[i] && input[i+4]){
-                    output[i]=false;
-                    carry = true;
-                }
-                else if(input[i] || input[i+4]){
-                    output[i]=true;
-                }
-                else{
-                    output[i]=false;
-                }
-            }
-        }
-        output[4]=carry;
-        
         this.getOutputPort("output_s1").setValue(output[0]);
         this.getOutputPort("output_s2").setValue(output[1]);
         this.getOutputPort("output_s3").setValue(output[2]);
