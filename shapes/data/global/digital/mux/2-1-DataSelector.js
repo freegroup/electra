@@ -217,15 +217,15 @@ digital_mux_2_1_DataSelector = digital_mux_2_1_DataSelector.extend({
     calculate:function()
     {
         if(this.getInputPort("input_select").getBooleanValue()){
-            this.getOutputPort("output_q1").setValue(this.getInputPort("input_b1").getBooleanValue());
-            this.getOutputPort("output_q2").setValue(this.getInputPort("input_b2").getBooleanValue());
-            this.getOutputPort("output_q3").setValue(this.getInputPort("input_b3").getBooleanValue());
-            this.getOutputPort("output_q4").setValue(this.getInputPort("input_b4").getBooleanValue());
-        } else {
             this.getOutputPort("output_q1").setValue(this.getInputPort("input_a1").getBooleanValue());
             this.getOutputPort("output_q2").setValue(this.getInputPort("input_a2").getBooleanValue());
             this.getOutputPort("output_q3").setValue(this.getInputPort("input_a3").getBooleanValue());
             this.getOutputPort("output_q4").setValue(this.getInputPort("input_a4").getBooleanValue());
+        } else {
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_b2").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_b3").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_b4").getBooleanValue());
         }
 
     }
