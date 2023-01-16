@@ -191,7 +191,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
 
          // your special code here
-         this.last_t=false;
+         this.last_clk=false;
          this.counter=0;
     },
 
@@ -202,36 +202,32 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
      **/
     calculate:function()
     {
-        var t = this.getInputPort(0).getBooleanValue();
-        var rising = this.last_t===false && t===true;
-        if(rising===true){
-            var a = this.getOutputPort("out_a");
-            var b = this.getOutputPort("out_b");
-            var c = this.getOutputPort("out_c");
-            var d = this.getOutputPort("out_d");
-            a.setValue(!!(this.counter & 1));
-            b.setValue(!!(this.counter & 2));
-            c.setValue(!!(this.counter & 4));
-            d.setValue(!!(this.counter & 8));
-            this.counter= (this.counter+1)%10;
+        var clk    = this.getInputPort("input_clk").getBooleanValue();
+        var load   = this.getInputPort("input_load").getBooleanValue();
+        var enable = this.getInputPort("input_enable").getBooleanValue();
+        
+        var rising = this.last_clk===false && clk===true;
+        if(enable) {
+            if(rising && load) {
+               let addr =   this.getInputPort("input_a1").getBooleanValue();
+                addr    += 2*this.getInputPort("input_a2").getBooleanValue();
+                addr    += 4*this.getInputPort("input_a3").getBooleanValue();
+                addr    += 8*this.getInputPort("input_a4").getBooleanValue();
+
+            }
+            
+            if(rising===true){
+                var q1 = this.getOutputPort("output_q1");
+                var q2 = this.getOutputPort("output_q2");
+                var q3 = this.getOutputPort("output_q3");
+                var q4 = this.getOutputPort("output_q4");
+                a.setValue(!!(this.counter & 1));
+                b.setValue(!!(this.counter & 2));
+                c.setValue(!!(this.counter & 4));
+                d.setValue(!!(this.counter & 8));
+                this.counter= (this.counter+1)%10;
+            }
         }
-        this.last_t = t;
-    },
-
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function()
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function()
-    {
+        this.last_clk = clk;
     }
 });
