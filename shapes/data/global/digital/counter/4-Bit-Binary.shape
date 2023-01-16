@@ -3,8 +3,8 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "d5eed864-f9ab-239f-6b6b-6d500ff0b2b4",
-      "x": 7959.752086639404,
-      "y": 7908.889,
+      "x": 7959.116277694702,
+      "y": 7917.5,
       "width": 80,
       "height": 165,
       "alpha": 1,
@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n         // your special code here\n         this.last_clk=false;\n         this.counter=0;\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        var clk    = this.getInputPort(\"input_clk\").getBooleanValue();\n        var load   = this.getInputPort(\"input_load\").getBooleanValue();\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true;\n        if(enable) {\n            // Load the new data from the input if we have a RISING clock and ENABLE is set\n            //\n            if(rising && load) {\n               this.counter  =   this.getInputPort(\"input_d1\").getBooleanValue();\n               this.counter += 2*this.getInputPort(\"input_d2\").getBooleanValue();\n               this.counter += 4*this.getInputPort(\"input_d3\").getBooleanValue();\n               this.counter += 8*this.getInputPort(\"input_d4\").getBooleanValue();\n            }\n            \n            if(rising && clk ){\n                this.counter= (this.counter+1)%16;\n                this.getOutputPort(\"output_q1\").setValue(!!(this.counter & 1));\n                this.getOutputPort(\"output_q2\").setValue(!!(this.counter & 2));\n                this.getOutputPort(\"output_q3\").setValue(!!(this.counter & 4));\n                this.getOutputPort(\"output_q4\").setValue(!!(this.counter & 8));\n            }\n        }\n        this.last_clk = clk;\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n         // your special code here\n         this.last_clk=false;\n         this.counter=0;\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        var clk    = this.getInputPort(\"input_clk\").getBooleanValue();\n        var load   = this.getInputPort(\"input_load\").getBooleanValue();\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true;\n        if(enable) {\n            // Load the new data from the input if we have a RISING clock and ENABLE is set\n            //\n            if(rising && load) {\n               this.counter  =   this.getInputPort(\"input_d1\").getBooleanValue();\n               this.counter += 2*this.getInputPort(\"input_d2\").getBooleanValue();\n               this.counter += 4*this.getInputPort(\"input_d3\").getBooleanValue();\n               this.counter += 8*this.getInputPort(\"input_d4\").getBooleanValue();\n               this.getOutputPort(\"output_q1\").setValue(!!(this.counter & 1));\n               this.getOutputPort(\"output_q2\").setValue(!!(this.counter & 2));\n               this.getOutputPort(\"output_q3\").setValue(!!(this.counter & 4));\n               this.getOutputPort(\"output_q4\").setValue(!!(this.counter & 8));\n            }\n            \n            if(rising && clk ){\n                this.counter= (this.counter+1)%16;\n                this.getOutputPort(\"output_q1\").setValue(!!(this.counter & 1));\n                this.getOutputPort(\"output_q2\").setValue(!!(this.counter & 2));\n                this.getOutputPort(\"output_q3\").setValue(!!(this.counter & 4));\n                this.getOutputPort(\"output_q4\").setValue(!!(this.counter & 8));\n            }\n        }\n        this.last_clk = clk;\n    }\n});",
         "name": "Rectangle",
         "markdown": "# BCD Counter\n\n\nBCD = **B**inary **C**oded **D**ecimal = Counts from 0 to 9 and then repeats.\n\n\n\nA binary coded decimal (BCD) is a serial digital counter that counts\nten digits. And it resets for every new clock input. As it can go \nthrough 10 unique combinations of output, it is also called as \n `Decade counter` . A BCD counter can count 0000, 0001, 0010, \n1000, 1001, 1010, 1011, 1110, 1111, 0000, and 0001 and so on.\n\nThis is a **generic BCD** counter which reacts with **increasing pulses** of the \nclock signal. This behaviour is `different` from the usual `74LS94` devices \nthat are used. This works on falling edges which allows you to build a \nmulti-digit counter with fewer gates.",
         "type": "Output",
@@ -28,20 +28,20 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7959.752086639404,
-          "y": 7908.889
+          "x": 7959.116277694702,
+          "y": 7917.5
         },
         {
-          "x": 8039.752086639404,
-          "y": 7908.889
+          "x": 8039.116277694702,
+          "y": 7917.5
         },
         {
-          "x": 8039.752086639404,
-          "y": 8073.889
+          "x": 8039.116277694702,
+          "y": 8082.5
         },
         {
-          "x": 7959.752086639404,
-          "y": 8073.889
+          "x": 7959.116277694702,
+          "y": 8082.5
         }
       ],
       "blur": 0,
@@ -66,9 +66,9 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "09da8af5-a3ba-04d9-c6e7-f5619e30f121",
-      "x": 7960,
-      "y": 7967,
-      "width": 36.21666717529297,
+      "x": 7959.364191055298,
+      "y": 7975.611,
+      "width": 74.8359375,
       "height": 22,
       "alpha": 1,
       "selectable": true,
@@ -106,8 +106,8 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "ce91a191-8b7b-dc27-d6b6-15dd18bb01ca",
-      "x": 7960,
-      "y": 7952.214226060486,
+      "x": 7959.364191055298,
+      "y": 7960.825226060486,
       "width": 13,
       "height": 17,
       "alpha": 1,
@@ -126,16 +126,16 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7960,
-          "y": 7952.214226060486
+          "x": 7959.364191055298,
+          "y": 7960.825226060486
         },
         {
-          "x": 7973,
-          "y": 7960.95708320334
+          "x": 7972.364191055298,
+          "y": 7969.5680832033395
         },
         {
-          "x": 7960,
-          "y": 7969.214226060486
+          "x": 7959.364191055298,
+          "y": 7977.825226060486
         }
       ],
       "blur": 0,
@@ -157,8 +157,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "3b9db0ed-1ba2-a98a-51cb-3a4f5af3550f",
-      "x": 7954.033331298828,
-      "y": 7955,
+      "x": 7953.397522354126,
+      "y": 7963.611,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -198,8 +198,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "4f83a764-63b8-7620-b479-a555e7c8f0d0",
-      "x": 8034.0911000000015,
-      "y": 7995.0452,
+      "x": 8033.455291055299,
+      "y": 8003.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -239,8 +239,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "543ba80d-b7f4-44a2-0588-734259ce1aa9",
-      "x": 8035.0911000000015,
-      "y": 8015.0452,
+      "x": 8034.455291055299,
+      "y": 8023.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -280,8 +280,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "9606e121-295b-5ec7-bcfa-b4ee534f4142",
-      "x": 8035.0911000000015,
-      "y": 8035.0452,
+      "x": 8034.455291055299,
+      "y": 8043.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -321,8 +321,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "5eedda0c-72c9-32eb-a653-fa2c22609619",
-      "x": 8036.0911000000015,
-      "y": 8055.0452,
+      "x": 8035.455291055299,
+      "y": 8063.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -362,8 +362,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "52e7f5ae-8cfa-054d-5fa5-d642c0839c2f",
-      "x": 8015.428806298828,
-      "y": 7990.0452,
+      "x": 8014.792997354126,
+      "y": 7998.656199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -402,8 +402,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "9ba647d0-d381-6054-3a88-a2d1729afd03",
-      "x": 8015.428806298828,
-      "y": 8009.5452,
+      "x": 8014.792997354126,
+      "y": 8018.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -442,8 +442,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "4383cbe5-c972-dc30-b5fc-f2ba855839a5",
-      "x": 8016.428806298828,
-      "y": 8029.5452,
+      "x": 8015.792997354126,
+      "y": 8038.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -482,8 +482,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "b4d73868-0dfd-060d-7dfb-a9216147df63",
-      "x": 8016.428806298828,
-      "y": 8048.5452,
+      "x": 8015.792997354126,
+      "y": 8057.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -522,8 +522,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "1d227bc2-ceb5-a1a4-3499-0437275023d7",
-      "x": 7954.033331298828,
-      "y": 7995.0452,
+      "x": 7953.397522354126,
+      "y": 8003.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -560,8 +560,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "f719ce20-4d81-4fba-7045-63a160142b8a",
-      "x": 7954.033331298828,
-      "y": 8015.0452,
+      "x": 7953.397522354126,
+      "y": 8023.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -598,8 +598,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "d85f77ed-f652-7f22-34db-43fc5d8d32f6",
-      "x": 7954.033331298828,
-      "y": 8035.0452,
+      "x": 7953.397522354126,
+      "y": 8043.656199999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -636,8 +636,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "9945a0aa-34b3-6a49-4276-d47641796f07",
-      "x": 7954,
-      "y": 8055,
+      "x": 7953.364191055298,
+      "y": 8063.611,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -674,8 +674,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "95e916f6-3327-9018-b0ed-11beede603f8",
-      "x": 7954,
-      "y": 7935,
+      "x": 7953.364191055298,
+      "y": 7943.611,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -715,8 +715,8 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "d12affe6-7240-a5d2-7104-1aa71dde1e42",
-      "x": 7955,
-      "y": 7915,
+      "x": 7954.364191055298,
+      "y": 7923.611,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -756,8 +756,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "3f9dd31d-3e17-b9e0-535d-cb447a2e5248",
-      "x": 7962,
-      "y": 7990.0452,
+      "x": 7961.364191055298,
+      "y": 7998.656199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -796,8 +796,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "1914a00b-5eaa-571b-0a35-bf05e5ce4b67",
-      "x": 7963,
-      "y": 8009.5452,
+      "x": 7962.364191055298,
+      "y": 8018.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -836,8 +836,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "de63474a-055c-8cf0-030e-fbcfa289f5fd",
-      "x": 7962,
-      "y": 8029.5452,
+      "x": 7961.364191055298,
+      "y": 8038.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -876,8 +876,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "ba9bb7d4-6041-fd3b-41c3-8b2dec82af97",
-      "x": 7963,
-      "y": 8048.5452,
+      "x": 7962.364191055298,
+      "y": 8057.156199999999,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -916,8 +916,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "e95a2412-4650-75e0-f684-bb1a4b6ffa95",
-      "x": 7962.033331298828,
-      "y": 7930,
+      "x": 7961.397522354126,
+      "y": 7938.611,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,
@@ -956,9 +956,9 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "4f1172fa-e4bd-1355-d3cd-151374857eae",
-      "x": 7963,
-      "y": 7908.889,
-      "width": 29.760000228881836,
+      "x": 7962.364191055298,
+      "y": 7917.5,
+      "width": 38.03125,
       "height": 22,
       "alpha": 1,
       "selectable": true,
@@ -996,8 +996,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "ce003f2f-95d6-76fc-4458-0118003ea2cb",
-      "x": 7972,
-      "y": 7949.214226060486,
+      "x": 7971.364191055298,
+      "y": 7957.825226060486,
       "width": 29.760000228881836,
       "height": 22,
       "alpha": 1,

@@ -215,6 +215,10 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
                this.counter += 2*this.getInputPort("input_d2").getBooleanValue();
                this.counter += 4*this.getInputPort("input_d3").getBooleanValue();
                this.counter += 8*this.getInputPort("input_d4").getBooleanValue();
+               this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
+               this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
+               this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
+               this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
             }
             
             if(rising && clk ){
