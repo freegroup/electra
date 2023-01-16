@@ -112,8 +112,8 @@ digital_flipflop_SR_Latch = digital_flipflop_SR_Latch.extend({
     
     calculate:function(context)
     {
-        var s = !!this.getInputPort("input_s").getBooleanValue();
-        var r = !!this.getInputPort("input_r").getBooleanValue();
+        var s = this.getInputPort("input_s").getBooleanValue();
+        var r = this.getInputPort("input_r").getBooleanValue();
 
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
