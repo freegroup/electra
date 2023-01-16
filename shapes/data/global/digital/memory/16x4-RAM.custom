@@ -26,17 +26,17 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
     {
         let rw = this.getInputPort("input_rw").getBooleanValue();
         
-        let addr =   this.getInputPort("input_a1").getBooleanValue();
-        addr    += 2*this.getInputPort("input_a2").getBooleanValue();
-        addr    += 4*this.getInputPort("input_a3").getBooleanValue();
-        addr    += 8*this.getInputPort("input_a4").getBooleanValue();
+        let addr = this.getInputPort("input_a1").getBooleanValue()?1:0;
+        addr    += this.getInputPort("input_a2").getBooleanValue()?2:0;
+        addr    += this.getInputPort("input_a3").getBooleanValue()?4:0;
+        addr    += this.getInputPort("input_a4").getBooleanValue()?8:0;
 
         let data = this.ram[addr]
         if(rw){
-            data =   this.getInputPort("input_d1").getBooleanValue();
-            data    += 2*this.getInputPort("input_d2").getBooleanValue();
-            data    += 4*this.getInputPort("input_d3").getBooleanValue();
-            data    += 8*this.getInputPort("input_d4").getBooleanValue();
+            data = this.getInputPort("input_d1").getBooleanValue()?1:0;
+            data+= this.getInputPort("input_d2").getBooleanValue()?2:0;
+            data+= this.getInputPort("input_d3").getBooleanValue()?4:0;
+            data+= this.getInputPort("input_d4").getBooleanValue()?8:0;
             this.ram[addr] = data
         }
 
