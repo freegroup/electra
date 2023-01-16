@@ -17,6 +17,13 @@ digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
         this.last_t = false;
     },
     
+    onStart(context)
+    {
+        var q = this.getOutputPort("output_q");
+        var q_ = this.getOutputPort("output_q_not");
+        q_.setValue(!q.getBooleanValue())
+    },
+    
     calculate:function()
     {
         var j = this.getInputPort("input_j").getBooleanValue();
