@@ -15,71 +15,71 @@ var digital_counter_4_Bit_Binary = CircuitFigure.extend({
 
      this._super( $.extend({stroke:0, bgColor:null, width:81.7674446105957,height:165},attr), setter, getter);
      var port;
-     // input_t
+     // input_clk
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8790238511176329, y: 30.976363636363562 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_t");
+     port.setName("input_clk");
      port.setMaxFanOut(1);
-     // out_a
+     // output_q1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 97.0300756473881, y: 55.24618181818148 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("out_a");
+     port.setName("output_q1");
      port.setMaxFanOut(20);
-     // out_b
+     // output_q2
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.25305626609563, y: 67.36739393939361 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("out_b");
+     port.setName("output_q2");
      port.setMaxFanOut(20);
-     // out_c
+     // output_q3
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.25305626609563, y: 79.48860606060573 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("out_c");
+     port.setName("output_q3");
      port.setMaxFanOut(20);
-     // out_d
+     // output_q4
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 99.47603688480315, y: 91.60981818181784 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
-     port.setName("out_d");
+     port.setName("output_q4");
      port.setMaxFanOut(25);
-     // Port
+     // input_d1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8790238511176329, y: 55.24618181818148 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("input_d1");
      port.setMaxFanOut(1);
-     // Port
+     // input_d2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8790238511176329, y: 67.36739393939361 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("input_d2");
      port.setMaxFanOut(1);
-     // Port
+     // input_d3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.8790238511176329, y: 79.48860606060573 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("input_d3");
      port.setMaxFanOut(1);
-     // Port
+     // input_d4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9197873835803339, y: 91.58242424242417 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
+     port.setName("input_d4");
      port.setMaxFanOut(1);
-     // input_t
+     // input_load
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9197873835803339, y: 18.85515151515144 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_t");
+     port.setName("input_load");
      port.setMaxFanOut(1);
-     // input_t
+     // input_enable
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.303193235127196, y: 6.733939393939319 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_t");
+     port.setName("input_enable");
      port.setMaxFanOut(1);
    },
 
@@ -203,8 +203,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
     calculate:function()
     {
         var t = this.getInputPort(0).getBooleanValue();
-
-        var rising = this.last_t===false && t===true; 
+        var rising = this.last_t===false && t===true;
         if(rising===true){
             var a = this.getOutputPort("out_a");
             var b = this.getOutputPort("out_b");

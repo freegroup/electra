@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n         // your special code here\n         this.last_t=false;\n         this.counter=0;\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        var t = this.getInputPort(0).getBooleanValue();\n\n        var rising = this.last_t===false && t===true; \n        if(rising===true){\n            var a = this.getOutputPort(\"out_a\");\n            var b = this.getOutputPort(\"out_b\");\n            var c = this.getOutputPort(\"out_c\");\n            var d = this.getOutputPort(\"out_d\");\n            a.setValue(!!(this.counter & 1));\n            b.setValue(!!(this.counter & 2));\n            c.setValue(!!(this.counter & 4));\n            d.setValue(!!(this.counter & 8));\n            this.counter= (this.counter+1)%10;\n        }\n        this.last_t = t;\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function()\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function()\n    {\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n         // your special code here\n         this.last_t=false;\n         this.counter=0;\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @required\n     **/\n    calculate:function()\n    {\n        var t = this.getInputPort(0).getBooleanValue();\n        var rising = this.last_t===false && t===true;\n        if(rising===true){\n            var a = this.getOutputPort(\"out_a\");\n            var b = this.getOutputPort(\"out_b\");\n            var c = this.getOutputPort(\"out_c\");\n            var d = this.getOutputPort(\"out_d\");\n            a.setValue(!!(this.counter & 1));\n            b.setValue(!!(this.counter & 2));\n            c.setValue(!!(this.counter & 4));\n            d.setValue(!!(this.counter & 8));\n            this.counter= (this.counter+1)%10;\n        }\n        this.last_t = t;\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function()\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function()\n    {\n    }\n});",
         "name": "Rectangle",
         "markdown": "# BCD Counter\n\n\nBCD = **B**inary **C**oded **D**ecimal = Counts from 0 to 9 and then repeats.\n\n\n\nA binary coded decimal (BCD) is a serial digital counter that counts\nten digits. And it resets for every new clock input. As it can go \nthrough 10 unique combinations of output, it is also called as \n `Decade counter` . A BCD counter can count 0000, 0001, 0010, \n1000, 1001, 1010, 1011, 1110, 1111, 0000, and 0001 and so on.\n\nThis is a **generic BCD** counter which reacts with **increasing pulses** of the \nclock signal. This behaviour is `different` from the usual `74LS94` devices \nthat are used. This works on falling edges which allows you to build a \nmulti-digit counter with fewer gates.",
         "type": "Output",
@@ -166,7 +166,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "input_t",
+        "name": "input_clk",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -207,7 +207,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "out_a",
+        "name": "output_q1",
         "type": "Output",
         "direction": 1,
         "fanout": 20
@@ -248,7 +248,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "out_b",
+        "name": "output_q2",
         "type": "Output",
         "direction": 1,
         "fanout": 20
@@ -289,7 +289,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "out_c",
+        "name": "output_q3",
         "type": "Output",
         "direction": 1,
         "fanout": 20
@@ -330,7 +330,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "out_d",
+        "name": "output_q4",
         "type": "Output",
         "direction": 1,
         "fanout": 25
@@ -531,7 +531,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Port",
+        "name": "input_d1",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -569,7 +569,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Port",
+        "name": "input_d2",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -607,7 +607,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Port",
+        "name": "input_d3",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -645,7 +645,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Port",
+        "name": "input_d4",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -683,7 +683,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "input_t",
+        "name": "input_load",
         "type": "Input",
         "direction": 3,
         "fanout": 1
@@ -724,7 +724,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "input_t",
+        "name": "input_enable",
         "type": "Input",
         "direction": 3,
         "fanout": 1

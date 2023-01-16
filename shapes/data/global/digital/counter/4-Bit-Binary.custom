@@ -26,8 +26,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
     calculate:function()
     {
         var t = this.getInputPort(0).getBooleanValue();
-
-        var rising = this.last_t===false && t===true; 
+        var rising = this.last_t===false && t===true;
         if(rising===true){
             var a = this.getOutputPort("out_a");
             var b = this.getOutputPort("out_b");
