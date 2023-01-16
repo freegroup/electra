@@ -209,29 +209,12 @@ digital_decoder_Binaryto7Seg = digital_decoder_Binaryto7Seg.extend({
                 (this.getInputPort("in_c").getBooleanValue()?4:0) +
                 (this.getInputPort("in_d").getBooleanValue()?8:0);
 
-       this.getOutputPort("out_a").setValue( ((e!=1) &&(e!=4)&&(e!=6)&& (e<10)));
-       this.getOutputPort("out_b").setValue( ((e!=5) &&(e!=6)&& (e<10)));
-       this.getOutputPort("out_c").setValue( ((e!=2) &&(e<10)));
-       this.getOutputPort("out_d").setValue( (((e!==1)&&(e!==4)&&(e!==7))||(e>10)));
-       this.getOutputPort("out_e").setValue( (((e===0)||(e===2)||(e===6)||(e===8))||(e>9)));
-       this.getOutputPort("out_f").setValue( ((e!=1) &&(e!=2)&&(e!=3)&&(e!=7)&&(e<10)));
-       this.getOutputPort("out_g").setValue( (((e!==0)&&(e!==1)&&(e!==7))||(e>9)));
-    },
-
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function(context)
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function(context)
-    {
+       this.getOutputPort("out_a").setValue( e!==1 && e!==4 && e!==6 && e!==11 && e!==13);
+       this.getOutputPort("out_b").setValue( e!==5 && e!==6 && e!==11 && e!==12 && e!==14 && e!==15);
+       this.getOutputPort("out_c").setValue( e!==2 && e!==12 && e!==14 && e!==15 );
+       this.getOutputPort("out_d").setValue( e!==1 && e!==4 && e!==7 && e!==10 && e!==15);
+       this.getOutputPort("out_e").setValue( e!==1 && e!==3 && e!==4 && e!==5 && e!==7 && e!==9 );
+       this.getOutputPort("out_f").setValue( e!==1 && e!==2 && e!==3 && e!==7 && e!==13);
+       this.getOutputPort("out_g").setValue( e!==0 && e!==1 && e!==7 && e!==12 );
     }
 });
