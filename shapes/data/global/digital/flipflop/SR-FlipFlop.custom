@@ -28,17 +28,17 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
         if(rising){
             let q = this.getOutputPort("output_q");
             let q_ = this.getOutputPort("output_q_not");
-            if(s===false && r===true){
+            if(r===true && s===false){
                 q.setValue(false);
                 q_.setValue(true);
             }
             // set
-            else if(s===true && r===false){
+            else if(r===false && s===true){
                 q.setValue(true);
                 q_.setValue(false);
             }
             // invalid
-            else if(s===true && r===true){
+            else if(r===true && s===true){
                 q.setValue( false);
                 q_.setValue( false);
             }
