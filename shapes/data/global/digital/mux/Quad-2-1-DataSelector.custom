@@ -1,0 +1,38 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_mux_Quad_2_1_DataSelector = digital_mux_Quad_2_1_DataSelector.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    calculate:function()
+    {
+        if(this.getInputPort("input_select").getBooleanValue()){
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_a1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_a2").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_a3").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_a4").getBooleanValue());
+        } else {
+            this.getOutputPort("output_q1").setValue(this.getInputPort("input_b1").getBooleanValue());
+            this.getOutputPort("output_q2").setValue(this.getInputPort("input_b2").getBooleanValue());
+            this.getOutputPort("output_q3").setValue(this.getInputPort("input_b3").getBooleanValue());
+            this.getOutputPort("output_q4").setValue(this.getInputPort("input_b4").getBooleanValue());
+        }
+
+    }
+});
