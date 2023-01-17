@@ -13,6 +13,7 @@ import markdownDialog from "./dialog/MarkdownDialog"
 import colors from "../../common/js/Colors"
 import CodeDialog from "./dialog/CodeDialog"
 import WebUSBHelpDialog from "./dialog/WebUSBHelpDialog"
+import figureConfigDialog from "./dialog/FigureConfigDialog"
 
 import hardware from "./hardware"
 
@@ -376,7 +377,7 @@ export default draw2d.Canvas.extend({
     // hide the figure configuration dialog if the user clicks inside the canvas
     //
     this.on("click", () => {
-      $("#figureConfigDialog").hide()
+      figureConfigDialog.hide()
     })
 
     // only responsible to reload the code and the current document
