@@ -6,6 +6,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
   init: function () {
     this._super()
     this.mouseMoveProxy = this._onMouseMoveCallback.bind(this)
+    this.deleteFigureProxy = this._onDeleteFigureCallback.bind(this)
+
     this.configIcon  = null
     this.configFigure = null
   },
@@ -37,12 +39,18 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     // provide configuration menu if the mouse is close to a shape
     //
     canvas.on("mousemove", this.mouseMoveProxy)
+
+    // check whenever the deleted figure is currently in the "config" mode. In this case
+    // the config icon must be deleted instantly
+    //
+    canvas.on("figure:remove", this.deleteFigureProxy)
   },
 
   onUninstall: function (canvas) {
     this._super(canvas)
 
     canvas.off(this.mouseMoveProxy)
+    canvas.off(this.deleteFigureProxy)
   },
 
   onMouseUp: function (canvas, x, y, shiftKey, ctrlKey) {
@@ -108,6 +116,13 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
         this.configFigure = null
         x.fadeOut(500, () => x.remove())
       }
+    }
+  },
+
+  _onDeleteFigureCallback: function(emitter, event){
+    if(event.figure === this.configFigure){
+      this.configFigure = null
+      this.configIcon?.remove()
     }
   }
 })
