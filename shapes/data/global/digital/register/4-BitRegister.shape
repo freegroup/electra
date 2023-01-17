@@ -4,9 +4,9 @@
       "type": "shape_designer.figure.ExtPolygon",
       "id": "7dda3cd2-e288-1bb8-4c62-8a2bf5627661",
       "x": 7970.5,
-      "y": 7930.57775,
+      "y": 7925.044749999999,
       "width": 59,
-      "height": 53,
+      "height": 69,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -14,8 +14,8 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
-        "markdown": "# 4-Bit Register\n\nAn 4-bit register is a digital circuit that can store and hold 4 bits of \nbinary data. It typically has four inputs: `load`, `clock`, `reset` and `enable`.\n\nThe `load` input is used to load new data into the register. When this input \nis high, the data present on the 8-bit data input lines is loaded into the register.\n\nThe `clock` input is used to control when data is loaded into the register. \nThe register only responds to changes on the data inputs when the clock input \nis high (on the rising edge). This is known as \"edge-triggered\" behavior.\n\nThe `reset` input is used to clear the register and set all its outputs to \nzero. When this input is high, the register's contents are reset to zero, \nregardless of the state of the other inputs.\n\nThe `enable` input is used to enable or disable the register. When this input \nis high, the register is enabled and can respond to changes on the data inputs\nand the clock input. When this input is low, the register is disabled and will \nnot respond to changes on the data inputs or the clock input.\n\nAn 4-bit register with these four inputs can be used to temporarily store data \nin a digital circuit and control when the data is loaded or read. The register \ncan also be used to synchronize data transfer between different parts of a \ncircuit or to clear the stored data as needed.",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var reset = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(reset){\n            this.getOutputPort(\"output_q1\").setValue(0)\n            this.getOutputPort(\"output_q2\").setValue(0)\n            this.getOutputPort(\"output_q3\").setValue(0)\n            this.getOutputPort(\"output_q4\").setValue(0)\n        }\n        else if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
+        "markdown": "# 4-Bit Register\nAn 4-bit register is a digital circuit that can store and hold 4 bits of binary \ndata. It typically has four inputs: `load`, `clock` and `reset`.\n\nThe `load` input is used to load new data into the register. When this input is \nhigh, the data present on the 4-bit data input lines is loaded into the register.\n\nThe `clock` input is used to control when data is loaded into the register. The \nregister only responds to changes on the data inputs when the clock input is \nhigh (on the rising edge). This is known as \"edge-triggered\" behavior.\n\nThe `reset` input is used to clear the register and set all its outputs to \nzero. When this input is high, the register's contents are reset to zero, \nregardless of the state of the other inputs.\n\n\nAn 4-bit register with these four inputs can be used to temporarily store data \nin a digital circuit and control when the data is loaded or read. The register \ncan also be used to synchronize data transfer between different parts of a \ncircuit or to clear the stored data as needed.",
         "type": "Output",
         "direction": 1
       },
@@ -29,39 +29,39 @@
       "vertices": [
         {
           "x": 8023.599999999998,
-          "y": 7970.920458804963
+          "y": 7977.566389764949
         },
         {
           "x": 8029.5,
-          "y": 7970.920458804963
+          "y": 7977.566389764949
         },
         {
           "x": 8029.5,
-          "y": 7930.57775
+          "y": 7925.044749999999
         },
         {
           "x": 7970.5,
-          "y": 7930.57775
+          "y": 7925.044749999999
         },
         {
           "x": 7970.5,
-          "y": 7970.920458804963
+          "y": 7977.566389764949
         },
         {
           "x": 7976.400000000002,
-          "y": 7970.920458804963
+          "y": 7977.566389764949
         },
         {
           "x": 7976.400000000002,
-          "y": 7983.57775
+          "y": 7994.044749999999
         },
         {
           "x": 8023.599999999998,
-          "y": 7983.57775
+          "y": 7994.044749999999
         },
         {
           "x": 8023.599999999998,
-          "y": 7970.920458804963
+          "y": 7977.566389764949
         }
       ],
       "blur": 0,
@@ -84,7 +84,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "794de299-e401-bcd7-029b-d1b45d29989f",
       "x": 7970.5,
-      "y": 7979.4222500000005,
+      "y": 7985.69425,
       "width": 59,
       "height": 90,
       "alpha": 1,
@@ -104,19 +104,19 @@
       "vertices": [
         {
           "x": 7970.5,
-          "y": 7979.4222500000005
+          "y": 7985.69425
         },
         {
           "x": 8029.5,
-          "y": 7979.4222500000005
+          "y": 7985.69425
         },
         {
           "x": 8029.5,
-          "y": 8069.4222500000005
+          "y": 8075.69425
         },
         {
           "x": 7970.5,
-          "y": 8069.4222500000005
+          "y": 8075.69425
         }
       ],
       "blur": 0,
@@ -139,9 +139,9 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "0b5993de-527b-2309-20d4-4519d5414943",
       "x": 7971,
-      "y": 7955.6782625,
-      "width": 12.041999999999462,
-      "height": 10.25799999999981,
+      "y": 7967.349749999999,
+      "width": 12,
+      "height": 10,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -159,15 +159,15 @@
       "vertices": [
         {
           "x": 7971,
-          "y": 7955.6782625
+          "y": 7967.349749999999
         },
         {
-          "x": 7983.0419999999995,
-          "y": 7960.584262499999
+          "x": 7983,
+          "y": 7972.1323586956505
         },
         {
           "x": 7971,
-          "y": 7965.936262499999
+          "y": 7977.349749999999
         }
       ],
       "blur": 0,
@@ -187,7 +187,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7964.5,
-      "y": 7955.98695,
+      "y": 7967.349749999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -227,8 +227,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
-      "x": 7975,
-      "y": 7930.57775,
+      "x": 7972.94140625,
+      "y": 7924.3057499999995,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
@@ -268,7 +268,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "1d2c32de-9441-dac3-cd55-cc8406714361",
       "x": 8005.5549461669925,
-      "y": 8045,
+      "y": 8051.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -308,7 +308,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "51482e08-6a74-7746-bbe9-93d6b5fb19fd",
       "x": 8005.5549461669925,
-      "y": 8024.8311375,
+      "y": 8031.103137499999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -348,7 +348,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6e035f01-7c56-702f-c12e-c6c964423aa8",
       "x": 8005.5549461669925,
-      "y": 8005,
+      "y": 8011.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -388,7 +388,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
       "x": 8005.5549461669925,
-      "y": 7985,
+      "y": 7991.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -428,7 +428,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "d3e905b8-6eea-db8a-cda8-ad588074826e",
       "x": 8024.3945,
-      "y": 8050,
+      "y": 8056.271999999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -468,7 +468,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "2312c1ee-6d27-f0df-a644-8b55fd8c087a",
       "x": 8024.3945,
-      "y": 8030.43295,
+      "y": 8036.704949999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -508,7 +508,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "078497de-04ae-57d8-a141-a3d4afacfe39",
       "x": 8024.3945,
-      "y": 8010.15145,
+      "y": 8016.423449999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -548,7 +548,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8024.3945,
-      "y": 7990,
+      "y": 7996.271999999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -588,7 +588,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
       "x": 7964.5,
-      "y": 7936.2574375,
+      "y": 7930.029437499999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -629,7 +629,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "fc1f9521-b31f-564b-0f49-af8742bc08d9",
       "x": 7965,
-      "y": 7990,
+      "y": 7996.271999999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -670,7 +670,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "e951cbbd-42a0-930d-0d2e-c88e35fba117",
       "x": 7965,
-      "y": 8010.15145,
+      "y": 8016.423449999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -711,7 +711,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "8d6c5b9f-175a-f1a3-6369-c88e36bf5b1e",
       "x": 7965,
-      "y": 8030.43295,
+      "y": 8036.704949999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -752,7 +752,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5ce54fcb-3e73-34cb-1248-578f41a65671",
       "x": 7965,
-      "y": 8050,
+      "y": 8056.271999999999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -793,7 +793,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "56976980-dcc5-04ff-cbf7-30ca128edc7d",
       "x": 7973.5,
-      "y": 7985.07775,
+      "y": 7991.349749999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -833,7 +833,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6ef96142-a11a-ef8c-a145-31706fa76a6a",
       "x": 7973.5,
-      "y": 8005,
+      "y": 8011.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -873,7 +873,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "a550dba3-7e4a-e7f7-5a72-6628ce0ace97",
       "x": 7973.5,
-      "y": 8025,
+      "y": 8031.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -913,7 +913,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "47954b00-f1ec-9439-dadf-445578e3d073",
       "x": 7973.5,
-      "y": 8045,
+      "y": 8051.271999999999,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -931,6 +931,87 @@
       "radius": 0,
       "dasharray": null,
       "text": "D4",
+      "outlineStroke": 0,
+      "outlineColor": "rgba(0,0,0,0)",
+      "fontSize": 10,
+      "fontColor": "rgba(8,8,8,1)",
+      "fontFamily": null,
+      "editor": "LabelInplaceEditor",
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontSizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FontColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtPort",
+      "id": "8939e075-12f1-f36d-8bcc-d1b0e8b3c66c",
+      "x": 7965,
+      "y": 7948.529437499999,
+      "width": 10,
+      "height": 10,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "input_reset",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
+      },
+      "cssClass": "shape_designer_figure_ExtPort",
+      "ports": [],
+      "bgColor": "rgba(55,177,222,1)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 1,
+      "dasharray": null,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.FanoutFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.ExtLabel",
+      "id": "0100ea60-e8ce-0f0c-6ca6-573a7094a72a",
+      "x": 7972.5,
+      "y": 7942.552252555846,
+      "width": 39.140625,
+      "height": 21.359375,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "enable"
+      },
+      "cssClass": "shape_designer_figure_ExtLabel",
+      "ports": [],
+      "bgColor": "rgba(0,0,0,0)",
+      "color": "rgba(27,27,27,1)",
+      "stroke": 0,
+      "radius": 0,
+      "dasharray": null,
+      "text": "reset",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 10,

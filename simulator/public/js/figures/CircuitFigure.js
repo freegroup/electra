@@ -137,6 +137,13 @@ export default draw2d.SetFigure.extend({
    * @returns
    */
   setPersistentAttributes: function (memento) {
+    // ignore the width/height from the persistence. width/height is defined by the figure itself
+    //
+    if(this.isResizeable()===false){
+      delete memento.width
+      delete memento.height
+    }
+
     this._super(memento)
 
     if(typeof memento.value !== "undefined"){

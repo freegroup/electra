@@ -20,10 +20,21 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
     calculate:function()
     {
         var enable = this.getInputPort("input_enable").getBooleanValue();
+        var reset = this.getInputPort("input_enable").getBooleanValue();
         var clk = this.getInputPort("input_clk").getBooleanValue();
         
         var rising = this.last_clk===false && clk===true; 
-        if(rising===true && enable===true){
+        if(reset){
+            this.getOutputPort("output_q1").setValue(0)
+            this.getOutputPort("output_q2").setValue(0)
+            this.getOutputPort("output_q3").setValue(0)
+            this.getOutputPort("output_q4").setValue(0)
+            this.getOutputPort("output_q5").setValue(0)
+            this.getOutputPort("output_q6").setValue(0)
+            this.getOutputPort("output_q7").setValue(0)
+            this.getOutputPort("output_q8").setValue(0)
+        }
+        else if(rising===true && enable===true){
             this.getOutputPort("output_q1").setValue(this.getInputPort("input_d1").getValue())
             this.getOutputPort("output_q2").setValue(this.getInputPort("input_d2").getValue())
             this.getOutputPort("output_q3").setValue(this.getInputPort("input_d3").getValue())

@@ -4,9 +4,9 @@
       "type": "shape_designer.figure.ExtPolygon",
       "id": "7dda3cd2-e288-1bb8-4c62-8a2bf5627661",
       "x": 7970.5,
-      "y": 7889.42525,
+      "y": 7883.92525,
       "width": 59,
-      "height": 64,
+      "height": 69,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -14,7 +14,7 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n            this.getOutputPort(\"output_q5\").setValue(this.getInputPort(\"input_d5\").getValue())\n            this.getOutputPort(\"output_q6\").setValue(this.getInputPort(\"input_d6\").getValue())\n            this.getOutputPort(\"output_q7\").setValue(this.getInputPort(\"input_d7\").getValue())\n            this.getOutputPort(\"output_q8\").setValue(this.getInputPort(\"input_d8\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var reset = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(reset){\n            this.getOutputPort(\"output_q1\").setValue(0)\n            this.getOutputPort(\"output_q2\").setValue(0)\n            this.getOutputPort(\"output_q3\").setValue(0)\n            this.getOutputPort(\"output_q4\").setValue(0)\n            this.getOutputPort(\"output_q5\").setValue(0)\n            this.getOutputPort(\"output_q6\").setValue(0)\n            this.getOutputPort(\"output_q7\").setValue(0)\n            this.getOutputPort(\"output_q8\").setValue(0)\n        }\n        else if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n            this.getOutputPort(\"output_q5\").setValue(this.getInputPort(\"input_d5\").getValue())\n            this.getOutputPort(\"output_q6\").setValue(this.getInputPort(\"input_d6\").getValue())\n            this.getOutputPort(\"output_q7\").setValue(this.getInputPort(\"input_d7\").getValue())\n            this.getOutputPort(\"output_q8\").setValue(this.getInputPort(\"input_d8\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
         "markdown": "# 8-Bit Register\nAn 8-bit register is a digital circuit that can store and hold 8 bits of binary \ndata. It typically has four inputs: \"load\", \"clock\", \"reset\" and \"enable\".\n\nThe \"load\" input is used to load new data into the register. When this input is \nhigh, the data present on the 8-bit data input lines is loaded into the register.\n\nThe \"clock\" input is used to control when data is loaded into the register. The \nregister only responds to changes on the data inputs when the clock input is \nhigh (on the rising edge). This is known as \"edge-triggered\" behavior.\n\nThe \"reset\" input is used to clear the register and set all its outputs to \nzero. When this input is high, the register's contents are reset to zero, \nregardless of the state of the other inputs.\n\nThe \"enable\" input is used to enable or disable the register. When this input \nis high, the register is enabled and can respond to changes on the data inputs \nand the clock input. When this input is low, the register is disabled and will \nnot respond to changes on the data inputs or the clock input.\n\nAn 8-bit register with these four inputs can be used to temporarily store data \nin a digital circuit and control when the data is loaded or read. The register \ncan also be used to synchronize data transfer between different parts of a \ncircuit or to clear the stored data as needed.",
         "type": "Output",
         "direction": 1
@@ -29,39 +29,39 @@
       "vertices": [
         {
           "x": 8023.599999999998,
-          "y": 7938.140973839956
+          "y": 7936.44688976495
         },
         {
           "x": 8029.5,
-          "y": 7938.140973839956
+          "y": 7936.44688976495
         },
         {
           "x": 8029.5,
-          "y": 7889.42525
+          "y": 7883.92525
         },
         {
           "x": 7970.5,
-          "y": 7889.42525
+          "y": 7883.92525
         },
         {
           "x": 7970.5,
-          "y": 7938.140973839956
+          "y": 7936.44688976495
         },
         {
           "x": 7976.400000000002,
-          "y": 7938.140973839956
+          "y": 7936.44688976495
         },
         {
           "x": 7976.400000000002,
-          "y": 7953.42525
+          "y": 7952.92525
         },
         {
           "x": 8023.599999999998,
-          "y": 7953.42525
+          "y": 7952.92525
         },
         {
           "x": 8023.599999999998,
-          "y": 7938.140973839956
+          "y": 7936.44688976495
         }
       ],
       "blur": 0,
@@ -139,9 +139,9 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "0b5993de-527b-2309-20d4-4519d5414943",
       "x": 7971,
-      "y": 7927.8307625,
-      "width": 12.041999999999462,
-      "height": 10.25799999999981,
+      "y": 7926.2302500000005,
+      "width": 12,
+      "height": 10,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
@@ -159,15 +159,15 @@
       "vertices": [
         {
           "x": 7971,
-          "y": 7927.8307625
+          "y": 7926.2302500000005
         },
         {
-          "x": 7983.0419999999995,
-          "y": 7932.736762499999
+          "x": 7983,
+          "y": 7931.012858695652
         },
         {
           "x": 7971,
-          "y": 7938.0887625
+          "y": 7936.2302500000005
         }
       ],
       "blur": 0,
@@ -187,7 +187,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7964.5,
-      "y": 7928.2302500000005,
+      "y": 7926.2302500000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -227,8 +227,8 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
-      "x": 7981,
-      "y": 7904.7302500000005,
+      "x": 7972.94140625,
+      "y": 7883.186250000001,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
@@ -588,7 +588,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
       "x": 7964.5,
-      "y": 7909.4099375000005,
+      "y": 7888.9099375000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1594,50 +1594,51 @@
       ]
     },
     {
-      "type": "shape_designer.figure.ExtLabel",
-      "id": "a63269a5-6793-9e6e-9e3f-e6fb8e43c97a",
-      "x": 7974,
-      "y": 7885.42525,
-      "width": 45.373046875,
-      "height": 21.007502555847168,
+      "type": "shape_designer.figure.ExtPort",
+      "id": "8939e075-12f1-f36d-8bcc-d1b0e8b3c66c",
+      "x": 7965,
+      "y": 7907.4099375000005,
+      "width": 10,
+      "height": 10,
       "alpha": 1,
       "selectable": true,
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "input_reset",
+        "type": "Input",
+        "direction": 3,
+        "fanout": 1
       },
-      "cssClass": "shape_designer_figure_ExtLabel",
+      "cssClass": "shape_designer_figure_ExtPort",
       "ports": [],
-      "bgColor": "rgba(0,0,0,0)",
+      "bgColor": "rgba(55,177,222,1)",
       "color": "rgba(27,27,27,1)",
-      "stroke": 0,
-      "radius": 0,
+      "stroke": 1,
       "dasharray": null,
-      "text": "Register",
-      "outlineStroke": 0,
-      "outlineColor": "rgba(0,0,0,0)",
-      "fontSize": 11,
-      "fontColor": "rgba(8,8,8,1)",
-      "fontFamily": null,
-      "editor": "LabelInplaceEditor",
       "filters": [
         {
           "name": "shape_designer.filter.PositionFilter"
         },
         {
-          "name": "shape_designer.filter.FontSizeFilter"
+          "name": "shape_designer.filter.FanoutFilter"
         },
         {
-          "name": "shape_designer.filter.FontColorFilter"
+          "name": "shape_designer.filter.PortDirectionFilter"
+        },
+        {
+          "name": "shape_designer.filter.PortTypeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
         }
       ]
     },
     {
       "type": "shape_designer.figure.ExtLabel",
-      "id": "83edab1a-d2d8-b956-672a-4d2277b29606",
-      "x": 7981.0419999999995,
-      "y": 7921.4099375000005,
+      "id": "0100ea60-e8ce-0f0c-6ca6-573a7094a72a",
+      "x": 7972.5,
+      "y": 7901.432752555847,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
@@ -1654,7 +1655,7 @@
       "stroke": 0,
       "radius": 0,
       "dasharray": null,
-      "text": "clk",
+      "text": "reset",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 10,

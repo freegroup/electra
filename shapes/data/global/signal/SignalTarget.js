@@ -87,6 +87,7 @@ signal_SignalTarget = signal_SignalTarget.extend({
         
         this.on("change:userData.signalId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
+            this.signalId = event.value
             adjustWidth()
         });
         
