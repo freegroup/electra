@@ -25,7 +25,7 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
     // may the figure is assigned to a composite. In this case the composite can
     // override the event receiver
     while (figure !== null) {
-      var delegated = figure.getSelectionAdapter()();
+      let delegated = figure.getSelectionAdapter()();
       if (delegated === figure) {
         break;
       }
@@ -40,9 +40,7 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
 
     this.mouseDownElement = figure;
 
-    if (this.mouseDownElement !== null) {
-      this.mouseDownElement.fireEvent("mousedown", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
-    }
+    this.mouseDownElement?.fireEvent("mousedown", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
 
     if(figure instanceof draw2d.shape.widget.Widget) {
       // just panning event is allowed.
@@ -51,7 +49,6 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
         this.panningElement = figure
         this._super(canvas, x, y, shiftKey, ctrlKey)
       }
-
     }
   },
 
@@ -65,9 +62,8 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
    * @param {Boolean} ctrlKey true if the ctrl key has been pressed during the event
    */
   onMouseUp: function (canvas, x, y, shiftKey, ctrlKey) {
-    if (this.mouseDownElement !== null) {
-      this.mouseDownElement.fireEvent("mouseup", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
-    }
+
+    this.mouseDownElement?.fireEvent("mouseup", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
     this.mouseDownElement = null;
 
     if(this.panningElement!==null) {

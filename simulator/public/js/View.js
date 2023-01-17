@@ -285,7 +285,6 @@ export default draw2d.Canvas.extend({
 
       if (figure !== null) {
         let {x,y} = event
-
         let items = {}
 
         if (figure instanceof CircuitFigure) {
@@ -383,7 +382,6 @@ export default draw2d.Canvas.extend({
     // only responsible to reload the code and the current document
     // (the palette.js did its own job and refresh palette entry if required)
     socket.on("shape/generated", msg => {
-      console.log("got event", msg)
       $.getScript(conf.shapes[msg.scope].file(msg.jsPath),
         this.reloadFromCache.bind(this)
       )
@@ -391,9 +389,7 @@ export default draw2d.Canvas.extend({
 
 
     this.slider = $('#simulationBaseTimer')
-      .slider({
-        id: "simulationBaseTimerSlider"
-      })
+      .slider({id: "simulationBaseTimerSlider"})
       .on("slide", (event) => {
         //       Slider   timerBase
         //        A,B       a,b
@@ -526,8 +522,9 @@ export default draw2d.Canvas.extend({
       shape.onStart?.(this.simulationContext)
     })
 
+    this.probeWindow.update()
     this._calculate()
-
+    
     $("#simulationStartStop")
       .addClass("pause")
       .removeClass("play")
@@ -667,12 +664,12 @@ export default draw2d.Canvas.extend({
   getBoundingBox: function () {
     let xCoords = []
     let yCoords = []
-    this.getFigures().each(function (i, f) {
+    this.getFigures().each( (i, f) => {
       let b = f.getBoundingBox()
       xCoords.push(b.x, b.x + b.w)
       yCoords.push(b.y, b.y + b.h)
     })
-    this.getLines().each(function (i, f) {
+    this.getLines().each((i, f) => {
       let b = f.getBoundingBox()
       xCoords.push(b.x, b.x + b.w)
       yCoords.push(b.y, b.y + b.h)
@@ -693,6 +690,9 @@ export default draw2d.Canvas.extend({
     new draw2d.io.json.Writer().marshal(this, json => {
       draw2d.Canvas.prototype.clear.call(this)
       new draw2d.io.json.Reader().unmarshal(this, json)
+      // update the probeWindow with the ne serialized objects
+      //
+      this.probeWindow.update()
     })
   },
 

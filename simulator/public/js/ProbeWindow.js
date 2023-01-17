@@ -83,6 +83,7 @@ export default class ProbeWindow {
       $("#probe_hint").hide()
     else
       $("#probe_hint").show()
+
     $("#canvas_zoom").show().animate({bottom: '220px'}, 300)
     $("#probe_window").show().animate({height: '200px'}, 300)
     $("#draw2dCanvasWrapper").animate({bottom: '200px'}, 300)
@@ -107,6 +108,15 @@ export default class ProbeWindow {
       $("#probeSortable").remove()
     })
     this.visible = false
+  }
+
+  update() {
+    // update the UI if we are already visible. This happens if we for some reasons reload the document
+    // or if we change/delete propes async.
+    //
+    if(this.visible === true){
+      this.show()
+    }
   }
 
   resize() {
