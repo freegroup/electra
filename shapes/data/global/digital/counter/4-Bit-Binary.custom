@@ -28,28 +28,53 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
         var clk    = this.getInputPort("input_clk").getBooleanValue();
         var load   = this.getInputPort("input_load").getBooleanValue();
         var enable = this.getInputPort("input_enable").getBooleanValue();
+        var reset  = this.getInputPort("input_reset").getBooleanValue();
         
         var rising = this.last_clk===false && clk===true;
+        
+        if(reset ){
+            this.counter= 0;
+            this.getOutputPort("output_q1").setValue(0);
+            this.getOutputPort("output_q2").setValue(0);
+            this.getOutputPort("output_q3").setValue(0);
+            this.getOutputPort("output_q4").setValue(0);
+            this.getOutputPort("output_q5").setValue(0);
+            this.getOutputPort("output_q6").setValue(0);
+            this.getOutputPort("output_q7").setValue(0);
+            this.getOutputPort("output_q8").setValue(0);
+        }
 
         // Load the new data from the input if we have a RISING clock and ENABLE is set
         //
-        if(rising && load) {
-           this.counter  =   this.getInputPort("input_d1").getBooleanValue();
-           this.counter += 2*this.getInputPort("input_d2").getBooleanValue();
-           this.counter += 4*this.getInputPort("input_d3").getBooleanValue();
-           this.counter += 8*this.getInputPort("input_d4").getBooleanValue();
+        else if(rising && load) {
+           this.counter  = this.getInputPort("input_d1").getBooleanValue()?1:0;
+           this.counter += this.getInputPort("input_d2").getBooleanValue()?2:0;
+           this.counter += this.getInputPort("input_d3").getBooleanValue()?4:0;
+           this.counter += this.getInputPort("input_d4").getBooleanValue()?8:0;
+           this.counter += this.getInputPort("input_d5").getBooleanValue()?16:0;
+           this.counter += this.getInputPort("input_d6").getBooleanValue()?32:0;
+           this.counter += this.getInputPort("input_d7").getBooleanValue()?64:0;
+           this.counter += this.getInputPort("input_d8").getBooleanValue()?128:0;
            this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
            this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
            this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
            this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+           this.getOutputPort("output_q5").setValue(!!(this.counter & 16));
+           this.getOutputPort("output_q6").setValue(!!(this.counter & 32));
+           this.getOutputPort("output_q7").setValue(!!(this.counter & 64));
+           this.getOutputPort("output_q8").setValue(!!(this.counter & 128));
         }
         
-        if(enable && rising && clk ){
+        else if(enable && rising && clk ){
             this.counter= (this.counter+1)%16;
             this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
             this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
             this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
             this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+            this.getOutputPort("output_q5").setValue(!!(this.counter & 16));
+            this.getOutputPort("output_q6").setValue(!!(this.counter & 32));
+            this.getOutputPort("output_q7").setValue(!!(this.counter & 64));
+            this.getOutputPort("output_q8").setValue(!!(this.counter & 128));
         }
         this.last_clk = clk;
     }
