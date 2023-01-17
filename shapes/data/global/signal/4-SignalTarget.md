@@ -1,11 +1,8 @@
-# Signal Target
+# Data Bus
 
-When you don’t want to route too many wires, how about trying `signal` elements.
+A data bus in a circuit simulator can be thought of as a bundle of parallel 
+electrical signals that are used to transmit data between different components 
+within a digital circuit. Each signal in the data bus is labeled with a unique 
+name or identifier, such as "D0" or "Data[7:0]", to indicate its specific 
+function or role within the circuit.
 
-
-A `signal` shape is an electrical design primitive. It is used to make an electrical 
-connection between one schematic group and another group, or sheet symbol in a 
-design. The name of the `signal` defines the connection. 
-
-A `signal target` on a schematic sheet connects to `signals source`
-or sheet entries with the **same name** in the project.

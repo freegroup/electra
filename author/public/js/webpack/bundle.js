@@ -4413,7 +4413,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   high: "#C21B7A",
-  low: "#0078F2"
+  low: "#0078F2",
+  unconnected: "#cacaca"
 });
 
 /***/ }),
@@ -4502,13 +4503,16 @@ growPolicy.growFactor = 1.5;
     return this.decoration.getStick();
   },
   getValue: function getValue() {
-    if (this.getConnections().getSize() > 0) {
-      return this.getConnections().first().getSource().getValue();
-    }
-    return this._super();
+    var _this$getConnections$, _this$getConnections$2;
+    // return the value direct from the one and only connection, if some connection exists.
+    // else return the value from the base implementation
+    return (_this$getConnections$ = (_this$getConnections$2 = this.getConnections().first()) === null || _this$getConnections$2 === void 0 ? void 0 : _this$getConnections$2.getValue()) !== null && _this$getConnections$ !== void 0 ? _this$getConnections$ : this._super();
   },
-  setValue: function setValue() {
-    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _Values__WEBPACK_IMPORTED_MODULE_2__["default"].DIGITAL_LOW;
+  /**
+   * 
+   * @param {*} value Can be any ztype of object. Even `null`or `undefined`. This is required for a "bus" implementation for unconnected state
+   */
+  setValue: function setValue(value) {
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean") {
@@ -4527,10 +4531,11 @@ growPolicy.growFactor = 1.5;
     return this.hasChangedValue() && !this.getBooleanValue();
   },
   /**
-   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
-   * v <= 1.5volt  => FALSE
-   * v >  1.5volt  => TRUE
-   *
+   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE/undefined)
+   * 
+   * v <= 1.5volt           => FALSE
+   * v >  1.5volt           => TRUE
+   * v =  null or undefined => undefined
    */
   getBooleanValue: function getBooleanValue() {
     return this.getValue() > 1.5;
@@ -4612,8 +4617,11 @@ growPolicy.growFactor = 1.5;
     this.add(circle, locator);
     this.setValue(_Values__WEBPACK_IMPORTED_MODULE_0__["default"].DIGITAL_LOW);
   },
-  setValue: function setValue() {
-    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _Values__WEBPACK_IMPORTED_MODULE_0__["default"].DIGITAL_LOW;
+  /**
+   * 
+   * @param {*} value Can be any ztype of object. Even `null`or `undefined`. This is required for a "bus" implementation for unconnected state
+   */
+  setValue: function setValue(value) {
     // convert boolean values to 5volt TTL pegel logic
     //
     if (typeof value === "boolean") {
@@ -4622,11 +4630,11 @@ growPolicy.growFactor = 1.5;
     this._super(value);
   },
   /**
-   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE)
-   * v <= 1.5volt  => FALSE
-   * v >  1.5volt  => TRUE
-   *
-   * normally v must be greater to 2.2v to be HIGH. But the software can'T handle undefined values right now.
+   * Converts power values (0-5 volt) to boolean logic (TRUE/FALSE/undefined)
+   * 
+   * v <= 1.5volt           => FALSE
+   * v >  1.5volt           => TRUE
+   * v =  null or undefined => undefined
    */
   getBooleanValue: function getBooleanValue() {
     return this.getValue() > 1.5;

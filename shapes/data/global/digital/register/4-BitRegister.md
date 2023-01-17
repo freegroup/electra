@@ -1,24 +1,25 @@
-# D-FlipFlop
+# 4-Bit Register
 
-## Description
+An 4-bit register is a digital circuit that can store and hold 4 bits of 
+binary data. It typically has four inputs: `load`, `clock`, `reset` and `enable`.
 
-The D FlipFLop is widely used. It is also known as a 
-*data* or *delay* flip-flop.
+The `load` input is used to load new data into the register. When this input 
+is high, the data present on the 8-bit data input lines is loaded into the register.
 
-The D flip-flop captures the value of the `D` input 
-at a definite portion of the clock cycle (such 
-as the rising edge of the clock). That captured 
-value becomes the `Q` output. At other times, the 
-output Q does not change. The `D flip-flop` 
-can be viewed as a memory cell, a zero-order hold, 
-or a delay line.
+The `clock` input is used to control when data is loaded into the register. 
+The register only responds to changes on the data inputs when the clock input 
+is high (on the rising edge). This is known as "edge-triggered" behavior.
 
+The `reset` input is used to clear the register and set all its outputs to 
+zero. When this input is high, the register's contents are reset to zero, 
+regardless of the state of the other inputs.
 
-## Logic table
+The `enable` input is used to enable or disable the register. When this input 
+is high, the register is enabled and can respond to changes on the data inputs
+and the clock input. When this input is low, the register is disabled and will 
+not respond to changes on the data inputs or the clock input.
 
-| Clock        | D       |  **Q***next*   |
-|:------------:|:-------:|:----------:|
-| Rising edge  | Low     |  **Low**       |
-| Rising edge  | High    |  **High**      |
-| non rising   | *       |  **Q***last*   |
-
+An 4-bit register with these four inputs can be used to temporarily store data 
+in a digital circuit and control when the data is loaded or read. The register 
+can also be used to synchronize data transfer between different parts of a 
+circuit or to clear the stored data as needed.

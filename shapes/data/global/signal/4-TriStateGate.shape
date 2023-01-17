@@ -4,7 +4,7 @@
       "type": "shape_designer.figure.ExtPolygon",
       "id": "30d2e4ef-f7d6-d71a-4039-1951dfc4c6ac",
       "x": 7960,
-      "y": 7903.255512500001,
+      "y": 7941.755512500001,
       "width": 80,
       "height": 32.641999999999825,
       "alpha": 1,
@@ -15,7 +15,7 @@
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n    },\n\n\n    calculate:function(context)\n    {\n        let enable = this.getInputPort(\"enable\")\n        if(enable.getBooleanValue()){\n            this.getOutputPort(\"output1\").setValue(this.getInputPort(\"input1\").getValue())\n            this.getOutputPort(\"output2\").setValue(this.getInputPort(\"input2\").getValue())\n            this.getOutputPort(\"output3\").setValue(this.getInputPort(\"input3\").getValue())\n            this.getOutputPort(\"output4\").setValue(this.getInputPort(\"input4\").getValue())\n        }\n        else {\n            this.getOutputPort(\"output1\").setValue(null)\n            this.getOutputPort(\"output2\").setValue(null)\n            this.getOutputPort(\"output3\").setValue(null)\n            this.getOutputPort(\"output4\").setValue(null)\n        }\n    }\n});",
-        "markdown": "# Signal Source\n\nWhen you don’t want to route too many wires, how about trying `signal` elements.\n\n\nA `signal` shape is an electrical design primitive. It is used to make an electrical \nconnection between one schematic group and another group, or sheet symbol in a \ndesign. The name of the `signal` defines the connection. \n\nA `signal target` on a schematic sheet connects to `signals source`\nor sheet entries with the **same name** in the project.",
+        "markdown": "# Tri-State Bus driver\n\nA tri-state bus driver is a digital circuit that allows multiple devices to \nshare a common data bus while preventing conflicts. It works by allowing the \noutput of a device to be placed in one of three states: a high logic level, a \nlow logic level, or a high-impedance state. The high-impedance state is also \nknown as a *floating* or *disconnected* state, and it allows other devices to \ndrive the bus without interference from the first device.\n\nThe basic idea behind a tri-state bus driver is to *decouple* multiple devices \nfrom a shared data bus by allowing only one device at a time to drive the bus. \nThis is done by using a control input, such as an \"enable\" signal, to determine \nwhich device is allowed to drive the bus at a given time. When the enable signal \nis active, the tri-state bus driver allows the device to drive the bus, and when \nthe enable signal is inactive, the device's output is placed in the \nhigh-impedance state, preventing it from driving the bus.\n\n",
         "type": "Output",
         "direction": 1
       },
@@ -29,39 +29,39 @@
       "vertices": [
         {
           "x": 8030.055000000001,
-          "y": 7925.255512500001
+          "y": 7963.755512500001
         },
         {
           "x": 8040,
-          "y": 7925.255512500001
+          "y": 7963.755512500001
         },
         {
           "x": 8040,
-          "y": 7903.255512500001
+          "y": 7941.755512500001
         },
         {
           "x": 7960,
-          "y": 7903.255512500001
+          "y": 7941.755512500001
         },
         {
           "x": 7960,
-          "y": 7925.255512500001
+          "y": 7963.755512500001
         },
         {
           "x": 7969.225000000001,
-          "y": 7925.255512500001
+          "y": 7963.755512500001
         },
         {
           "x": 7969.225000000001,
-          "y": 7935.897512500001
+          "y": 7974.397512500001
         },
         {
           "x": 8030.055000000001,
-          "y": 7935.897512500001
+          "y": 7974.397512500001
         },
         {
           "x": 8030.055000000001,
-          "y": 7925.255512500001
+          "y": 7963.755512500001
         }
       ],
       "blur": 0,
@@ -84,7 +84,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "ee27bb9f-d9c1-3420-b1bf-6e69ddcdab10",
       "x": 7960,
-      "y": 7931.744487499999,
+      "y": 7970.244487499999,
       "width": 80,
       "height": 88,
       "alpha": 1,
@@ -104,19 +104,19 @@
       "vertices": [
         {
           "x": 7960,
-          "y": 7931.744487499999
+          "y": 7970.244487499999
         },
         {
           "x": 8040,
-          "y": 7931.744487499999
+          "y": 7970.244487499999
         },
         {
           "x": 8040,
-          "y": 8019.744487499999
+          "y": 8058.244487499999
         },
         {
           "x": 7960,
-          "y": 8019.744487499999
+          "y": 8058.244487499999
         }
       ],
       "blur": 0,
@@ -139,7 +139,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "2192d27c-0c9c-733d-83aa-4ffad02fd007",
       "x": 7953.738200000001,
-      "y": 7909.426087499999,
+      "y": 7947.926087499999,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -177,7 +177,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "146ab27e-04bb-e4e7-04f3-88549e03ddb9",
       "x": 7953.738200000001,
-      "y": 7936.8743125,
+      "y": 7975.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -215,7 +215,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "0ca0ea59-1c45-3bc3-7285-661d65c1aa80",
       "x": 7953.738200000001,
-      "y": 7956.8743125,
+      "y": 7995.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -253,7 +253,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "9a463933-6dc0-3ef1-ec52-284210859ae8",
       "x": 7953.738200000001,
-      "y": 7976.8743125,
+      "y": 8015.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -291,7 +291,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "848c046f-d1fe-7ac0-fdf5-3fd045875141",
       "x": 7953.738200000001,
-      "y": 7996.8743125,
+      "y": 8035.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -329,7 +329,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "fd38272c-22f5-46fb-3f8d-2d70036a8113",
       "x": 8035.213300000001,
-      "y": 7936.8743125,
+      "y": 7975.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -370,7 +370,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7eb1044c-735e-f408-26e1-cdccf1aa00ab",
       "x": 8035.213300000001,
-      "y": 7956.8743125,
+      "y": 7995.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -411,7 +411,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "eee5cd71-8301-635f-9554-d69b6779d4cf",
       "x": 8035.213300000001,
-      "y": 7976.8743125,
+      "y": 8015.3743125,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -452,7 +452,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "6ee0c238-6177-cbc9-fd03-b52acf1a66fc",
       "x": 8035.213300000001,
-      "y": 7997.4168875,
+      "y": 8035.9168875,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -508,15 +508,15 @@
       "vertex": [
         {
           "x": 7992.5506,
-          "y": 7914.253512500002
+          "y": 7952.753512500002
         },
         {
           "x": 7999.293,
-          "y": 7914.319512499996
+          "y": 7952.819512499996
         },
         {
           "x": 7999.068500000001,
-          "y": 7969.4717125000025
+          "y": 8007.9717125000025
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -546,11 +546,11 @@
       "vertex": [
         {
           "x": 8029.341000000003,
-          "y": 7976.727512500004
+          "y": 8015.227512500004
         },
         {
           "x": 7974.072599999999,
-          "y": 7977.770312500001
+          "y": 8016.270312500001
         }
       ],
       "router": "draw2d.layout.connection.VertexRouter",
@@ -565,7 +565,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "220cfbdc-4bfb-b37c-9197-a57d69c4ff76",
       "x": 7985.238200000001,
-      "y": 7962.8743125,
+      "y": 8001.3743125,
       "width": 36,
       "height": 27,
       "alpha": 1,
@@ -590,15 +590,15 @@
       "vertices": [
         {
           "x": 7985.238200000001,
-          "y": 7962.8743125
+          "y": 8001.3743125
         },
         {
           "x": 8021.238200000001,
-          "y": 7976.7103319262305
+          "y": 8015.2103319262305
         },
         {
           "x": 7985.238200000001,
-          "y": 7989.8743125
+          "y": 8028.3743125
         }
       ],
       "blur": 0,
@@ -621,7 +621,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "63b08665-ce5f-f808-ee34-553a834c9fc3",
       "x": 7962.238200000001,
-      "y": 7903.255512500001,
+      "y": 7941.755512500001,
       "width": 38.03125,
       "height": 21.123201370239258,
       "alpha": 1,

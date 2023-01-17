@@ -1,17 +1,16 @@
-# BCD Counter
+# Binary Counter
 
 
-BCD = **B**inary **C**oded **D**ecimal = Counts from 0 to 9 and then repeats.
+A 4-bit binary counter is a digital circuit that counts upward in binary 
+(base 2) from 0 to 15 and then resets to 0. 
 
+It does this by using 
+four flip-flops, each of which represents a bit in the binary number. 
+Each time a pulse is applied to the counter, the value of the least 
+significant bit (bit 0) changes from 0 to 1 and all the bits to the left 
+of it shift over one place. 
 
-
-A binary coded decimal (BCD) is a serial digital counter that counts
-ten digits. And it resets for every new clock input. As it can go 
-through 10 unique combinations of output, it is also called as 
- `Decade counter` . A BCD counter can count 0000, 0001, 0010, 
-1000, 1001, 1010, 1011, 1110, 1111, 0000, and 0001 and so on.
-
-This is a **generic BCD** counter which reacts with **increasing pulses** of the 
-clock signal. This behaviour is `different` from the usual `74LS94` devices 
-that are used. This works on falling edges which allows you to build a 
-multi-digit counter with fewer gates.
+Once the 4-bit counter reaches its maximum value of 15 (1111 in binary), the 
+next pulse causes it to reset to 0 (0000 in binary). It can be used to create 
+various sequences of counting, frequency division, time keeping and many other 
+applications.

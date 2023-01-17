@@ -4,7 +4,7 @@
       "type": "shape_designer.figure.ExtPolygon",
       "id": "7dda3cd2-e288-1bb8-4c62-8a2bf5627661",
       "x": 7970.5,
-      "y": 7884.27275,
+      "y": 7889.42525,
       "width": 59,
       "height": 64,
       "alpha": 1,
@@ -15,7 +15,7 @@
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_clk = false;\n    },\n    \n    calculate:function()\n    {\n        var enable = this.getInputPort(\"input_enable\").getBooleanValue();\n        var clk = this.getInputPort(\"input_clk\").getBooleanValue();\n        \n        var rising = this.last_clk===false && clk===true; \n        if(rising===true && enable===true){\n            this.getOutputPort(\"output_q1\").setValue(this.getInputPort(\"input_d1\").getValue())\n            this.getOutputPort(\"output_q2\").setValue(this.getInputPort(\"input_d2\").getValue())\n            this.getOutputPort(\"output_q3\").setValue(this.getInputPort(\"input_d3\").getValue())\n            this.getOutputPort(\"output_q4\").setValue(this.getInputPort(\"input_d4\").getValue())\n            this.getOutputPort(\"output_q5\").setValue(this.getInputPort(\"input_d5\").getValue())\n            this.getOutputPort(\"output_q6\").setValue(this.getInputPort(\"input_d6\").getValue())\n            this.getOutputPort(\"output_q7\").setValue(this.getInputPort(\"input_d7\").getValue())\n            this.getOutputPort(\"output_q8\").setValue(this.getInputPort(\"input_d8\").getValue())\n        }\n        this.last_clk = clk;\n    }\n});",
-        "markdown": "# D-FlipFlop\n\n## Description\n\nThe D FlipFLop is widely used. It is also known as a \n*data* or *delay* flip-flop.\n\nThe D flip-flop captures the value of the `D` input \nat a definite portion of the clock cycle (such \nas the rising edge of the clock). That captured \nvalue becomes the `Q` output. At other times, the \noutput Q does not change. The `D flip-flop` \ncan be viewed as a memory cell, a zero-order hold, \nor a delay line.\n\n\n## Logic table\n\n| Clock        | D       |  **Q***next*   |\n|:------------:|:-------:|:----------:|\n| Rising edge  | Low     |  **Low**       |\n| Rising edge  | High    |  **High**      |\n| non rising   | *       |  **Q***last*   |\n\n",
+        "markdown": "# 8-Bit Register\nAn 8-bit register is a digital circuit that can store and hold 8 bits of binary \ndata. It typically has four inputs: \"load\", \"clock\", \"reset\" and \"enable\".\n\nThe \"load\" input is used to load new data into the register. When this input is \nhigh, the data present on the 8-bit data input lines is loaded into the register.\n\nThe \"clock\" input is used to control when data is loaded into the register. The \nregister only responds to changes on the data inputs when the clock input is \nhigh (on the rising edge). This is known as \"edge-triggered\" behavior.\n\nThe \"reset\" input is used to clear the register and set all its outputs to \nzero. When this input is high, the register's contents are reset to zero, \nregardless of the state of the other inputs.\n\nThe \"enable\" input is used to enable or disable the register. When this input \nis high, the register is enabled and can respond to changes on the data inputs \nand the clock input. When this input is low, the register is disabled and will \nnot respond to changes on the data inputs or the clock input.\n\nAn 8-bit register with these four inputs can be used to temporarily store data \nin a digital circuit and control when the data is loaded or read. The register \ncan also be used to synchronize data transfer between different parts of a \ncircuit or to clear the stored data as needed.",
         "type": "Output",
         "direction": 1
       },
@@ -29,39 +29,39 @@
       "vertices": [
         {
           "x": 8023.599999999998,
-          "y": 7932.988473839956
+          "y": 7938.140973839956
         },
         {
           "x": 8029.5,
-          "y": 7932.988473839956
+          "y": 7938.140973839956
         },
         {
           "x": 8029.5,
-          "y": 7884.27275
+          "y": 7889.42525
         },
         {
           "x": 7970.5,
-          "y": 7884.27275
+          "y": 7889.42525
         },
         {
           "x": 7970.5,
-          "y": 7932.988473839956
+          "y": 7938.140973839956
         },
         {
           "x": 7976.400000000002,
-          "y": 7932.988473839956
+          "y": 7938.140973839956
         },
         {
           "x": 7976.400000000002,
-          "y": 7948.27275
+          "y": 7953.42525
         },
         {
           "x": 8023.599999999998,
-          "y": 7948.27275
+          "y": 7953.42525
         },
         {
           "x": 8023.599999999998,
-          "y": 7932.988473839956
+          "y": 7938.140973839956
         }
       ],
       "blur": 0,
@@ -84,7 +84,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "794de299-e401-bcd7-029b-d1b45d29989f",
       "x": 7970.5,
-      "y": 7939.4222500000005,
+      "y": 7944.574750000001,
       "width": 59,
       "height": 170,
       "alpha": 1,
@@ -104,19 +104,19 @@
       "vertices": [
         {
           "x": 7970.5,
-          "y": 7939.4222500000005
+          "y": 7944.574750000001
         },
         {
           "x": 8029.5,
-          "y": 7939.4222500000005
+          "y": 7944.574750000001
         },
         {
           "x": 8029.5,
-          "y": 8109.4222500000005
+          "y": 8114.574750000001
         },
         {
           "x": 7970.5,
-          "y": 8109.4222500000005
+          "y": 8114.574750000001
         }
       ],
       "blur": 0,
@@ -139,7 +139,7 @@
       "type": "shape_designer.figure.PolyRect",
       "id": "0b5993de-527b-2309-20d4-4519d5414943",
       "x": 7971,
-      "y": 7922.6782625,
+      "y": 7927.8307625,
       "width": 12.041999999999462,
       "height": 10.25799999999981,
       "alpha": 1,
@@ -159,15 +159,15 @@
       "vertices": [
         {
           "x": 7971,
-          "y": 7922.6782625
+          "y": 7927.8307625
         },
         {
           "x": 7983.0419999999995,
-          "y": 7927.584262499999
+          "y": 7932.736762499999
         },
         {
           "x": 7971,
-          "y": 7932.936262499999
+          "y": 7938.0887625
         }
       ],
       "blur": 0,
@@ -187,7 +187,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
       "x": 7964.5,
-      "y": 7923.07775,
+      "y": 7928.2302500000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -228,7 +228,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
       "x": 7981,
-      "y": 7899.57775,
+      "y": 7904.7302500000005,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
@@ -268,7 +268,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "1d2c32de-9441-dac3-cd55-cc8406714361",
       "x": 8005.5549461669925,
-      "y": 8005,
+      "y": 8010.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -308,7 +308,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "51482e08-6a74-7746-bbe9-93d6b5fb19fd",
       "x": 8005.5549461669925,
-      "y": 7984.8311375,
+      "y": 7989.9836375,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -348,7 +348,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6e035f01-7c56-702f-c12e-c6c964423aa8",
       "x": 8005.5549461669925,
-      "y": 7965,
+      "y": 7970.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -388,7 +388,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
       "x": 8005.5549461669925,
-      "y": 7945,
+      "y": 7950.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -428,7 +428,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "d3e905b8-6eea-db8a-cda8-ad588074826e",
       "x": 8024.3945,
-      "y": 8010,
+      "y": 8015.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -468,7 +468,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "2312c1ee-6d27-f0df-a644-8b55fd8c087a",
       "x": 8024.3945,
-      "y": 7990.43295,
+      "y": 7995.5854500000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -508,7 +508,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "078497de-04ae-57d8-a141-a3d4afacfe39",
       "x": 8024.3945,
-      "y": 7970.15145,
+      "y": 7975.30395,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -548,7 +548,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
       "x": 8024.3945,
-      "y": 7950,
+      "y": 7955.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -588,7 +588,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
       "x": 7964.5,
-      "y": 7904.2574375,
+      "y": 7909.4099375000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -629,7 +629,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "fc1f9521-b31f-564b-0f49-af8742bc08d9",
       "x": 7965,
-      "y": 7950,
+      "y": 7955.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -670,7 +670,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "e951cbbd-42a0-930d-0d2e-c88e35fba117",
       "x": 7965,
-      "y": 7970.15145,
+      "y": 7975.30395,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -711,7 +711,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "8d6c5b9f-175a-f1a3-6369-c88e36bf5b1e",
       "x": 7965,
-      "y": 7990.43295,
+      "y": 7995.5854500000005,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -752,7 +752,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5ce54fcb-3e73-34cb-1248-578f41a65671",
       "x": 7965,
-      "y": 8010,
+      "y": 8015.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -793,7 +793,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "56976980-dcc5-04ff-cbf7-30ca128edc7d",
       "x": 7973.5,
-      "y": 7945.07775,
+      "y": 7950.2302500000005,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -833,7 +833,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "6ef96142-a11a-ef8c-a145-31706fa76a6a",
       "x": 7973.5,
-      "y": 7965,
+      "y": 7970.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -873,7 +873,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "a550dba3-7e4a-e7f7-5a72-6628ce0ace97",
       "x": 7973.5,
-      "y": 7985,
+      "y": 7990.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -913,7 +913,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "47954b00-f1ec-9439-dadf-445578e3d073",
       "x": 7973.5,
-      "y": 8005,
+      "y": 8010.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -953,7 +953,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "04e866e3-133a-bd83-4c05-168fb107cfea",
       "x": 7965,
-      "y": 8030,
+      "y": 8035.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -994,7 +994,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "4ca9e2f2-c359-9fd1-7879-6af6142bf26a",
       "x": 7964.5,
-      "y": 8050,
+      "y": 8055.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1035,7 +1035,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "556af694-18ff-b53d-c1c8-66cf10f5b7d0",
       "x": 7964.5,
-      "y": 8070,
+      "y": 8075.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1076,7 +1076,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "81b58b07-acd3-8a72-4f5a-443e0bef699a",
       "x": 7964.5,
-      "y": 8090,
+      "y": 8095.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1117,7 +1117,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "8250346d-6865-0e06-5755-c525d0a39a70",
       "x": 8024.3945,
-      "y": 8030,
+      "y": 8035.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1157,7 +1157,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "31585741-f873-5563-ca4d-0b8debb1d708",
       "x": 8024.3945,
-      "y": 8050,
+      "y": 8055.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1197,7 +1197,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "5e8bdc68-65ed-85b6-4765-b19468143539",
       "x": 8024.3945,
-      "y": 8070,
+      "y": 8075.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1237,7 +1237,7 @@
       "type": "shape_designer.figure.ExtPort",
       "id": "c42a760a-f886-e5e1-aab2-1b5dad13c81e",
       "x": 8024.3945,
-      "y": 8090,
+      "y": 8095.1525,
       "width": 10,
       "height": 10,
       "alpha": 1,
@@ -1277,7 +1277,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "743e8f60-6297-07ef-25ab-a474e182e136",
       "x": 8005.5549461669925,
-      "y": 8025,
+      "y": 8030.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1317,7 +1317,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "1098830d-4825-e76a-d7e2-3fea5d977f8d",
       "x": 8005.5549461669925,
-      "y": 8045,
+      "y": 8050.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1357,7 +1357,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "fb745277-f5de-1894-2514-39295ccf11a7",
       "x": 8005.5549461669925,
-      "y": 8065,
+      "y": 8070.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1397,7 +1397,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "9574eb11-bfdd-2fdc-8c1e-97dd2d55c169",
       "x": 8005.5549461669925,
-      "y": 8085,
+      "y": 8090.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1437,7 +1437,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "2d9dcd54-33a7-546c-0909-dbeaee2e83df",
       "x": 7974,
-      "y": 8024.8203125,
+      "y": 8029.9728125,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1477,7 +1477,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "14488cbf-a56f-92ee-d5fb-e85ee71ea4ea",
       "x": 7974.5,
-      "y": 8045,
+      "y": 8050.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1517,7 +1517,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "bbdc4622-c949-54bf-c43e-1b0281cbb0db",
       "x": 7973.5,
-      "y": 8065,
+      "y": 8070.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1557,7 +1557,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "1dfa5a15-2681-f6b4-e46a-a88ede594193",
       "x": 7973.5,
-      "y": 8085,
+      "y": 8090.1525,
       "width": 28.328125,
       "height": 21.359375,
       "alpha": 1,
@@ -1597,8 +1597,8 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "a63269a5-6793-9e6e-9e3f-e6fb8e43c97a",
       "x": 7974,
-      "y": 7880.27275,
-      "width": 28.338090896606445,
+      "y": 7885.42525,
+      "width": 45.373046875,
       "height": 21.007502555847168,
       "alpha": 1,
       "selectable": true,
@@ -1637,7 +1637,7 @@
       "type": "shape_designer.figure.ExtLabel",
       "id": "83edab1a-d2d8-b956-672a-4d2277b29606",
       "x": 7981.0419999999995,
-      "y": 7916.2574375,
+      "y": 7921.4099375000005,
       "width": 39.140625,
       "height": 21.359375,
       "alpha": 1,
