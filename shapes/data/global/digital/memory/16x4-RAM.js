@@ -224,6 +224,12 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
                 this.ram[i/4] = parseInt(a.substring(i,i+4),2)
             }
         });
+        this.on("added", ()=>{
+            let serializedRAM = this.attr("userData.ram")
+            if(!serializedRAM){
+                this.attr("userData.ram", new Array(16*4+1).join("0"))
+            }
+        })
     },
 
     onStop: function(){
