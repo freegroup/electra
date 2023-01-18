@@ -261,5 +261,17 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
             this.getOutputPort("output_q3").setValue(data & 4);
             this.getOutputPort("output_q4").setValue(data & 8);
         }
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"ram",
+            label:"16x4 Bit RAM",
+            property:{
+                type: "longstring"
+            }
+        }];
     }
 });
