@@ -270,7 +270,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
             name:"ram",
             label:"16x4 Bit RAM",
             property:{
-                type: "longstring"
+                type: "longtext"
             }
         }];
     }
