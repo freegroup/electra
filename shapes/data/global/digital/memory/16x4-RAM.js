@@ -215,11 +215,25 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         
         this.ram = new Uint8Array(16)
 
+        // change the ram if the user change them in the config dialog
+        //
         this.on("change:userData.ram",(emitter, event)=>{
-            this.busId = event.value
+            let a = event.value
+            a = a.trim().replace(/\n|\r/g, "")
+            for(let i = 0; i< a.length; i+=4) {
+                this.ram[i/4] = parseInt(a.substring(i,i+4),2)
+            }
         });
     },
 
+    onStop: function(){
+        a = []
+        this.ram.forEach( (val) => {
+            a.push(val.toString(2).padStart(4, "0").substring(0,4))
+        })
+        this.attr("userData.ram", a.join("\n"))
+    },
+    
     /**
      *  Called by the simulator for every calculation
      *  loop
