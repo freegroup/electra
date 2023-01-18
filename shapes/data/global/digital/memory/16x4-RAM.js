@@ -214,6 +214,10 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.ram = new Uint8Array(16)
+
+        this.on("change:userData.ram",(emitter, event)=>{
+            this.busId = event.value
+        });
     },
 
     /**
@@ -230,18 +234,18 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         addr    += this.getInputPort("input_a3").getBooleanValue()?4:0;
         addr    += this.getInputPort("input_a4").getBooleanValue()?8:0;
 
-        let data = this.ram[addr]
         if(rw){
-            data = this.getInputPort("input_d1").getBooleanValue()?1:0;
+            let data = this.getInputPort("input_d1").getBooleanValue()?1:0;
             data+= this.getInputPort("input_d2").getBooleanValue()?2:0;
             data+= this.getInputPort("input_d3").getBooleanValue()?4:0;
             data+= this.getInputPort("input_d4").getBooleanValue()?8:0;
             this.ram[addr] = data
+        } else {
+            let data = this.ram[addr]
+            this.getOutputPort("output_q1").setValue(data & 1);
+            this.getOutputPort("output_q2").setValue(data & 2);
+            this.getOutputPort("output_q3").setValue(data & 4);
+            this.getOutputPort("output_q4").setValue(data & 8);
         }
-
-        this.getOutputPort("output_q1").setValue(data & 1);
-        this.getOutputPort("output_q2").setValue(data & 2);
-        this.getOutputPort("output_q3").setValue(data & 4);
-        this.getOutputPort("output_q4").setValue(data & 8);
     }
 });
