@@ -226,7 +226,9 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         });
         this.on("added", ()=>{
             let serializedRAM = this.attr("userData.ram")
+            console.log(serializedRAM)
             if(!serializedRAM){
+                console.log("reset RAM")
                 this.attr("userData.ram", new Array(16+1).join("0000\n"))
             }
         })
