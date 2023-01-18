@@ -235,6 +235,9 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
     onStop: function(){
         a = []
         this.ram.forEach( (val) => {
+            // 17   => 1001
+            //  9.  => 0101
+            // ....
             a.push(val.toString(2).padStart(4, "0").substring(0,4))
         })
         this.attr("userData.ram", a.join("\n"))
