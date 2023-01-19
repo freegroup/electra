@@ -253,24 +253,6 @@ body.light {
         }
     }
 
-
-    #figureConfigDialog {
-        background-color: white;
-        border-color: rgba(0, 0, 0, 0.2);
-        border-left-color: #C71D3D;
-
-        .figureAddLabel {
-            &:hover {
-                color: #C71D3D;
-            }
-        }
-
-        &:after {
-            border-color: transparent;
-            border-right-color: #C71D3D;
-        }
-    }
-
     .modal-backdrop.in {
         opacity: 0.7;
         background-color: black;
@@ -428,6 +410,21 @@ body.light {
         }
     }
 
+    #figureConfigDialog{
+        textarea {
+            &.figureAttribute {
+                background-color:#272822;
+                border-color:#272822;
+                color:#ffffff;
+            }
+            &.lineNumbering {
+                background-color:#3E3D32;
+                border-color:#3E3D32;
+                color:#928869;
+            }
+        }
+    }
+  
     #notificationToast {
         background-color: #C71D3D;
         color: white;

@@ -192,7 +192,7 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
     calculate:function()
     {
         var enable = this.getInputPort("input_enable").getBooleanValue();
-        var reset = this.getInputPort("input_enable").getBooleanValue();
+        var reset = this.getInputPort("input_reset").getBooleanValue();
         var clk = this.getInputPort("input_clk").getBooleanValue();
         
         var rising = this.last_clk===false && clk===true; 

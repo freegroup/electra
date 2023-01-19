@@ -1,7 +1,6 @@
 import axios from "axios"
 import "../less/index.less"
 
-import UpdateSuccessDialog from "./dialog/UpdateSuccessDialog"
 import Split from 'split.js'
 
 require('js-treeview/dist/treeview.min.css')

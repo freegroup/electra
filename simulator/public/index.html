@@ -252,39 +252,6 @@
 
 
 <!--
-  # Updates List
-  #
-  #
--->
-<script id="updateTemplate" type="text/x-jsrender">
-<div class="paragraph">
-  <h3>Current Shape files Version</h3>
-  You current version of the shape files are <b>{{current_version}}</b>
-
-  <h3>Available Updates</h3>
-  <b>{{update.tag_name}}</b> {{#update.assets}}
-      <span class="updateFile" >{{browser_download_url}}</span>
-      <button data-url="{{browser_download_url}}" class="btn btn-primary installButton">Install</button>
-  {{/update.assets}}
-</div>
-
-</script>
-
-<!--
-  # Template if nothing available for update....you are up to date
-  #
-  #
--->
-<script id="uptodateTemplate" type="text/x-jsrender">
-<div class="paragraph">
-  <h3>Current Shape files Version</h3>
-  Your current version of the shape files are <b>{{current_version}}</b>
-  <br><br>
-  You're up to date!
-</div>
-</script>
-
-<!--
   # New Dialog
   #
   #
@@ -399,21 +366,18 @@
 <!--
   UpdateSuccess Dialog. Shown if the update of the shape files are done
  -->
-<div id="updateSuccessDialog" class="modal fade genericDialog" tabindex="-1">
+<div id="figureConfigDialog" class="modal fade genericDialog" tabindex="-1">
   <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="media-heading">Shape files were updated</h4>
+        <h4 class="media-heading"></h4>
       </div>
       <div class="modal-body">
-        <div class="html">
-          Your system has been success upgraded to the latests shape files. Reload of the UI is required
-          to load them.
-        </div>
+
       </div>
       <div class="modal-footer">
-        <button class="btn reloadBtn" data-dismiss="modal">Reload Window</button>
-        <button class="btn  btn-primary" data-dismiss="modal">Close</button>
+        <button class="btn okBtn" >Save</button>
+        <button class="btn  btn-primary" data-dismiss="modal">Abort</button>
       </div>
     </div>
   </div>

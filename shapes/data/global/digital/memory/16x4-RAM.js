@@ -214,8 +214,43 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.ram = new Uint8Array(16)
+
+        // change the ram if the user change them in the config dialog
+        //
+        this.on("change:userData.ram",(emitter, event)=>{
+            console.log("data changed", event.value)
+            let a = event.value
+            a = a.trim().replace(/[^0-1]/g, "")
+            for(let i = 0; i< a.length; i+=4) {
+                this.ram[i/4] = parseInt(a.substring(i,i+4),2)
+            }
+        });
+        this.on("added", ()=>{
+            let serializedRAM = this.attr("userData.ram")
+            console.log(serializedRAM)
+            if(!serializedRAM){
+                console.log("reset RAM")
+                serializedRAM =  new Array(16+1).join("0000\n")
+                this.attr("userData.ram", serializedRAM)
+            }
+            serializedRAM = serializedRAM.trim().replace(/[^0-1]/g, "").substring(0, 4*16)
+            for(let i = 0; i< serializedRAM.length; i+=4) {
+                this.ram[i/4] = parseInt(serializedRAM.substring(i,i+4),2)
+            }
+        })
     },
 
+    onStop: function(){
+        let a = []
+        this.ram.forEach( (val) => {
+            // 17   => 1001
+            //  9.  => 0101
+            // ....
+            a.push(val.toString(2).padStart(4, "0").substring(0,4))
+        })
+        this.attr("userData.ram", a.join("\n"))
+    },
+    
     /**
      *  Called by the simulator for every calculation
      *  loop
@@ -224,24 +259,35 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
     calculate:function()
     {
         let rw = this.getInputPort("input_rw").getBooleanValue();
-        
         let addr = this.getInputPort("input_a1").getBooleanValue()?1:0;
         addr    += this.getInputPort("input_a2").getBooleanValue()?2:0;
         addr    += this.getInputPort("input_a3").getBooleanValue()?4:0;
         addr    += this.getInputPort("input_a4").getBooleanValue()?8:0;
 
-        let data = this.ram[addr]
         if(rw){
-            data = this.getInputPort("input_d1").getBooleanValue()?1:0;
+            let data = this.getInputPort("input_d1").getBooleanValue()?1:0;
             data+= this.getInputPort("input_d2").getBooleanValue()?2:0;
             data+= this.getInputPort("input_d3").getBooleanValue()?4:0;
             data+= this.getInputPort("input_d4").getBooleanValue()?8:0;
             this.ram[addr] = data
+        } else {
+            let data = this.ram[addr]
+            this.getOutputPort("output_q1").setValue(data&1?true:false);
+            this.getOutputPort("output_q2").setValue(data&2?true:false);
+            this.getOutputPort("output_q3").setValue(data&4?true:false);
+            this.getOutputPort("output_q4").setValue(data&8?true:false);
         }
-
-        this.getOutputPort("output_q1").setValue(data & 1);
-        this.getOutputPort("output_q2").setValue(data & 2);
-        this.getOutputPort("output_q3").setValue(data & 4);
-        this.getOutputPort("output_q4").setValue(data & 8);
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"ram",
+            label:"16x4 Bit RAM",
+            property:{
+                type: "longtext"
+            }
+        }];
     }
 });

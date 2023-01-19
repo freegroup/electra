@@ -6,40 +6,41 @@
 
 
 #figureConfigDialog{
-  display:none;
-  border-width:1px;
-  border-style: solid;
-  padding: 10px;
-  margin-left:30px;
-  border-left-width:1px;
-  border-left-style: solid;
-  border-radius:4px;
-  .header{
-    font-size: 16px;
-    font-weight: 600;
-    padding-bottom: 15px;
-  }
   .figureAddLabel{
     font-size:12px;
     font-weight: 200;
     cursor:pointer;
   }
 
-  .form-group{
-    textarea{
-      min-width: 300px;
-      min-height: 100px;
+  textarea {
+    &.figureAttribute, &.lineNumbering {
+      font-family: lucida console, courier new, courier, monospace;
+      margin: 0;
+      padding: 10px 0;
+      height: 300px;
+      border-radius: 0;
+      resize: none;
+      font-size: 16px;
+      line-height: 1.2;
+      outline: none;
+      box-sizing: border-box;
+      &:focus-visible {
+        outline:none;
+      }
     }
-  }
-  &:after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: -20px;
-    top: 10px;
-    width: 0;
-    height: 0;
-    border-width:10px;
-    border-style: solid;
+
+    &.figureAttribute {
+      padding-left: calc(3.5rem + 5px);
+      width:100%;
+    }
+
+    &.lineNumbering {
+      border-color: transparent;
+      overflow-y: hidden;
+      text-align: right;
+      box-shadow: none;
+      position: absolute;
+      width: 3.5rem;
+    }
   }
 }
