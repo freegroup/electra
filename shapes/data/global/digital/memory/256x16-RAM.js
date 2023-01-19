@@ -34,7 +34,7 @@ var digital_memory_256x16_RAM = CircuitFigure.extend({
      port.setName("input_a3");
      port.setMaxFanOut(1);
      // input_a4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 56.601236702127665, y: 0.24875621890547264 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 39.361702127659576, y: -0.9950248756218906 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
@@ -94,25 +94,25 @@ var digital_memory_256x16_RAM = CircuitFigure.extend({
      port.setName("input_rw");
      port.setMaxFanOut(1);
      // input_a4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 47.355385638297875, y: 1.2437810945273633 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 30.851063829787233, y: -0.9950248756218906 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
      port.setMaxFanOut(1);
      // input_a4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 28.062646276595572, y: 0.24875621890547264 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 22.340425531914892, y: -0.9950248756218906 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
      port.setMaxFanOut(1);
      // input_a4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 15.938178191489452, y: 0.24875621890547264 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 13.829787234042554, y: -0.9950248756218906 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
      port.setMaxFanOut(1);
      // input_a4
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 5.319148936170213, y: 0.24875621890547264 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 5.319148936170213, y: -0.9950248756218906 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a4");
