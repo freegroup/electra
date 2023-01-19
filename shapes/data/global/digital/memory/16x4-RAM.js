@@ -218,6 +218,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         // change the ram if the user change them in the config dialog
         //
         this.on("change:userData.ram",(emitter, event)=>{
+            console.log("data changed", event.value)
             let a = event.value
             a = a.trim().replace(/\n|\r/g, "")
             for(let i = 0; i< a.length; i+=4) {
