@@ -220,7 +220,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         this.on("change:userData.ram",(emitter, event)=>{
             console.log("data changed", event.value)
             let a = event.value
-            a = a.trim().replace(/\n|\r/g, "")
+            a = a.trim().replace(/[^0-1]/g, "")
             for(let i = 0; i< a.length; i+=4) {
                 this.ram[i/4] = parseInt(a.substring(i,i+4),2)
             }
@@ -233,7 +233,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
                 serializedRAM =  new Array(16+1).join("0000\n")
                 this.attr("userData.ram", serializedRAM)
             }
-            serializedRAM = serializedRAM.trim().replace(/\n|\r/g, "").substring(0, 4*16)
+            serializedRAM = serializedRAM.trim().replace(/[^0-1]/g, "").substring(0, 4*16)
             for(let i = 0; i< serializedRAM.length; i+=4) {
                 this.ram[i/4] = parseInt(serializedRAM.substring(i,i+4),2)
             }
@@ -259,7 +259,6 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
     calculate:function()
     {
         let rw = this.getInputPort("input_rw").getBooleanValue();
-        
         let addr = this.getInputPort("input_a1").getBooleanValue()?1:0;
         addr    += this.getInputPort("input_a2").getBooleanValue()?2:0;
         addr    += this.getInputPort("input_a3").getBooleanValue()?4:0;
