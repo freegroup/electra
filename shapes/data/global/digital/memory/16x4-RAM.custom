@@ -35,7 +35,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
             }
             serializedRAM = serializedRAM.trim().replace(/\n|\r/g, "").substring(0, 4*16)
             for(let i = 0; i< serializedRAM.length; i+=4) {
-                this.ram[i/4] = parseInt(a.substring(i,i+4),2)
+                this.ram[i/4] = parseInt(serializedRAM.substring(i,i+4),2)
             }
         })
     },
