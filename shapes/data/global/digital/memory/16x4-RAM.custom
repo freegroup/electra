@@ -31,7 +31,8 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
             console.log(serializedRAM)
             if(!serializedRAM){
                 console.log("reset RAM")
-                this.attr("userData.ram", new Array(16+1).join("0000\n"))
+                serializedRAM =  new Array(16+1).join("0000\n")
+                this.attr("userData.ram", serializedRAM)
             }
             serializedRAM = serializedRAM.trim().replace(/\n|\r/g, "").substring(0, 4*16)
             for(let i = 0; i< serializedRAM.length; i+=4) {
