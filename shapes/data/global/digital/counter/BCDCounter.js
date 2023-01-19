@@ -139,29 +139,12 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
             var b = this.getOutputPort("out_b");
             var c = this.getOutputPort("out_c");
             var d = this.getOutputPort("out_d");
-            a.setValue(!!(this.counter & 1));
-            b.setValue(!!(this.counter & 2));
-            c.setValue(!!(this.counter & 4));
-            d.setValue(!!(this.counter & 8));
+            a.setValue(this.counter&1?true:false);
+            b.setValue(this.counter&2?true:false);
+            c.setValue(this.counter&4?true:false);
+            d.setValue(this.counter&8?true:false);
             this.counter= (this.counter+1)%10;
         }
         this.last_t = t;
-    },
-
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function()
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function()
-    {
     }
 });
