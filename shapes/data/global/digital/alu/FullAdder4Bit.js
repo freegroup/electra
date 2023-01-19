@@ -144,8 +144,8 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'S1');
-       shape.attr({"x":59.11934999999994,"y":20.25,"text-anchor":"start","text":"S1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'Q1');
+       shape.attr({"x":57.96309999999994,"y":20.25,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -159,13 +159,13 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'S3');
-       shape.attr({"x":58.96309999999994,"y":59.124299999999494,"text-anchor":"start","text":"S3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'Q3');
+       shape.attr({"x":57.96309999999994,"y":59.374299999999494,"text-anchor":"start","text":"Q3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'S2');
-       shape.attr({"x":58.96309999999994,"y":39.8125,"text-anchor":"start","text":"S2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'Q2');
+       shape.attr({"x":57.96309999999994,"y":39.8125,"text-anchor":"start","text":"Q2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -190,7 +190,7 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'A4');
-       shape.attr({"x":6.27559999999994,"y":80.47956250000061,"text-anchor":"start","text":"A4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":5.77559999999994,"y":80.47956250000061,"text-anchor":"start","text":"A4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -209,8 +209,8 @@ var digital_alu_FullAdder4Bit = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'S4');
-       shape.attr({"x":59.11934999999994,"y":79.97956250000061,"text-anchor":"start","text":"S4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'Q4');
+       shape.attr({"x":58.11934999999994,"y":79.97956250000061,"text-anchor":"start","text":"Q4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
