@@ -298,22 +298,5 @@ digital_alu_FullAdder4Bit = digital_alu_FullAdder4Bit.extend({
         this.getOutputPort("output_s3").setValue(output[2]);
         this.getOutputPort("output_s4").setValue(output[3]);
         this.getOutputPort("output_c").setValue(output[4]);
-    },
-
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function()
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function()
-    {
     }
 });
