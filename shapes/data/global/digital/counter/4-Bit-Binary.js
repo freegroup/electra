@@ -217,10 +217,10 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
         
         if(reset ){
             this.counter= 0;
-            this.getOutputPort("output_q1").setValue(0);
-            this.getOutputPort("output_q2").setValue(0);
-            this.getOutputPort("output_q3").setValue(0);
-            this.getOutputPort("output_q4").setValue(0);
+            this.getOutputPort("output_q1").setValue(false);
+            this.getOutputPort("output_q2").setValue(false);
+            this.getOutputPort("output_q3").setValue(false);
+            this.getOutputPort("output_q4").setValue(false);
         }
 
         // Load the new data from the input if we have a RISING clock and ENABLE is set
@@ -230,18 +230,18 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
            this.counter += this.getInputPort("input_d2").getBooleanValue()?2:0;
            this.counter += this.getInputPort("input_d3").getBooleanValue()?4:0;
            this.counter += this.getInputPort("input_d4").getBooleanValue()?8:0;
-           this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
-           this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
-           this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
-           this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+           this.getOutputPort("output_q1").setValue(this.counter&1?true:false);
+           this.getOutputPort("output_q2").setValue(this.counter&2?true:false);
+           this.getOutputPort("output_q3").setValue(this.counter&4?true:false);
+           this.getOutputPort("output_q4").setValue(this.counter&8?true:false);
         }
         
         else if(enable && rising && clk ){
             this.counter= (this.counter+1)%16;
-            this.getOutputPort("output_q1").setValue(!!(this.counter & 1));
-            this.getOutputPort("output_q2").setValue(!!(this.counter & 2));
-            this.getOutputPort("output_q3").setValue(!!(this.counter & 4));
-            this.getOutputPort("output_q4").setValue(!!(this.counter & 8));
+            this.getOutputPort("output_q1").setValue(this.counter&1?true:false);
+            this.getOutputPort("output_q2").setValue(this.counter&2?true:false);
+            this.getOutputPort("output_q3").setValue(this.counter&4?true:false);
+            this.getOutputPort("output_q4").setValue(this.counter&8?true:false);
         }
         this.last_clk = clk;
     }
