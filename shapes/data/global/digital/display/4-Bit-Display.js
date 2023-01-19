@@ -94,7 +94,7 @@ digital_display_4_Bit_Display = digital_display_4_Bit_Display.extend({
         val    += this.getInputPort("input_bit2").getBooleanValue()?2:0;
         val    += this.getInputPort("input_bit3").getBooleanValue()?4:0;
         val    += this.getInputPort("input_bit4").getBooleanValue()?8:0;
-        this.layerAttr("digit", {text: val.toString(10).padStart(3, '0')});
+        this.layerAttr("digit", {text: val.toString(10).padStart(2, '0')});
     }
 
 });
