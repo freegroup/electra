@@ -73,10 +73,10 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
             this.ram[addr] = data
         } else {
             let data = this.ram[addr]
-            this.getOutputPort("output_q1").setValue(data & 1);
-            this.getOutputPort("output_q2").setValue(data & 2);
-            this.getOutputPort("output_q3").setValue(data & 4);
-            this.getOutputPort("output_q4").setValue(data & 8);
+            this.getOutputPort("output_q1").setValue(data&1?true:false);
+            this.getOutputPort("output_q2").setValue(data&2?true:false);
+            this.getOutputPort("output_q3").setValue(data&4?true:false);
+            this.getOutputPort("output_q4").setValue(data&8?true:false);
         }
     },
     
