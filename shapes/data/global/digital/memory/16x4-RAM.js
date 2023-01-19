@@ -241,7 +241,7 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
     },
 
     onStop: function(){
-        a = []
+        let a = []
         this.ram.forEach( (val) => {
             // 17   => 1001
             //  9.  => 0101
