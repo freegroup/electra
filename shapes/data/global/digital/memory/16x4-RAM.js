@@ -218,7 +218,6 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         // change the ram if the user change them in the config dialog
         //
         this.on("change:userData.ram",(emitter, event)=>{
-            console.log("data changed", event.value)
             let a = event.value
             a = a.trim().replace(/[^0-1]/g, "")
             for(let i = 0; i< a.length; i+=4) {
@@ -227,10 +226,8 @@ digital_memory_16x4_RAM = digital_memory_16x4_RAM.extend({
         });
         this.on("added", ()=>{
             let serializedRAM = this.attr("userData.ram")
-            console.log(serializedRAM)
             if(!serializedRAM){
-                console.log("reset RAM")
-                serializedRAM =  new Array(16+1).join("0000\n")
+                serializedRAM = new Array(16+1).join("0000\n")
                 this.attr("userData.ram", serializedRAM)
             }
             serializedRAM = serializedRAM.trim().replace(/[^0-1]/g, "").substring(0, 4*16)
