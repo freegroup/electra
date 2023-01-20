@@ -460,7 +460,7 @@ digital_memory_256x16_RAM = digital_memory_256x16_RAM.extend({
         this.addressLength = 8;
         this.lineCount = Math.pow(2, this.addressLength)
         
-        this.ram = new Uint16Array(this.wordLenght)
+        this.ram = new Uint16Array(this.lineCount)
 
         // change the ram if the user change them in the config dialog
         //
