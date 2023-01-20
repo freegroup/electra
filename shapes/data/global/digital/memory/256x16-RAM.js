@@ -111,11 +111,11 @@ var digital_memory_256x16_RAM = CircuitFigure.extend({
      port.setBackgroundColor("#37B1DE");
      port.setName("input_a7");
      port.setMaxFanOut(1);
-     // input_a5
+     // input_a8
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 7.579695715768386, y: -1.0638297872340425 }));
      port.setConnectionDirection(0);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_a5");
+     port.setName("input_a8");
      port.setMaxFanOut(1);
      // input_d5
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9095634858922064, y: 37.5 }));
