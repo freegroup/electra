@@ -474,7 +474,7 @@ digital_memory_256x16_RAM = digital_memory_256x16_RAM.extend({
         this.on("added", ()=>{
             let serializedRAM = this.attr("userData.ram")
             if(!serializedRAM){
-                serializedRAM = new Array(this.lineCount+1).join("0000\n")
+                serializedRAM = new Array(this.lineCount+1).join("".padStart(this.wordLength, "0")+"\n")
                 this.attr("userData.ram", serializedRAM)
             }
             serializedRAM = serializedRAM.trim().replace(/[^0-1]/g, "").substring(0, this.wordLength*this.lineCount)
