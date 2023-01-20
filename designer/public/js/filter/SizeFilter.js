@@ -28,6 +28,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
       max: 600,
       step: 1,
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: 'width'
     })
 
@@ -36,6 +37,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
       max: 600,
       step: 1,
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: 'height'
     })
 

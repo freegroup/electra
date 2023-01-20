@@ -29,6 +29,7 @@ export default shape_designer.filter.FanoutFilter = class FanoutFilter extends F
       max: 50,
       step: 1,
       maxboostedstep: 1,
+      mousewheel: false,
       postfix: 'px'
     })
 

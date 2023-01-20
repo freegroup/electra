@@ -30,6 +30,7 @@ export default shape_designer.filter.OpacityFilter = class OpacityFilter extends
       step: 5,
       boostat: parseInt(figure.getAlpha() * 100),
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: '%'
     })
     $("#filter_opacity").on("change", $.proxy(function () {

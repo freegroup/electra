@@ -29,6 +29,7 @@ export default shape_designer.filter.FontSizeFilter = class FontSizeFilter exten
       step: 1,
       boostat: figure.getFontSize(),
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: 'px'
     })
 

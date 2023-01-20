@@ -26,6 +26,7 @@ export default shape_designer.filter.BlurFilter = class BlurFilter extends Filte
     $("#filter_blur").TouchSpin({
       min: 1,
       max: 5,
+      mousewheel: false,
       step: 1
     })
 

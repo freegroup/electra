@@ -745,6 +745,7 @@ export default draw2d.Canvas.extend({
   },
 
   calculateConnectionIntersection : function(){
+    this.linesToRepaintAfterDragDrop = new draw2d.util.ArrayList()
   },
   
   /**

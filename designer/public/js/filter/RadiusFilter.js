@@ -29,6 +29,7 @@ export default shape_designer.filter.RadiusFilter = class RadiusFilter extends F
       max: 200,
       step: 1,
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: 'px'
     })
     $("#filter_radius").on("change", $.proxy(function () {

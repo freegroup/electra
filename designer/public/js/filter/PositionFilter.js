@@ -27,6 +27,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       min: 0,
       max: 10000,
       step: 1,
+      mousewheel: false,
       maxboostedstep: 10,
       postfix: 'X'
     })
@@ -36,6 +37,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       max: 10000,
       step: 1,
       maxboostedstep: 10,
+      mousewheel: false,
       postfix: 'Y'
     })
 
@@ -50,11 +52,14 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       }
     })
 
-    $("input[name='filter_position_y']").on("change", () => {
+    $("input[name='filter_position_y']").on("change", (event) => {
       try {
         this.block = true
         let pos = figure.getPosition()
         figure.setPosition(pos.x, parseFloat($("input[name='filter_position_y']").val()))
+      }
+      catch(e){
+        console.log(e)
       }
       finally {
         this.block = false

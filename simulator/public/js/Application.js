@@ -9,6 +9,7 @@ import Files from "../../common/js/FilesScreen"
 import conf from "./Configuration"
 import reader from "./io/Reader"
 import fileSave from "./dialog/FileSave"
+import progress from "./dialog/Progress"
 import shareDialog from "../../common/js/LinkShareDialog";
 import AuthorPage from "../../common/js/AuthorPage";
 import AppSwitch from "../../common/js/AppSwitch";
@@ -108,29 +109,32 @@ class Application {
     return storage.loadUrl(url)
       .then((content) => {
         this.view.clear()
-        reader.unmarshal(this.view, content)
-        this.view.getCommandStack().markSaveLocation()
-        this.view.centerDocument()
-        this.hasUnsavedChanges = false
-        $("#editorFileSave div").removeClass("highlight")
-        this.currentFile = { name, scope}
-
-        // check if a tutorial exists for the named file and load/activate them
-        //
-        storage.loadUrl(url.replace(conf.fileSuffix, ".guide"))
-          .then(guide => {
-            if (typeof guide === "string") {
-              guide = JSON.parse(guide)
-            }
-            $(guide.screen).click()
-            checkElement("#paletteElementsScroll").then(() => {
-              new Anno(guide.steps).show()
+        progress.show()
+        return reader.unmarshal(this.view, content, progress.update).then( ()=>{
+          progress.hide()
+          this.view.getCommandStack().markSaveLocation()
+          this.view.centerDocument()
+          this.hasUnsavedChanges = false
+          $("#editorFileSave div").removeClass("highlight")
+          this.currentFile = { name, scope}
+  
+          // check if a tutorial exists for the named file and load/activate them
+          //
+          storage.loadUrl(url.replace(conf.fileSuffix, ".guide"))
+            .then(guide => {
+              if (typeof guide === "string") {
+                guide = JSON.parse(guide)
+              }
+              $(guide.screen).click()
+              checkElement("#paletteElementsScroll").then(() => {
+                new Anno(guide.steps).show()
+              })
             })
-          })
-          .catch(error => {
-            // ignore 404 HTTP error silently
-          })
-        return content
+            .catch(error => {
+              // ignore 404 HTTP error silently
+            })
+          return content
+        })
       })
       .catch (exc => {
         notFoundDialog.show(name)

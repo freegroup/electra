@@ -17,11 +17,10 @@ export default draw2d.InputPort.extend({
     this._super( {coronaWidth: 2, ...attr}, setter, getter)
 
     this.decoration = new MarkerFigure()
-
     this.add(this.decoration, new draw2d.layout.locator.LeftLocator({margin: 8}))
 
     this.on("disconnect", (emitter, event) => {
-      this.decoration.setVisible(this.getConnections().getSize() === 0)
+      this.decoration?.setVisible(this.getConnections().getSize() === 0)
 
       // default value of a not connected port is always HIGH
       //
@@ -31,15 +30,15 @@ export default draw2d.InputPort.extend({
     })
 
     this.on("connect", (emitter, event) => {
-      this.decoration.setVisible(false)
+      this.decoration?.setVisible(false)
     })
 
     this.on("dragend", (emitter, event) => {
-      this.decoration.setVisible(this.getConnections().getSize() === 0);
+      this.decoration?.setVisible(this.getConnections().getSize() === 0);
     })
 
     this.on("drag", (emitter, event) => {
-      this.decoration.setVisible(false)
+      this.decoration?.setVisible(false)
     })
 
     // a port can have a value. Useful for workflow engines or circuit diagrams
@@ -54,19 +53,19 @@ export default draw2d.InputPort.extend({
   },
 
   useDefaultValue: function (flag) {
-    this.decoration.setStick(flag)
+    this.decoration?.setStick(flag)
   },
 
   setDefaultValue: function(value){
-    this.decoration.setDefaultValue(value)
+    this.decoration?.setDefaultValue(value)
   },
 
   getDefaultValue: function(){
-    return this.decoration.getDefaultValue()
+    return this.decoration?.getDefaultValue()
   },
 
   useDefaultValueProvider: function(){
-    return this.decoration.getStick()
+    return this.decoration?.getStick()
   },
 
   getValue: function (){
@@ -125,6 +124,10 @@ export default draw2d.InputPort.extend({
    * @param {draw2d.Canvas} canvas the new parent of the figure or null
    */
   setCanvas: function (canvas) {
+    if(this.canvas === canvas){
+      return this // silently
+    }
+
     // remove the shape if we reset the canvas and the element
     // was already drawn
     if (canvas === null && this.shape !== null) {
@@ -150,7 +153,6 @@ export default draw2d.InputPort.extend({
     //
     this.lastAppliedAttributes = {}
 
-
     if (canvas === null) {
       this.stopTimer()
     } else {
@@ -158,7 +160,6 @@ export default draw2d.InputPort.extend({
         this.startTimer(this.timerInterval)
       }
     }
-
     return this
   }
 

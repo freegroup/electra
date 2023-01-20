@@ -38,6 +38,7 @@ export default shape_designer.filter.StrokeFilter = class StrokeFilter extends F
         max: 50,
         step: 1,
         maxboostedstep: 1,
+        mousewheel: false,
         postfix: 'px'
       })
       .on("change", $.proxy(function () {

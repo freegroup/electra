@@ -91,22 +91,22 @@ export default shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend(
       this.add(figure, locator)
       this.decoration = figure
       locator.relocate(0,figure)
-
     }
+  },
+
+  setPosition(x,y){
+    this._super(x,y)
+    //this.updateDecoration()
   },
 
   hideDecoration: function () {
     this.attr(this.hiddenStyle)
-    if( this.decoration ){
-      this.decoration.setVisible(false)
-    }
+    this.decoration?.setVisible(false)
   },
 
   showDecoration: function () {
     this.attr(this.normalStyle)
-    if( this.decoration ){
-      this.decoration.setVisible(true)
-    }
+    this.decoration?.setVisible(true)
   },
 
 
@@ -148,9 +148,7 @@ export default shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend(
       return
     }
 
-    if (typeof attributes === "undefined") {
-      attributes = {}
-    }
+    attributes ??= {}
 
     this.filters.each( (i, filter) => {
       filter.apply(this, attributes)
