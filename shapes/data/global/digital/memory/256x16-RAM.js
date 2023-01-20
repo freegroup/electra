@@ -505,7 +505,7 @@ digital_memory_256x16_RAM = digital_memory_256x16_RAM.extend({
         let rw = this.getInputPort("input_rw").getBooleanValue();
         let addr = 0;
         
-        for(let i = 0; i<this.wordLength; i++){
+        for(let i = 0; i<this.addressLength; i++){
             addr += this.getInputPort("input_a"+(i+1)).getBooleanValue()?(1<<i):0;
         }
 
