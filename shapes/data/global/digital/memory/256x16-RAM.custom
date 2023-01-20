@@ -76,7 +76,7 @@ digital_memory_256x16_RAM = digital_memory_256x16_RAM.extend({
         } else {
             let data = this.ram[addr]
             for(let i = 0; i<this.wordLength; i++){
-                this.getOutputPort("input_q"+(i+1)).setValue(data&(1<<i)?true:false);
+                this.getOutputPort("output_q"+(i+1)).setValue(data&(1<<i)?true:false);
             }
         }
     },
