@@ -348,7 +348,8 @@ export default draw2d.Canvas.extend({
                   let locator = new draw2d.layout.locator.SmartDraggableLocator()
                   label.installEditor(new LabelInplaceEditor())
                   figure.add(label, locator)
-                  Object.defineProperty(figure, "canvas", {configurable: false, writable: false})
+                  // ?!?!?!?!
+                  //Object.defineProperty(figure, "canvas", {configurable: false, writable: false})
                 }
                 break
               case "design":
