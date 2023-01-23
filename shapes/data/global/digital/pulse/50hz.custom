@@ -15,6 +15,7 @@ digital_pulse_50hz = digital_pulse_50hz.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.currentTimer=0;
+        this.value = 0.0
     },
     
     calculate:function()
