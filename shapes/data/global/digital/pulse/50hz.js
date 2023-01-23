@@ -84,7 +84,7 @@ digital_pulse_50hz = digital_pulse_50hz.extend({
       // 4 ticks => 50Hz    
        this.currentTimer = (this.currentTimer+1)%4; 
        if(this.currentTimer===0){
-           this.value = !this.value;
+           this.value = 5.0-this.value;
            this.getOutputPort(0).setValue(this.value);
        }
     },
