@@ -9,17 +9,14 @@ export default draw2d.shape.composite.Raft.extend({
 
     calculate: function()
     {
-
     },
 
     onStart:function()
     {
-
     },
 
     onStop:function()
     {
-
     },
 
     toBack:function(figure)
@@ -53,7 +50,7 @@ export default draw2d.shape.composite.Raft.extend({
         // add all decorations to the memento
         //
         memento.labels = [];
-        this.children.each(function(i,e){
+        this.children.each((i,e) => {
             var labelJSON = e.figure.getPersistentAttributes();
             labelJSON.locator=e.locator.NAME;
             memento.labels.push(labelJSON);
@@ -79,19 +76,19 @@ export default draw2d.shape.composite.Raft.extend({
 
         // and add all children of the JSON document.
         //
-        $.each(memento.labels, $.proxy(function(i,json){
+        $.each(memento.labels,(i,json)=> {
             // create the figure stored in the JSON
-            var figure =  eval("new "+json.type+"()");
+            var figure =  eval("new "+json.type+"()")
 
             // apply all attributes
-            figure.attr(json);
+            figure.attr(json)
 
             // instantiate the locator
-            var locator =  eval("new "+json.locator+"()");
+            var locator =  eval("new "+json.locator+"()")
 
             // add the new figure as child to this figure
-            this.add(figure, locator);
-        },this));
+            this.add(figure, locator)
+        });
     }
 
 });
