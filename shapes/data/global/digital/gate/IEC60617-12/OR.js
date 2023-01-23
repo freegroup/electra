@@ -7,28 +7,28 @@
 var digital_gate_IEC60617_12_OR = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_OR",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:30.8125,height:40},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:30.8046875,height:40},attr), setter, getter);
      var port;
      // input01
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.2454361054766734, y: 22.5 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.246259193507482, y: 22.5 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
      port.setMaxFanOut(20);
      // input02
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.2454361054766734, y: 78.75 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.246259193507482, y: 78.75 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
      port.setMaxFanOut(20);
      // output
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.6815415821501, y: 50 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.70656860258687, y: 50 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
@@ -38,7 +38,7 @@ var digital_gate_IEC60617_12_OR = CircuitFigure.extend({
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 30.8125;
+      this.originalWidth = 30.8046875;
       this.originalHeight= 40;
       return shape;
    },
@@ -48,7 +48,7 @@ var digital_gate_IEC60617_12_OR = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L30.8125,0 L30.8125,40 L0,40");
+       shape = this.canvas.paper.path("M0,0 L30.8046875,0 L30.8046875,40 L0,40");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -92,9 +92,9 @@ digital_gate_IEC60617_12_OR = digital_gate_IEC60617_12_OR.extend({
     
     calculate:function(context)
     {
-        var i1 = this.getInputPort(0);
-        var i2 = this.getInputPort(1);
-        var o1 = this.getOutputPort(0);
+        var i1 = this.getInputPort("input01");
+        var i2 = this.getInputPort("input02");
+        var o1 = this.getOutputPort("output");
         
         o1.setValue(i1.getBooleanValue() || i2.getBooleanValue());
     }

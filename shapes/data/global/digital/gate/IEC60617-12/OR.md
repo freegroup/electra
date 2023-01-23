@@ -1,6 +1,5 @@
 # OR Gate
 
-## Description
 The `OR gate` is a digital logic gate that implements logical 
 disjunction - it behaves according to the truth table to the
  

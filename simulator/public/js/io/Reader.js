@@ -1,5 +1,3 @@
-
-
 let Reader = draw2d.io.json.Reader.extend({
 
     init:function(){
@@ -93,7 +91,7 @@ let Reader = draw2d.io.json.Reader.extend({
         canvas.linesToRepaintAfterDragDrop = canvas.getLines().clone();
         */
         canvas.showDecoration();
-  
+
         // restore the UI state
         //
         if(json.view){

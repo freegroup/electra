@@ -4458,7 +4458,8 @@ growPolicy.growFactor = 1.5;
       margin: 8
     }));
     this.on("disconnect", function (emitter, event) {
-      _this.decoration.setVisible(_this.getConnections().getSize() === 0);
+      var _this$decoration;
+      (_this$decoration = _this.decoration) === null || _this$decoration === void 0 ? void 0 : _this$decoration.setVisible(_this.getConnections().getSize() === 0);
 
       // default value of a not connected port is always HIGH
       //
@@ -4467,13 +4468,16 @@ growPolicy.growFactor = 1.5;
       }
     });
     this.on("connect", function (emitter, event) {
-      _this.decoration.setVisible(false);
+      var _this$decoration2;
+      (_this$decoration2 = _this.decoration) === null || _this$decoration2 === void 0 ? void 0 : _this$decoration2.setVisible(false);
     });
     this.on("dragend", function (emitter, event) {
-      _this.decoration.setVisible(_this.getConnections().getSize() === 0);
+      var _this$decoration3;
+      (_this$decoration3 = _this.decoration) === null || _this$decoration3 === void 0 ? void 0 : _this$decoration3.setVisible(_this.getConnections().getSize() === 0);
     });
     this.on("drag", function (emitter, event) {
-      _this.decoration.setVisible(false);
+      var _this$decoration4;
+      (_this$decoration4 = _this.decoration) === null || _this$decoration4 === void 0 ? void 0 : _this$decoration4.setVisible(false);
     });
 
     // a port can have a value. Useful for workflow engines or circuit diagrams
@@ -4491,16 +4495,20 @@ growPolicy.growFactor = 1.5;
     this.add(circle, locator);
   },
   useDefaultValue: function useDefaultValue(flag) {
-    this.decoration.setStick(flag);
+    var _this$decoration5;
+    (_this$decoration5 = this.decoration) === null || _this$decoration5 === void 0 ? void 0 : _this$decoration5.setStick(flag);
   },
   setDefaultValue: function setDefaultValue(value) {
-    this.decoration.setDefaultValue(value);
+    var _this$decoration6;
+    (_this$decoration6 = this.decoration) === null || _this$decoration6 === void 0 ? void 0 : _this$decoration6.setDefaultValue(value);
   },
   getDefaultValue: function getDefaultValue() {
-    return this.decoration.getDefaultValue();
+    var _this$decoration7;
+    return (_this$decoration7 = this.decoration) === null || _this$decoration7 === void 0 ? void 0 : _this$decoration7.getDefaultValue();
   },
   useDefaultValueProvider: function useDefaultValueProvider() {
-    return this.decoration.getStick();
+    var _this$decoration8;
+    return (_this$decoration8 = this.decoration) === null || _this$decoration8 === void 0 ? void 0 : _this$decoration8.getStick();
   },
   getValue: function getValue() {
     var _this$getConnections$, _this$getConnections$2;
@@ -4550,6 +4558,10 @@ growPolicy.growFactor = 1.5;
    * @param {draw2d.Canvas} canvas the new parent of the figure or null
    */
   setCanvas: function setCanvas(canvas) {
+    if (this.canvas === canvas) {
+      return this; // silently
+    }
+
     // remove the shape if we reset the canvas and the element
     // was already drawn
     if (canvas === null && this.shape !== null) {

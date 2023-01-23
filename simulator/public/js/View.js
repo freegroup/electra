@@ -631,7 +631,6 @@ export default draw2d.Canvas.extend({
       $("#editRedo").removeClass("disabled")
     }
 
-
     this.hardwareChanged()
   },
 
@@ -681,6 +680,24 @@ export default draw2d.Canvas.extend({
     let height = Math.max(100, Math.max.apply(Math, yCoords) - minY)
 
     return new draw2d.geo.Rectangle(minX, minY, width, height)
+  },
+
+  showDecoration: function(){
+    this._super()
+
+    // update the colors of the connections to the real state of the outputPorts.
+    // This is required after loading a brain. In this case an unpredictable state of the connections is visible.
+    // Fix this by using the real values of the ports.
+    this.getLines().each( (i, line) => {
+      let outPort = line.getSource()
+      let value = outPort.getValue()
+      if(value === undefined ||  value === null){
+        line.setColor(colors.unconnected)
+      }
+      else {
+        line.setColor(value ? colors.high : colors.low)
+      }
+    })
   },
 
   /**

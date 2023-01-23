@@ -6,6 +6,8 @@ class Dialog {
 
   show() {
       $('#progressDialog').modal('show')
+      this.text = $("#progressDialog .modal-body")
+      this.bar = $('#progressDialog .progress-bar')
   }
 
   hide() {
@@ -13,9 +15,8 @@ class Dialog {
   }
 
   update(total, current, objectType){    
-    $("#progressDialog .modal-body").html(`loading ${objectType} ${current}/${total}`)
-    $('#progressDialog .progress-bar').attr("style", "width:" + ((100/total) * current).toString() + "%");
-
+    this.text.html(`loading ${objectType} ${current}/${total}`)
+    this.bar.attr("style", "width:" + ((100/total) * current).toString() + "%");
   }
 }
 

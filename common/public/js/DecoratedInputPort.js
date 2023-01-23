@@ -31,6 +31,8 @@ export default draw2d.InputPort.extend({
 
     this.on("connect", (emitter, event) => {
       this.decoration?.setVisible(false)
+      let value = event.connection.getPeerPort(this)?.getValue()
+      this.setValue(value)
     })
 
     this.on("dragend", (emitter, event) => {

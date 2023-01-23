@@ -157,8 +157,6 @@ export default class ProbeWindow {
   addProbe(probeFigure) {
     probeFigure.setIndex(this.probes.length)
 
-    let _this = this
-
     let data = d3.range(this.channelBufferSize).map(() => 0)
     let li = d3.select("#probeSortable").append("li").attr("id", probeFigure.id).attr("index", probeFigure.getIndex())
     let label = li.append("div").text(probeFigure.getText())
@@ -166,14 +164,9 @@ export default class ProbeWindow {
     let svg = li.append("svg:svg").attr("width", this.channelWidth).attr("height", this.channelHeight)
     let vis = svg.append("svg:g")
     let path = d3.line()
-      .x(function (d, i) {
-        return _this.xScale(i)
-      })
-      .y(function (d, i) {
-        return _this.yScale(d)
-      })
+      .x((d, i) => this.xScale(i))
+      .y((d, i) => this.yScale(d))
       .curve(d3.curveStepBefore)
-    //   .interpolate("step-before")
 
     vis.selectAll("path")
       .data([data])

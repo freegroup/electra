@@ -110,7 +110,7 @@ class Application {
       .then((content) => {
         this.view.clear()
         progress.show()
-        return reader.unmarshal(this.view, content, progress.update).then( ()=>{
+        return reader.unmarshal(this.view, content, progress.update.bind(progress)).then( ()=>{
           progress.hide()
           this.view.getCommandStack().markSaveLocation()
           this.view.centerDocument()
