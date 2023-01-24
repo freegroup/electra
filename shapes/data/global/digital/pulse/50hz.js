@@ -7,7 +7,7 @@
 var digital_pulse_50hz = CircuitFigure.extend({
 
    NAME: "digital_pulse_50hz",
-   VERSION: "2.0.343_1136",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
@@ -77,14 +77,15 @@ digital_pulse_50hz = digital_pulse_50hz.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
         this.currentTimer=0;
+        this.value = 0.0
     },
     
     calculate:function()
     {
-      // 2 ticks => 50Hz    
-       this.currentTimer = (this.currentTimer+1)%2; 
+      // 4 ticks => 50Hz    
+       this.currentTimer = (this.currentTimer+1)%5; 
        if(this.currentTimer===0){
-           this.value = !this.value;
+           this.value = 5.0-this.value;
            this.getOutputPort(0).setValue(this.value);
        }
     },
