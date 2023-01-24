@@ -24,9 +24,9 @@ let Reader = draw2d.io.json.Reader.extend({
                 let source = null;
                 let target = null;
                 progressCallback(total, current, o instanceof draw2d.Connection?"connections":"objects")
-                for (let i in element) {
-                  let val = element[i];
-                  if (i === "source") {
+                for (let key in element) {
+                  let val = element[key];
+                  if (key === "source") {
                     node = canvas.getFigure(val.node);
                     if (node === null) {
                       throw "Source figure with id '" + val.node + "' not found"
@@ -35,7 +35,7 @@ let Reader = draw2d.io.json.Reader.extend({
                     if (source === null) {
                       throw "Unable to find source port '" + val.port + "' at figure '" + val.node + "' to unmarschal '" + element.type + "'"
                     }
-                  } else if (i === "target") {
+                  } else if (key === "target") {
                     node = canvas.getFigure(val.node);
                     if (node === null) {
                       throw "Target figure with id '" + val.node + "' not found"
