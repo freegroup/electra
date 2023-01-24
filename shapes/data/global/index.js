@@ -3496,7 +3496,7 @@ digital_display_7Segment = digital_display_7Segment.extend({
         var _this = this;
         this.portLockup.forEach(function(element, index){
             _this.layerAttr(element.s, { 
-                fill  : element.p.getBooleanValue()?"#C21B7A":null,
+                fill  : element.p.getBooleanValue()?"#C21B7A":"#FAFAFA",
                 stroke: element.p.getBooleanValue()?"#000000":"#f4f4f9"
             });
         });

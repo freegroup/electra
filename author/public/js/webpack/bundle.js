@@ -4468,8 +4468,10 @@ growPolicy.growFactor = 1.5;
       }
     });
     this.on("connect", function (emitter, event) {
-      var _this$decoration2;
+      var _this$decoration2, _event$connection$get;
       (_this$decoration2 = _this.decoration) === null || _this$decoration2 === void 0 ? void 0 : _this$decoration2.setVisible(false);
+      var value = (_event$connection$get = event.connection.getPeerPort(_this)) === null || _event$connection$get === void 0 ? void 0 : _event$connection$get.getValue();
+      _this.setValue(value);
     });
     this.on("dragend", function (emitter, event) {
       var _this$decoration3;

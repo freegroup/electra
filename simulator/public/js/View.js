@@ -591,11 +591,11 @@ export default draw2d.Canvas.extend({
 
       if(value === undefined ||  value === null){
         // do not transfer the value if the source is "disconnected"
-        line.setColor(colors.unconnected)
+        line.setColor(colors.draw2d.unconnected)
       }
       else {
         inPort.setValue(value)
-        line.setColor(value ? colors.high : colors.low)
+        line.setColor(value ? colors.draw2d.high : colors.draw2d.low)
       }
     })
 
@@ -693,10 +693,10 @@ export default draw2d.Canvas.extend({
       let outPort = line.getSource()
       let value = outPort.getValue()
       if(value === undefined ||  value === null){
-        line.setColor(colors.unconnected)
+        line.setColor(colors.draw2d.unconnected)
       }
       else {
-        line.setColor(value ? colors.high : colors.low)
+        line.setColor(value ? colors.draw2d.high : colors.draw2d.low)
       }
     })
   },

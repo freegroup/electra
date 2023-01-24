@@ -22,11 +22,14 @@ export default draw2d.SetFigure.extend({
   },
 
   layerAttr: function (name, attributes) {
-    this.svgNodes?.forEach( (shape) => {
-      if (shape.data("name") === name) {
-        shape.attr(attributes)
-      }
-    })
+    //this.layerGet(name)?.attr(attributes)
+    for( let key in attributes){
+      let node = this.layerGet(name)?.node
+      if(key === "text")
+        node?node.children[0].innerHTML= attributes[key]: void(0)
+      else
+        node?.setAttribute(key, attributes[key])
+    }
   },
 
   layerShow: function (name, flag, duration) {

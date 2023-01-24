@@ -74,6 +74,16 @@ export default draw2d.Connection.extend({
     }
   },
 
+  setColor: function(color) {
+    try {
+      this.color = color
+      this.shape?.[1]?.node.setAttribute("stroke", this.color.hash())
+    }
+    catch(e){
+      console.log(color, e)
+    }
+  },
+
   /**
    * @method
    * Return an objects with all important attributes for XML or JSON serialization
