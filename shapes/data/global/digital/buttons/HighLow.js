@@ -91,7 +91,7 @@ digital_buttons_HighLow = digital_buttons_HighLow.extend({
             this.value = !this.value;
             this.layerShow("low" , !this.value, 100);
             this.layerShow("high",  this.value, 100);
-            console.log("click---------------------------------------------------------------")
+            this.getOutputPort(0).setValue(this.value);
         });
 
         this.on("added",()=>{
@@ -99,12 +99,5 @@ digital_buttons_HighLow = digital_buttons_HighLow.extend({
             this.layerShow("high",  this.value);
             this.getOutputPort(0).setValue(this.value);
         });
-    },
-    
-    calculate: function()
-    {
-        // transfer the new state of the button with the next clock cycle
-        this.getOutputPort(0).setValue(this.value);
     }
-
 });
