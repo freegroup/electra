@@ -13,7 +13,6 @@ export default draw2d.SetFigure.extend({
     this.on("dblclick", () => markdownDialog.show(this) )
   },
 
-
   applyAlpha: function () {
   },
 
@@ -22,29 +21,32 @@ export default draw2d.SetFigure.extend({
   },
 
   layerAttr: function (name, attributes) {
-    //this.layerGet(name)?.attr(attributes)
-    for( let key in attributes){
-      let node = this.layerGet(name)?.node
-      if(key === "text")
-        node?node.children[0].innerHTML= attributes[key]: void(0)
-      else
-        node?.setAttribute(key, attributes[key])
+    this.layerGet(name)?.attr(attributes)
+    // text layout do not work correct. getBBox returns old values
+    /*
+    let node = this.layerGet(name)?.node
+    if(node) {
+      for( let key in attributes){
+        if(key === "text")
+          node.children[0].innerHTML= attributes[key]
+        else
+          node.setAttribute(key, attributes[key])
+      }
     }
+    */
   },
 
   layerShow: function (name, flag, duration) {
     if (this.svgNodes === null) return
 
     if (duration) {
-      this.svgNodes.forEach(function (node) {
+      this.svgNodes.forEach((node) => {
         if (node.data("name") === name) {
           if (flag) {
             node.attr({opacity: 0}).show().animate({opacity: 1}, duration)
           }
           else {
-            node.animate({opacity: 0}, duration, function () {
-              this.hide()
-            })
+            node.animate({opacity: 0}, duration, () => this.hide())
           }
         }
       })
@@ -159,14 +161,14 @@ export default draw2d.SetFigure.extend({
 
     // and add all children of the JSON document.
     //
-    $.each(memento.labels,  (i, json) => {
+    memento.labels?.forEach( json => {
       // create the figure stored in the JSON
-      let figure = eval("new " + json.type + "()")
+      let figure = eval(`new ${json.type}()`)
       // apply all attributes
       figure.attr(json)
 
       // instantiate the locator
-      let locator = eval("new " + json.locator + "()")
+      let locator = eval(`new ${json.locator}()`)
       if(json.locatorAttr) {
         locator.attr(json.locatorAttr)
       }
@@ -174,7 +176,7 @@ export default draw2d.SetFigure.extend({
       this.add(figure, locator)
     })
 
-    $.each(memento.inputDefaults,  (i, d) => {
+    memento.inputDefaults?.forEach ( (d,i) => {
       // create the figure stored in the JSON
       let p = this.getInputPort(i)
       if(d.useDefaultValue){
@@ -184,4 +186,5 @@ export default draw2d.SetFigure.extend({
     })
   }
 })
+
 

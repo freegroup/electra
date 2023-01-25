@@ -8,39 +8,38 @@ let Reader = draw2d.io.json.Reader.extend({
     //
     unmarshal: async function(canvas, json, progressCallback)
     {
-      let _this = this
       json = json.draw2d
       progressCallback ??= ()=>{}
 
       let total = json.length
       let current = 0
-      function nextElement(element) {
+      let nextElement = (element) => {
         return new Promise( (resolve,reject) => {
             requestIdleCallback( ()=> {
               ++current
               try {
                 let node = null
-                let o = _this.createFigureFromType(element.type);
+                let o = this.createFigureFromType(element.type)
                 let source = null;
                 let target = null;
-                progressCallback(total, current, o instanceof draw2d.Connection?"connections":"objects")
+                progressCallback(total, current, element.type)
                 for (let key in element) {
-                  let val = element[key];
+                  let val = element[key]
                   if (key === "source") {
-                    node = canvas.getFigure(val.node);
+                    node = canvas.getFigure(val.node)
                     if (node === null) {
                       throw "Source figure with id '" + val.node + "' not found"
                     }
-                    source = node.getPort(val.port);
+                    source = node.getPort(val.port)
                     if (source === null) {
                       throw "Unable to find source port '" + val.port + "' at figure '" + val.node + "' to unmarschal '" + element.type + "'"
                     }
                   } else if (key === "target") {
-                    node = canvas.getFigure(val.node);
+                    node = canvas.getFigure(val.node)
                     if (node === null) {
                       throw "Target figure with id '" + val.node + "' not found"
                     }
-                    target = node.getPort(val.port);
+                    target = node.getPort(val.port)
                     if (target === null) {
                       throw "Unable to find target port '" + val.port + "' at figure '" + val.node + "' to unmarschal '" + element.type + "'"
                     }
@@ -71,25 +70,12 @@ let Reader = draw2d.io.json.Reader.extend({
         //
         json.forEach(element => {
           if (typeof element.composite !== "undefined") {
-            let figure = canvas.getFigure(element.id);
-            if (figure === null) {
-              figure = canvas.getLine(element.id);
-            }
-            let group = canvas.getFigure(element.composite);
+            let figure = canvas.getFigure(element.id) || canvas.getLine(element.id);
+            let group  = canvas.getFigure(element.composite);
             group.assignFigure(figure);
           }
         });
   
-        // recalculate all crossings and repaint the connections with
-        // possible crossing decoration
-        /*
-        canvas.calculateConnectionIntersection();
-        canvas.getLines().each((i, line) => {
-          line.svgPathString = null;
-          line.repaint();
-        });
-        canvas.linesToRepaintAfterDragDrop = canvas.getLines().clone();
-        */
         canvas.showDecoration();
 
         // restore the UI state
