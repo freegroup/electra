@@ -59,7 +59,7 @@ var digital_gate_IEC60617_12_AND = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'&');
-       shape.attr({"x":9.5,"y":19,"text-anchor":"start","text":"&","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":9.5,"y":20,"text-anchor":"start","text":"&","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
@@ -90,7 +90,7 @@ digital_gate_IEC60617_12_AND = digital_gate_IEC60617_12_AND.extend({
         var i1 = this.getInputPort(0);
         var i2 = this.getInputPort(1);
         var o1 = this.getOutputPort(0);
-        
+        console.log(i1.getValue(), i2.getValue())
         o1.setValue(i1.getBooleanValue() && i2.getBooleanValue());
     }
 });
