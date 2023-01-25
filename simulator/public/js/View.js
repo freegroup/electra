@@ -573,13 +573,13 @@ export default draw2d.Canvas.extend({
     // transport the value from outputPort to inputPort
     //
     this.getLines().each( (i, line) => {
-      this.value = line.getSource().getValue()
-      if(this.value === undefined ||  this.value === null){
+      line.value = line.getSource().getValue()
+      if(line.value === undefined ||  line.value === null){
         // do not transfer the value if the source is "disconnected"
         line.setColor(colors.draw2d.unconnected)
       }
       else {
-        line.setColor(this.value ? colors.draw2d.high : colors.draw2d.low)
+        line.setColor(line.value ? colors.draw2d.high : colors.draw2d.low)
       }
     })
 
