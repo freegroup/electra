@@ -6101,7 +6101,6 @@ digital_gate_IEC60617_12_AND = digital_gate_IEC60617_12_AND.extend({
         var i1 = this.getInputPort(0);
         var i2 = this.getInputPort(1);
         var o1 = this.getOutputPort(0);
-        console.log(i1.getValue(), i2.getValue())
         o1.setValue(i1.getBooleanValue() && i2.getBooleanValue());
     }
 });
@@ -9134,6 +9133,21 @@ var digital_register_8_BitRegister = CircuitFigure.extend({
        shape.attr({"x":39.05494616699252,"y":77.64593749999949,"text-anchor":"start","text":"Q1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","q1");
        
+       // q5
+       shape = this.canvas.paper.text(0,0,'Q5');
+       shape.attr({"x":39.05494616699252,"y":157.6459374999995,"text-anchor":"start","text":"Q5","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q5");
+       
+       // q6
+       shape = this.canvas.paper.text(0,0,'Q6');
+       shape.attr({"x":39.05494616699252,"y":177.6459374999995,"text-anchor":"start","text":"Q6","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q6");
+       
+       // q7
+       shape = this.canvas.paper.text(0,0,'Q7');
+       shape.attr({"x":39.05494616699252,"y":197.6459374999995,"text-anchor":"start","text":"Q7","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","q7");
+       
        // d1
        shape = this.canvas.paper.text(0,0,'D1');
        shape.attr({"x":7,"y":77.72368749999987,"text-anchor":"start","text":"D1","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
@@ -9154,45 +9168,30 @@ var digital_register_8_BitRegister = CircuitFigure.extend({
        shape.attr({"x":7,"y":137.6459374999995,"text-anchor":"start","text":"D4","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","d4");
        
-       // q5
-       shape = this.canvas.paper.text(0,0,'Q5');
-       shape.attr({"x":39.05494616699252,"y":157.6459374999995,"text-anchor":"start","text":"Q5","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q5");
-       
-       // q6
-       shape = this.canvas.paper.text(0,0,'Q6');
-       shape.attr({"x":39.05494616699252,"y":177.6459374999995,"text-anchor":"start","text":"Q6","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q6");
-       
-       // q7
-       shape = this.canvas.paper.text(0,0,'Q7');
-       shape.attr({"x":39.05494616699252,"y":197.6459374999995,"text-anchor":"start","text":"Q7","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","q7");
-       
        // q8
        shape = this.canvas.paper.text(0,0,'Q8');
        shape.attr({"x":39.05494616699252,"y":217.6459374999995,"text-anchor":"start","text":"Q8","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","q8");
        
-       // d4
+       // d5
        shape = this.canvas.paper.text(0,0,'D5');
        shape.attr({"x":7.5,"y":157.4662499999995,"text-anchor":"start","text":"D5","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","d4");
+       shape.data("name","d5");
        
-       // d4
+       // d6
        shape = this.canvas.paper.text(0,0,'D6');
        shape.attr({"x":8,"y":177.6459374999995,"text-anchor":"start","text":"D6","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","d4");
+       shape.data("name","d6");
        
-       // d4
+       // d7
        shape = this.canvas.paper.text(0,0,'D7');
        shape.attr({"x":7,"y":197.6459374999995,"text-anchor":"start","text":"D7","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","d4");
+       shape.data("name","d7");
        
-       // d4
-       shape = this.canvas.paper.text(0,0,'D4');
-       shape.attr({"x":7,"y":217.6459374999995,"text-anchor":"start","text":"D4","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","d4");
+       // d8
+       shape = this.canvas.paper.text(0,0,'D8');
+       shape.attr({"x":7,"y":217.6459374999995,"text-anchor":"start","text":"D8","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","d8");
        
        // enable
        shape = this.canvas.paper.text(0,0,'reset');
