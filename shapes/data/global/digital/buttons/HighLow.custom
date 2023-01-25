@@ -27,11 +27,5 @@ digital_buttons_HighLow = digital_buttons_HighLow.extend({
             this.layerShow("high",  this.value);
             this.getOutputPort(0).setValue(this.value);
         });
-    },
-    
-    calculate: function()
-    {
-        // do nothing per default;
     }
-
 });

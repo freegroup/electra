@@ -33,7 +33,7 @@ export default draw2d.Connection.extend({
   },
 
   getValue: function () {
-    return this.getSource().getValue()
+    return this.value
   },
 
   /**

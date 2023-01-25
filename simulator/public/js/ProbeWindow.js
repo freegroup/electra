@@ -115,7 +115,7 @@ export default class ProbeWindow {
     // or if we change/delete propes async.
     //
     if(this.visible === true){
-      this.show()
+      //this.show()
     }
   }
 
@@ -155,6 +155,7 @@ export default class ProbeWindow {
   }
 
   addProbe(probeFigure) {
+    console.log("addProbe", probeFigure.text)
     probeFigure.setIndex(this.probes.length)
 
     let data = d3.range(this.channelBufferSize).map(() => 0)

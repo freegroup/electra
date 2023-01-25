@@ -570,6 +570,19 @@ export default draw2d.Canvas.extend({
   },
 
   _calculate: function () {
+    // transport the value from outputPort to inputPort
+    //
+    this.getLines().each( (i, line) => {
+      this.value = line.getSource().getValue()
+      if(this.value === undefined ||  this.value === null){
+        // do not transfer the value if the source is "disconnected"
+        line.setColor(colors.draw2d.unconnected)
+      }
+      else {
+        line.setColor(this.value ? colors.draw2d.high : colors.draw2d.low)
+      }
+    })
+
     // call the "calculate" method if given to calculate the output-port values
     //
     this.getFigures().each((i, figure) => {
@@ -584,27 +597,15 @@ export default draw2d.Canvas.extend({
     // transport the value from outputPort to inputPort
     //
     this.getLines().each( (i, line) => {
-      let outPort = line.getSource()
-      let inPort = line.getTarget()
-
-      let value = outPort.getValue()
-
-      if(value === undefined ||  value === null){
-        // do not transfer the value if the source is "disconnected"
-        line.setColor(colors.draw2d.unconnected)
-      }
-      else {
-        inPort.setValue(value)
-        line.setColor(value ? colors.draw2d.high : colors.draw2d.low)
-      }
+      line.getTarget().setValue(line.value)
     })
+
+    this.probeWindow.tick(this.timerBase)
 
     if (this.simulate === true) {
       //     setImmediate(this.animationFrameFunc);
       setTimeout(this.animationFrameFunc, this.timerBase)
     }
-
-    this.probeWindow.tick(this.timerBase)
   },
 
   /**

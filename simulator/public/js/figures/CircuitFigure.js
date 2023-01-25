@@ -46,7 +46,7 @@ export default draw2d.SetFigure.extend({
             node.attr({opacity: 0}).show().animate({opacity: 1}, duration)
           }
           else {
-            node.animate({opacity: 0}, duration, () => this.hide())
+            node.animate({opacity: 0}, duration, () => node.hide())
           }
         }
       })

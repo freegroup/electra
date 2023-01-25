@@ -1483,10 +1483,10 @@ var digital_buttons_HighLow = CircuitFigure.extend({
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:42,height:42.5},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:42,height:43},attr), setter, getter);
      var port;
      // Port
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.80952380952381, y: 52.94117647058824 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.80952380952381, y: 52.32558139534884 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
@@ -1497,7 +1497,7 @@ var digital_buttons_HighLow = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 42;
-      this.originalHeight= 42.5;
+      this.originalHeight= 43;
       return shape;
    },
 
@@ -1506,7 +1506,7 @@ var digital_buttons_HighLow = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L42,0 L42,42.5 L0,42.5");
+       shape = this.canvas.paper.path("M0,0 L42,0 L42,43 L0,43");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -1517,7 +1517,7 @@ var digital_buttons_HighLow = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'0');
-       shape.attr({"x":4,"y":32,"text-anchor":"start","text":"0","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4,"y":32.25,"text-anchor":"start","text":"0","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Circle
@@ -1569,13 +1569,7 @@ digital_buttons_HighLow = digital_buttons_HighLow.extend({
             this.layerShow("high",  this.value);
             this.getOutputPort(0).setValue(this.value);
         });
-    },
-    
-    calculate: function()
-    {
-        // do nothing per default;
     }
-
 });
 
 
@@ -6076,7 +6070,7 @@ var digital_gate_IEC60617_12_AND = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'&');
-       shape.attr({"x":9.5,"y":19,"text-anchor":"start","text":"&","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":9.5,"y":20,"text-anchor":"start","text":"&","font-family":"\"Arial\"","font-size":20,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
@@ -6107,7 +6101,7 @@ digital_gate_IEC60617_12_AND = digital_gate_IEC60617_12_AND.extend({
         var i1 = this.getInputPort(0);
         var i2 = this.getInputPort(1);
         var o1 = this.getOutputPort(0);
-        
+        console.log(i1.getValue(), i2.getValue())
         o1.setValue(i1.getBooleanValue() && i2.getBooleanValue());
     }
 });
