@@ -21,19 +21,21 @@ export default draw2d.SetFigure.extend({
   },
 
   layerAttr: function (name, attributes) {
-    this.layerGet(name)?.attr(attributes)
-    // text layout do not work correct. getBBox returns old values
-    /*
-    let node = this.layerGet(name)?.node
-    if(node) {
-      for( let key in attributes){
-        if(key === "text")
-          node.children[0].innerHTML= attributes[key]
-        else
-          node.setAttribute(key, attributes[key])
+    if(this.canvas?.isSimulationRunning()){
+      // text layout do not work correct. getBBox returns old values
+      let node = this.layerGet(name)?.node
+      if(node) {
+        for( let key in attributes){
+          if(key === "text")
+            node.children[0].innerHTML= attributes[key]
+          else
+            node.setAttribute(key, attributes[key])
+        }
       }
     }
-    */
+    else {
+      this.layerGet(name)?.attr(attributes)
+    }
   },
 
   layerShow: function (name, flag, duration) {
