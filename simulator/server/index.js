@@ -25,6 +25,8 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 const app = express();
 
 app.use('/simulator', express.static(scriptPath+'/../public'));
+/* legacy. some posting in different electronic blogs */
+app.use('/circuit', express.static(scriptPath+'/../public'));
 
 // Start Server
 // "localhost" => Service ist nicht von ausserhalb aufrufbar.
