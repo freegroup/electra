@@ -288,12 +288,6 @@ testShape = testShape.extend({
 
 
 <script id="shape-base-template" type="text/js-template">
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var {{{className}}} = CircuitFigure.extend({
 
    NAME: "{{{className}}}",
@@ -301,10 +295,11 @@ var {{{className}}} = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:{{width}},height:{{height}} }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:{{width}},height:{{height}}},attr), setter, getter);
-     var port;
+     let port;
      {{#ports}}
      // {{{name}}}
      port = this.{{{method}}}({{{type}}}, new draw2d.layout.locator.XYRelPortLocator({x: {{x}}, y: {{y}} }));
@@ -312,6 +307,9 @@ var {{{className}}} = CircuitFigure.extend({
      port.setBackgroundColor("{{color}}");
      port.setName("{{name}}");
      port.setMaxFanOut({{fanout}});
+     this.read["{{name}}"] = port.getValue.bind(port)
+     this.write["{{name}}"]= port.setValue.bind(port)
+
      {{/ports}}
    },
 

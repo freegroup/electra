@@ -15,6 +15,21 @@
     "imagePath": "analog/math/Mean.png"
   },
   {
+    "name": "analog_math_Product",
+    "tags": [
+      "analog",
+      "math",
+      "Product"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Product.js",
+    "displayName": "Product",
+    "basedir": "analog/math",
+    "shapePath": "analog/math/Product.shape",
+    "imagePath": "analog/math/Product.png"
+  },
+  {
     "name": "analog_SignalInverter",
     "tags": [
       "analog",
@@ -41,6 +56,36 @@
     "basedir": "analog",
     "shapePath": "analog/SignalSwitch.shape",
     "imagePath": "analog/SignalSwitch.png"
+  },
+  {
+    "name": "analog_sink_Sparkline",
+    "tags": [
+      "analog",
+      "sink",
+      "Sparkline"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Sparkline.js",
+    "displayName": "Sparkline",
+    "basedir": "analog/sink",
+    "shapePath": "analog/sink/Sparkline.shape",
+    "imagePath": "analog/sink/Sparkline.png"
+  },
+  {
+    "name": "analog_source_Slider",
+    "tags": [
+      "analog",
+      "source",
+      "Slider"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Slider.js",
+    "displayName": "Slider",
+    "basedir": "analog/source",
+    "shapePath": "analog/source/Slider.shape",
+    "imagePath": "analog/source/Slider.png"
   },
   {
     "name": "digital_alu_FullAdder",
@@ -1055,21 +1100,6 @@
     "imagePath": "digital/signal/VerticalBus.png"
   },
   {
-    "name": "digital_timer_Delay",
-    "tags": [
-      "digital",
-      "timer",
-      "Delay"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Delay.js",
-    "displayName": "Delay",
-    "basedir": "digital/timer",
-    "shapePath": "digital/timer/Delay.shape",
-    "imagePath": "digital/timer/Delay.png"
-  },
-  {
     "name": "drawing_Circle",
     "tags": [
       "drawing",
@@ -1752,48 +1782,6 @@
     "basedir": "widget",
     "shapePath": "widget/Markdown.shape",
     "imagePath": "widget/Markdown.png"
-  },
-  {
-    "name": "widget_PushButton",
-    "tags": [
-      "widget",
-      "PushButton"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "PushButton.js",
-    "displayName": "PushButton",
-    "basedir": "widget",
-    "shapePath": "widget/PushButton.shape",
-    "imagePath": "widget/PushButton.png"
-  },
-  {
-    "name": "widget_Slider",
-    "tags": [
-      "widget",
-      "Slider"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Slider.js",
-    "displayName": "Slider",
-    "basedir": "widget",
-    "shapePath": "widget/Slider.shape",
-    "imagePath": "widget/Slider.png"
-  },
-  {
-    "name": "widget_Sparkline",
-    "tags": [
-      "widget",
-      "Sparkline"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Sparkline.js",
-    "displayName": "Sparkline",
-    "basedir": "widget",
-    "shapePath": "widget/Sparkline.shape",
-    "imagePath": "widget/Sparkline.png"
   },
   {
     "name": "widget_Text",

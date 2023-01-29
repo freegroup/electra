@@ -1,0 +1,32 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+analog_math_Product = analog_math_Product.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        let v1 = this.read["input1"]();
+        let v2 = this.read["input2"]();
+        this.write["output"](v1*v2);
+    }
+});

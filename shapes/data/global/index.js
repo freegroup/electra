@@ -157,6 +157,114 @@ analog_math_Mean = analog_math_Mean.extend({
 });
 
 
+var analog_math_Product = CircuitFigure.extend({
+
+   NAME: "analog_math_Product",
+   VERSION: "local-version",
+
+   init:function(attr, setter, getter)
+   {
+     this._super( {...attr, stroke:0, bgColor:null, width:40,height:40 }, setter, getter);
+     this.read = {};
+     this.write = {};
+
+     let port;
+     // output
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 52.5 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("output");
+     port.setMaxFanOut(20);
+     this.read["output"] = port.getValue.bind(port)
+     this.write["output"]= port.setValue.bind(port)
+
+     // input1
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 25.48828125 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input1");
+     port.setMaxFanOut(20);
+     this.read["input1"] = port.getValue.bind(port)
+     this.write["input1"]= port.setValue.bind(port)
+
+     // input2
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 75.48828125 }));
+     port.setConnectionDirection(3);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("input2");
+     port.setMaxFanOut(20);
+     this.read["input2"] = port.getValue.bind(port)
+     this.write["input2"]= port.setValue.bind(port)
+
+
+   },
+
+   createShapeElement : function()
+   {
+      var shape = this._super();
+      this.originalWidth = 40;
+      this.originalHeight= 40;
+      return shape;
+   },
+
+   createSet: function()
+   {
+       this.canvas.paper.setStart();
+       var shape = null;
+       // BoundingBox
+       shape = this.canvas.paper.path("M0,0 L40,0 L40,40 L0,40");
+       shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
+       shape.data("name","BoundingBox");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0,2Q0,0 2, 0L38,0Q40,0 40, 2L40,38Q40,40 38, 40L2,40Q0,40 0, 38L0,2');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'X');
+       shape.attr({"x":12.5,"y":20.390625,"text-anchor":"start","text":"X","font-family":"\"Arial\"","font-size":23,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+
+       return this.canvas.paper.setFinish();
+   }
+});
+
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+analog_math_Product = analog_math_Product.extend({
+
+    init: function(attr, setter, getter){
+        this._super(attr, setter, getter);
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @param {Object} context context where objects can store or handover global variables to other objects.
+     *  @required
+     **/
+    calculate:function( context)
+    {
+        let v1 = this.read["input1"]();
+        let v2 = this.read["input2"]();
+        this.write["output"](v1*v2);
+    }
+});
+
+
 // Generated Code for the Draw2D touch HTML5 lib.
 // File will be generated if you save the *.shape file.
 //
@@ -396,6 +504,176 @@ analog_SignalSwitch = analog_SignalSwitch.extend({
     }
 
 });
+
+
+
+var analog_sink_Sparkline = draw2d.shape.diagram.Sparkline.extend({
+
+    NAME : "analog_sink_Sparkline",
+
+    init : function(attr)
+    {
+        this._super(attr)
+        this.maxValues = 100
+        this.min = 0
+        this.max = 5
+        this.padding=4
+        this.persistPorts = false
+
+        this.inputPort = new DecoratedInputPort()
+        this.inputPort.setName("input")
+        this.inputPort.setMaxFanOut(1)
+
+        this.outputPort = new DecoratedOutputPort()
+        this.outputPort.setName("output")
+
+        this.setBackgroundColor("#FF765E")
+        this.setRadius(5)
+        this.addPort(this.inputPort)
+        this.addPort(this.outputPort)
+        this.setDimension(250,50)
+
+        // get the connected port and forward the port to the related party ( SignalSource shape)
+        // The Sparkline forwards the original signal without any delay. The signal runtime is the same if the
+        // Sparkline in between a connect or not
+        this.inputPort.on("connect", (emitter, event)=>{
+            let signalPort = event.connection.getSource()
+            this.outputPort.originalGetValue = this.outputPort.getValue
+            this.outputPort.originalGetBooleanValue = this.outputPort.getBooleanValue
+            this.outputPort.getValue = ()=>{
+                return signalPort.getValue()
+            }
+            this.outputPort.getBooleanValue = ()=>{
+                return signalPort.getBooleanValue()
+            }
+        })
+        this.inputPort.on("disconnect", (emitter, event)=>{
+            this.outputPort.getValue = this.outputPort.originalGetValue
+            this.outputPort.getBooleanValue = this.outputPort.originalGetBooleanValue
+        })
+    },
+
+    setData:function( data)
+    {
+        this._super(data)
+        this.cache= {}
+        this.min = 0
+        this.max = 5
+        this.repaint()
+    },
+
+
+    /**
+     * @method
+     *
+     * Update the chart with the current value of the input port.
+     *
+     */
+    calculate:function(context)
+    {
+        let port = this.getInputPort(0)
+        let value=port.getValue() || 0.0
+        this.data.push(value===null?0:value)
+        if(this.data.length>this.maxValues) {
+            this.data.shift()
+        }
+        this.setData(this.data)
+    },
+
+    /**
+     *  Called if the simulation mode is starting
+     *  @required
+     **/
+    onStart:function( context )
+    {
+    },
+
+    /**
+     *  Called if the simulation mode is stopping
+     *  @required
+     **/
+    onStop:function( context )
+    {
+    },
+
+    /**
+     * Get the simulator a hint which kind of hardware the shapes requires or supports
+     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost
+     * and your are running a circuit which needs this kind of hardware...
+     **/
+    getRequiredHardware: function(){
+        return {
+            arduino: false
+        }
+    }
+});
+
+
+
+var analog_source_Slider = draw2d.shape.widget.Slider.extend({
+
+    NAME: "analog_source_Slider",
+    VERSION: "1.0.0",
+
+    init: function () {
+        this._super({bold: false, fontFamily: "Verdana", fontSize: 10, bgColor: "#fafafa"});
+
+        this.persistPorts = false
+
+        this.outputPort = new DecoratedOutputPort()
+        this.outputPort.setName("output")
+        this.addPort(this.outputPort)
+
+        this.on("change:userData.value", (figure, event) => {
+            this.setValue(parseInt(event.value))
+        })
+
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.on("change:value", (element, event) => {
+            let value = parseInt(event.value); // 0..100
+            value = 5.0 / 100.0 * value;       // 0..5
+            this.getOutputPort(0).setValue(value);
+        });
+    },
+
+    onStart: function (context) {
+        let value = 5.0 / 100.0 * this.getValue();       // 0..5
+        this.getOutputPort(0).setValue(value);
+    },
+
+
+    onPanning: function (dx, dy, dx2, dy2) {
+        // calculate the current position of the mouse pos
+        //
+        let width = this.getWidth()
+        let sliderWidth = width - this.padding.left - this.padding.right
+
+        let figurePos = Math.min(width, Math.max(0, this.panningX + dx))
+        let sliderPos = Math.min(width - this.padding.left - this.padding.right, figurePos)
+
+        this.setValue(100 / sliderWidth * sliderPos)
+    },
+
+
+    getPersistentAttributes: function ()
+    {
+        let memento = this._super()
+        memento.value = this.getValue()
+        return memento
+    },
+
+    setPersistentAttributes: function (memento)
+    {
+        this._super(memento)
+        if(memento.value){
+            this.setValue(parseInt(memento.value))
+        }
+    }
+
+});
+
+
 
 
 // Generated Code for the Draw2D touch HTML5 lib.
@@ -10817,175 +11095,6 @@ var digital_signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
 });
 
 
-
-
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
-var digital_timer_Delay = CircuitFigure.extend({
-
-   NAME: "digital_timer_Delay",
-   VERSION: "2.0.343_1136",
-
-   init:function(attr, setter, getter)
-   {
-     var _this = this;
-
-     this._super( $.extend({stroke:0, bgColor:null, width:84,height:69},attr), setter, getter);
-     var port;
-     // output_0
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.59523809523809, y: 52.11524637681209 }));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("output_0");
-     port.setMaxFanOut(20);
-     // input_0
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -5.357142857142857, y: 52.11524637681209 }));
-     port.setConnectionDirection(3);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("input_0");
-     port.setMaxFanOut(20);
-   },
-
-   createShapeElement : function()
-   {
-      var shape = this._super();
-      this.originalWidth = 84;
-      this.originalHeight= 69;
-      return shape;
-   },
-
-   createSet: function()
-   {
-       this.canvas.paper.setStart();
-       var shape = null;
-       // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L84,0 L84,69 L0,69");
-       shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
-       shape.data("name","BoundingBox");
-       
-       // Rectangle
-       shape = this.canvas.paper.path('M84,67Q84,69 82, 69L2,69Q0,69 0, 67L0,2Q0,0 2, 0L82,0Q84,0 84, 2L84,67');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
-       
-       // Label
-       shape = this.canvas.paper.text(0,0,'Delay');
-       shape.attr({"x":39,"y":37.1796875,"text-anchor":"start","text":"Delay","font-family":"\"Arial\"","font-size":11,"stroke":"#000000","fill":"#D9D9D9","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
-       // Line
-       shape = this.canvas.paper.path('M9.916348593882503 20.631087969915825L9.981884593883478,48.33643196991761');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(168,168,168,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M35.98444459388338 57.68939196991232L35.41100459388326,27.297071969915123');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(201,201,201,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // pulseline_top
-       shape = this.canvas.paper.path('M4.002237499998955 19.776879999997618L9.309437499999149,19.776879999997618Q11.309437499999149,19.776879999997618 11.309437499999017, 17.776879999997618L11.30943749999837,8.006239999996978Q11.30943749999824,6.006239999996978 13.30931793710452, 6.0281086368907495L39.27579706289352,6.312051363103535Q41.2756774999998,6.333919999997306 41.2756774999998, 8.333919999997306L41.2756774999998,16.992499999997563Q41.2756774999998,18.992499999997563 43.275583463722825, 19.011894232776932L75.06557749999865,19.32017999999698');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","pulseline_top");
-       
-       // pulseline_bottom
-       shape = this.canvas.paper.path('M3.1039974999966944 59.194799999995666L33.642557499997565,59.194799999995666Q35.642557499997565,59.194799999995666 35.642557499997565, 57.194799999995666L35.642557499997565,48.40719999999601Q35.642557499997565,46.40719999999601 37.64243793710385, 46.38533136310224L63.608917062891024,46.10138863688945Q65.60879749999731,46.07951999999568 65.60879749999731, 48.07951999999568L65.60879749999731,56.73809999999594Q65.60879749999731,58.73809999999594 67.60879749999731, 58.738099999995804L78.75485749999643,58.73809999999503');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","pulseline_bottom");
-       
-       // Line
-       shape = this.canvas.paper.path('M11.086228750001283 33.84501399999499L11.41390875000252,42.430230000002666');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,5,105,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M33.25262875000226 38.00094999999965L30.385428749999846,42.22802200000024');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,5,105,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M29.60130075000143 34.49864599999819L33.074708750000354,37.873749999997926');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,5,105,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M11.171028750002733 38.167670000003454L33.12558875000104,38.495350000001054');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,5,105,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-
-       return this.canvas.paper.setFinish();
-   }
-});
-
-/**
- * by 'Draw2D Shape Designer'
- *
- * Custom JS code to tweak the standard behaviour of the generated
- * shape. add your custome code and event handler here.
- *
- *
- */
-digital_timer_Delay = digital_timer_Delay.extend({
-
-    init: function(attr, setter, getter){
-        this._super(attr, setter, getter);
-
-        this.on("change:userData.delay",(emitter, event)=>{
-            var value = event.value;
-            this.delayedValues = []; 
-            this.delayedValues.length = parseInt(parseInt(value)/10);
-            this.pointer=0;
-            
-        });
-        this.attr({
-            resizeable:false,
-            "userData.delay":500
-        });
-        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-    },
-    
-    /**
-     * called every '10 [ms]' from the application.
-     * 
-     **/
-    calculate:function(context)
-    {
-       this.getOutputPort(0).setValue(this.delayedValues[this.pointer]);
-       this.delayedValues[this.pointer] = this.getInputPort(0).getBooleanValue();
-       this.pointer = (this.pointer+1)%this.delayedValues.length; 
-    },
-    
-    onStart:function(context)
-    {
-        this.currentTimer=0;
-    },
-    
-    onStop:function(context)
-    {
-    },
-
-    getParameterSettings:function()
-    {
-        return [
-        {
-            name:"delay",
-            label:"Delay [ms]",
-            property:{
-                type: "integer",
-                min: 10,
-                max: 15000,
-                increment:10
-        }
-        
-        }];
-    }
-
-});
 
 
 
@@ -22521,298 +22630,6 @@ var widget_Markdown = draw2d.shape.basic.Rectangle.extend({
 
 });
 
-
-
-
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
-var widget_PushButton = CircuitFigure.extend({
-
-   NAME: "widget_PushButton",
-   VERSION: "2.0.343_1136",
-
-   init:function(attr, setter, getter)
-   {
-     var _this = this;
-
-     this._super( $.extend({stroke:0, bgColor:null, width:35.04322500000035,height:28.93699999999899},attr), setter, getter);
-     var port;
-     // Port
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 131.7741517796944, y: 82.88350554653319 }));
-     port.setConnectionDirection(1);
-     port.setBackgroundColor("#37B1DE");
-     port.setName("Port");
-     port.setMaxFanOut(20);
-   },
-
-   createShapeElement : function()
-   {
-      var shape = this._super();
-      this.originalWidth = 35.04322500000035;
-      this.originalHeight= 28.93699999999899;
-      return shape;
-   },
-
-   createSet: function()
-   {
-       this.canvas.paper.setStart();
-       var shape = null;
-       // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L35.04322500000035,0 L35.04322500000035,28.93699999999899 L0,28.93699999999899");
-       shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
-       shape.data("name","BoundingBox");
-       
-       // Label
-       shape = this.canvas.paper.ellipse();
-       shape.attr({"rx":4.5,"ry":4,"cx":4.5,"cy":22.98399999999947,"stroke":"none","stroke-width":0,"fill":"rgba(194,27,122,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Label");
-       
-       // Circle
-       shape = this.canvas.paper.ellipse();
-       shape.attr({"rx":4.5,"ry":4,"cx":27.5,"cy":23.48399999999947,"stroke":"none","stroke-width":0,"fill":"rgba(0,0,0,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Circle");
-       
-       // low
-       shape = this.canvas.paper.path('M26.125825000000987,8.735999999999876Q24.125825000000987,8.735999999999876 24.125825000000987, 6.735999999999876L24.125825000000987,2Q24.125825000000987,0 22.125825000000987, 0L11.125825000000987,0Q9.125825000000987,0 9.125825000000987, 2L9.125825000000987,6.735999999999876Q9.125825000000987,8.735999999999876 7.125825000000987, 8.735999999999876L2.299425000001065,8.735999999999876Q0.2994250000010652,8.735999999999876 0.2994250000010652, 10.735999999999876L0.2994250000010652,11.735999999999876Q0.2994250000010652,13.735999999999876 2.299425000001065, 13.735999999999876L30.299425000001065,13.735999999999876Q32.299425000001065,13.735999999999876 32.299425000001065, 11.735999999999876L32.299425000001065,10.735999999999876Q32.299425000001065,8.735999999999876 30.299425000001065, 8.735999999999876L26.125825000000987,8.735999999999876');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","low");
-       
-       // high
-       shape = this.canvas.paper.path('M22.31382500000109,16.235999999999876Q20.50182500000119,16.235999999999876 21.26817190867568, 14.388647187036133L23.359478091326498,9.347352812963743Q24.125825000000987,7.5 22.125825000000987, 7.5L11.125825000000987,7.5Q9.125825000000987,7.5 9.627772390073126, 9.4359878144244L10.888877609928265,14.300012185575476Q11.390825000000405,16.235999999999876 9.390825000000405, 16.235999999999876L2.299425000001065,16.235999999999876Q0.2994250000010652,16.235999999999876 0.2994250000010652, 18.235999999999876L0.2994250000010652,19.235999999999876Q0.2994250000010652,21.235999999999876 2.299425000001065, 21.235999999999876L30.299425000001065,21.235999999999876Q32.299425000001065,21.235999999999876 32.299425000001065, 19.235999999999876L32.299425000001065,18.235999999999876Q32.299425000001065,16.235999999999876 30.299425000001065, 16.235999999999876L26.125825000000987,16.235999999999876Q24.125825000000987,16.235999999999876 22.31382500000109, 16.235999999999876L22.31382500000109,16.235999999999876');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","high");
-       
-       // Line
-       shape = this.canvas.paper.path('M30.043225000000348 23.93699999999899L37.699524999999994,23.93699999999899L45.35582500000055,23.93699999999899');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-
-       return this.canvas.paper.setFinish();
-   }
-});
-
-/**
- * by 'Draw2D Shape Designer'
- *
- * Custom JS code to tweak the standard behaviour of the generated
- * shape. add your custome code and event handler here.
- *
- *
- */
-widget_PushButton = widget_PushButton.extend({
-
-    init: function(attr, setter, getter){
-         this._super(attr, setter, getter);
-
-        this.setResizeable(false);
-        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-        
-        this.value = false;
-        this.on("mousedown",()=>{            
-            this.layerShow("low" , false, 100);
-            this.layerShow("high", true,  100);
-            this.getOutputPort(0).setValue(true);
-        });
-        this.on("mouseup",()=>{            
-            this.value = !this.value;
-            this.layerShow("low" , true,  100);
-            this.layerShow("high", false, 100);
-            this.getOutputPort(0).setValue(false);
-        });
-
-        this.on("added",()=>{
-            this.layerShow("low" , true);
-            this.layerShow("high", false);
-            this.getOutputPort(0).setValue(false);
-        });
-    },
-    
-    calculate: function()
-    {
-        // do nothing per default;
-    }
-
-});
-
-
-var widget_Slider = draw2d.shape.widget.Slider.extend({
-
-    NAME: "widget_Slider",
-    VERSION: "1.0.0",
-
-    init: function () {
-        this._super({bold: false, fontFamily: "Verdana", fontSize: 10, bgColor: "#fafafa"});
-
-        this.persistPorts = false
-
-        this.outputPort = new DecoratedOutputPort()
-        this.outputPort.setName("output")
-        this.addPort(this.outputPort)
-
-        this.on("change:userData.value", (figure, event) => {
-            this.setValue(parseInt(event.value))
-        })
-
-        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-
-        this.on("change:value", (element, event) => {
-            let value = parseInt(event.value); // 0..100
-            value = 5.0 / 100.0 * value;       // 0..5
-            this.getOutputPort(0).setValue(value);
-        });
-    },
-
-    calculate: function (context) {
-    },
-
-    onStart: function (context) {
-        let value = 5.0 / 100.0 * this.getValue();       // 0..5
-        this.getOutputPort(0).setValue(value);
-    },
-
-    onStop: function (context) {
-    },
-
-
-    onPanning: function (dx, dy, dx2, dy2) {
-        // calculate the current position of the mouse pos
-        //
-        let width = this.getWidth()
-        let sliderWidth = width - this.padding.left - this.padding.right
-
-        let figurePos = Math.min(width, Math.max(0, this.panningX + dx))
-        let sliderPos = Math.min(width - this.padding.left - this.padding.right, figurePos)
-
-        this.setValue(100 / sliderWidth * sliderPos)
-    },
-
-
-    getPersistentAttributes: function ()
-    {
-        let memento = this._super()
-        memento.value = this.getValue()
-        return memento
-    },
-
-    setPersistentAttributes: function (memento)
-    {
-        this._super(memento)
-        if(memento.value){
-            this.setValue(parseInt(memento.value))
-        }
-    }
-
-});
-
-
-
-
-
-var widget_Sparkline = draw2d.shape.diagram.Sparkline.extend({
-
-    NAME : "widget_Sparkline",
-
-    init : function(attr)
-    {
-        this._super(attr)
-        this.maxValues = 100
-        this.min = 0
-        this.max = 5
-        this.padding=4
-        this.persistPorts = false
-
-        this.inputPort = new DecoratedInputPort()
-        this.inputPort.setName("input")
-        this.inputPort.setMaxFanOut(1)
-
-        this.outputPort = new DecoratedOutputPort()
-        this.outputPort.setName("output")
-
-        this.setBackgroundColor("#FF765E")
-        this.setRadius(5)
-        this.addPort(this.inputPort)
-        this.addPort(this.outputPort)
-        this.setDimension(250,50)
-
-        // get the connected port and forward the port to the related party ( SignalSource shape)
-        // The Sparkline forwards the original signal without any delay. The signal runtime is the same if the
-        // Sparkline in between a connect or not
-        this.inputPort.on("connect", (emitter, event)=>{
-            let signalPort = event.connection.getSource()
-            this.outputPort.originalGetValue = this.outputPort.getValue
-            this.outputPort.originalGetBooleanValue = this.outputPort.getBooleanValue
-            this.outputPort.getValue = ()=>{
-                return signalPort.getValue()
-            }
-            this.outputPort.getBooleanValue = ()=>{
-                return signalPort.getBooleanValue()
-            }
-        })
-        this.inputPort.on("disconnect", (emitter, event)=>{
-            this.outputPort.getValue = this.outputPort.originalGetValue
-            this.outputPort.getBooleanValue = this.outputPort.originalGetBooleanValue
-        })
-    },
-
-    setData:function( data)
-    {
-        this._super(data)
-        this.cache= {}
-        this.min = 0
-        this.max = 5
-        this.repaint()
-    },
-
-
-    /**
-     * @method
-     *
-     * Update the chart with the current value of the input port.
-     *
-     */
-    calculate:function(context)
-    {
-        let port = this.getInputPort(0)
-        let value=port.getValue() || 0.0
-        this.data.push(value===null?0:value)
-        if(this.data.length>this.maxValues) {
-            this.data.shift()
-        }
-        this.setData(this.data)
-    },
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function( context )
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function( context )
-    {
-    },
-
-    /**
-     * Get the simulator a hint which kind of hardware the shapes requires or supports
-     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost
-     * and your are running a circuit which needs this kind of hardware...
-     **/
-    getRequiredHardware: function(){
-        return {
-            arduino: false
-        }
-    }
-});
 
 
 

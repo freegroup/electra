@@ -114,8 +114,6 @@ export default draw2d.InputPort.extend({
     return this.getValue()>1.5
   },
 
-
-
   /**
    *
    * Set Canvas must be overridden because all "children" must be painted BEHIND the main figures.
