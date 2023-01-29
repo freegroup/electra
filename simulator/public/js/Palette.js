@@ -37,16 +37,47 @@ export default class Palette {
    socket.on("shape/generated", endGenerateEventMethod)
   }
 
-  refreshUI(){
+  refreshUI( defaultCategories){
+    defaultCategories ??= ["digital"]
     $.getJSON(conf.shapes.jsonUrl, (data) => {
       data.forEach( shape=> shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath))
-      this.buildPalette(data)
-      this.buildTree(data)
+      this.buildCategory(data, defaultCategories)
+      this.buildPalette(data, defaultCategories)
+      this.buildTree(data, defaultCategories)
     })
   }
 
-  buildPalette(data){
-    let tmpl = Hogan.compile($("#shapeTemplate").html());
+  buildCategory(data, selectedCategories){
+    // We build a category filter by using the first "tag" of the shape
+    //
+    let categories = new Set()
+    data.forEach( shape => { 
+      if(shape.scope ==="global")
+        categories.add(shape.tags[0])
+      else
+        categories.add("User Shapes")
+    })
+
+    categories = Array.from(categories).map( category => {return { name: category, selected: selectedCategories.includes(category)?"selected":""}})
+    let tmpl = Hogan.compile($("#shapeCategory").html())
+    let html = tmpl.render({ categories: categories})
+    $(".paletteFilterTitle").html(html)
+    $('#shape-category-select').multiselect({ 
+      onChange: () => {
+        var selectedOptions = $('#shape-category-select option:selected')
+        var values = [];
+        selectedOptions.each(( index, selectedOption) => {
+          values.push($(selectedOption).val());
+        });
+        this.buildPalette(data, values)
+        this.buildTree(data, values)
+      }
+    })
+  }
+
+  buildPalette(data, selectedCategories){
+    data = data.filter( shape => selectedCategories.includes(shape.tags[0]))
+    let tmpl = Hogan.compile($("#shapeTemplate").html())
     let html = tmpl.render({ shapes: data })
     $("#paletteElements").html(html)
 
@@ -72,7 +103,9 @@ export default class Palette {
       .on('mouseout', () => { $(this).parent().removeClass('glowBorder') })
   }
 
-  buildTree(data) {
+  buildTree(data, selectedCategories) {
+    data = data.filter( shape => selectedCategories.includes(shape.tags[0]))
+
     let tree = data.map(element => element.basedir.split("/"))
 
     function arrangeIntoTree(paths) {
@@ -115,7 +148,7 @@ export default class Palette {
     //
     // Create tree
     //
-    new TreeView(tree, 'paletteFilter')
+    let treeView = new TreeView(tree, 'paletteFilter')
 
     $(".tree-leaf-content").on("click", (event) => {
       try {
@@ -139,5 +172,10 @@ export default class Palette {
         console.log(e)
       }
     })
+
+    // check whenever only "one" root element exists. In this case we expand them by default
+    if($("#paletteFilter > .tree-leaf").length === 1){
+      $("#paletteFilter .tree-expando").first().click()
+    }
   }
 }

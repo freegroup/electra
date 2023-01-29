@@ -102,11 +102,14 @@ $.fn.extend({
         last = self
       })
 
-      $(document).on('click', function () {
-        if (last) {
-          last.popover('hide').removeClass('popconfirm-active')
-        }
-      })
+      if(!document.popConfirm){
+        document.popConfirm = true
+        $(document).on('click', () => {
+          if (last) {
+            last.popover('hide').removeClass('popconfirm-active')
+          }
+        })
+      }
 
       self.bind('click', function (e) {
         eventToConfirm = e

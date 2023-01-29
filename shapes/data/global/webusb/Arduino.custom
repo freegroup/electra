@@ -6,7 +6,7 @@
  *
  *
  */
-arduino_Arduino = arduino_Arduino.extend({
+webusb_Arduino = webusb_Arduino.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);

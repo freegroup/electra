@@ -1,6 +1,11 @@
 //
 let mapping = {
     "draw2d.Connection": "Connection",
+    "arduino_Arduino": "webusb_Arduino",
+    "hardware_Arduino": "webusb_Arduino",
+    "hardware_arduino_Arduino": "webusb_Arduino",
+    "documentation_Markdown": "widget_Markdown",
+    "digital_timer_Delay": "digital_pulse_Delay",
     "digital_signal_High": "digital_signal_Static_High",
     "digital_signal_Low": "digital_signal_Static_Low",
     "signal_4_SignalSource": "digital_signal_4_SignalSource",

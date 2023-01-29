@@ -121,6 +121,7 @@
         <div class="paletteContainer">
           <div id="paletteHeader">
             <div class="paletteFilterTitle">Components</div>
+            <div id="paletteCategory"></div>
             <div id="paletteFilter"></div>
           </div>
           <div id="paletteElementsScroll">
@@ -241,6 +242,14 @@
 
 </div>
 
+<script id="shapeCategory" type="text/x-jsrender">
+  <select id="shape-category-select" multiple="multiple" style="width:100%">
+    {{#categories}}
+    <option {{selected}} value="{{name}}">{{name}}</option>
+    {{/categories}}
+</select>
+</script>
+  
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}
     <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="palette_item">
@@ -447,6 +456,7 @@
 
 <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap-slider/slider.css' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap-multiselect/index.css' rel='stylesheet' type='text/css'>
 <link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
 
 <script src="../common/js/ASCIIMathTeXImg.js"></script>
@@ -458,6 +468,7 @@
 <script src="../common/js/notify/bootstrap-notify.js"></script>
 <script src="../common/js/bootbox/bootbox.min.js"></script>
 <script src="../common/js/bootstrap-slider/bootstrap-slider.js"></script>
+<script src="../common/js/bootstrap-multiselect/index.js"></script>
 <script src="../common/js/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
 
 <script src="../common/js/draw2d.js"></script>

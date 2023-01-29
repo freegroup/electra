@@ -1,5 +1,20 @@
 [
   {
+    "name": "analog_math_Mean",
+    "tags": [
+      "analog",
+      "math",
+      "Mean"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Mean.js",
+    "displayName": "Mean",
+    "basedir": "analog/math",
+    "shapePath": "analog/math/Mean.shape",
+    "imagePath": "analog/math/Mean.png"
+  },
+  {
     "name": "analog_SignalInverter",
     "tags": [
       "analog",
@@ -26,34 +41,6 @@
     "basedir": "analog",
     "shapePath": "analog/SignalSwitch.shape",
     "imagePath": "analog/SignalSwitch.png"
-  },
-  {
-    "name": "arduino_Arduino",
-    "tags": [
-      "arduino",
-      "Arduino"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Arduino.js",
-    "displayName": "Arduino",
-    "basedir": "arduino",
-    "shapePath": "arduino/Arduino.shape",
-    "imagePath": "arduino/Arduino.png"
-  },
-  {
-    "name": "arduino_Signal",
-    "tags": [
-      "arduino",
-      "Signal"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Signal.js",
-    "displayName": "Signal",
-    "basedir": "arduino",
-    "shapePath": "arduino/Signal.shape",
-    "imagePath": "arduino/Signal.png"
   },
   {
     "name": "digital_alu_FullAdder",
@@ -1153,20 +1140,6 @@
     "imagePath": "drawing/Text.png"
   },
   {
-    "name": "math_Mean",
-    "tags": [
-      "math",
-      "Mean"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "Mean.js",
-    "displayName": "Mean",
-    "basedir": "math",
-    "shapePath": "math/Mean.shape",
-    "imagePath": "math/Mean.png"
-  },
-  {
     "name": "video_assemble_Stencil",
     "tags": [
       "video",
@@ -1751,6 +1724,20 @@
     "basedir": "video/tools",
     "shapePath": "video/tools/VideoSelector.shape",
     "imagePath": "video/tools/VideoSelector.png"
+  },
+  {
+    "name": "webusb_Arduino",
+    "tags": [
+      "webusb",
+      "Arduino"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "Arduino.js",
+    "displayName": "Arduino",
+    "basedir": "webusb",
+    "shapePath": "webusb/Arduino.shape",
+    "imagePath": "webusb/Arduino.png"
   },
   {
     "name": "widget_Markdown",
