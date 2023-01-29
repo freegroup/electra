@@ -14,29 +14,6 @@ analog_math_Product = analog_math_Product.extend({
 
     init: function(attr, setter, getter){
         this._super(attr, setter, getter);
-
-        this.total   = 0;    // the running total
-        this.average = 0;    // the average
-        this.readings = []; 
-        this.readIndex = 0;
-        this.numReadings =0;
-        
-        this.on("change:userData.numReadings",(emitter, event)=>{
-            this.numReadings = parseInt(event.value);
-            this.readings = []; 
-            this.total =0;
-            this.average = 0;
-            this.readings.length = this.numReadings;
-            this.pointer=0;
-            this.readIndex = 0;
-            this.readings.fill(0)
-        });
-        
-        this.attr({
-            resizeable:false,
-            "userData.numReadings":10
-        });
-
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
 
@@ -48,42 +25,8 @@ analog_math_Product = analog_math_Product.extend({
      **/
     calculate:function( context)
     {
-        this.total = this.total - this.readings[this.readIndex];
-        this.readings[this.readIndex] = this.getInputPort(0).getValue() || 0;
-        this.total = this.total + this.readings[this.readIndex];
-        this.readIndex = (this.readIndex+1)%this.readings.length;
-        this.average = parseInt((this.total / this.readings.length)*1000)/1000;
-        this.getOutputPort(0).setValue(this.average);
-    },
-
-    /**
-     *  Called if the simulation mode is starting
-     *  @required
-     **/
-    onStart:function( context )
-    {
-    },
-
-    /**
-     *  Called if the simulation mode is stopping
-     *  @required
-     **/
-    onStop:function( context )
-    {
-    },
-    
-    getParameterSettings:function()
-    {
-        return [
-        {
-            name:"numReadings",
-            label:"Number of Readings for the average",
-            property:{
-                type: "integer",
-                min: 10,
-                max: 150,
-                increment:1
-        }
-        }];
+        let v1 = this.getInputPort(0).getValue() ?? 0;
+        let v2 = this.getInputPort(1).getValue() ?? 0;
+        this.getOutputPort(0).setValue(v1*v2);
     }
 });
