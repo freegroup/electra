@@ -5,18 +5,63 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     this._super( {...attr, stroke:0, bgColor:null, width:80,height:83.27760000000035 }, setter, getter);
+     this._super( {...attr, stroke:0, bgColor:null, width:102.52570724487305,height:103.27759904632603 }, setter, getter);
      this.read = {};
      this.write = {};
 
      let port;
+     // out_a
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.59840751580046, y: 11.351397368801065 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out_a");
+     port.setMaxFanOut(20);
+     this.read["out_a"] = port.getValue.bind(port)
+     this.write["out_a"]= port.setValue.bind(port)
+
+     // out_b
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.59840751580046, y: 30.71668101664113 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out_b");
+     port.setMaxFanOut(20);
+     this.read["out_b"] = port.getValue.bind(port)
+     this.write["out_b"]= port.setValue.bind(port)
+
+     // out_c
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.59840751580046, y: 50.08196466448119 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out_c");
+     port.setMaxFanOut(20);
+     this.read["out_c"] = port.getValue.bind(port)
+     this.write["out_c"]= port.setValue.bind(port)
+
+     // out_d
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.59840751580046, y: 69.93138040351725 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out_d");
+     port.setMaxFanOut(20);
+     this.read["out_d"] = port.getValue.bind(port)
+     this.write["out_d"]= port.setValue.bind(port)
+
+     // out_strobe
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 103.59840751580046, y: 89.0803047800643 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out_strobe");
+     port.setMaxFanOut(20);
+     this.read["out_strobe"] = port.getValue.bind(port)
+     this.write["out_strobe"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 80;
-      this.originalHeight= 83.27760000000035;
+      this.originalWidth = 102.52570724487305;
+      this.originalHeight= 103.27759904632603;
       return shape;
    },
 
@@ -25,12 +70,12 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L80,0 L80,83.27760000000035 L0,83.27760000000035");
+       shape = this.canvas.paper.path("M0,0 L102.52570724487305,0 L102.52570724487305,103.27759904632603 L0,103.27759904632603");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0 1.7776000000003478L80 1.7776000000003478L80 81.77760000000035L0 81.77760000000035Z');
+       shape = this.canvas.paper.path('M0 1.7776000000003478L100 1.7776000000003478L100 101.77760000000035L0 101.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
@@ -176,7 +221,7 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'C');
-       shape.attr({"x":5.5,"y":72.52760000000035,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":5.504339694976807,"y":71.80414933929478,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -192,6 +237,31 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        // Label
        shape = this.canvas.paper.text(0,0,'F');
        shape.attr({"x":66,"y":72.02760000000035,"text-anchor":"start","text":"F","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'A');
+       shape.attr({"x":90.17759999999998,"y":12.527600000000348,"text-anchor":"start","text":"A","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'B');
+       shape.attr({"x":90.17759999999998,"y":32.75,"text-anchor":"start","text":"B","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'strobe');
+       shape.attr({"x":64.53896427154541,"y":92.52759952316319,"text-anchor":"start","text":"strobe","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'D');
+       shape.attr({"x":89.85383224487305,"y":72.75,"text-anchor":"start","text":"D","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'C');
+       shape.attr({"x":89.67759999999998,"y":52.52760000000035,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
 
