@@ -11,28 +11,35 @@ var analog_math_Product = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:40,height:40 }, setter, getter);
+     this.read = new Map();
+     this.write = new Map();
 
-     this._super( $.extend({stroke:0, bgColor:null, width:40,height:40},attr), setter, getter);
-     var port;
+     let port;
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 52.5 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
+     this.read.set("output", port.getValue.bind(port))
+     this.write.set("output", port.setValue.bind(port))
      // input_1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 25.48828125 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_1");
      port.setMaxFanOut(20);
+     this.read.set("input_1", port.getValue.bind(port))
+     this.write.set("input_1", port.setValue.bind(port))
      // input_2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 75.48828125 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_2");
      port.setMaxFanOut(20);
+     this.read.set("input_2", port.getValue.bind(port))
+     this.write.set("input_2", port.setValue.bind(port))
    },
 
    createShapeElement : function()
