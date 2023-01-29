@@ -24,22 +24,22 @@ var analog_math_Product = CircuitFigure.extend({
      port.setMaxFanOut(20);
      this.read.set("output", port.getValue.bind(port))
      this.write.set("output", port.setValue.bind(port))
-     // input_1
+     // input1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 25.48828125 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_1");
+     port.setName("input1");
      port.setMaxFanOut(20);
-     this.read.set("input_1", port.getValue.bind(port))
-     this.write.set("input_1", port.setValue.bind(port))
-     // input_2
+     this.read.set("input1", port.getValue.bind(port))
+     this.write.set("input1", port.setValue.bind(port))
+     // input2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 75.48828125 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
-     port.setName("input_2");
+     port.setName("input2");
      port.setMaxFanOut(20);
-     this.read.set("input_2", port.getValue.bind(port))
-     this.write.set("input_2", port.setValue.bind(port))
+     this.read.set("input2", port.getValue.bind(port))
+     this.write.set("input2", port.setValue.bind(port))
    },
 
    createShapeElement : function()
@@ -101,8 +101,8 @@ analog_math_Product = analog_math_Product.extend({
      **/
     calculate:function( context)
     {
-        let v1 = this.getInputPort(0).getValue() ?? 0;
-        let v2 = this.getInputPort(1).getValue() ?? 0;
-        this.getOutputPort(0).setValue(v1*v2);
+        let v1 = this.read["input1"]();
+        let v2 = this.read["input2"]();
+        this.write["output"](v1*v2);
     }
 });

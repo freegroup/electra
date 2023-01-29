@@ -25,8 +25,8 @@ analog_math_Product = analog_math_Product.extend({
      **/
     calculate:function( context)
     {
-        let v1 = this.getInputPort(0).getValue() ?? 0;
-        let v2 = this.getInputPort(1).getValue() ?? 0;
-        this.getOutputPort(0).setValue(v1*v2);
+        let v1 = this.read["input1"]();
+        let v2 = this.read["input2"]();
+        this.write["output"](v1*v2);
     }
 });
