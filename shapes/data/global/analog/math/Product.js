@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var analog_math_Product = CircuitFigure.extend({
 
    NAME: "analog_math_Product",
@@ -24,7 +18,7 @@ var analog_math_Product = CircuitFigure.extend({
      port.setMaxFanOut(20);
      this.read["output"] = port.getValue.bind(port)
      this.write["output"]= port.setValue.bind(port)
-     
+
      // input1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 25.48828125 }));
      port.setConnectionDirection(3);
@@ -33,7 +27,7 @@ var analog_math_Product = CircuitFigure.extend({
      port.setMaxFanOut(20);
      this.read["input1"] = port.getValue.bind(port)
      this.write["input1"]= port.setValue.bind(port)
-     
+
      // input2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 75.48828125 }));
      port.setConnectionDirection(3);
@@ -42,7 +36,7 @@ var analog_math_Product = CircuitFigure.extend({
      port.setMaxFanOut(20);
      this.read["input2"] = port.getValue.bind(port)
      this.write["input2"]= port.setValue.bind(port)
-     
+
 
    },
 
