@@ -1,0 +1,107 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+digital_signal_8_SignalTarget = digital_signal_8_SignalTarget.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+         // your special code here
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+
+        this.on("change:userData.busId",(emitter, event)=>{
+            this.layerAttr("label", {text: event.value})
+        });
+        
+        this.on("added", ()=>{
+            this.busId = this.attr("userData.busId")
+            if(!this.busId){
+                this.busId = "Bus_Id"
+                this.attr("userData.busId", this.busId)
+            }            
+            this.layerAttr("label", {text: this.busId})
+        })
+        
+        // get the connected port and forward the port to the related party ( SignalSource shape)
+        //
+        this.signalSourcePort = []
+        this.getInputPort("in1").on("connect",    (emitter, event)=>{ this.signalSourcePort[0] = event.connection.getSource() })
+        this.getInputPort("in1").on("disconnect", (emitter, event)=>{ this.signalSourcePort[0] = null })
+        
+        this.getInputPort("in2").on("connect",    (emitter, event)=>{ this.signalSourcePort[1] = event.connection.getSource() })
+        this.getInputPort("in2").on("disconnect", (emitter, event)=>{ this.signalSourcePort[1] = null })
+        
+        this.getInputPort("in3").on("connect",    (emitter, event)=>{ this.signalSourcePort[2] = event.connection.getSource() })
+        this.getInputPort("in3").on("disconnect", (emitter, event)=>{ this.signalSourcePort[2] = null })
+        
+        this.getInputPort("in4").on("connect",    (emitter, event)=>{ this.signalSourcePort[3] = event.connection.getSource() })
+        this.getInputPort("in4").on("disconnect", (emitter, event)=>{ this.signalSourcePort[3] = null })
+        
+        this.getInputPort("in5").on("connect",    (emitter, event)=>{ this.signalSourcePort[4] = event.connection.getSource() })
+        this.getInputPort("in5").on("disconnect", (emitter, event)=>{ this.signalSourcePort[4] = null })
+        
+        this.getInputPort("in6").on("connect",    (emitter, event)=>{ this.signalSourcePort[5] = event.connection.getSource() })
+        this.getInputPort("in6").on("disconnect", (emitter, event)=>{ this.signalSourcePort[5] = null })
+        
+        this.getInputPort("in7").on("connect",    (emitter, event)=>{ this.signalSourcePort[6] = event.connection.getSource() })
+        this.getInputPort("in7").on("disconnect", (emitter, event)=>{ this.signalSourcePort[6] = null })
+        
+        this.getInputPort("in8").on("connect",    (emitter, event)=>{ this.signalSourcePort[7] = event.connection.getSource() })
+        this.getInputPort("in8").on("disconnect", (emitter, event)=>{ this.signalSourcePort[7] = null })
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    onPreStart:function(context)
+    {
+        // first check if any object already create the signal context
+        context.signalPorts ??= {}
+    },
+
+    calculate:function(context)
+    {
+        for (var i = 0; i<8; i++){
+            // either signalPort can be undefined of the result of getValue...
+            let value = this.signalSourcePort[i]?.getValue()
+            // override the source of the signal if we have a "connected" source. 
+            // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
+            // to the bus.
+            
+            if(value !==null && value!==undefined ){
+                if(context.signalPorts[this.busId+":"+(i+1)] !== this.signalSourcePort[i]){
+                    context.signalPorts[this.busId+":"+(i+1)] = this.signalSourcePort[i];
+                }
+            }
+            // it is "undefined". In this case remove it from the bus
+            else if (context.signalPorts[this.busId+":"+(i+1)] === this.signalSourcePort[i]){
+                context.signalPorts[this.busId+":"+(i+1)] = null
+            }            
+        }
+    },
+    
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"busId",
+            label:"Bus Id",
+            property:{
+                type: "string"
+            }
+        }];
+    }
+});
