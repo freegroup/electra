@@ -880,34 +880,192 @@
     "imagePath": "digital/register/8-BitRegister.png"
   },
   {
-    "name": "digital_signal_High",
+    "name": "digital_signal_4_SignalSource",
     "tags": [
       "digital",
       "signal",
+      "4",
+      "SignalSource"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-SignalSource.js",
+    "displayName": "4-SignalSource",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/4-SignalSource.shape",
+    "imagePath": "digital/signal/4-SignalSource.png"
+  },
+  {
+    "name": "digital_signal_4_SignalTarget",
+    "tags": [
+      "digital",
+      "signal",
+      "4",
+      "SignalTarget"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-SignalTarget.js",
+    "displayName": "4-SignalTarget",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/4-SignalTarget.shape",
+    "imagePath": "digital/signal/4-SignalTarget.png"
+  },
+  {
+    "name": "digital_signal_4_TriStateGate",
+    "tags": [
+      "digital",
+      "signal",
+      "4",
+      "TriStateGate"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "4-TriStateGate.js",
+    "displayName": "4-TriStateGate",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/4-TriStateGate.shape",
+    "imagePath": "digital/signal/4-TriStateGate.png"
+  },
+  {
+    "name": "digital_signal_8_SignalSource",
+    "tags": [
+      "digital",
+      "signal",
+      "8",
+      "SignalSource"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "8-SignalSource.js",
+    "displayName": "8-SignalSource",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/8-SignalSource.shape",
+    "imagePath": "digital/signal/8-SignalSource.png"
+  },
+  {
+    "name": "digital_signal_8_SignalTarget",
+    "tags": [
+      "digital",
+      "signal",
+      "8",
+      "SignalTarget"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "8-SignalTarget.js",
+    "displayName": "8-SignalTarget",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/8-SignalTarget.shape",
+    "imagePath": "digital/signal/8-SignalTarget.png"
+  },
+  {
+    "name": "digital_signal_8_TriStateGate",
+    "tags": [
+      "digital",
+      "signal",
+      "8",
+      "TriStateGate"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "8-TriStateGate.js",
+    "displayName": "8-TriStateGate",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/8-TriStateGate.shape",
+    "imagePath": "digital/signal/8-TriStateGate.png"
+  },
+  {
+    "name": "digital_signal_SignalSource",
+    "tags": [
+      "digital",
+      "signal",
+      "SignalSource"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "SignalSource.js",
+    "displayName": "SignalSource",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/SignalSource.shape",
+    "imagePath": "digital/signal/SignalSource.png"
+  },
+  {
+    "name": "digital_signal_SignalTarget",
+    "tags": [
+      "digital",
+      "signal",
+      "SignalTarget"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "SignalTarget.js",
+    "displayName": "SignalTarget",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/SignalTarget.shape",
+    "imagePath": "digital/signal/SignalTarget.png"
+  },
+  {
+    "name": "digital_signal_Static_High",
+    "tags": [
+      "digital",
+      "signal",
+      "Static",
       "High"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "High.js",
-    "displayName": "High",
+    "basename": "Static-High.js",
+    "displayName": "Static-High",
     "basedir": "digital/signal",
-    "shapePath": "digital/signal/High.shape",
-    "imagePath": "digital/signal/High.png"
+    "shapePath": "digital/signal/Static-High.shape",
+    "imagePath": "digital/signal/Static-High.png"
   },
   {
-    "name": "digital_signal_Low",
+    "name": "digital_signal_Static_Low",
     "tags": [
       "digital",
       "signal",
+      "Static",
       "Low"
     ],
     "scope": "global",
     "version": "local-version",
-    "basename": "Low.js",
-    "displayName": "Low",
+    "basename": "Static-Low.js",
+    "displayName": "Static-Low",
     "basedir": "digital/signal",
-    "shapePath": "digital/signal/Low.shape",
-    "imagePath": "digital/signal/Low.png"
+    "shapePath": "digital/signal/Static-Low.shape",
+    "imagePath": "digital/signal/Static-Low.png"
+  },
+  {
+    "name": "digital_signal_TriStateGate",
+    "tags": [
+      "digital",
+      "signal",
+      "TriStateGate"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "TriStateGate.js",
+    "displayName": "TriStateGate",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/TriStateGate.shape",
+    "imagePath": "digital/signal/TriStateGate.png"
+  },
+  {
+    "name": "digital_signal_VerticalBus",
+    "tags": [
+      "digital",
+      "signal",
+      "VerticalBus"
+    ],
+    "scope": "global",
+    "version": "local-version",
+    "basename": "VerticalBus.js",
+    "displayName": "VerticalBus",
+    "basedir": "digital/signal",
+    "shapePath": "digital/signal/VerticalBus.shape",
+    "imagePath": "digital/signal/VerticalBus.png"
   },
   {
     "name": "digital_timer_Delay",
@@ -1007,152 +1165,6 @@
     "basedir": "math",
     "shapePath": "math/Mean.shape",
     "imagePath": "math/Mean.png"
-  },
-  {
-    "name": "signal_4_SignalSource",
-    "tags": [
-      "signal",
-      "4",
-      "SignalSource"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "4-SignalSource.js",
-    "displayName": "4-SignalSource",
-    "basedir": "signal",
-    "shapePath": "signal/4-SignalSource.shape",
-    "imagePath": "signal/4-SignalSource.png"
-  },
-  {
-    "name": "signal_4_SignalTarget",
-    "tags": [
-      "signal",
-      "4",
-      "SignalTarget"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "4-SignalTarget.js",
-    "displayName": "4-SignalTarget",
-    "basedir": "signal",
-    "shapePath": "signal/4-SignalTarget.shape",
-    "imagePath": "signal/4-SignalTarget.png"
-  },
-  {
-    "name": "signal_4_TriStateGate",
-    "tags": [
-      "signal",
-      "4",
-      "TriStateGate"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "4-TriStateGate.js",
-    "displayName": "4-TriStateGate",
-    "basedir": "signal",
-    "shapePath": "signal/4-TriStateGate.shape",
-    "imagePath": "signal/4-TriStateGate.png"
-  },
-  {
-    "name": "signal_8_SignalSource",
-    "tags": [
-      "signal",
-      "8",
-      "SignalSource"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "8-SignalSource.js",
-    "displayName": "8-SignalSource",
-    "basedir": "signal",
-    "shapePath": "signal/8-SignalSource.shape",
-    "imagePath": "signal/8-SignalSource.png"
-  },
-  {
-    "name": "signal_8_SignalTarget",
-    "tags": [
-      "signal",
-      "8",
-      "SignalTarget"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "8-SignalTarget.js",
-    "displayName": "8-SignalTarget",
-    "basedir": "signal",
-    "shapePath": "signal/8-SignalTarget.shape",
-    "imagePath": "signal/8-SignalTarget.png"
-  },
-  {
-    "name": "signal_8_TriStateGate",
-    "tags": [
-      "signal",
-      "8",
-      "TriStateGate"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "8-TriStateGate.js",
-    "displayName": "8-TriStateGate",
-    "basedir": "signal",
-    "shapePath": "signal/8-TriStateGate.shape",
-    "imagePath": "signal/8-TriStateGate.png"
-  },
-  {
-    "name": "signal_SignalSource",
-    "tags": [
-      "signal",
-      "SignalSource"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "SignalSource.js",
-    "displayName": "SignalSource",
-    "basedir": "signal",
-    "shapePath": "signal/SignalSource.shape",
-    "imagePath": "signal/SignalSource.png"
-  },
-  {
-    "name": "signal_SignalTarget",
-    "tags": [
-      "signal",
-      "SignalTarget"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "SignalTarget.js",
-    "displayName": "SignalTarget",
-    "basedir": "signal",
-    "shapePath": "signal/SignalTarget.shape",
-    "imagePath": "signal/SignalTarget.png"
-  },
-  {
-    "name": "signal_TriStateGate",
-    "tags": [
-      "signal",
-      "TriStateGate"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "TriStateGate.js",
-    "displayName": "TriStateGate",
-    "basedir": "signal",
-    "shapePath": "signal/TriStateGate.shape",
-    "imagePath": "signal/TriStateGate.png"
-  },
-  {
-    "name": "signal_VerticalBus",
-    "tags": [
-      "signal",
-      "VerticalBus"
-    ],
-    "scope": "global",
-    "version": "local-version",
-    "basename": "VerticalBus.js",
-    "displayName": "VerticalBus",
-    "basedir": "signal",
-    "shapePath": "signal/VerticalBus.shape",
-    "imagePath": "signal/VerticalBus.png"
   },
   {
     "name": "video_assemble_Stencil",

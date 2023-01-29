@@ -4,40 +4,64 @@
 // created with http://www.draw2d.org
 //
 //
-var signal_4_SignalSource = CircuitFigure.extend({
+var digital_signal_8_SignalSource = CircuitFigure.extend({
 
-   NAME: "signal_4_SignalSource",
+   NAME: "digital_signal_8_SignalSource",
    VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:60.03125,height:127.02762111167976},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:60.03125,height:204.05524222335862},attr), setter, getter);
      var port;
      // out1
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 42.043014076479416 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 26.172442346049635 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out1");
      port.setMaxFanOut(20);
      // out2
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 57.787621292587524 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 35.973709778379565 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out2");
      port.setMaxFanOut(20);
      // out3
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 73.53222850869564 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 45.774977210709494 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out3");
      port.setMaxFanOut(20);
      // out4
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 89.27683572480375 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 55.57624464303942 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out4");
+     port.setMaxFanOut(20);
+     // out5
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 65.37751207536935 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out5");
+     port.setMaxFanOut(20);
+     // out6
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 75.17877950769929 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out6");
+     port.setMaxFanOut(20);
+     // out7
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 84.98004694002921 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out7");
+     port.setMaxFanOut(20);
+     // out8
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 94.78360562023701, y: 94.78131437235915 }));
+     port.setConnectionDirection(1);
+     port.setBackgroundColor("#37B1DE");
+     port.setName("out8");
      port.setMaxFanOut(20);
    },
 
@@ -45,7 +69,7 @@ var signal_4_SignalSource = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 60.03125;
-      this.originalHeight= 127.02762111167976;
+      this.originalHeight= 204.05524222335862;
       return shape;
    },
 
@@ -54,18 +78,18 @@ var signal_4_SignalSource = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L60.03125,0 L60.03125,127.02762111167976 L0,127.02762111167976");
+       shape = this.canvas.paper.path("M0,0 L60.03125,0 L60.03125,204.05524222335862 L0,204.05524222335862");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M5.015625 22.027621111679764L55.015625 22.027621111679764L55.015625 127.02762111167976L5.015625 127.02762111167976Z');
+       shape = this.canvas.paper.path('M5.863133248901249 22.857390625000335L55.86313324890125 22.857390625000335L55.86313324890125 202.85739062500033L5.863133248901249 202.85739062500033Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Label
-       shape = this.canvas.paper.text(0,0,'4 Bit');
-       shape.attr({"x":20.0078125,"y":41.906240625000464,"text-anchor":"start","text":"4 Bit","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape = this.canvas.paper.text(0,0,'8 Bit');
+       shape.attr({"x":20.0078125,"y":41.906240625000464,"text-anchor":"start","text":"8 Bit","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
@@ -84,14 +108,34 @@ var signal_4_SignalSource = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Label
+       shape = this.canvas.paper.text(0,0,'5');
+       shape.attr({"x":45.03623324889759,"y":133.40624062500046,"text-anchor":"start","text":"5","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
        shape = this.canvas.paper.text(0,0,'3');
        shape.attr({"x":45.03623324889759,"y":93.90624062500046,"text-anchor":"start","text":"3","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M33.988633248895894 77.91129062499476L27.515383248897706,86.11074062500029L21.042133248898608,94.3101906250049');
+       shape = this.canvas.paper.path('M33.988633248895894 115.91129062499476L27.515383248897706,124.11074062500029L21.042133248898608,132.3101906250049');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'8');
+       shape.attr({"x":45.03623324889759,"y":193.40624062500046,"text-anchor":"start","text":"8","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'6');
+       shape.attr({"x":45.03623324889759,"y":153.40624062500046,"text-anchor":"start","text":"6","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'7');
+       shape.attr({"x":45.03623324889759,"y":173.40624062500046,"text-anchor":"start","text":"7","font-family":"\"Arial\"","font-size":8,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'Signal Bus');
@@ -104,7 +148,7 @@ var signal_4_SignalSource = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M28.036233248897588 61.371990624994396L28.036233248898498,115.61859062500298');
+       shape = this.canvas.paper.path('M28.036233248897588 61.371990624994396L28.036233248899407,187.23609062500327');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
@@ -125,7 +169,7 @@ var signal_4_SignalSource = CircuitFigure.extend({
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-signal_4_SignalSource = signal_4_SignalSource.extend({
+digital_signal_8_SignalSource = digital_signal_8_SignalSource.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
@@ -163,6 +207,10 @@ signal_4_SignalSource = signal_4_SignalSource.extend({
         this.getOutputPort("out2").getValue = ()=>context.signalPorts[this.busId+":2"]?.getValue()
         this.getOutputPort("out3").getValue = ()=>context.signalPorts[this.busId+":3"]?.getValue()
         this.getOutputPort("out4").getValue = ()=>context.signalPorts[this.busId+":4"]?.getValue()
+        this.getOutputPort("out5").getValue = ()=>context.signalPorts[this.busId+":5"]?.getValue()
+        this.getOutputPort("out6").getValue = ()=>context.signalPorts[this.busId+":6"]?.getValue()
+        this.getOutputPort("out7").getValue = ()=>context.signalPorts[this.busId+":7"]?.getValue()
+        this.getOutputPort("out8").getValue = ()=>context.signalPorts[this.busId+":8"]?.getValue()
     },
 
     getParameterSettings: function()

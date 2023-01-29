@@ -4,19 +4,19 @@
 // created with http://www.draw2d.org
 //
 //
-var digital_signal_Low = CircuitFigure.extend({
+var digital_signal_Static_Low = CircuitFigure.extend({
 
-   NAME: "digital_signal_Low",
-   VERSION: "2.0.343_1136",
+   NAME: "digital_signal_Static_Low",
+   VERSION: "local-version",
 
    init:function(attr, setter, getter)
    {
      var _this = this;
 
-     this._super( $.extend({stroke:0, bgColor:null, width:40,height:22},attr), setter, getter);
+     this._super( $.extend({stroke:0, bgColor:null, width:40,height:21.5},attr), setter, getter);
      var port;
      // Port
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.69275000000107, y: 45.45454545454546 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.69275000000107, y: 46.51162790697675 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
@@ -27,7 +27,7 @@ var digital_signal_Low = CircuitFigure.extend({
    {
       var shape = this._super();
       this.originalWidth = 40;
-      this.originalHeight= 22;
+      this.originalHeight= 21.5;
       return shape;
    },
 
@@ -36,7 +36,7 @@ var digital_signal_Low = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L40,0 L40,22 L0,22");
+       shape = this.canvas.paper.path("M0,0 L40,0 L40,21.5 L0,21.5");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -47,7 +47,7 @@ var digital_signal_Low = CircuitFigure.extend({
        
        // label
        shape = this.canvas.paper.text(0,0,'LOW');
-       shape.attr({"x":4,"y":11,"text-anchor":"start","text":"LOW","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4,"y":10.75,"text-anchor":"start","text":"LOW","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","label");
        
 
@@ -67,7 +67,7 @@ var digital_signal_Low = CircuitFigure.extend({
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-digital_signal_Low = digital_signal_Low.extend({
+digital_signal_Static_Low = digital_signal_Static_Low.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);

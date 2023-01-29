@@ -10,14 +10,15 @@
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-digital_signal_High = digital_signal_High.extend({
+digital_signal_Static_Low = digital_signal_Static_Low.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
 
          // your special code here
-        this.getOutputPort(0).setValue(true)
+        this.getOutputPort(0).setValue(false)
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     }
+
 });

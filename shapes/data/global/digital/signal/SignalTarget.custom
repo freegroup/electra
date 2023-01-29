@@ -10,28 +10,30 @@
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-signal_SignalSource = signal_SignalSource.extend({
+digital_signal_SignalTarget = digital_signal_SignalTarget.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);
 
+         // your special code here
         this.attr({resizeable:false});
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
         
-        // calculate the outer frame/shape in the correct size in relation to the length of the text
+        // handle the size of the shape if the label has changed
         //
         var adjustWidth = ()=>{
             var width = this.layerGet("label").getBBox().width+15
-
             this.setWidth(width+5);
             this.layerAttr("BoundingBox", { path: `M0 0 L${width} 0 L${width} 20 L0 20 Z`})
-            this.layerAttr("outline",     { path: `M0 0 L${width-13} 0 L${width} 10 L${width-13} 20 L0 20 Z`})
+            this.layerAttr("outline",     { path: `M0 10 L13 0 L${width} 0 L${width} 20 L13 20 Z`})
         }
+        
         this.on("change:userData.signalId",(emitter, event)=>{
             this.layerAttr("label", {text: event.value})
             this.signalId = event.value
             adjustWidth()
         });
+        
         this.on("added", ()=>{
             this.signalId = this.attr("userData.signalId")
             if(!this.signalId){
@@ -41,23 +43,48 @@ signal_SignalSource = signal_SignalSource.extend({
             this.layerAttr("label", {text: this.signalId})
             adjustWidth()
         })
+        
+        // get the connected port and forward the port to the related party ( SignalSource shape)
+        //
+        this.getInputPort(0).on("connect", (emitter, event)=>{
+           this.signalSourcePort = event.connection.getSource()
+        })
+        this.getInputPort(0).on("disconnect", (emitter, event)=>{
+           this.signalSourcePort = null
+        })
     },
 
-    onPreStart: function(context)
-    {
-        context.signalPorts ??={}
-    },
-    
     /**
      *  Called by the simulator for every calculation
      *  loop
      *  @required
      **/
-    onStart:function(context)
+    onPreStart:function(context)
     {
-        this.getOutputPort(0).getValue = ()=> context.signalPorts[this.signalId]?.getValue()
+        // first check if any object already create the signal context
+        context.signalPorts ??= {}
     },
 
+    calculate:function(context)
+    {
+        // either signalPort can be undefined of the result of getValue...
+        let value = this.signalSourcePort?.getValue()
+        
+        // override the source of the signal if we have a "connected" source. 
+        // This is the semantic of a "bus". Only connected (tri state sources) ports can transfer data
+        // to the bus.
+        
+        if(value !==null && value!==undefined ){
+            if(context.signalPorts[this.signalId] !== this.signalSourcePort){
+                context.signalPorts[this.signalId] = this.signalSourcePort;
+            }
+        }
+        // it is "undefined". In this case remove it from the bus
+        else if (context.signalPorts[this.signalId] === this.signalSourcePort){
+              context.signalPorts[this.signalId] = null
+        }
+    },
+    
     getParameterSettings: function()
     {
         return [
@@ -92,6 +119,5 @@ signal_SignalSource = signal_SignalSource.extend({
 
     return this
   }
-
 
 });

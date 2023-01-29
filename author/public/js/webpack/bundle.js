@@ -2075,6 +2075,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _common_js_TypeMapping__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../common/js/TypeMapping */ "../common/public/js/TypeMapping.js");
+
 var Reader = draw2d.io.json.Reader.extend({
   init: function init() {
     this._super();
@@ -2087,11 +2089,7 @@ var Reader = draw2d.io.json.Reader.extend({
     this._super(view, fileData.draw2d);
   },
   createFigureFromType: function createFigureFromType(type) {
-    // patch object types from older versions of JSON
-    if (type === "draw2d.Connection") {
-      type = "Connection";
-    }
-    return this._super(type);
+    return this._super((0,_common_js_TypeMapping__WEBPACK_IMPORTED_MODULE_0__["default"])(type));
   }
 });
 var reader = new Reader();
@@ -5772,6 +5770,29 @@ var Locator = draw2d.layout.locator.Locator.extend( /** @lends draw2d.layout.loc
 });
 var locator = new Locator();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (locator);
+
+/***/ }),
+
+/***/ "../common/public/js/TypeMapping.js":
+/*!******************************************!*\
+  !*** ../common/public/js/TypeMapping.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//
+var mapping = {
+  "draw2d.Connection": "Connection"
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  typeMapping: function typeMapping(key) {
+    return mapping[key] || key;
+  }
+});
 
 /***/ }),
 

@@ -1,5 +1,5 @@
-let signal_VerticalBusLocator = draw2d.layout.locator.Locator.extend({
-  NAME: "signal_VerticalBusLocator",
+let digital_signal_VerticalBusLocator = draw2d.layout.locator.Locator.extend({
+  NAME: "digital_signal_VerticalBusLocator",
 
   init: function (attr, setter, getter) {
     this._super(attr, setter, getter)
@@ -16,8 +16,8 @@ let signal_VerticalBusLocator = draw2d.layout.locator.Locator.extend({
 })
 
 
-var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
-    NAME: "signal_VerticalBus",
+var digital_signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
+    NAME: "digital_signal_VerticalBus",
     VERSION: "1.0.0",
 
     init: function (attr) {
@@ -55,7 +55,7 @@ var signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
           this.label = new draw2d.shape.basic.Label({angle: 90, text: label, color: "#0d0d0d", fontColor: "#0d0d0d", stroke: 0})
           // add the new decoration to the connection with a position locator.
           //
-          this.add(this.label, new signal_VerticalBusLocator())
+          this.add(this.label, new digital_signal_VerticalBusLocator())
           this.label.setSelectionAdapter( () => this )
           this.label.delegateTarget = () => this.port
         } else {

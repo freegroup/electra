@@ -1,11 +1,10 @@
 import conf from "./Configuration"
-import Hogan from "hogan.js";
-import TreeView from "js-treeview";
+import Hogan from "hogan.js"
+import TreeView from "js-treeview"
 
 /**
  * @author Andreas Herz
  */
-
 export default class Palette {
   /**
    * @constructor
@@ -40,11 +39,7 @@ export default class Palette {
 
   refreshUI(){
     $.getJSON(conf.shapes.jsonUrl, (data) => {
-      data = data.map( shape=> {
-        shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath)
-        return shape
-      })
-
+      data.forEach( shape=> shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath))
       this.buildPalette(data)
       this.buildTree(data)
     })
@@ -78,10 +73,7 @@ export default class Palette {
   }
 
   buildTree(data) {
-    let tree = []
-    data.forEach(element => {
-      tree.push(element.basedir.split("/"))
-    })
+    let tree = data.map(element => element.basedir.split("/"))
 
     function arrangeIntoTree(paths) {
       let tree = []
@@ -115,12 +107,7 @@ export default class Palette {
         while (t < array.length && array[t][key] !== value) {
           t++
         }
-
-        if (t < array.length) {
-          return array[t]
-        } else {
-          return false
-        }
+        return (t < array.length) ? array[t]: false
       }
     }
 

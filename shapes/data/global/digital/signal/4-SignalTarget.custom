@@ -10,7 +10,7 @@
  * Looks disconcerting - extending my own class. But this is a good method to
  * merge basic code and override them with custom methods.
  */
-signal_4_SignalTarget = signal_4_SignalTarget.extend({
+digital_signal_4_SignalTarget = digital_signal_4_SignalTarget.extend({
 
     init: function(attr, setter, getter){
          this._super(attr, setter, getter);

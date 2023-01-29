@@ -1,3 +1,5 @@
+import typeMapping from "../../../common/js/TypeMapping"
+
 let Reader = draw2d.io.json.Reader.extend({
 
     init:function(){
@@ -94,12 +96,7 @@ let Reader = draw2d.io.json.Reader.extend({
 
     createFigureFromType:function(type)
     {
-        // patch object types from older versions of JSON
-        if(type === "draw2d.Connection"){
-            type = "Connection"
-        }
-
-        return this._super(type)
+      return this._super(typeMapping(type))
     }
 })
 
