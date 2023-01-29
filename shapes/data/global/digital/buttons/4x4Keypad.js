@@ -79,85 +79,85 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
-       // Rectangle
+       // rect_0
        shape = this.canvas.paper.path('M0 1.7776000000003478L20 1.7776000000003478L20 21.777600000000348L0 21.777600000000348Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_0");
        
-       // Rectangle
+       // rect_1
        shape = this.canvas.paper.path('M20 1.7776000000003478L40 1.7776000000003478L40 21.777600000000348L20 21.777600000000348Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_1");
        
-       // Rectangle
+       // rect_2
        shape = this.canvas.paper.path('M40 1.7776000000003478L60 1.7776000000003478L60 21.777600000000348L40 21.777600000000348Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_2");
        
-       // Rectangle
+       // rect_3
        shape = this.canvas.paper.path('M60 1.7776000000003478L80 1.7776000000003478L80 21.777600000000348L60 21.777600000000348Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_3");
        
-       // Rectangle
+       // rect_4
        shape = this.canvas.paper.path('M0 21.777600000000348L20 21.777600000000348L20 41.77760000000035L0 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_4");
        
-       // Rectangle
+       // rect_8
        shape = this.canvas.paper.path('M0 41.77760000000035L20 41.77760000000035L20 61.77760000000035L0 61.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_8");
        
-       // Rectangle
+       // rect_c
        shape = this.canvas.paper.path('M0 61.77760000000035L20 61.77760000000035L20 81.77760000000035L0 81.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_c");
        
-       // Rectangle
+       // rect_5
        shape = this.canvas.paper.path('M20 21.777600000000348L40 21.777600000000348L40 41.77760000000035L20 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_5");
        
-       // Rectangle
+       // rect_6
        shape = this.canvas.paper.path('M40 21.777600000000348L60 21.777600000000348L60 41.77760000000035L40 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_6");
        
-       // Rectangle
+       // rect_7
        shape = this.canvas.paper.path('M60 21.777600000000348L80 21.777600000000348L80 41.77760000000035L60 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_7");
        
-       // Rectangle
+       // rect_9
        shape = this.canvas.paper.path('M20 41.77760000000035L40 41.77760000000035L40 61.77760000000035L20 61.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_9");
        
-       // Rectangle
+       // rect_a
        shape = this.canvas.paper.path('M40 41.77760000000035L60 41.77760000000035L60 61.77760000000035L40 61.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_a");
        
-       // Rectangle
+       // rect_b
        shape = this.canvas.paper.path('M60 41.77760000000035L80 41.77760000000035L80 61.77760000000035L60 61.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_b");
        
-       // Rectangle
+       // rect_d
        shape = this.canvas.paper.path('M20 61.77760000000035L40 61.77760000000035L40 81.77760000000035L20 81.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_d");
        
-       // Rectangle
+       // rect_e
        shape = this.canvas.paper.path('M40 61.77760000000035L60 61.77760000000035L60 81.77760000000035L40 81.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_e");
        
-       // Rectangle
+       // rect_f
        shape = this.canvas.paper.path('M60 61.77760000000035L80 61.77760000000035L80 81.77760000000035L60 81.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Rectangle");
+       shape.data("name","rect_f");
        
        // Label
        shape = this.canvas.paper.text(0,0,'0');
