@@ -1,0 +1,69 @@
+/**
+ * Generated Code for the Draw2D touch HTML5 lib.
+ * File will be generated if you save the *.shape file.
+ *
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custom code and event handler here.
+ *
+ * Looks disconcerting - extending my own class. But this is a good method to
+ * merge basic code and override them with custom methods.
+ */
+digital_signal_8_SignalSource = digital_signal_8_SignalSource.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+        
+        this.on("change:userData.busId",(emitter, event)=>{
+            this.layerAttr("label", {text: event.value})
+            this.busId = event.value
+        });
+        this.on("added", ()=>{
+            this.busId = this.attr("userData.busId")
+            if(!this.busId){
+                this.busId = "Bus_Id"
+                this.attr("userData.busId", this.busId)
+            }            
+            this.layerAttr("label", {text: this.busId})
+        })
+    },
+    
+    onPreStart: function(context)
+    {
+      context.signalPorts ??={}  
+    },
+
+    /**
+     *  Called by the simulator for every calculation
+     *  loop
+     *  @required
+     **/
+    onStart:function(context)
+    {
+        this.getOutputPort("out1").getValue = ()=>context.signalPorts[this.busId+":1"]?.getValue()
+        this.getOutputPort("out2").getValue = ()=>context.signalPorts[this.busId+":2"]?.getValue()
+        this.getOutputPort("out3").getValue = ()=>context.signalPorts[this.busId+":3"]?.getValue()
+        this.getOutputPort("out4").getValue = ()=>context.signalPorts[this.busId+":4"]?.getValue()
+        this.getOutputPort("out5").getValue = ()=>context.signalPorts[this.busId+":5"]?.getValue()
+        this.getOutputPort("out6").getValue = ()=>context.signalPorts[this.busId+":6"]?.getValue()
+        this.getOutputPort("out7").getValue = ()=>context.signalPorts[this.busId+":7"]?.getValue()
+        this.getOutputPort("out8").getValue = ()=>context.signalPorts[this.busId+":8"]?.getValue()
+    },
+
+    getParameterSettings: function()
+    {
+        return [
+        {
+            name:"busId",
+            label:"Bus Id",
+            property:{
+                type: "string"
+            }
+        }];
+    }
+
+});
