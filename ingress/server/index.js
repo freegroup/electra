@@ -165,6 +165,14 @@ app.use('/simulator', createProxyMiddleware({
     onProxyReq: onProxyReq
 }));
 
+app.use('/circuit', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
+    changeOrigin: true,
+    pathRewrite: {},
+    onProxyReq: onProxyReq
+}));
+
+
 app.use('/common', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_COMMON,
     changeOrigin: true,
