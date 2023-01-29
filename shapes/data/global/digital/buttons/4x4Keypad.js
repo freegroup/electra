@@ -5,7 +5,7 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     this._super( {...attr, stroke:0, bgColor:null, width:10,height:10 }, setter, getter);
+     this._super( {...attr, stroke:0, bgColor:null, width:80,height:83.27760000000035 }, setter, getter);
      this.read = {};
      this.write = {};
 
@@ -15,8 +15,8 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 10;
-      this.originalHeight= 10;
+      this.originalWidth = 80;
+      this.originalHeight= 83.27760000000035;
       return shape;
    },
 
@@ -25,9 +25,174 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L10,0 L10,10 L0,10");
+       shape = this.canvas.paper.path("M0,0 L80,0 L80,83.27760000000035 L0,83.27760000000035");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 1.7776000000003478L80 1.7776000000003478L80 81.77760000000035L0 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 1.7776000000003478L20 1.7776000000003478L20 21.777600000000348L0 21.777600000000348Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M20 1.7776000000003478L40 1.7776000000003478L40 21.777600000000348L20 21.777600000000348Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M40 1.7776000000003478L60 1.7776000000003478L60 21.777600000000348L40 21.777600000000348Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M60 1.7776000000003478L80 1.7776000000003478L80 21.777600000000348L60 21.777600000000348Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 21.777600000000348L20 21.777600000000348L20 41.77760000000035L0 41.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 41.77760000000035L20 41.77760000000035L20 61.77760000000035L0 61.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M0 61.77760000000035L20 61.77760000000035L20 81.77760000000035L0 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M20 21.777600000000348L40 21.777600000000348L40 41.77760000000035L20 41.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M40 21.777600000000348L60 21.777600000000348L60 41.77760000000035L40 41.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M60 21.777600000000348L80 21.777600000000348L80 41.77760000000035L60 41.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M20 41.77760000000035L40 41.77760000000035L40 61.77760000000035L20 61.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M40 41.77760000000035L60 41.77760000000035L60 61.77760000000035L40 61.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M60 41.77760000000035L80 41.77760000000035L80 61.77760000000035L60 61.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M20 61.77760000000035L40 61.77760000000035L40 81.77760000000035L20 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M40 61.77760000000035L60 61.77760000000035L60 81.77760000000035L40 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Rectangle
+       shape = this.canvas.paper.path('M60 61.77760000000035L80 61.77760000000035L80 81.77760000000035L60 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Rectangle");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'0');
+       shape.attr({"x":5.5,"y":10.75,"text-anchor":"start","text":"0","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'1');
+       shape.attr({"x":26.5,"y":10.75,"text-anchor":"start","text":"1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'2');
+       shape.attr({"x":46.5,"y":10.75,"text-anchor":"start","text":"2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'3');
+       shape.attr({"x":66.5,"y":10.75,"text-anchor":"start","text":"3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'4');
+       shape.attr({"x":6.5,"y":32.02760000000035,"text-anchor":"start","text":"4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'5');
+       shape.attr({"x":26.5,"y":32.02760000000035,"text-anchor":"start","text":"5","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'6');
+       shape.attr({"x":46.5,"y":32.02760000000035,"text-anchor":"start","text":"6","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'7');
+       shape.attr({"x":66.5,"y":32.02760000000035,"text-anchor":"start","text":"7","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'8');
+       shape.attr({"x":6.5,"y":52.02760000000035,"text-anchor":"start","text":"8","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'9');
+       shape.attr({"x":27,"y":52.02760000000035,"text-anchor":"start","text":"9","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'A');
+       shape.attr({"x":46.5,"y":52.02760000000035,"text-anchor":"start","text":"A","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'B');
+       shape.attr({"x":66,"y":51.52760000000035,"text-anchor":"start","text":"B","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'C');
+       shape.attr({"x":5.5,"y":72.52760000000035,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'D');
+       shape.attr({"x":25.5,"y":72.52760000000035,"text-anchor":"start","text":"D","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'E');
+       shape.attr({"x":45.5,"y":72.52760000000035,"text-anchor":"start","text":"E","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'F');
+       shape.attr({"x":66,"y":72.02760000000035,"text-anchor":"start","text":"F","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
        
 
        return this.canvas.paper.setFinish();
