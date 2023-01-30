@@ -8,9 +8,21 @@
 digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
 
     init: function(attr, setter, getter){
-         this._super(attr, setter, getter);
+        this._super(attr, setter, getter);
 
-         // your special code here
+        // your special code here
+        this.on("click", (emitter, event) => {
+            console.log(event)
+            /*
+            let h = emitter.getHeight();
+            let modh = h/this.bitCount;
+            let index = (event.relY/modh)|0;
+            let port = emitter.getOutputPort(index);
+            port.setValue(!port.getBooleanValue());
+            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
+            */
+        });
+
     },
 
     /**
