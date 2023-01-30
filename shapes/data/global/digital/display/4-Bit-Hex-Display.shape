@@ -5,7 +5,7 @@
       "id": "63b0af25-29ea-78e8-4970-475f88c7fd9f",
       "x": 7952.5,
       "y": 7956.0904,
-      "width": 96,
+      "width": 62,
       "height": 87,
       "alpha": 1,
       "selectable": true,
@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n    },\n    \n    calculate:function(context)\n    {\n        let val = this.getInputPort(\"input_bit1\").getBooleanValue()?1:0;\n        val    += this.getInputPort(\"input_bit2\").getBooleanValue()?2:0;\n        val    += this.getInputPort(\"input_bit3\").getBooleanValue()?4:0;\n        val    += this.getInputPort(\"input_bit4\").getBooleanValue()?8:0;\n        this.layerAttr(\"digit\", {text: val.toString(10).padStart(2, '0')});\n    }\n\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n    },\n    \n    calculate:function(context)\n    {\n        let val = this.getInputPort(\"input_bit1\").getBooleanValue()?1:0;\n        val    += this.getInputPort(\"input_bit2\").getBooleanValue()?2:0;\n        val    += this.getInputPort(\"input_bit3\").getBooleanValue()?4:0;\n        val    += this.getInputPort(\"input_bit4\").getBooleanValue()?8:0;\n        this.layerAttr(\"digit\", {text: val.toString(16).toUpperCase()});\n    }\n\n});",
         "name": "circle",
         "markdown": "# 8-Bit Number display\n\nConverts the 8-Input bis into the corresponding dezimal number and shows them\nin the display.",
         "type": "Output",
@@ -32,11 +32,11 @@
           "y": 7956.0904
         },
         {
-          "x": 8048.5,
+          "x": 8014.5,
           "y": 7956.0904
         },
         {
-          "x": 8048.5,
+          "x": 8014.5,
           "y": 8043.0904
         },
         {
@@ -218,7 +218,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "04b0e937-cdb4-2b8d-1261-f8d60f22cf32",
-      "x": 7951.5,
+      "x": 7954.5,
       "y": 7951.25,
       "width": 28.34375,
       "height": 21,
@@ -236,7 +236,7 @@
       "stroke": 0,
       "radius": 0,
       "dasharray": null,
-      "text": "15",
+      "text": "F",
       "outlineStroke": 0,
       "outlineColor": "rgba(0,0,0,0)",
       "fontSize": 80,
