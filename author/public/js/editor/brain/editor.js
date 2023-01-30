@@ -5,13 +5,16 @@ import writer from "./io/writer"
 import View from "./view"
 import Palette from "./palette"
 
-export default class Editor {
+import GenericEditor from '../editor'
+
+export default class Editor extends GenericEditor{
 
   constructor() {
+    super()
   }
 
   inject(section) {
-    this.section = section
+    super.inject(section)
     let menu = $(".activeSection .tinyFlyoverMenu")
     $(".workspace").append(`
           <div class="content editorContainerSelector" " id="draw2dCanvasWrapper">
@@ -52,7 +55,7 @@ export default class Editor {
   commit(){
     this.view.simulationStop()
     return new Promise((resolve, reject) => {
-      this._resetDOM()
+      this.resetDOM()
       this.view.getSelection().each((index, item)=>{
          item.unselect()
       })
@@ -66,12 +69,28 @@ export default class Editor {
   cancel(){
     this.view.simulationStop()
     return new Promise((resolve, reject) => {
-      this._resetDOM()
+      this.resetDOM()
       resolve(this.section)
     })
   }
 
-  _resetDOM(){
+  render(whereToAppend, section){
+    if (section.content) {
+      whereToAppend.append(`
+        <div data-id="${section.id}" class='section'>
+            <img class="sectionContent" data-type="brain" src="${section.content.image}">
+        </div>
+      `)
+    } else {
+      whereToAppend.append(`
+        <div data-id="${section.id}" class='section'>
+            <div class="sectionContent" data-type="brain">-double click to edit brain-</div>
+        </div>
+      `)
+    }
+  }
+
+  resetDOM(){
     this.view.simulationStop()
     this.splitter.destroy()
     $("#paletteElements").html("")

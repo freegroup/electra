@@ -1520,26 +1520,40 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _io_writer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./io/writer */ "./public/js/editor/brain/io/writer.js");
 /* harmony import */ var _view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view */ "./public/js/editor/brain/view.js");
 /* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./palette */ "./public/js/editor/brain/palette.js");
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 
 
 
 
-var Editor = /*#__PURE__*/function () {
+
+var Editor = /*#__PURE__*/function (_GenericEditor) {
+  _inherits(Editor, _GenericEditor);
+  var _super = _createSuper(Editor);
   function Editor() {
     _classCallCheck(this, Editor);
+    return _super.call(this);
   }
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       var _this = this;
-      this.section = section;
+      _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
       var menu = $(".activeSection .tinyFlyoverMenu");
       $(".workspace").append("\n          <div class=\"content editorContainerSelector\" \" id=\"draw2dCanvasWrapper\">\n               <div class=\"canvas\" id=\"draw2dCanvas\" oncontextmenu=\"return false;\">\n          </div>\n       ");
       menu.prepend("\n          <div class=\"playButton play material-button\" id=\"simulationStartStop\">\n            <span>\n              <span class=\"s1\"></span>\n              <span class=\"s2\"></span>\n              <span class=\"s3\"></span>\n            </span>\n          </div>\n    ");
@@ -1566,7 +1580,7 @@ var Editor = /*#__PURE__*/function () {
       var _this2 = this;
       this.view.simulationStop();
       return new Promise(function (resolve, reject) {
-        _this2._resetDOM();
+        _this2.resetDOM();
         _this2.view.getSelection().each(function (index, item) {
           item.unselect();
         });
@@ -1582,13 +1596,22 @@ var Editor = /*#__PURE__*/function () {
       var _this3 = this;
       this.view.simulationStop();
       return new Promise(function (resolve, reject) {
-        _this3._resetDOM();
+        _this3.resetDOM();
         resolve(_this3.section);
       });
     }
   }, {
-    key: "_resetDOM",
-    value: function _resetDOM() {
+    key: "render",
+    value: function render(whereToAppend, section) {
+      if (section.content) {
+        whereToAppend.append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <img class=\"sectionContent\" data-type=\"brain\" src=\"").concat(section.content.image, "\">\n        </div>\n      "));
+      } else {
+        whereToAppend.append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <div class=\"sectionContent\" data-type=\"brain\">-double click to edit brain-</div>\n        </div>\n      "));
+      }
+    }
+  }, {
+    key: "resetDOM",
+    value: function resetDOM() {
       this.view.simulationStop();
       this.splitter.destroy();
       $("#paletteElements").html("");
@@ -1596,7 +1619,7 @@ var Editor = /*#__PURE__*/function () {
     }
   }]);
   return Editor;
-}();
+}(_editor__WEBPACK_IMPORTED_MODULE_5__["default"]);
 
 
 /***/ }),
@@ -2746,10 +2769,153 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./public/js/editor/image/editor.js":
+/***/ "./public/js/editor/cloze/editor.js":
 /*!******************************************!*\
-  !*** ./public/js/editor/image/editor.js ***!
+  !*** ./public/js/editor/cloze/editor.js ***!
   \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Editor)
+/* harmony export */ });
+/* harmony import */ var codemirror_lib_codemirror_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! codemirror/lib/codemirror.css */ "./node_modules/codemirror/lib/codemirror.css");
+/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! codemirror */ "./node_modules/codemirror/lib/codemirror.js");
+/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(codemirror__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! codemirror/mode/gfm/gfm.js */ "./node_modules/codemirror/mode/gfm/gfm.js");
+/* harmony import */ var codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! codemirror/addon/selection/active-line.js */ "./node_modules/codemirror/addon/selection/active-line.js");
+/* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
+
+var Editor = /*#__PURE__*/function (_GenericEditor) {
+  _inherits(Editor, _GenericEditor);
+  var _super = _createSuper(Editor);
+  function Editor() {
+    _classCallCheck(this, Editor);
+    return _super.call(this);
+  }
+  _createClass(Editor, [{
+    key: "inject",
+    value: function inject(section) {
+      var _this = this;
+      _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
+      var content = section.content;
+      $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                <div class=\"left\">\n                  <textarea id=\"markdownEditor\"></textarea>\n                </div>\n                <div class=\"right\">\n                  <article class=\"markdown-body\" id=\"htmlPreview\"></article>\n                </div>\n              </div>\n                ");
+      this.editorId = "markdownEditor";
+      this.previewId = "htmlPreview";
+      this.editor = codemirror__WEBPACK_IMPORTED_MODULE_1___default().fromTextArea(document.getElementById(this.editorId), {
+        lineNumbers: true,
+        mode: 'gfm',
+        theme: 'default',
+        viewportMargin: Infinity,
+        autofocus: true,
+        lineWrapping: true,
+        styleActiveLine: {
+          nonEmpty: true
+        }
+      });
+      this.editor.setValue(content);
+      this.editor.on('changes', this.debounce(function () {
+        _this.updatePreview();
+      }, 500, false));
+      this.updatePreview();
+      return this;
+    }
+
+    /* public interface */
+  }, {
+    key: "commit",
+    value: function commit() {
+      var _this2 = this;
+      return new Promise(function (resolve, reject) {
+        _this2.section.content = _this2.editor.getValue();
+        resolve(_this2.section);
+      });
+    }
+
+    /* public interface */
+  }, {
+    key: "cancel",
+    value: function cancel() {
+      var _this3 = this;
+      return new Promise(function (resolve, reject) {
+        resolve(_this3.section);
+      });
+    }
+
+    /* public interface */
+  }, {
+    key: "render",
+    value: function render(content) {
+      return md.render(content);
+    }
+  }, {
+    key: "defaultContent",
+    value: function defaultContent() {
+      return null;
+    }
+  }, {
+    key: "updatePreview",
+    value: function updatePreview() {
+      var markdown = this.editor.getValue();
+      var preview = md.render(markdown);
+      document.getElementById(this.previewId).innerHTML = preview;
+    }
+  }, {
+    key: "getValue",
+    value: function getValue() {
+      return this.editor.getValue();
+    }
+  }, {
+    key: "debounce",
+    value: function debounce(func, wait, immediate) {
+      var timeout;
+      return function () {
+        var context = this;
+        var args = arguments;
+        var later = function later() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    }
+  }]);
+  return Editor;
+}(_editor__WEBPACK_IMPORTED_MODULE_4__["default"]);
+
+
+/***/ }),
+
+/***/ "./public/js/editor/editor.js":
+/*!************************************!*\
+  !*** ./public/js/editor/editor.js ***!
+  \************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2766,12 +2932,94 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 var Editor = /*#__PURE__*/function () {
   function Editor() {
     _classCallCheck(this, Editor);
+    this.section = null;
   }
+
+  /* public interface */
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       this.section = section;
-      this.content = section.content || "";
+      return this;
+    }
+
+    /* public interface */
+  }, {
+    key: "commit",
+    value: function commit() {
+      var _this = this;
+      return new Promise(function (resolve, reject) {
+        resolve(_this.section);
+      });
+    }
+
+    /* public interface */
+  }, {
+    key: "cancel",
+    value: function cancel() {
+      var _this2 = this;
+      return new Promise(function (resolve, reject) {
+        resolve(_this2.section);
+      });
+    }
+
+    /* public interface */
+  }, {
+    key: "render",
+    value: function render(whereToAppend, section) {}
+  }, {
+    key: "defaultContent",
+    value: function defaultContent() {
+      return null;
+    }
+  }]);
+  return Editor;
+}();
+
+
+/***/ }),
+
+/***/ "./public/js/editor/image/editor.js":
+/*!******************************************!*\
+  !*** ./public/js/editor/image/editor.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Editor)
+/* harmony export */ });
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Editor = /*#__PURE__*/function (_GenericEditor) {
+  _inherits(Editor, _GenericEditor);
+  var _super = _createSuper(Editor);
+  function Editor() {
+    _classCallCheck(this, Editor);
+    return _super.call(this);
+  }
+  _createClass(Editor, [{
+    key: "inject",
+    value: function inject(section) {
+      var _section$content;
+      _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
+      this.content = (_section$content = section.content) !== null && _section$content !== void 0 ? _section$content : "";
       var _this = this;
       $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div class=\"drop-message\">\n                        Drag & Drop images or click to upload\n                  </div>\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\">\n                      <img src=\"".concat(this.content, "\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n              </div>\n                "));
       var dropRegion = document.getElementById("editor-container");
@@ -2888,26 +3136,24 @@ var Editor = /*#__PURE__*/function () {
     value: function commit() {
       var _this2 = this;
       return new Promise(function (resolve, reject) {
-        _this2.section.content = _this2.getValue();
+        _this2.section.content = _this2.content;
         resolve(_this2.section);
       });
     }
+
+    /* public interface */
   }, {
-    key: "cancel",
-    value: function cancel() {
-      var _this3 = this;
-      return new Promise(function (resolve, reject) {
-        resolve(_this3.section);
-      });
-    }
-  }, {
-    key: "getValue",
-    value: function getValue() {
-      return this.content;
+    key: "render",
+    value: function render(whereToAppend, section) {
+      if (section.content) {
+        whereToAppend.append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <img class=\"sectionContent\" data-type=\"image\" src=\"").concat(section.content, "\">\n        </div>\n      "));
+      } else {
+        whereToAppend.append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <div class=\"sectionContent\" data-type=\"image\">-double click to edit image-</div>\n        </div>\n      "));
+      }
     }
   }]);
   return Editor;
-}();
+}(_editor__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 /***/ }),
@@ -2930,12 +3176,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(codemirror_mode_gfm_gfm_js__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! codemirror/addon/selection/active-line.js */ "./node_modules/codemirror/addon/selection/active-line.js");
 /* harmony import */ var codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(codemirror_addon_selection_active_line_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 
 
@@ -2943,15 +3199,21 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 md.use(__webpack_require__(/*! markdown-it-container */ "./node_modules/markdown-it-container/index.js"), "info");
-var Editor = /*#__PURE__*/function () {
+
+var Editor = /*#__PURE__*/function (_GenericEditor) {
+  _inherits(Editor, _GenericEditor);
+  var _super = _createSuper(Editor);
   function Editor() {
     _classCallCheck(this, Editor);
+    return _super.call(this);
   }
+
+  /* public interface */
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
       var _this = this;
-      this.section = section;
+      _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
       var content = section.content;
       $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                <div class=\"left\">\n                  <textarea id=\"markdownEditor\"></textarea>\n                </div>\n                <div class=\"right\">\n                  <article class=\"markdown-body\" id=\"htmlPreview\"></article>\n                </div>\n              </div>\n                ");
       this.editorId = "markdownEditor";
@@ -2974,6 +3236,8 @@ var Editor = /*#__PURE__*/function () {
       this.updatePreview();
       return this;
     }
+
+    /* public interface */
   }, {
     key: "commit",
     value: function commit() {
@@ -2983,13 +3247,25 @@ var Editor = /*#__PURE__*/function () {
         resolve(_this2.section);
       });
     }
+
+    /* public interface */
   }, {
-    key: "cancel",
-    value: function cancel() {
-      var _this3 = this;
-      return new Promise(function (resolve, reject) {
-        resolve(_this3.section);
-      });
+    key: "render",
+    value: function render(whereToAppend, section) {
+      var errorCSS = "";
+      var markdown = section.content;
+      try {
+        markdown = md.render(markdown);
+      } catch (error) {
+        console.log(error);
+        errorCSS = "error";
+      }
+      whereToAppend.append("\n        <div data-id=\"".concat(section.id, "\" class='section ").concat(errorCSS, "'>\n           <div class=\"sectionContent markdownRendering\" data-type=\"markdown\">").concat(markdown, "</div>\n        </div>\n      "));
+    }
+  }, {
+    key: "defaultContent",
+    value: function defaultContent() {
+      return "## Header";
     }
   }, {
     key: "updatePreview",
@@ -2997,16 +3273,6 @@ var Editor = /*#__PURE__*/function () {
       var markdown = this.editor.getValue();
       var preview = md.render(markdown);
       document.getElementById(this.previewId).innerHTML = preview;
-    }
-  }, {
-    key: "getValue",
-    value: function getValue() {
-      return this.editor.getValue();
-    }
-  }, {
-    key: "render",
-    value: function render(content) {
-      return md.render(content);
     }
   }, {
     key: "debounce",
@@ -3027,7 +3293,7 @@ var Editor = /*#__PURE__*/function () {
     }
   }]);
   return Editor;
-}();
+}(_editor__WEBPACK_IMPORTED_MODULE_4__["default"]);
 
 
 /***/ }),
@@ -3753,23 +4019,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_js_InputPrompt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../common/js/InputPrompt */ "../common/public/js/InputPrompt.js");
 /* harmony import */ var _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./commands/CommandStack */ "./public/js/commands/CommandStack.js");
 /* harmony import */ var _commands_State__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./commands/State */ "./public/js/commands/State.js");
-/* harmony import */ var _configuration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./configuration */ "./public/js/configuration.js");
+/* harmony import */ var _model_page__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./model/page */ "./public/js/model/page.js");
+/* harmony import */ var _editor_markdown_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor/markdown/editor */ "./public/js/editor/markdown/editor.js");
+/* harmony import */ var _editor_brain_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./editor/brain/editor */ "./public/js/editor/brain/editor.js");
+/* harmony import */ var _editor_cloze_editor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./editor/cloze/editor */ "./public/js/editor/cloze/editor.js");
+/* harmony import */ var _editor_image_editor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor/image/editor */ "./public/js/editor/image/editor.js");
+/* harmony import */ var _editor_editor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./editor/editor */ "./public/js/editor/editor.js");
+/* harmony import */ var _palette__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./palette */ "./public/js/palette.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-
-
-
-
 var shortid = __webpack_require__(/*! short-uuid */ "./node_modules/short-uuid/index.js");
-var Page = (__webpack_require__(/*! ./model/page */ "./public/js/model/page.js")["default"]);
-var MarkdownEditor = (__webpack_require__(/*! ./editor/markdown/editor */ "./public/js/editor/markdown/editor.js")["default"]);
-var BrainEditor = (__webpack_require__(/*! ./editor/brain/editor */ "./public/js/editor/brain/editor.js")["default"]);
-var ImageEditor = (__webpack_require__(/*! ./editor/image/editor */ "./public/js/editor/image/editor.js")["default"]);
-var Palette = (__webpack_require__(/*! ./palette */ "./public/js/palette.js")["default"]);
+
+
+
+
+
+
+
+
+
+
 var View = /*#__PURE__*/function () {
   /**
    * @constructor
@@ -3779,14 +4052,18 @@ var View = /*#__PURE__*/function () {
     var _this = this;
     _classCallCheck(this, View);
     this.app = app;
-    this.markdownEditor = new MarkdownEditor();
-    this.brainEditor = new BrainEditor();
-    this.imageEditor = new ImageEditor();
-    this.page = new Page();
+    this.page = new _model_page__WEBPACK_IMPORTED_MODULE_3__["default"]();
     this.activeSection = null;
     this.currentEditor = null;
     this.html = $(id);
-    this.palette = new Palette(app, this, permissions, "#paletteElements");
+    this.palette = new _palette__WEBPACK_IMPORTED_MODULE_9__["default"](app, this, permissions, "#paletteElements");
+    this.unknownEditor = new _editor_editor__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.editors = {
+      markdown: new _editor_markdown_editor__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      cloze: new _editor_cloze_editor__WEBPACK_IMPORTED_MODULE_6__["default"](),
+      brain: new _editor_brain_editor__WEBPACK_IMPORTED_MODULE_5__["default"](),
+      image: new _editor_image_editor__WEBPACK_IMPORTED_MODULE_7__["default"]()
+    };
     this.palette.render();
     _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].off(this).on("change", this);
     this.showWelcomeMessage();
@@ -3837,22 +4114,10 @@ var View = /*#__PURE__*/function () {
     }).on("click", "#sectionMenuCancelEdit", function (event) {
       _this.onCancelEdit();
       return false;
-    }).on("click", "#sectionMenuInsertImage", function (event) {
-      var section = _this.addImage($(event.target).data("index"));
-      if (section) {
-        _this.onSelect(section);
-        _this.onEdit(section);
-      }
-      return false;
-    }).on("click", "#sectionMenuInsertMarkdown", function (event) {
-      var section = _this.addMarkdown($(event.target).data("index"));
-      if (section) {
-        _this.onSelect(section);
-        _this.onEdit(section);
-      }
-      return false;
-    }).on("click", "#sectionMenuInsertBrain", function (event) {
-      var section = _this.addBrain($(event.target).data("index"));
+    }).on("click", ".sectionMenuInsertSection", function (event) {
+      var index = $(event.target).data("index");
+      var type = $(event.target).data("type");
+      var section = _this.addSection(type, index);
       if (section) {
         _this.onSelect(section);
         _this.onEdit(section);
@@ -3903,7 +4168,7 @@ var View = /*#__PURE__*/function () {
       this.onCommitEdit();
       _common_js_InputPrompt__WEBPACK_IMPORTED_MODULE_0__["default"].show("Add new Chapter", "Chapter name").then(function (value) {
         _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](_this2.app));
-        var page = new Page();
+        var page = new _model_page__WEBPACK_IMPORTED_MODULE_3__["default"]();
         page.name = value;
         _this2.app.getDocument().push(page);
         _this2.setPage(page);
@@ -3913,59 +4178,29 @@ var View = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "addMarkdown",
-    value: function addMarkdown(index) {
+    key: "addSection",
+    value: function addSection(type, index) {
+      var _this$editors$type;
       // commit the current changes if an editor is active
       this.onCommitEdit();
+
+      // save the last state for undo/redo
       _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](this.app));
       var section = {
         id: shortid.generate(),
-        type: "markdown",
-        content: "## Header"
+        type: type,
+        content: (_this$editors$type = this.editors[type]) === null || _this$editors$type === void 0 ? void 0 : _this$editors$type.defaultContent()
       };
       this.page.add(section, index);
+      // if the "index" is a number, we would insert a section in the middle of the page.
+      // in this case it is the best to render the whole page. At the moment an edit can only
+      // "append" its content to a page.
       if (typeof index === "number") {
         this.render(this.page);
       } else {
-        this.renderMarkdown(section, index);
-      }
-      return section;
-    }
-  }, {
-    key: "addBrain",
-    value: function addBrain(index) {
-      // commit the current changes if an editor is active
-      this.onCommitEdit();
-      _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](this.app));
-      var section = {
-        id: shortid.generate(),
-        type: "brain",
-        content: null
-      };
-      this.page.add(section, index);
-      if (typeof index === "number") {
-        this.render(this.page);
-      } else {
-        this.renderBrain(section, index);
-      }
-      return section;
-    }
-  }, {
-    key: "addImage",
-    value: function addImage(index) {
-      // commit the current changes if an editor is active
-      this.onCommitEdit();
-      _commands_CommandStack__WEBPACK_IMPORTED_MODULE_1__["default"].push(new _commands_State__WEBPACK_IMPORTED_MODULE_2__["default"](this.app));
-      var section = {
-        id: shortid.generate(),
-        type: "image",
-        content: null
-      };
-      this.page.add(section, index);
-      if (typeof index === "number") {
-        this.render(this.page);
-      } else {
-        this.renderImage(section, index);
+        var _this$editors$type2;
+        var editor = (_this$editors$type2 = this.editors[type]) !== null && _this$editors$type2 !== void 0 ? _this$editors$type2 : this.unknownEditor;
+        editor.render(this.html.find(".sections"), section);
       }
       return section;
     }
@@ -3977,63 +4212,16 @@ var View = /*#__PURE__*/function () {
       this.html.html($("<div class='sections'></div>"));
       this.renderSpacer(0);
       page.forEach(function (section, index) {
-        switch (section.type) {
-          case "brain":
-            _this3.renderBrain(section);
-            break;
-          case "markdown":
-            _this3.renderMarkdown(section);
-            break;
-          case "image":
-            _this3.renderImage(section);
-            break;
-          default:
-            _this3.renderUnknown(section);
-            break;
-        }
+        var _this3$editors$sectio;
+        var editor = (_this3$editors$sectio = _this3.editors[section.type]) !== null && _this3$editors$sectio !== void 0 ? _this3$editors$sectio : _this3.unknownEditor;
+        editor.render(_this3.html.find(".sections"), section);
         _this3.renderSpacer(index + 1);
       });
     }
   }, {
-    key: "renderMarkdown",
-    value: function renderMarkdown(section) {
-      var errorCSS = "";
-      var markdown = section.content;
-      try {
-        markdown = this.markdownEditor.render(section.content);
-      } catch (error) {
-        console.log(error);
-        errorCSS = "error";
-      }
-      this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section ").concat(errorCSS, "'>\n           <div class=\"sectionContent markdownRendering\" data-type=\"markdown\">").concat(markdown, "</div>\n        </div>\n      "));
-    }
-  }, {
-    key: "renderBrain",
-    value: function renderBrain(section) {
-      if (section.content) {
-        this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <img class=\"sectionContent\" data-type=\"brain\" src=\"").concat(section.content.image, "\">\n        </div>\n      "));
-      } else {
-        this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <div class=\"sectionContent\" data-type=\"brain\">-double click to edit brain-</div>\n        </div>\n      "));
-      }
-    }
-  }, {
-    key: "renderImage",
-    value: function renderImage(section) {
-      if (section.content) {
-        this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <div class=\"sectionContent\" data-type=\"image\">\n              <img data-type=\"image\" src=\"").concat(section.content, "\">\n            </div>\n        </div>\n      "));
-      } else {
-        this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n            <div class=\"sectionContent\" data-type=\"image\">-double click to edit image-</div>\n        </div>\n      "));
-      }
-    }
-  }, {
     key: "renderSpacer",
     value: function renderSpacer(index) {
-      this.html.find(".sections").append("\n        <div class='section'>\n          <div class='sectionContent ' data-type=\"spacer\" >\n            <div data-index=\"".concat(index, "\" id=\"sectionMenuInsertMarkdown\"  class='material-button' >&#8853; Text</div>\n            <div data-index=\"").concat(index, "\" id=\"sectionMenuInsertBrain\"     class='material-button' >&#8853; Diagram</div>\n            <div data-index=\"").concat(index, "\" id=\"sectionMenuInsertImage\"     class='material-button' >&#8853; Picture</div>\n          </div>\n        </div>\n      "));
-    }
-  }, {
-    key: "renderUnknown",
-    value: function renderUnknown(section) {
-      this.html.find(".sections").append("\n        <div data-id=\"".concat(section.id, "\" class='section'>\n           <div class=\"sectionContent\" data-type=\"unknown\">Unknown section type</div>\n        </div>\n      "));
+      this.html.find(".sections").append("\n        <div class='section'>\n          <div class='sectionContent ' data-type=\"spacer\" >\n            <div data-index=\"".concat(index, "\" data-type=\"markdown\" class='sectionMenuInsertSection material-button' >&#8853; Text</div>\n            <div data-index=\"").concat(index, "\" data-type=\"brain\"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>\n            <div data-index=\"").concat(index, "\" data-type=\"image\"    class='sectionMenuInsertSection material-button' >&#8853; Picture</div>\n          </div>\n        </div>\n      "));
     }
   }, {
     key: "onSelect",
@@ -4049,39 +4237,25 @@ var View = /*#__PURE__*/function () {
   }, {
     key: "onUnselect",
     value: function onUnselect() {
+      var _this$activeSection;
       if (this.currentEditor) {
         return;
       }
-      if (this.activeSection === null) {
-        return;
-      }
       $(".activeSection .tinyFlyoverMenu").remove();
-      this.activeSection.removeClass("activeSection");
+      (_this$activeSection = this.activeSection) === null || _this$activeSection === void 0 ? void 0 : _this$activeSection.removeClass("activeSection");
       this.activeSection = null;
     }
   }, {
     key: "onEdit",
     value: function onEdit(section) {
+      var _this$editors$section;
       if (this.currentEditor) {
         return;
       }
-      var type = section.type;
-      var menu = $(".activeSection .tinyFlyoverMenu");
-      menu.html("\n          <div data-id=\"".concat(section.id, "\" id=\"sectionMenuCommitEdit\" class=\"material-button\">Save</div>\n          <div data-id=\"").concat(section.id, "\" id=\"sectionMenuCancelEdit\" class=\"material-button\">Cancel</div>\n        "));
-      switch (type) {
-        case 'markdown':
-          this.currentEditor = this.markdownEditor.inject(section);
-          $(".sections").removeClass("activeSection");
-          break;
-        case 'brain':
-          this.currentEditor = this.brainEditor.inject(section);
-          $(".sections").removeClass("activeSection");
-          break;
-        case 'image':
-          this.currentEditor = this.imageEditor.inject(section);
-          $(".sections").removeClass("activeSection");
-          break;
-      }
+      $(".activeSection .tinyFlyoverMenu").html("\n          <div data-id=\"".concat(section.id, "\" id=\"sectionMenuCommitEdit\" class=\"material-button\">Save</div>\n          <div data-id=\"").concat(section.id, "\" id=\"sectionMenuCancelEdit\" class=\"material-button\">Cancel</div>\n        "));
+      this.currentEditor = (_this$editors$section = this.editors[section.type]) !== null && _this$editors$section !== void 0 ? _this$editors$section : this.unknownEditor;
+      this.currentEditor.inject(section);
+      $(".sections").removeClass("activeSection");
     }
   }, {
     key: "onDelete",
@@ -5683,11 +5857,14 @@ $.fn.extend({
         }
         last = self;
       });
-      $(document).on('click', function () {
-        if (last) {
-          last.popover('hide').removeClass('popconfirm-active');
-        }
-      });
+      if (!document.popConfirm) {
+        document.popConfirm = true;
+        $(document).on('click', function () {
+          if (last) {
+            last.popover('hide').removeClass('popconfirm-active');
+          }
+        });
+      }
       self.bind('click', function (e) {
         eventToConfirm = e;
         e.preventDefault();
@@ -5782,17 +5959,35 @@ var locator = new Locator();
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 //
 var mapping = {
-  "draw2d.Connection": "Connection"
+  "draw2d.Connection": "Connection",
+  "arduino_Arduino": "webusb_Arduino",
+  "hardware_Arduino": "webusb_Arduino",
+  "hardware_arduino_Arduino": "webusb_Arduino",
+  "documentation_Markdown": "widget_Markdown",
+  "digital_timer_Delay": "digital_pulse_Delay",
+  "digital_signal_High": "digital_signal_Static_High",
+  "digital_signal_Low": "digital_signal_Static_Low",
+  "widget_PushButton": "digital_button_PushButton",
+  "widget_Slider": "analog_source_Slider",
+  "widget_Sparkline": "analog_sink_Sparkline",
+  "signal_4_SignalSource": "digital_signal_4_SignalSource",
+  "signal_4_SignalTarget": "digital_signal_4_SignalTarget",
+  "signal_4_TriStateGate": "digital_signal_4_TriStateGate",
+  "signal_8_SignalSource": "digital_signal_8_SignalSource",
+  "signal_8_SignalTarget": "digital_signal_8_SignalTarget",
+  "signal_8_TriStateGate": "digital_signal_8_TriStateGate",
+  "signal_SignalSource": "digital_signal_SignalSource",
+  "signal_SignalTarget": "digital_signal_SignalTarget",
+  "signal_TriStateGate": "digital_signal_TriStateGate",
+  "signal_VerticalBus": "digital_signal_VerticalBus"
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  typeMapping: function typeMapping(key) {
-    return mapping[key] || key;
-  }
-});
+/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(key) {
+  return mapping[key] || key;
+}
 
 /***/ }),
 

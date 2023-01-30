@@ -1,11 +1,14 @@
-export default class Editor {
+import GenericEditor from '../editor'
+
+export default class Editor extends GenericEditor{
 
   constructor() {
+    super()
   }
 
   inject(section) {
-    this.section = section
-    this.content = section.content || ""
+    super.inject(section)
+    this.content = section.content ?? ""
     let _this = this
 
     $(".sections .activeSection .sectionContent").html(`
@@ -139,19 +142,26 @@ export default class Editor {
 
   commit() {
     return new Promise((resolve, reject) => {
-      this.section.content = this.getValue()
-
+      this.section.content = this.content
       resolve(this.section)
     })
   }
 
-  cancel() {
-    return new Promise((resolve, reject) => {
-      resolve(this.section)
-    })
-  }
 
-  getValue() {
-    return this.content
+  /* public interface */
+  render(whereToAppend, section){
+    if (section.content) {
+      whereToAppend.append(`
+        <div data-id="${section.id}" class='section'>
+            <img class="sectionContent" data-type="image" src="${section.content}">
+        </div>
+      `)
+    } else {
+      whereToAppend.append(`
+        <div data-id="${section.id}" class='section'>
+            <div class="sectionContent" data-type="image">-double click to edit image-</div>
+        </div>
+      `)
+    }
   }
 }

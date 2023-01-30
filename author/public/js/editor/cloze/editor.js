@@ -3,9 +3,6 @@ import CodeMirror from 'codemirror'
 import 'codemirror/mode/gfm/gfm.js'
 import 'codemirror/addon/selection/active-line.js'
 let md = require('markdown-it')()
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-container'), "info")
-
 import GenericEditor from '../editor'
 
 export default class Editor extends GenericEditor{
@@ -14,7 +11,6 @@ export default class Editor extends GenericEditor{
     super()
   }
 
-  /* public interface */
   inject(section) {
     super.inject(section)
     let content = section.content
@@ -43,7 +39,9 @@ export default class Editor extends GenericEditor{
     })
 
     this.editor.setValue(content)
-    this.editor.on('changes', this.debounce(()=>{this.updatePreview()}, 500, false))
+    this.editor.on('changes', this.debounce(() => {
+      this.updatePreview()
+    }, 500, false))
     this.updatePreview()
 
     return this
@@ -53,6 +51,13 @@ export default class Editor extends GenericEditor{
   commit(){
     return new Promise((resolve, reject) => {
       this.section.content = this.editor.getValue()
+      resolve(this.section)
+    })
+  }
+
+  /* public interface */
+  cancel(){
+    return new Promise((resolve, reject) => {
       resolve(this.section)
     })
   }
@@ -69,19 +74,27 @@ export default class Editor extends GenericEditor{
     }
     whereToAppend.append(`
         <div data-id="${section.id}" class='section ${errorCSS}'>
-           <div class="sectionContent markdownRendering" data-type="markdown">${markdown}</div>
+           <div class="sectionContent markdownRendering" data-type="cloze">${markdown}</div>
         </div>
       `)
   }
 
   defaultContent(){
-    return "## Header"
+    return null
   }
 
   updatePreview(){
     let markdown = this.editor.getValue()
     let preview = md.render(markdown)
     document.getElementById(this.previewId).innerHTML = preview
+  }
+
+  getValue(){
+    return this.editor.getValue()
+  }
+
+  render(content){
+    return md.render(content)
   }
 
   debounce(func, wait, immediate) {
