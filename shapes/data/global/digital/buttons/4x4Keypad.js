@@ -283,11 +283,13 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
 
         // your special code here
         this.segment = null
-
+        this.key = -1
+        this.strobe = false
         this.mousedownCallback = function(emitter, {relX, relY}) {
             relX = parseInt(relX/20)
             relY = parseInt(relY/20)
-            this.segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
+            this.key = (relX+ relY*4)
+            this.segment =  "rect_"+this.key.toString(16).toLowerCase()
             emitter.layerAttr(this.segment, {fill:"#C21B7A"});
         };
         
@@ -304,6 +306,27 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
      **/
     calculate:function( context)
     {
+        // first stage....set the output
+        if (this.strobe && this.key >=0){
+            this.getOutputPort("out_strobe").setValue(false)
+            this.key = -1
+        }
+        else if (this.strobe){
+            this.getOutputPort("out_a").setValue(false)
+            this.getOutputPort("out_b").setValue(false)
+            this.getOutputPort("out_c").setValue(false)
+            this.getOutputPort("out_d").setValue(false)
+            this.strobe = false
+        }
+        else if(this.key>=0){
+            this.getOutputPort("out_a").setValue(this.key&1?true:false)
+            this.getOutputPort("out_b").setValue(this.key&2?true:false)
+            this.getOutputPort("out_c").setValue(this.key&4?true:false)
+            this.getOutputPort("out_d").setValue(this.key&8?true:false)
+            this.getOutputPort("out_strobe").setValue(true)
+            this.strobe = true
+        }
+
     },
 
 
@@ -313,7 +336,6 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
      **/
     onStart:function( context )
     {
-        console.log("start")
         this.on("mousedown", this.mousedownCallback, this)
         this.on("mouseup",   this.mouseupCallback, this)
     },
