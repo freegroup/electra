@@ -284,14 +284,14 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
         // your special code here
         this.segment = null
 
-        this.mpousedown = (emitter, {relX, relY}) => {
+        this.mpousedown = function(emitter, {relX, relY}) {
             relX = parseInt(relX/20)
             relY = parseInt(relY/20)
             this.segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
             emitter.layerAttr(this.segment, {fill:"#C21B7A"});
         };
         
-        this.mouseup = (emitter, {relX, relY}) => {
+        this.mouseup = function(emitter, {relX, relY}) {
             emitter.layerAttr(this.segment, {fill:"#FFFFFF"});
         };
     },
