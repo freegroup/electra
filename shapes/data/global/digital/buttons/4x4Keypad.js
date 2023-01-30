@@ -75,87 +75,87 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape.data("name","BoundingBox");
        
        // Rectangle
-       shape = this.canvas.paper.path('M0.000 1.778L100.000 1.778L100.000 101.778L0.000 101.778Z');
+       shape = this.canvas.paper.path('M0.00 1.78L100.00 1.78L100.00 101.78L0.00 101.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // rect_0
-       shape = this.canvas.paper.path('M0.000 1.778L20.000 1.778L20.000 21.778L0.000 21.778Z');
+       shape = this.canvas.paper.path('M0.00 1.78L20.00 1.78L20.00 21.78L0.00 21.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_0");
        
        // rect_1
-       shape = this.canvas.paper.path('M20.000 1.778L40.000 1.778L40.000 21.778L20.000 21.778Z');
+       shape = this.canvas.paper.path('M20.00 1.78L40.00 1.78L40.00 21.78L20.00 21.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_1");
        
        // rect_2
-       shape = this.canvas.paper.path('M40.000 1.778L60.000 1.778L60.000 21.778L40.000 21.778Z');
+       shape = this.canvas.paper.path('M40.00 1.78L60.00 1.78L60.00 21.78L40.00 21.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_2");
        
        // rect_3
-       shape = this.canvas.paper.path('M60.000 1.778L80.000 1.778L80.000 21.778L60.000 21.778Z');
+       shape = this.canvas.paper.path('M60.00 1.78L80.00 1.78L80.00 21.78L60.00 21.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_3");
        
        // rect_4
-       shape = this.canvas.paper.path('M0.000 21.778L20.000 21.778L20.000 41.778L0.000 41.778Z');
+       shape = this.canvas.paper.path('M0.00 21.78L20.00 21.78L20.00 41.78L0.00 41.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_4");
        
        // rect_8
-       shape = this.canvas.paper.path('M0.000 41.778L20.000 41.778L20.000 61.778L0.000 61.778Z');
+       shape = this.canvas.paper.path('M0.00 41.78L20.00 41.78L20.00 61.78L0.00 61.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_8");
        
        // rect_c
-       shape = this.canvas.paper.path('M0.000 61.778L20.000 61.778L20.000 81.778L0.000 81.778Z');
+       shape = this.canvas.paper.path('M0.00 61.78L20.00 61.78L20.00 81.78L0.00 81.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_c");
        
        // rect_5
-       shape = this.canvas.paper.path('M20.000 21.778L40.000 21.778L40.000 41.778L20.000 41.778Z');
+       shape = this.canvas.paper.path('M20.00 21.78L40.00 21.78L40.00 41.78L20.00 41.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_5");
        
        // rect_6
-       shape = this.canvas.paper.path('M40.000 21.778L60.000 21.778L60.000 41.778L40.000 41.778Z');
+       shape = this.canvas.paper.path('M40.00 21.78L60.00 21.78L60.00 41.78L40.00 41.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_6");
        
        // rect_7
-       shape = this.canvas.paper.path('M60.000 21.778L80.000 21.778L80.000 41.778L60.000 41.778Z');
+       shape = this.canvas.paper.path('M60.00 21.78L80.00 21.78L80.00 41.78L60.00 41.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_7");
        
        // rect_9
-       shape = this.canvas.paper.path('M20.000 41.778L40.000 41.778L40.000 61.778L20.000 61.778Z');
+       shape = this.canvas.paper.path('M20.00 41.78L40.00 41.78L40.00 61.78L20.00 61.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_9");
        
        // rect_a
-       shape = this.canvas.paper.path('M40.000 41.778L60.000 41.778L60.000 61.778L40.000 61.778Z');
+       shape = this.canvas.paper.path('M40.00 41.78L60.00 41.78L60.00 61.78L40.00 61.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_a");
        
        // rect_b
-       shape = this.canvas.paper.path('M60.000 41.778L80.000 41.778L80.000 61.778L60.000 61.778Z');
+       shape = this.canvas.paper.path('M60.00 41.78L80.00 41.78L80.00 61.78L60.00 61.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_b");
        
        // rect_d
-       shape = this.canvas.paper.path('M20.000 61.778L40.000 61.778L40.000 81.778L20.000 81.778Z');
+       shape = this.canvas.paper.path('M20.00 61.78L40.00 61.78L40.00 81.78L20.00 81.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_d");
        
        // rect_e
-       shape = this.canvas.paper.path('M40.000 61.778L60.000 61.778L60.000 81.778L40.000 81.778Z');
+       shape = this.canvas.paper.path('M40.00 61.78L60.00 61.78L60.00 81.78L40.00 81.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_e");
        
        // rect_f
-       shape = this.canvas.paper.path('M60.000 61.778L80.000 61.778L80.000 81.778L60.000 81.778Z');
+       shape = this.canvas.paper.path('M60.00 61.78L80.00 61.78L80.00 81.78L60.00 81.78Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_f");
        
