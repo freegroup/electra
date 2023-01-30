@@ -6,6 +6,9 @@ import '@fortawesome/fontawesome-free/js/regular'
 import '@fortawesome/fontawesome-free/js/brands'
 
 import "../less/index.less"
+import "../../common/js/polyfill"
+
+
 import global from "./global"
 import conf from "./Configuration"
 

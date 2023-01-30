@@ -10,7 +10,6 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
 
     this._super(attr, setter, getter)
 
-
     this.setUserData({name: "Label"})
 
     this.filters = new draw2d.util.ArrayList()
@@ -50,9 +49,9 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
   addFilter: function (filter) {
     var alreadyIn = false
 
-    this.filters.each($.proxy(function (i, e) {
+    this.filters.each( (i, e) =>{
       alreadyIn = alreadyIn || (e.NAME === filter.NAME)
-    }, this))
+    })
     if (alreadyIn === true) {
       return // silently
     }
@@ -64,21 +63,7 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
     return this
   },
 
-/*
-  setPosition: function(x, y) {
-    if (x instanceof draw2d.geo.Point) {
-      return this._super(
-        parseFloat(x.x.toFixed(1)),
-        parseFloat(x.y.toFixed(1)))
-    }
-
-    return this._super(
-      parseFloat(x.toFixed(1)),
-      parseFloat(y.toFixed(1)))
-  },
-*/
-
-    /**
+  /**
    * @method
    * Trigger the repaint of the element.
    *
@@ -88,9 +73,7 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
       return
     }
 
-    if (typeof attributes === "undefined") {
-      attributes = {}
-    }
+    attributes ??= {}
 
     // style the label
     var lattr = {}
@@ -102,7 +85,6 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
       lattr["font-family"] = this.fontFamily
     }
     lattr.fill = this.fontColor.hash()
-    // since 4.2.1
     lattr.stroke = this.outlineColor.hash()
     lattr["stroke-width"] = this.outlineStroke
 
@@ -114,7 +96,8 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
     // set of the x/y must be done AFTER the font-size and bold has been set.
     // Reason: the getHeight method needs the font-size for calculation because
     //         it redirects the calculation to the SVG element.
-    this.svgNodes.attr({x: this.padding.left, y: this.getHeight() / 2})
+
+    this.svgNodes.attr({x: this.padding.left.toFixedNumber(2), y: (this.getHeight() / 2).toFixedNumber(2)})
 
     // jump over the normal Label implementation
     draw2d.SetFigure.prototype.repaint.call(this, attributes)
@@ -122,27 +105,24 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
 
   getPersistentAttributes: function () {
     var memento = this._super()
-
     memento.filters = []
-    this.filters.each($.proxy(function (i, e) {
+    this.filters.each((i, e) => {
       var filterMemento = e.getPersistentAttributes(this)
       memento.filters.push(filterMemento)
-    }, this))
-
+    })
     return memento
   },
 
   setPersistentAttributes: function (memento) {
     this._super(memento)
 
-
     if (typeof memento.filters !== "undefined") {
       this.filters = new draw2d.util.ArrayList()
-      $.each(memento.filters, $.proxy(function (i, e) {
+      $.each(memento.filters, (i, e) => {
         var filter = eval("new " + e.name + "()")
         filter.setPersistentAttributes(this, e)
         this.filters.add(filter)
-      }, this))
+      })
     }
   }
 })

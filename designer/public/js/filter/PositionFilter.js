@@ -45,7 +45,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       try {
         this.block = true
         let pos = figure.getPosition()
-        figure.setPosition(parseFloat($("input[name='filter_position_x']").val()), pos.y)
+        figure.setPosition(parseFloat($("input[name='filter_position_x']").val()).toFixedNumber(2), pos.y.toFixedNumber(2))
       }
       finally {
         this.block = false
@@ -56,7 +56,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       try {
         this.block = true
         let pos = figure.getPosition()
-        figure.setPosition(pos.x, parseFloat($("input[name='filter_position_y']").val()))
+        figure.setPosition(pos.x.toFixedNumber(2), parseFloat($("input[name='filter_position_y']").val()).toFixedNumber(2))
       }
       catch(e){
         console.log(e)
@@ -72,8 +72,8 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       return
     }
     let pos = figure.getPosition()
-    $("input[name='filter_position_y']").val(pos.y)
-    $("input[name='filter_position_x']").val(pos.x)
+    $("input[name='filter_position_y']").val(pos.y.toFixedNumber(2))
+    $("input[name='filter_position_x']").val(pos.x.toFixedNumber(2))
   }
 
   removePane() {
