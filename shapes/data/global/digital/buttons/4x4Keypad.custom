@@ -42,6 +42,7 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
      **/
     onStart:function( context )
     {
+        console.log("start")
         this.on("mousedown", this.mousedownCallback, this)
         this.on("mouseup",   this.mouseupCallback, this)
     },
