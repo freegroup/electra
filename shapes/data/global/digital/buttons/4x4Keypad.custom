@@ -11,19 +11,15 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
         this._super(attr, setter, getter);
 
         // your special code here
+        this.segment = null
         this.on("mousedown", (emitter, {relX, relY}) => {
             relX = parseInt(relX/20)
             relY = parseInt(relY/20)
-            let segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
-            console.log(segment)
-            /*
-            let h = emitter.getHeight();
-            let modh = h/this.bitCount;
-            let index = (event.relY/modh)|0;
-            let port = emitter.getOutputPort(index);
-            port.setValue(!port.getBooleanValue());
-            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
-            */
+            this.segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
+            emitter.layerAttr(this.segment, {fill:"#C21B7A"});
+        });
+        this.on("mouseup", (emitter, {relX, relY}) => {
+            emitter.layerAttr(this.segment, {fill:"#FFFFFF"});
         });
 
     },

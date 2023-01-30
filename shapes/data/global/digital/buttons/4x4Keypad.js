@@ -104,16 +104,6 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_4");
        
-       // rect_8
-       shape = this.canvas.paper.path('M0 41.77760000000035L20 41.77760000000035L20 61.77760000000035L0 61.77760000000035Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","rect_8");
-       
-       // rect_c
-       shape = this.canvas.paper.path('M0 61.77760000000035L20 61.77760000000035L20 81.77760000000035L0 81.77760000000035Z');
-       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","rect_c");
-       
        // rect_5
        shape = this.canvas.paper.path('M20 21.777600000000348L40 21.777600000000348L40 41.77760000000035L20 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
@@ -128,6 +118,11 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape = this.canvas.paper.path('M60 21.777600000000348L80 21.777600000000348L80 41.77760000000035L60 41.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_7");
+       
+       // rect_8
+       shape = this.canvas.paper.path('M0 41.77760000000035L20 41.77760000000035L20 61.77760000000035L0 61.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","rect_8");
        
        // rect_9
        shape = this.canvas.paper.path('M20 41.77760000000035L40 41.77760000000035L40 61.77760000000035L20 61.77760000000035Z');
@@ -144,6 +139,11 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_b");
        
+       // rect_c
+       shape = this.canvas.paper.path('M0 61.77760000000035L20 61.77760000000035L20 81.77760000000035L0 81.77760000000035Z');
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","rect_c");
+       
        // rect_d
        shape = this.canvas.paper.path('M20 61.77760000000035L40 61.77760000000035L40 81.77760000000035L20 81.77760000000035Z');
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
@@ -159,85 +159,85 @@ var digital_buttons_4x4Keypad = CircuitFigure.extend({
        shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect_f");
        
-       // Label
+       // 0
        shape = this.canvas.paper.text(0,0,'0');
        shape.attr({"x":5.5,"y":10.75,"text-anchor":"start","text":"0","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","0");
        
-       // Label
+       // 1
        shape = this.canvas.paper.text(0,0,'1');
        shape.attr({"x":26.5,"y":10.75,"text-anchor":"start","text":"1","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","1");
        
-       // Label
+       // 2
        shape = this.canvas.paper.text(0,0,'2');
        shape.attr({"x":46.5,"y":10.75,"text-anchor":"start","text":"2","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","2");
        
-       // Label
+       // 3
        shape = this.canvas.paper.text(0,0,'3');
        shape.attr({"x":66.5,"y":10.75,"text-anchor":"start","text":"3","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","3");
        
-       // Label
+       // 4
        shape = this.canvas.paper.text(0,0,'4');
        shape.attr({"x":6.5,"y":32.02760000000035,"text-anchor":"start","text":"4","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","4");
        
-       // Label
+       // 5
        shape = this.canvas.paper.text(0,0,'5');
        shape.attr({"x":26.5,"y":32.02760000000035,"text-anchor":"start","text":"5","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","5");
        
-       // Label
+       // 6
        shape = this.canvas.paper.text(0,0,'6');
        shape.attr({"x":46.5,"y":32.02760000000035,"text-anchor":"start","text":"6","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","6");
        
-       // Label
+       // 7
        shape = this.canvas.paper.text(0,0,'7');
        shape.attr({"x":66.5,"y":32.02760000000035,"text-anchor":"start","text":"7","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","7");
        
-       // Label
+       // 8
        shape = this.canvas.paper.text(0,0,'8');
        shape.attr({"x":6.5,"y":52.02760000000035,"text-anchor":"start","text":"8","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","8");
        
-       // Label
+       // 9
        shape = this.canvas.paper.text(0,0,'9');
        shape.attr({"x":27,"y":52.02760000000035,"text-anchor":"start","text":"9","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","9");
        
-       // Label
+       // a
        shape = this.canvas.paper.text(0,0,'A');
        shape.attr({"x":46.5,"y":52.02760000000035,"text-anchor":"start","text":"A","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","a");
        
-       // Label
+       // b
        shape = this.canvas.paper.text(0,0,'B');
        shape.attr({"x":66,"y":51.52760000000035,"text-anchor":"start","text":"B","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","b");
        
-       // Label
+       // c
        shape = this.canvas.paper.text(0,0,'C');
        shape.attr({"x":5.504339694976807,"y":71.80414933929478,"text-anchor":"start","text":"C","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","c");
        
-       // Label
+       // d
        shape = this.canvas.paper.text(0,0,'D');
        shape.attr({"x":25.5,"y":72.52760000000035,"text-anchor":"start","text":"D","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","d");
        
-       // Label
+       // e
        shape = this.canvas.paper.text(0,0,'E');
        shape.attr({"x":45.5,"y":72.52760000000035,"text-anchor":"start","text":"E","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","e");
        
-       // Label
+       // f
        shape = this.canvas.paper.text(0,0,'F');
        shape.attr({"x":66,"y":72.02760000000035,"text-anchor":"start","text":"F","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
+       shape.data("name","f");
        
        // Label
        shape = this.canvas.paper.text(0,0,'A');
@@ -282,19 +282,15 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
         this._super(attr, setter, getter);
 
         // your special code here
+        this.segment = null
         this.on("mousedown", (emitter, {relX, relY}) => {
             relX = parseInt(relX/20)
             relY = parseInt(relY/20)
-            let segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
-            console.log(segment)
-            /*
-            let h = emitter.getHeight();
-            let modh = h/this.bitCount;
-            let index = (event.relY/modh)|0;
-            let port = emitter.getOutputPort(index);
-            port.setValue(!port.getBooleanValue());
-            emitter.layerAttr("rect0"+(index+1), {fill:port.getBooleanValue()?"#C21B7A":"#FFFFFF"});
-            */
+            this.segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
+            emitter.layerAttr(this.segment, {fill:"#C21B7A"});
+        });
+        this.on("mouseup", (emitter, {relX, relY}) => {
+            emitter.layerAttr(this.segment, {fill:"#FFFFFF"});
         });
 
     },

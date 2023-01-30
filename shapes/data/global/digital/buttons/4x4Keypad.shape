@@ -14,7 +14,7 @@
       "userData": {
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        // your special code here\n        this.on(\"mousedown\", (emitter, {relX, relY}) => {\n            relX = parseInt(relX/20)\n            relY = parseInt(relY/20)\n            let segment =  \"rect_\"+(relX+ relY*4).toString(16).toLowerCase()\n            console.log(segment)\n            /*\n            let h = emitter.getHeight();\n            let modh = h/this.bitCount;\n            let index = (event.relY/modh)|0;\n            let port = emitter.getOutputPort(index);\n            port.setValue(!port.getBooleanValue());\n            emitter.layerAttr(\"rect0\"+(index+1), {fill:port.getBooleanValue()?\"#C21B7A\":\"#FFFFFF\"});\n            */\n        });\n\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n    },\n\n    /**\n     * Get the simulator a hint which kind of hardware the shapes requires or supports\n     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost\n     * and your are running a circuit which needs this kind of hardware...\n     **/\n    getRequiredHardware: function(){\n      return {\n        arduino: false\n      }\n    }\n\n});"
+        "code": "/**\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        // your special code here\n        this.segment = null\n        this.on(\"mousedown\", (emitter, {relX, relY}) => {\n            relX = parseInt(relX/20)\n            relY = parseInt(relY/20)\n            this.segment =  \"rect_\"+(relX+ relY*4).toString(16).toLowerCase()\n            emitter.layerAttr(this.segment, {fill:\"#C21B7A\"});\n        });\n        this.on(\"mouseup\", (emitter, {relX, relY}) => {\n            emitter.layerAttr(this.segment, {fill:\"#FFFFFF\"});\n        });\n\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n    },\n\n\n    /**\n     *  Called if the simulation mode is starting\n     *  @required\n     **/\n    onStart:function( context )\n    {\n    },\n\n    /**\n     *  Called if the simulation mode is stopping\n     *  @required\n     **/\n    onStop:function( context )\n    {\n    },\n\n    /**\n     * Get the simulator a hint which kind of hardware the shapes requires or supports\n     * This helps the simulator to bring up some dialogs and messages if any new hardware is connected/get lost\n     * and your are running a circuit which needs this kind of hardware...\n     **/\n    getRequiredHardware: function(){\n      return {\n        arduino: false\n      }\n    }\n\n});"
       },
       "cssClass": "shape_designer_figure_PolyRect",
       "ports": [],
@@ -334,116 +334,6 @@
     },
     {
       "type": "shape_designer.figure.PolyRect",
-      "id": "624d45e2-5230-c5d1-6829-6c3366f4bf2a",
-      "x": 7948.7371463775635,
-      "y": 7990.1388,
-      "width": 20,
-      "height": 20,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "rect_8"
-      },
-      "cssClass": "shape_designer_figure_PolyRect",
-      "ports": [],
-      "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(48,48,48,1)",
-      "stroke": 1,
-      "radius": 0,
-      "dasharray": null,
-      "vertices": [
-        {
-          "x": 7948.7371463775635,
-          "y": 7990.1388
-        },
-        {
-          "x": 7968.7371463775635,
-          "y": 7990.1388
-        },
-        {
-          "x": 7968.7371463775635,
-          "y": 8010.1388
-        },
-        {
-          "x": 7948.7371463775635,
-          "y": 8010.1388
-        }
-      ],
-      "blur": 0,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.SizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.StrokeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.PolyRect",
-      "id": "7854cdcb-e85d-c687-f0b9-c3c5c5ef5be9",
-      "x": 7948.7371463775635,
-      "y": 8010.1388,
-      "width": 20,
-      "height": 20,
-      "alpha": 1,
-      "selectable": true,
-      "draggable": true,
-      "angle": 0,
-      "userData": {
-        "name": "rect_c"
-      },
-      "cssClass": "shape_designer_figure_PolyRect",
-      "ports": [],
-      "bgColor": "rgba(255,255,255,1)",
-      "color": "rgba(48,48,48,1)",
-      "stroke": 1,
-      "radius": 0,
-      "dasharray": null,
-      "vertices": [
-        {
-          "x": 7948.7371463775635,
-          "y": 8010.1388
-        },
-        {
-          "x": 7968.7371463775635,
-          "y": 8010.1388
-        },
-        {
-          "x": 7968.7371463775635,
-          "y": 8030.1388
-        },
-        {
-          "x": 7948.7371463775635,
-          "y": 8030.1388
-        }
-      ],
-      "blur": 0,
-      "filters": [
-        {
-          "name": "shape_designer.filter.PositionFilter"
-        },
-        {
-          "name": "shape_designer.filter.SizeFilter"
-        },
-        {
-          "name": "shape_designer.filter.StrokeFilter"
-        },
-        {
-          "name": "shape_designer.filter.FillColorFilter"
-        }
-      ]
-    },
-    {
-      "type": "shape_designer.figure.PolyRect",
       "id": "507c17f7-59c8-e0f3-d7dd-94b6c59430d1",
       "x": 7968.7371463775635,
       "y": 7970.1388,
@@ -609,6 +499,61 @@
     },
     {
       "type": "shape_designer.figure.PolyRect",
+      "id": "624d45e2-5230-c5d1-6829-6c3366f4bf2a",
+      "x": 7948.7371463775635,
+      "y": 7990.1388,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "rect_8"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7948.7371463775635,
+          "y": 7990.1388
+        },
+        {
+          "x": 7968.7371463775635,
+          "y": 7990.1388
+        },
+        {
+          "x": 7968.7371463775635,
+          "y": 8010.1388
+        },
+        {
+          "x": 7948.7371463775635,
+          "y": 8010.1388
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
       "id": "aae0f029-58cb-9cec-0a67-2f02ebd41c86",
       "x": 7968.7371463775635,
       "y": 7990.1388,
@@ -754,6 +699,61 @@
         {
           "x": 8008.7371463775635,
           "y": 8010.1388
+        }
+      ],
+      "blur": 0,
+      "filters": [
+        {
+          "name": "shape_designer.filter.PositionFilter"
+        },
+        {
+          "name": "shape_designer.filter.SizeFilter"
+        },
+        {
+          "name": "shape_designer.filter.StrokeFilter"
+        },
+        {
+          "name": "shape_designer.filter.FillColorFilter"
+        }
+      ]
+    },
+    {
+      "type": "shape_designer.figure.PolyRect",
+      "id": "7854cdcb-e85d-c687-f0b9-c3c5c5ef5be9",
+      "x": 7948.7371463775635,
+      "y": 8010.1388,
+      "width": 20,
+      "height": 20,
+      "alpha": 1,
+      "selectable": true,
+      "draggable": true,
+      "angle": 0,
+      "userData": {
+        "name": "rect_c"
+      },
+      "cssClass": "shape_designer_figure_PolyRect",
+      "ports": [],
+      "bgColor": "rgba(255,255,255,1)",
+      "color": "rgba(48,48,48,1)",
+      "stroke": 1,
+      "radius": 0,
+      "dasharray": null,
+      "vertices": [
+        {
+          "x": 7948.7371463775635,
+          "y": 8010.1388
+        },
+        {
+          "x": 7968.7371463775635,
+          "y": 8010.1388
+        },
+        {
+          "x": 7968.7371463775635,
+          "y": 8030.1388
+        },
+        {
+          "x": 7948.7371463775635,
+          "y": 8030.1388
         }
       ],
       "blur": 0,
@@ -949,7 +949,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "0"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -989,7 +989,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "1"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1029,7 +1029,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "2"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1069,7 +1069,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "3"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1109,7 +1109,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "4"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1149,7 +1149,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "5"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1189,7 +1189,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "6"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1229,7 +1229,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "7"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1269,7 +1269,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "8"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1309,7 +1309,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "9"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1349,7 +1349,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "a"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1389,7 +1389,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "b"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1429,7 +1429,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "c"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1469,7 +1469,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "d"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1509,7 +1509,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "e"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
@@ -1549,7 +1549,7 @@
       "draggable": true,
       "angle": 0,
       "userData": {
-        "name": "Label"
+        "name": "f"
       },
       "cssClass": "shape_designer_figure_ExtLabel",
       "ports": [],
