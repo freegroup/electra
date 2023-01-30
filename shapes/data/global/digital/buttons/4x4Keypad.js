@@ -284,14 +284,14 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
         // your special code here
         this.segment = null
 
-        this.mpousedown = function(emitter, {relX, relY}) {
+        this.mousedownCallback = function(emitter, {relX, relY}) {
             relX = parseInt(relX/20)
             relY = parseInt(relY/20)
             this.segment =  "rect_"+(relX+ relY*4).toString(16).toLowerCase()
             emitter.layerAttr(this.segment, {fill:"#C21B7A"});
         };
         
-        this.mouseup = function(emitter, {relX, relY}) {
+        this.mouseupCallback = function(emitter, {relX, relY}) {
             emitter.layerAttr(this.segment, {fill:"#FFFFFF"});
         };
     },
@@ -313,8 +313,8 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
      **/
     onStart:function( context )
     {
-        this.on("mousedown", this.mousedown)
-        this.on("mouseup",   this.mouseupo)
+        this.on("mousedown", this.mousedownCallback)
+        this.on("mouseup",   this.mouseupCallback)
     },
 
     /**
@@ -323,8 +323,8 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
      **/
     onStop:function( context )
     {
-        this.off(this.mousedown)
-        this.off(this.mouseupo)
+        this.off(this.mousedownCallback)
+        this.off(this.mouseupCallback)
     },
 
     /**
