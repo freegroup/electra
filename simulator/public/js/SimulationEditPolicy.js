@@ -40,7 +40,15 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
 
     this.mouseDownElement = figure;
 
-    this.mouseDownElement?.fireEvent("mousedown", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
+    this.mouseDownElement?.fireEvent("mousedown", 
+      {
+        x: x, 
+        y: y, 
+        relX: x - this.mouseDownElement.getAbsoluteX(),
+        relY: y - this.mouseDownElement.getAbsoluteY(),
+        shiftKey: shiftKey, 
+        ctrlKey: ctrlKey
+      });
 
     if(figure instanceof draw2d.shape.widget.Widget) {
       // just panning event is allowed.
@@ -63,7 +71,15 @@ export default draw2d.policy.canvas.SingleSelectionPolicy.extend({
    */
   onMouseUp: function (canvas, x, y, shiftKey, ctrlKey) {
 
-    this.mouseDownElement?.fireEvent("mouseup", {x: x, y: y, shiftKey: shiftKey, ctrlKey: ctrlKey});
+    this.mouseDownElement?.fireEvent("mouseup", 
+    {
+      x: x, 
+      y: y, 
+      relX: x - this.mouseDownElement.getAbsoluteX(),
+      relY: y - this.mouseDownElement.getAbsoluteY(),
+      shiftKey: shiftKey, 
+      ctrlKey: ctrlKey
+    });
     this.mouseDownElement = null;
 
     if(this.panningElement!==null) {
