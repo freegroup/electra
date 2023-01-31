@@ -183,7 +183,8 @@ body.light {
             }
 
             &:hover {
-                background-color: rgba(0, 0, 0, 0.01);
+                border-radius: 3px;
+                border-style: dashed;
                 border-color: rgba(0, 0, 0, 0.1);
             }
 
@@ -211,6 +212,9 @@ body.light {
                     h3 {
                         color: rgb(var(--tint-color)) ;
                     }
+                    h1{
+                        border-bottom-color: rgb(var(--tint-color)) ;
+                    }
                     .cloze {
                         color: transparent ;
                         background-color: lightgray;
@@ -227,7 +231,6 @@ body.light {
                     }
                 }
             }
-
         }
 
         .activeSection {
@@ -242,7 +245,6 @@ body.light {
             text-align: center;
           }
         }
-      
     }
       
     .playButton {
