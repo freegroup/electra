@@ -2146,6 +2146,12 @@ var Writer = draw2d.io.json.Writer.extend({
     this._super();
   },
   marshal: function marshal(canvas, callback) {
+    var bb = canvas.getBoundingBox().scale(10, 10); // enlarge 10px in each direction to have a little border
+    var scaleW = Math.max(bb.w, 110) - bb.w;
+    var scaleH = Math.max(bb.h, 110) - bb.h;
+    bb = bb.scale(scaleW, scaleH);
+    console.log(canvas.getBoundingBox());
+    console.log(canvas.getBoundingBox().scale(10, 10));
     new draw2d.io.png.Writer().marshal(canvas, function (imageDataUrl) {
       var writer = new draw2d.io.json.Writer();
       writer.marshal(canvas, function (json) {
@@ -2155,7 +2161,7 @@ var Writer = draw2d.io.json.Writer.extend({
         };
         callback(data);
       });
-    }, canvas.getBoundingBox().scale(10, 10));
+    }, bb);
   }
 });
 var writer = new Writer();
@@ -2725,8 +2731,8 @@ __webpack_require__.r(__webpack_exports__);
     });
     var minX = Math.min.apply(Math, xCoords);
     var minY = Math.min.apply(Math, yCoords);
-    var width = Math.max(100, Math.max.apply(Math, xCoords) - minX);
-    var height = Math.max(100, Math.max.apply(Math, yCoords) - minY);
+    var width = Math.max(30, Math.max.apply(Math, xCoords) - minX);
+    var height = Math.max(30, Math.max.apply(Math, yCoords) - minY);
     return new draw2d.geo.Rectangle(minX, minY, width, height);
   },
   centerDocument: function centerDocument() {

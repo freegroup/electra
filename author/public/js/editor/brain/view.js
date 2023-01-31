@@ -408,8 +408,8 @@ export default draw2d.Canvas.extend({
     })
     let minX = Math.min.apply(Math, xCoords)
     let minY = Math.min.apply(Math, yCoords)
-    let width = Math.max(100, Math.max.apply(Math, xCoords) - minX)
-    let height = Math.max(100, Math.max.apply(Math, yCoords) - minY)
+    let width = Math.max(30, Math.max.apply(Math, xCoords) - minX)
+    let height = Math.max(30, Math.max.apply(Math, yCoords) - minY)
 
     return new draw2d.geo.Rectangle(minX, minY, width, height)
   },
