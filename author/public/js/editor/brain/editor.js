@@ -9,8 +9,8 @@ import GenericEditor from '../editor'
 
 export default class Editor extends GenericEditor{
 
-  constructor() {
-    super()
+  constructor(type = "brain") {
+    super(type)
   }
 
   inject(section) {
@@ -77,16 +77,14 @@ export default class Editor extends GenericEditor{
   render(whereToAppend, section){
     if (section.content) {
       whereToAppend.append(`
-        <div data-id="${section.id}" class='section'>
-            <img class="sectionContent" data-type="brain" src="${section.content.image}">
-        </div>
-      `)
+        <div data-id="${section.id}" class='section' data-type="${this.type}">
+            <img class="sectionContent" data-type="${this.type}" src="${section.content.image}">
+        </div>`)
     } else {
       whereToAppend.append(`
-        <div data-id="${section.id}" class='section'>
-            <div class="sectionContent" data-type="brain">-double click to edit brain-</div>
-        </div>
-      `)
+        <div data-id="${section.id}" class='section' data-type="${this.type}">
+            <div class="sectionContent" data-type="${this.type}">-double click to edit brain-</div>
+        </div>`)
     }
   }
 
@@ -96,5 +94,6 @@ export default class Editor extends GenericEditor{
     $("#paletteElements").html("")
     $("#paletteFilter").html("")
   }
-
 }
+
+

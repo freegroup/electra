@@ -204,13 +204,20 @@ body.light {
                     }
                 }
 
-                &[data-type='markdown'] {
-                    h1 {
+                &[data-type='markdown'],
+                &[data-type='cloze'] {
+                    h1 ,
+                    h2 ,
+                    h3 {
                         color: rgb(var(--tint-color)) ;
                     }
-
-                    h2 {
-                        color: rgb(var(--tint-color)) ;
+                    .cloze {
+                        color: transparent ;
+                        background-color: lightgray;
+                        padding-left: 15px;
+                        padding-right: 15px;
+                        border-radius: 3px;
+                        border-bottom: 1px dotted gray;
                     }
                 }
 

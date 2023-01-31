@@ -3,17 +3,21 @@ import Hogan from "hogan.js"
 
 let currentFigure = null
 
+let containerInitDone = false
 
 class Dialog {
   constructor() {
-    $("body").append(`
-          <div id="figureConfigDialog">
-             Please configure me
-          </div>
-      `)
+
   }
 
   show(figure, pos) {
+    if(containerInitDone === false){
+      $("body").append(`
+      <div id="figureConfigDialog">
+         Please configure me
+      </div>`)
+      containerInitDone = true
+    }
     Mousetrap.pause()
     currentFigure = figure
 

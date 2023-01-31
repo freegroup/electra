@@ -1,10 +1,15 @@
 
 export default class Editor {
 
-    constructor() {
+    constructor(type) {
         this.section = null
+        this.type = type 
     }
   
+    getType() {
+        return this.type
+    }
+    
     /* public interface */
     inject(section) {
       this.section = section

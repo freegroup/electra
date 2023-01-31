@@ -12,12 +12,12 @@
         {
           "id": "NivkGYUBr",
           "type": "markdown",
-          "content": "## Aufgabe\n\nStellen Sie die Wahrheitstabelle für die Funktion `f(x,y,z) = x' * (y + z)` auf. "
+          "content": "## Aufgabe\n\nStellen Sie die Wahrheitstabelle für die Funktion `f(x,y,z) = bar x * (y + z)` auf. "
         },
         {
           "id": "5uRfu7jR7",
           "type": "markdown",
-          "content": "## Lösung\n\n| z  | y  | x  | x' | y+z| x'(y+z)  |\n|----|----|----|----|----|----------|\n| 0  | 0  | 0  | 1  | 0  |    0     |\n| 0  | 0  | 1  | 0  | 0  |    0     |\n| 0  | 1  | 0  | 1  | 1  |    1     |\n| 0  | 1  | 1  | 0  | 1  |    0     |\n| 1  | 0  | 0  | 1  | 1  |    1     |\n| 1  | 0  | 1  | 0  | 1  |    0     |\n| 1  | 1  | 0  | 1  | 1  |    1     |\n| 1  | 1  | 1  | 0  | 1  |    0     |\n\n\n"
+          "content": "## Lösung\n\n| `z`  | `y`  | `x`  | `bar x` | `y+z`| `bar x (y+z)`  |\n|------|------|------|---------|------|----------------|\n| 0  | 0  | 0  | 1  | 0  |    0     |\n| 0  | 0  | 1  | 0  | 0  |    0     |\n| 0  | 1  | 0  | 1  | 1  |    1     |\n| 0  | 1  | 1  | 0  | 1  |    0     |\n| 1  | 0  | 0  | 1  | 1  |    1     |\n| 1  | 0  | 1  | 0  | 1  |    0     |\n| 1  | 1  | 0  | 1  | 1  |    1     |\n| 1  | 1  | 1  | 0  | 1  |    0     |\n\n\n"
         }
       ]
     },
@@ -33,12 +33,12 @@
         {
           "id": "Rwy1p7mZB",
           "type": "markdown",
-          "content": "## Aufgabe\nVereinfachen Sie folgende Gleichung\n\n\n```math\nf(x,y,z)= xy'z + x'y'z\n```\n\n\ndurch Anwendung von boolschen Theoremen und weisen Sie nach, dass die Funktion f(x,y,z) nicht von x abhängt. Erklären Sie welches Theorem Sie in jedem Schritt anwenden.\n"
+          "content": "## Aufgabe\nVereinfachen Sie folgende Gleichung\n\n\n```math\nf(x,y,z)= x\\ bar y\\ z + bar x \\ bar  y\\ z\n```\n\n\ndurch Anwendung von boolschen Theoremen und weisen Sie nach, dass die Funktion f(x,y,z) nicht von x abhängt. Erklären Sie welches Theorem Sie in jedem Schritt anwenden.\n"
         },
         {
           "id": "JrC-la5vC",
           "type": "markdown",
-          "content": "\n## Lösung\n|           | Schritt    |  Theorem    |\n|-----------|-----|------|\n| `f(x,y,z)=` | `xy'z+x'y'z`    | Distributivgesetz: `xy + xz = x(y+z)`      |\n| `f(x,y,z)=` |  `(x + x')y'z` | `x+x'=1`    |\n| `f(x,y,z)=` |  `1*y'z`    |  `1*x = x`     |\n| `f(x,y,z)=` |  `y'z`      |                |\n\nDiese Funktion hängt nicht von x ab, da x nicht in der Funktion auftaucht. "
+          "content": "\n## Lösung\n|           | Schritt    |  Theorem    |\n|-----------|-----|------|\n| `f(x,y,z)=` | `x bar yz+bar x\\ bar y z`    | Distributivgesetz: `xy + xz = x(y+z)`      |\n| `f(x,y,z)=` |  `(x + bar x) bar y z` | `x+ bar x=1`    |\n| `f(x,y,z)=` |  `1* bar y\\ z`    |  `1*x = x`     |\n| `f(x,y,z)=` |  `bar y\\ z`      |                |\n\nDiese Funktion hängt nicht von x ab, da x nicht in der Funktion auftaucht. "
         }
       ]
     },

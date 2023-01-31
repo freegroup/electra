@@ -6,6 +6,8 @@ const md = require('markdown-it')()
 md.use(require("markdown-it-asciimath"))
 md.use(require('markdown-it-container'), "info")
 
+import editorByType from "./editor/editorByType"
+
 function getParam(name) {
   name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
   let regexS = "[\\?&]" + name + "=([^&#]*)"
@@ -27,19 +29,6 @@ function getParam(name) {
 }
 
 
-function renderMarkdown(container, section){
-  let markdown = md.render(section.content)
-  container.append(`<div class="markdownRendering">${markdown}</div>`)
-}
-
-function renderBrain(container, section){
-  container.append(`<div class="imageRendering"><img src="${section.content.image}"></div>` )
-}
-function renderImage(container, section){
-  container.append(`<div class="imageRendering"><img src="${section.content}"></div>` )
-}
-
-
 $(window).load(function () {
   let containerId = "#authorContent"
   let sha = getParam("sha")
@@ -52,21 +41,8 @@ $(window).load(function () {
       pages.forEach( (page, index) => {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)
-        let sections = page.sections
-        sections.forEach( (section) => {
-          switch(section.type){
-            case "brain":
-              renderBrain(container, section)
-              break
-            case "markdown":
-              renderMarkdown(container, section)
-              break
-            case "image":
-              renderImage(container, section)
-              break
-            default:
-              break
-          }
+        page.sections.forEach( (section) => {
+          editorByType(section.type).render(container, section)
         })
         if(index < (pages.length-1))
           container.append("<div style='page-break-before:always;'></div>")

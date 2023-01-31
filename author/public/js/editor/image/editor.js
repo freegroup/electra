@@ -2,8 +2,8 @@ import GenericEditor from '../editor'
 
 export default class Editor extends GenericEditor{
 
-  constructor() {
-    super()
+  constructor(type = "image") {
+    super(type)
   }
 
   inject(section) {
@@ -152,14 +152,14 @@ export default class Editor extends GenericEditor{
   render(whereToAppend, section){
     if (section.content) {
       whereToAppend.append(`
-        <div data-id="${section.id}" class='section'>
-            <img class="sectionContent" data-type="image" src="${section.content}">
+        <div data-id="${section.id}" class='section' data-type="${this.type}">
+            <img class="sectionContent" data-type="${this.type}" src="${section.content}">
         </div>
       `)
     } else {
       whereToAppend.append(`
-        <div data-id="${section.id}" class='section'>
-            <div class="sectionContent" data-type="image">-double click to edit image-</div>
+        <div data-id="${section.id}" class='section' data-type="${this.type}">
+            <div class="sectionContent" data-type="${this.type}">-double click to edit image-</div>
         </div>
       `)
     }

@@ -5,11 +5,7 @@ import commandStack from "./commands/CommandStack"
 import State from "./commands/State"
 
 import Page from "./model/page"
-import MarkdownEditor from "./editor/markdown/editor"
-import BrainEditor from "./editor/brain/editor"
-import ClozeEditor from "./editor/cloze/editor"
-import ImageEditor from "./editor/image/editor"
-import UnknownEditor from "./editor/editor"
+import editorByType from "./editor/editorByType"
 import Palette from"./palette"
 
 export default class View {
@@ -25,14 +21,6 @@ export default class View {
     this.currentEditor = null
     this.html = $(id)
     this.palette = new Palette(app, this, permissions, "#paletteElements")
-
-    this.unknownEditor = new UnknownEditor()
-    this.editors = {
-      markdown: new MarkdownEditor(),
-      cloze: new ClozeEditor(),
-      brain: new BrainEditor(),
-      image: new ImageEditor()
-    }
 
     this.palette.render()
 
@@ -171,7 +159,7 @@ export default class View {
     let section = {
       id: shortid.generate(),
       type: type,
-      content: this.editors[type]?.defaultContent()
+      content: editorByType(type).defaultContent()
     }
     this.page.add(section, index)
     // if the "index" is a number, we would insert a section in the middle of the page.
@@ -181,8 +169,7 @@ export default class View {
       this.render(this.page)
     } 
     else {
-      let editor = this.editors[type] ?? this.unknownEditor
-      editor.render(this.html.find(".sections"), section)
+      editorByType(type).render(this.html.find(".sections"), section)
     }
     return section    
   }
@@ -193,8 +180,7 @@ export default class View {
     this.html.html($("<div class='sections'></div>"))
     this.renderSpacer(0)
     page.forEach((section, index) => {
-      let editor = this.editors[section.type] ?? this.unknownEditor
-      editor.render(this.html.find(".sections"), section)
+      editorByType(section.type).render(this.html.find(".sections"), section)
       this.renderSpacer(index + 1)
     })
   }
@@ -204,6 +190,7 @@ export default class View {
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
             <div data-index="${index}" data-type="markdown" class='sectionMenuInsertSection material-button' >&#8853; Text</div>
+            <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
             <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>
             <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection material-button' >&#8853; Picture</div>
           </div>
@@ -222,7 +209,7 @@ export default class View {
     $(".sections .activeSection").prepend(`
         <div class='tinyFlyoverMenu'>
           <div data-id="${section.id}" id="sectionMenuUp"     >&#8657;</div>
-          <div data-id="${section.id}" id="sectionMenuDown"   >&#8659</div>
+          <div data-id="${section.id}" id="sectionMenuDown"   >&#8659;</div>
           <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
           <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
         </div>`)
@@ -248,7 +235,7 @@ export default class View {
           <div data-id="${section.id}" id="sectionMenuCommitEdit" class="material-button">Save</div>
           <div data-id="${section.id}" id="sectionMenuCancelEdit" class="material-button">Cancel</div>
         `)
-    this.currentEditor = this.editors[section.type] ?? this.unknownEditor
+    this.currentEditor = editorByType(section.type)
     this.currentEditor.inject(section)
     $(".sections").removeClass("activeSection")
   }

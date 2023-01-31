@@ -10,8 +10,9 @@ import GenericEditor from '../editor'
 
 export default class Editor extends GenericEditor{
 
-  constructor() {
-    super()
+  constructor(type="markdown") {
+    super(type)
+    this.md = md
   }
 
   /* public interface */
@@ -62,14 +63,14 @@ export default class Editor extends GenericEditor{
     let errorCSS = ""
     let markdown = section.content
     try {
-      markdown = md.render(markdown)
+      markdown = this.md.render(markdown)
     } catch (error) {
       console.log(error)
-      errorCSS = "error"
+      errorCSS = " error"
     }
     whereToAppend.append(`
-        <div data-id="${section.id}" class='section ${errorCSS}'>
-           <div class="sectionContent markdownRendering" data-type="markdown">${markdown}</div>
+        <div data-id="${section.id}" class='section${errorCSS}' data-type="${this.type}">
+           <div class="sectionContent markdownRendering" data-type="${this.type}">${markdown}</div>
         </div>
       `)
   }
@@ -80,7 +81,7 @@ export default class Editor extends GenericEditor{
 
   updatePreview(){
     let markdown = this.editor.getValue()
-    let preview = md.render(markdown)
+    let preview = this.md.render(markdown)
     document.getElementById(this.previewId).innerHTML = preview
   }
 
