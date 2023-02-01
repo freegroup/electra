@@ -9,6 +9,7 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     this.configIcon = null
   },
 
+  
   /**
    * @method
    * Called by the canvas if the user click on a figure.
