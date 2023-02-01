@@ -17,6 +17,7 @@ export default class View {
   constructor(app, id, permissions) {
     this.app = app
     this.page = new Page()
+    this.activeSectionDom = null
     this.activeSection = null
     this.currentEditor = null
     this.html = $(id)
@@ -44,8 +45,8 @@ export default class View {
         let index = this.page.index(id)
         if (index > 0) {
           commandStack.push(new State(this.app))
-          let prev = this.activeSection.prev()
-          this.activeSection.insertBefore(prev)
+          let prev = this.activeSectionDom.prev()
+          this.activeSectionDom.insertBefore(prev)
           this.page.move(index, index - 1)
         }
         return false
@@ -55,8 +56,8 @@ export default class View {
         let index = this.page.index(id)
         if (index < this.page.length - 1) {
           commandStack.push(new State(this.app))
-          let prev = this.activeSection.next()
-          this.activeSection.insertAfter(prev)
+          let prev = this.activeSectionDom.next()
+          this.activeSectionDom.insertAfter(prev)
           this.page.move(index, index + 1)
         }
         return false
@@ -78,7 +79,11 @@ export default class View {
         return false
       })
       .on("click", "#sectionMenuCommitEdit", event => {
-        this.onCommitEdit(this.page.get($(event.target).data("id")))
+        let editedSection = this.activeSection
+        this.onCommitEdit().then( ()=>{
+          this.activeSection = null
+          this.onSelect(editedSection)
+        })
         return false
       })
       .on("click", "#sectionMenuCancelEdit", event => {
@@ -88,26 +93,25 @@ export default class View {
       .on("click", ".sectionMenuInsertSection", event => {
         let index = $(event.target).data("index")
         let type = $(event.target).data("type")
-        let section = this.addSection(type,index)
-        if(section){
+        this.addSection(type,index).then( section => {
           this.onSelect(section)
           this.onEdit(section)
-        }
+        })
         return false
       })
   }
 
   setPage(page) {
     // commit the current changes if an editor is active
-    this.onCommitEdit()
+    this.onCommitEdit().then(()=>{ 
+      // scroll to top
+      $(".content").scrollTop(0)
 
-    // scroll to top
-    $(".content").scrollTop(0)
-
-    $(".pageElement").removeClass("selected")
-    $(`.pageElement[data-page='${page.id}']`).addClass("selected")
-    this.page = page
-    this.render(this.page)
+      $(".pageElement").removeClass("selected")
+      $(`.pageElement[data-page='${page.id}']`).addClass("selected")
+      this.page = page
+      this.render(this.page)     
+    })
   }
 
   getPage() {
@@ -118,62 +122,65 @@ export default class View {
     // commit the current changes if an editor is active
     if(page === this.page) {
       let index = this.app.getDocument().index(page)
-      this.onCommitEdit()
-      if(index >0){
-        let newPage = this.app.getDocument().get(index-1)
-        this.setPage(newPage)
-      }
-      else if(this.app.getDocument().length >1 ){
-        let newPage = this.app.getDocument().get(1)
-        this.setPage(newPage)
-      }
+      this.onCommitEdit().then(()=>{
+        if(index >0){
+          let newPage = this.app.getDocument().get(index-1)
+          this.setPage(newPage)
+        }
+        else if(this.app.getDocument().length >1 ){
+          let newPage = this.app.getDocument().get(1)
+          this.setPage(newPage)
+        }  
+        this.app.getDocument().removePage(page)      
+      })
+    } 
+    else {
+      this.app.getDocument().removePage(page)
     }
-
-    this.app.getDocument().removePage(page)
   }
 
 
   addPage() {
     // commit the current changes if an editor is active
-    this.onCommitEdit()
-
-    inputPrompt.show("Add new Chapter", "Chapter name").then( value => {
-      commandStack.push(new State(this.app))
-      let page = new Page()
-      page.name = value
-      this.app.getDocument().push(page)
-      this.setPage(page)
-      let section = this.addMarkdown(0)
-      this.onSelect(section)
-      this.onEdit(section)
+    this.onCommitEdit().then(()=>{
+      inputPrompt.show("Add new Chapter", "Chapter name").then( value => {
+        commandStack.push(new State(this.app))
+        let page = new Page()
+        page.name = value
+        this.app.getDocument().push(page)
+        this.setPage(page)
+        let section = this.addMarkdown(0)
+        this.onSelect(section)
+        this.onEdit(section)
+      })      
     })
   }
 
   addSection(type, index){
     // commit the current changes if an editor is active
-    this.onCommitEdit()
+    return this.onCommitEdit().then(()=>{
 
-    // save the last state for undo/redo
-    commandStack.push(new State(this.app))
+      // save the last state for undo/redo
+      commandStack.push(new State(this.app))
 
-    let section = {
-      id: shortid.generate(),
-      type: type,
-      content: editorByType(type).defaultContent()
-    }
-    this.page.add(section, index)
-    // if the "index" is a number, we would insert a section in the middle of the page.
-    // in this case it is the best to render the whole page. At the moment an edit can only
-    // "append" its content to a page.
-    if (typeof index === "number") {
-      this.render(this.page)
-    } 
-    else {
-      editorByType(type).render(this.html.find(".sections"), section)
-    }
-    return section    
+      let section = {
+        id: shortid.generate(),
+        type: type,
+        content: editorByType(type).defaultContent()
+      }
+      this.page.add(section, index)
+      // if the "index" is a number, we would insert a section in the middle of the page.
+      // in this case it is the best to render the whole page. At the moment an edit can only
+      // "append" its content to a page.
+      if (typeof index === "number") {
+        this.render(this.page)
+      } 
+      else {
+        editorByType(type).render(this.html.find(".sections"), section)
+      }
+      return section         
+    })
   }
-
 
   render(page) {
     // inject the host for the rendered section
@@ -191,6 +198,7 @@ export default class View {
           <div class='sectionContent ' data-type="spacer" >
             <div data-index="${index}" data-type="markdown" class='sectionMenuInsertSection material-button' >&#8853; Text</div>
             <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
+            <div data-index="${index}" data-type="flipcard" class='sectionMenuInsertSection material-button' >&#8853; FlipCard</div>
             <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>
             <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection material-button' >&#8853; Picture</div>
           </div>
@@ -203,16 +211,24 @@ export default class View {
       return
     }
 
+    if(this.activeSection === section){
+      return // silently
+    }
+
     this.onUnselect()
-    this.activeSection = $(`.section[data-id='${section.id}']`)
-    this.activeSection.addClass('activeSection')
+    let editor = editorByType(section.type)
+    this.activeSection = section
+    this.activeSectionDom = $(`.section[data-id='${section.id}']`)
+    this.activeSectionDom.addClass('activeSection')
     $(".sections .activeSection").prepend(`
         <div class='tinyFlyoverMenu'>
+          ${editor.getMenu(section)}
           <div data-id="${section.id}" id="sectionMenuUp"     >&#8657;</div>
           <div data-id="${section.id}" id="sectionMenuDown"   >&#8659;</div>
           <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
           <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
         </div>`)
+    editor.onSelect(section)
   }
 
 
@@ -221,8 +237,18 @@ export default class View {
       return
     }
 
+    if(this.activeSection === null){
+      return // silently
+    }
+
+    let section = this.page.get($(".activeSection").data("id"))
+    if(section){
+      editorByType(section.type).onUnselect(section)
+    }
+
     $(".activeSection .tinyFlyoverMenu").remove()
-    this.activeSection?.removeClass("activeSection")
+    this.activeSectionDom?.removeClass("activeSection")
+    this.activeSectionDom = null
     this.activeSection = null
   }
 
@@ -248,11 +274,11 @@ export default class View {
 
   onCommitEdit() {
     if(this.currentEditor === null){
-      return
+      return Promise.resolve();
     }
 
     commandStack.push(new State(this.app))
-    this.currentEditor.commit()
+    return this.currentEditor.commit()
       .then(() => {
         this.currentEditor = null;
         $(".editorContainerSelector").remove()

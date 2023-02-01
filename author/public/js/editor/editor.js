@@ -9,7 +9,7 @@ export default class Editor {
     getType() {
         return this.type
     }
-    
+
     /* public interface */
     inject(section) {
       this.section = section
@@ -34,6 +34,23 @@ export default class Editor {
     render(whereToAppend, section){
     }
   
+    /**
+     * Called if the user selects the section and the editor is responsible to handle this content
+     * 
+     * @param {Object} section 
+     */
+    onSelect(section){
+      //console.log("Select", this.type, section)
+    }
+
+    onUnselect(section){
+      //console.log("unselect", this.type, section)
+    }
+
+    getMenu(section){
+      return ""
+    }
+
     defaultContent(){
       return null
     }
