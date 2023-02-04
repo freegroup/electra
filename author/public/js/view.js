@@ -7,6 +7,7 @@ import State from "./commands/State"
 import Page from "./model/page"
 import editorByType from "./editor/editorByType"
 import Palette from"./palette"
+import renderMode from "./renderMode"
 
 export default class View {
 
@@ -78,6 +79,10 @@ export default class View {
         this.onDelete(this.page.get($(event.target).data("id")))
         return false
       })
+      .on("click", "#sectionMenuFlip", event => {
+        this.onFlip(this.page.get($(event.target).data("id")))
+        return false
+      })
       .on("click", "#sectionMenuCommitEdit", event => {
         let editedSection = this.activeSection
         this.onCommitEdit().then( ()=>{
@@ -87,13 +92,17 @@ export default class View {
         return false
       })
       .on("click", "#sectionMenuCancelEdit", event => {
-        this.onCancelEdit()
+        let editedSection = this.activeSection
+        this.onCancelEdit().then( ()=>{
+          this.activeSection = null
+          this.onSelect(editedSection)
+        })
         return false
       })
       .on("click", ".sectionMenuInsertSection", event => {
         let index = $(event.target).data("index")
         let type = $(event.target).data("type")
-        this.addSection(type,index).then( section => {
+        this.addSection(type, index).then( section => {
           this.onSelect(section)
           this.onEdit(section)
         })
@@ -176,7 +185,7 @@ export default class View {
         this.render(this.page)
       } 
       else {
-        editorByType(type).render(this.html.find(".sections"), section)
+        this.html.find(".sections").append(editorByType(type).render(section, renderMode.EDITOR))
       }
       return section         
     })
@@ -186,8 +195,10 @@ export default class View {
     // inject the host for the rendered section
     this.html.html($("<div class='sections'></div>"))
     this.renderSpacer(0)
+    let whereToAppend = this.html.find(".sections")
     page.forEach((section, index) => {
-      editorByType(section.type).render(this.html.find(".sections"), section)
+      let content = editorByType(section.type).render(section, renderMode.EDITOR)
+      whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}</div>`)
       this.renderSpacer(index + 1)
     })
   }
@@ -272,6 +283,10 @@ export default class View {
     this.render(this.page)
   }
 
+  onFlip(section) {
+    $(`[data-id='${section.id}'] .flip_box`).toggleClass('flipped')
+  }
+
   onCommitEdit() {
     if(this.currentEditor === null){
       return Promise.resolve();
@@ -289,10 +304,10 @@ export default class View {
 
   onCancelEdit() {
     if (this.currentEditor === null) {
-      return
+      return Promise.resolve();
     }
 
-    this.currentEditor.cancel()
+    return this.currentEditor.cancel()
       .then(() => {
         $(".editorContainerSelector").remove()
         this.currentEditor = null;

@@ -58,8 +58,13 @@ export default class Editor extends GenericEditor{
     })
   }
 
-  /* public interface */
-  render(whereToAppend, section){
+  /**
+   * 
+   * @param {*} whereToAppend 
+   * @param {*} section 
+   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   */
+  render(section, mode){
     let errorCSS = ""
     let markdown = section.content
     try {
@@ -68,11 +73,7 @@ export default class Editor extends GenericEditor{
       console.log(error)
       errorCSS = " error"
     }
-    whereToAppend.append(`
-        <div data-id="${section.id}" class='section${errorCSS}' data-type="${this.type}">
-           <div class="sectionContent markdownRendering" data-type="${this.type}">${markdown}</div>
-        </div>
-      `)
+    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${this.type}">${markdown}</div>`
   }
 
   defaultContent(){

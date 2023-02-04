@@ -9,7 +9,7 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     this.configIcon = null
   },
 
-  
+
   /**
    * @method
    * Called by the canvas if the user click on a figure.
@@ -85,7 +85,6 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
 
     emitter.getFigures().each( (index, figure) =>{
       if (figure.hitTest(event.x, event.y, 40)) {
-
         hit = figure
         return false
       }
@@ -102,10 +101,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
         this.configIcon.on("click",  () => {
           FigureConfigDialog.show(hit, pos)
           this.configFigure = hit
-          if (this.configIcon !== null) {
-            this.configIcon.remove()
-            this.configIcon = null
-          }
+          this.configIcon?.remove()
+          this.configIcon = null
         })
       }
       this.configIcon.css({top: pos.y, left: pos.x, position: 'absolute'})

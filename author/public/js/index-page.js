@@ -2,6 +2,7 @@
 import "../less/index-page.less"
 const axios = require("axios")
 const md = require('markdown-it')()
+import renderMode from "./renderMode"
 
 md.use(require("markdown-it-asciimath"))
 md.use(require('markdown-it-container'), "info")
@@ -28,7 +29,6 @@ function getParam(name) {
   return results[1]
 }
 
-
 $(window).load(function () {
   let containerId = "#authorContent"
   let sha = getParam("sha")
@@ -42,7 +42,7 @@ $(window).load(function () {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)
         page.sections.forEach( (section) => {
-          editorByType(section.type).render(container, section)
+          container.append(editorByType(section.type).render(section, renderMode.WORKSHEET))
         })
         if(index < (pages.length-1))
           container.append("<div style='page-break-before:always;'></div>")

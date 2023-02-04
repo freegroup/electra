@@ -32,6 +32,10 @@
     }
 
     .sectionContent {
+      /* reqiered for flipcards */
+      perspective: 1000px;
+
+
       &[data-type='image']{
         text-align: center;
         max-width: 100%;
@@ -91,35 +95,20 @@
         max-width:100%;
       }
       &[data-type='flipcard']{
-          .container,
-          .flip-box,
-          .front,
-          .back {
-            width: 380px;
-            height: 350px;
-          }
 
-          .container,
           .flip_box {
             position: relative;
+            transition: all 0.5s ease-out;
+            transform-style: preserve-3d;
+            display: grid;
           }
 
           .front,
           .back {
-            position: absolute;
             backface-visibility: hidden;
+            grid-area: 1 / 1 / 2 / 2;
           }
 
-          .container {
-            -moz-transform: perspective(1200px);
-            -webkit-perspective: 1200px;
-            perspective: 1200px;
-          }
-
-          .flip_box {
-            transition: all 0.5s ease-out;
-            transform-style: preserve-3d;
-          }
 
           .front {
             background-color: lightgray;
@@ -134,57 +123,6 @@
             transform: rotateY(-180deg);
           }
 
-          .r_wrap {
-            position: absolute;
-            right: 40px;
-            bottom: 38px;
-          }
-
-          .b_round,
-          .s_round {
-            position: absolute;
-            right: 0px;
-            bottom: 0px;
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background-color: #D21849;
-            transition: all 0.2s linear;
-          }
-
-          .b_round {
-            opacity: 0;
-            background-color: #D21849;
-          }
-
-          .b_round_hover {
-            transform: scale(1.37);
-            opacity: 0.4;
-          }
-
-          .b_round_back_hover {
-            background-color: #F60044;
-          }
-
-          .s_round_click {
-            transform: scale(1.7);
-          }
-
-          .s_round_back {
-            background-color: #C30C3D;
-          }
-
-          .s_arrow {
-            width: 52px;
-            height: 52px;
-          
-            background-color: transparent;
-            transition: all 0.35s linear;
-          }
-
-          .s_arrow_rotate {
-            transform: rotate(-180deg);
-          }
       }
       &[data-type='spacer']{
         position: relative;

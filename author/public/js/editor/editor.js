@@ -31,7 +31,8 @@ export default class Editor {
     }
   
     /* public interface */
-    render(whereToAppend, section){
+    render(section, mode){
+      return ""
     }
   
     /**

@@ -148,20 +148,17 @@ export default class Editor extends GenericEditor{
   }
 
 
-  /* public interface */
-  render(whereToAppend, section){
+   /**
+   * 
+   * @param {*} whereToAppend 
+   * @param {*} section 
+   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   */
+   render(section, mode){
     if (section.content) {
-      whereToAppend.append(`
-        <div data-id="${section.id}" class='section' data-type="${this.type}">
-            <img class="sectionContent" data-type="${this.type}" src="${section.content}">
-        </div>
-      `)
-    } else {
-      whereToAppend.append(`
-        <div data-id="${section.id}" class='section' data-type="${this.type}">
-            <div class="sectionContent" data-type="${this.type}">-double click to edit image-</div>
-        </div>
-      `)
-    }
+      return `<img class="sectionContent" data-type="${this.type}" src="${section.content}">`
+    } 
+
+    return `<div class="sectionContent" data-type="${this.type}">-double click to edit image-</div>`
   }
 }

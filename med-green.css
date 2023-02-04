@@ -1,0 +1,152 @@
+body {
+  background-color: #e7ebee !important;
+
+  background-image:
+    linear-gradient(to top right, #e7ebee, #fefeff);
+}
+
+body * {
+  font-family: 'Lato', Sans-Serif !important;
+}
+
+header {
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+  border-bottom: 10px solid #42b0d4;
+  box-shadow: 0 2px 10px 0 rgb(0 0 0 / 15%);
+  background-color: #99b6d2;
+  padding: 0px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 14px;
+
+  background: linear-gradient(75deg, #90adc9 50%, #99b6d2 50%);
+}
+
+header:before {
+  content: " ";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  border-bottom: 1px solid white;
+}
+
+.entry-content h1 {
+  font-weight: 400;
+  left: -4vw;
+  position: relative;
+  font-size: 34px;
+  color: #42b0d4;
+}
+
+.home main {
+  margin-right: -5vw !important;
+  margin-left: -5vw !important;
+  margin-block-start: 0 !important;
+}
+
+.home main .entry-content:first-child {
+  max-width: 100%;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.home .wp-block-heading {
+  font-size: 5vw;
+}
+
+.mediteasyRoundBox li {
+  list-style: none;
+}
+
+.topRightRadius img {
+  border-top-right-radius: 50%;
+}
+
+.bottomRightRadius img {
+  border-bottom-right-radius: 50%;
+}
+
+.bottomLeftRadius img {
+  border-bottom-left-radius: 50%;
+}
+
+.mediteasyRoundBox li::before {
+  content: "\25A0";
+  font-weight: bold;
+  display: inline-block;
+  width: 2.5em;
+  margin-left: -1em;
+  border: 1px solid #e7ebee;
+  background-color: #e7ebee;
+  border-radius: 1px;
+  margin-right: 12px;
+  color: transparent
+}
+
+.mediteasyRoundBox {
+  border-radius: 1vw;
+  background-color: #fafafa;
+  padding-left: 7vw;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+}
+
+.mediteasyHeader {
+  font-weight: 500;
+  letter-spacing: 1.0vw;
+  font-size: min(30px, 2vw) !important;
+}
+
+.homeTeaserSlogan {
+  font-size: 5vw;
+}
+
+.mediteasySlogan {
+  transition: all 0.5s;
+  margin-block-start: 18px !important;
+  font-size: min(20px, 1vw) !important;
+  font-weight: 800;
+  letter-spacing: 0.5vw;
+  white-space: nowrap;
+}
+
+nav {
+  transition: all 1s;
+}
+
+.mediteasyLogo img {
+  transition: all 0.5s;
+}
+
+header.scrolled {
+  padding-bottom: 5px;
+}
+
+
+.scrolled .mediteasySeperator {
+  margin-block-start: 0px;
+  transition: all 0.5s;
+}
+
+
+.scrolled .mediteasySlogan {
+  margin-block-start: 0px !important;
+  transition: all 0.5s;
+}
+
+.scrolled nav {
+  margin-block-start: 0px;
+  transition: all 1s;
+}
+
+.scrolled .mediteasyLogo img {
+  width: 70px;
+  height: 70px;
+  transition: all 0.5s;
+}
+
+@media only screen and (min-device-width: 480px) {}

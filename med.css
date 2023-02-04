@@ -1,198 +1,125 @@
-:root {
-	--caffe: 166, 132, 68;
-	--sky-blue: 173, 200, 217;
-	--sea-blue: 123, 159, 191;
-	--deep-sea: 33, 63, 89;
-	--DarkCyanBlue: 16, 60, 87;
-	--sandstein: 196, 170, 137;
-	--toffe: 202, 157, 109;
-	--deckweiss: 242, 242, 242;
-	--Kiwi: 123, 191, 144;
-	--red: 255, 76, 101;
-	--cyan: 43,138,206;
-	--fresh-air: 179,220,252;
-	--alice-blue: 239,248,250;
-	--gamboge: 150,107,2;
-	--maize: 234,192,80;
-	--DarkChocolat: 69, 83, 95;
-	--dark-background: 12 51 86;
-	--header-bg: rgb(136 168 197) !important;
-	--header-color: green;
-	
-	--slider-bg: rgba(255,255,255,0.8);
-    --slider-color: green;
-	--slider-title-color: rgb(var(--DarkChocolat));
-	--slider-subtitle-color: white; 
-	
-	
-	--main-bg-color: rgb(var(--sandstein));
-	
-
-	--accent-color:rgb(var(--DarkCyanBlue));
-	--light-accent-color:#789CC5;
-	--dark-text: rgb(28,62,92);
-	--light-text: rgb(117,159,193);
-	--bright-text: #F2F2F2;
-	--section-color: rgb(196, 170, 137);
+body {
+	background-color: #e7ebee !important;
+}
+body * {
+font-family: 'Lato', Sans-Serif !important;
 }
 
-/******************************/
-/* HEADER MENU                */
-/******************************/
-#masthead{
-	position:sticky;
-	z-index:99999;
-	opacity:1;
+header {
+position: sticky;
+top: 0px;
+z-index:100;
+border-bottom: 10px solid #F6C64A;
+box-shadow: 0 2px 10px 0 rgb(0 0 0 / 15%);
+background-color: #99b6d2;
 }
 
-.main-navigation .menu>li .sub-menu {
-    border-top: 3px solid var(--dark-text);
+header:before {
+content: " ";
+position: absolute;
+top: 0px;
+left: 0px;
+right: 0px;
+bottom: 0px;
+border-bottom: 1px solid white;
 }
 
-.site-menu-content--sticky{
-	border-top:20px solid rgba(0, 9, 15, 0.8);
-}
-/* hovered menu entry */
-.main-navigation .menu>li .sub-menu>li>a:hover,
-.owl-theme .owl-nav button:hover {
-    background-color: var(--accent-color) !important;
-}
-/* normal background without scrolled */
-.navigation-wrap {
-    background: var(--header-bg);
+.entry-content h1 {
+font-weight: 100;
+left: -4vw;
+position: relative;
+font-size: 34px;
+color: #D46D3F;
 }
 
-/* background during scrolling */
-.sticky-menu div.navigation-wrap {
-    background: var(--header-bg);
+.home main{
+margin-right: -5vw !important;
+margin-left: -5vw !important;
+margin-block-start: 0 !important;
 }
 
-/* actual page and hover */
-.main-navigation .menu>li .sub-menu>li.current-menu-ancestor>a, .main-navigation .menu>li .sub-menu>li.current-menu-parent>a, .main-navigation .menu>li .sub-menu>li.current-menu-item>a, .main-navigation .menu .current-menu-ancestor>a, .main-navigation .menu .current-menu-parent>a, .main-navigation .menu .current-menu-item>a, .main-navigation .menu>li>a:hover {
-    color: var(--accent-color);
+.home main .entry-content:first-child{
+max-width:100%;
+margin-left:0px;
+margin-right:0px;
 }
 
-/* arrow ticks for submenüs */
-.main-navigation .menu li.menu-item-has-children>a+.menu-arrow-button i {
-    color: var(--accent-color);
+.home .wp-block-heading{
+font-size: 5vw;
 }
 
-/******************************/
-/* HOME Section: Slider       */
-/******************************/
-.main-slider .item::before {
-	background-color:var(--slider-bg)
-}
-
-.slider-caption .subtitle {
-	color: var(--slider-subtitle-color);
-}
-.slider-caption .title {
-	color: var(--slider-title-color);
-}
-
-.owl-theme .owl-dots .owl-dot.active span, .owl-theme .owl-dots .owl-dot:hover span {
-    background-color: var(--accent-color) !important;
+.mediteasyHeader {
+font-weight: 100;
+letter-spacing: 1vw;
+font-size: min(30px, 2vw) !important;
 }
 
 
-/******************************/
-/* HOME Section: Kontaktaufname    */
-/******************************/
-.callout-wraper:before {
-  background-color: var(--header-bg);
+.mediteasySlogan{
+transition: all 0.5s;
+margin-block-start: 18px !important;
+font-size: min(20px, 1vw) !important;
+letter-spacing: 0.5vw;
+white-space: nowrap;
+}
+
+nav{
+transition: all 1s;
+}
+
+.mediteasyLogo img{
+width: 135px;
+height: 135px;
+transition: all 0.5s;
+}
+
+.scrolled > div{
+padding: 0px;
+padding-left:30px;
+padding-right:30px;
+padding-bottom:10px;
+transition: all 0.5s;
 }
 
 
-/******************************/
-/* HOME Section: Referenzen   */
-/******************************/
-.testimonial-wraper{
-	background-image:none !important;
-}
-.testimonial-wraper:before {
-    background-color: var(--section-color);
+.scrolled .mediteasySeperator{
+margin-block-start: 0px;
+transition: all 0.5s;
 }
 
 
-/*******************************/
-/* HOME Section: Unser Service */
-/*******************************/
-/* icon background */
-.service  .icon-bg::after {
-    background: var(--light-text) !important;
+.scrolled .mediteasySlogan{
+margin-block-start: 0px !important;
+transition: all 0.5s;
 }
-/* icon */
-.service .icon-bg {
-    color:  var(--light-text) !important;
+.scrolled nav{
+margin-block-start: 0px;
+transition: all 1s;
 }
 
-/* Icon header */
-.service .inner-header .inner-title > a {
-   color:  var(--light-text);
+.scrolled .mediteasyLogo img {
+width: 70px;
+height: 70px;
+transition: all 0.5s;
 }
 
-.service .more-link {
-    color: var(--light-text);
+@media only screen and (min-device-width: 480px){
+
+
 }
+  
 
-/*********************************/
-/* HOME Section: Kontaktaufnahme */
-/*********************************/
-.callout-wraper {
-	background-image:none !important;
+<script>
+// When the user scrolls down 50px from the top of the document, resize the header's font size
+window.onscroll = () => {
+  let header = document.querySelector('header')	
+  let containsClass = header.classList.contains('scrolled')
+  if (document.documentElement.scrollTop > 200 && !containsClass) {
+     header.classList.add("scrolled" );
+  } 
+  else if (document.documentElement.scrollTop < 50 && containsClass){
+      header.classList.remove("scrolled");
+  }
 }
+</script>
 
-.callout-wraper:before {
-    background-color: var(--section-color);
-}
-
-/******************************/
-/* HOME Common Elements.      */
-/******************************/
-.page-scroll-up {
-    background-color: var(--accent-color);
-}
-
-
-.divider-main::before {
-    background:var(--light-text);
-}
-
-/******************************/
-/* Footer                     */
-/******************************/
-.site-footer h1, .site-footer h2,.site-footer h3, .site-footer p, .site-footer .widget address > a, .site-footer .widget address > p > a, .site-footer .widget .post .entry-title a {
-    color: #e0e0e0;
-} 
-
-
-/******************************/
-/* Common Links + Buttons     */
-/******************************/
-
-.btn-skin {
-    background-color: var(--accent-color);
-}
-
-hr{
-	opacity:1;
-}
-/* broken theme fixes */
-.site-menu-content--sticky.sticky-menu-in-view {
-    padding: 0;
-}
-
-.site-menu-content--sticky.sticky-menu-in-view .custom-logo-link{
-    display:none;
-}
-
-
- .border-box:after,  .border-box:before {
-    height: 0px;
-}
-
-
-#site-content, #owl-main{
-    padding-top: 300px;
-}

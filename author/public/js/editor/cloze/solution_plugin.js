@@ -63,14 +63,18 @@ function tokenize(state, silent) {
     // parse inner
     state.pos += 2;
     state.posMax = end;
+
     state.md.inline.tokenize(state);
+
     state.pos = end + 2;
     state.posMax = max;
     // end tag
     state.push('kbd_close', TAG, -1);
     return true;
 }
+
 function kbdplugin(markdownit) {
     markdownit.inline.ruler.before('link', 'kbd', tokenize);
 }
+
 module.exports = kbdplugin;
