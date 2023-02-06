@@ -1,27 +1,68 @@
+:root {
+  --tint-color:  #a08745;
+
+	--dark-blue: #223D71;
+
+	--header-color-dark: #90adc9;
+	--header-color-light: #99b6d2;
+  --header-thin-line: white;
+
+  --body-color-dark: #e7ebee;
+  --body-color-light: #fefeff;
+}
+
 body {
   background-color: #e7ebee !important;
-
-  background-image:
-    linear-gradient(to top right, #e7ebee, #fefeff);
+  background-image: linear-gradient(to top right, var(--body-color-dark), var(--body-color-light));
 }
 
 body * {
   font-family: 'Lato', Sans-Serif !important;
 }
 
+h2,
+h3,
+.entry-content h1{
+  color: var(--dark-blue) !important;
+	letter-spacing: 0.5vw;
+}
+
+.wp-block-separator{
+  color: var(--header-color-dark) !important;
+  background-color: var(--header-color-dark) !important;
+}
+
+.has-text-light-color {
+  color: var(--header-color-dark) !important;
+}
+
+
+.tintColorFont {
+  color: var(--tint-color) !important;
+}
+
+.mediteasyEmphasisButton,
+.mediteasyEmphasisButton a,
+.tintBackgroundColorFont {
+  background-color: var(--tint-color) !important;
+}
+
+.wp-element-button{
+  background-color: var(--dark-blue) !important;
+}
+
 header {
   position: sticky;
   top: 0px;
   z-index: 100;
-  border-bottom: 10px solid #42b0d4;
+  border-bottom: 10px solid var(--tint-color);
   box-shadow: 0 2px 10px 0 rgb(0 0 0 / 15%);
-  background-color: #99b6d2;
+  color: white;
   padding: 0px;
   padding-left: 30px;
   padding-right: 30px;
   padding-bottom: 14px;
-
-  background: linear-gradient(75deg, #90adc9 50%, #99b6d2 50%);
+  background: linear-gradient(75deg, var(--header-color-dark) 50%, var(--header-color-light) 50%);
 }
 
 header:before {
@@ -34,13 +75,25 @@ header:before {
   border-bottom: 1px solid white;
 }
 
+
+.mediteasyHeader,
+.mediteasySeparator,
+.mediteasySlogan
+ {
+  color: white !important;
+ }
+
+ .mediteasyHeader {
+  margin-top:6vh !important;
+ }
+
 .entry-content h1 {
   font-weight: 400;
   left: -4vw;
   position: relative;
   font-size: 34px;
-  color: #42b0d4;
 }
+
 
 .home main {
   margin-right: -5vw !important;
@@ -62,16 +115,28 @@ header:before {
   list-style: none;
 }
 
+.mediteasyEmphasisButton,
+.mediteasyEmphasisButton a {
+  border-radius: 50px !important;
+}
+
 .topRightRadius img {
   border-top-right-radius: 50%;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
 }
 
 .bottomRightRadius img {
   border-bottom-right-radius: 50%;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
 }
 
 .bottomLeftRadius img {
   border-bottom-left-radius: 50%;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+}
+
+.galerieImage img {
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
 }
 
 .mediteasyRoundBox li::before {
@@ -80,8 +145,8 @@ header:before {
   display: inline-block;
   width: 2.5em;
   margin-left: -1em;
-  border: 1px solid #e7ebee;
-  background-color: #e7ebee;
+  border: 1px solid var(--body-color-dark);
+  background-color:var(--body-color-dark);
   border-radius: 1px;
   margin-right: 12px;
   color: transparent
@@ -89,7 +154,7 @@ header:before {
 
 .mediteasyRoundBox {
   border-radius: 1vw;
-  background-color: #fafafa;
+  background-color: #f9fafc;;
   padding-left: 7vw;
   padding-top: 5vh;
   padding-bottom: 5vh;
@@ -127,11 +192,14 @@ header.scrolled {
 }
 
 
-.scrolled .mediteasySeperator {
+.scrolled .mediteasyHeader {
+  margin-top:1vh !important;
+ }
+
+.scrolled .mediteasySeparator {
   margin-block-start: 0px;
   transition: all 0.5s;
 }
-
 
 .scrolled .mediteasySlogan {
   margin-block-start: 0px !important;
@@ -149,4 +217,55 @@ header.scrolled {
   transition: all 0.5s;
 }
 
-@media only screen and (min-device-width: 480px) {}
+
+@media only screen and (max-width: 600px) {
+  .mediteasyHeader {
+    letter-spacing: 0.6vw;
+    font-size: 6vw !important;
+    margin-top: 1vh !important;
+  }
+
+  .mediteasySlogan {
+    letter-spacing: 0.6vw;
+    font-size: 4vw !important;
+  }
+
+  .mediteasyHeaderLogo{
+    text-align: center;
+  }
+
+  .scrolled .headerInstagramm {
+    display: none;
+  }
+
+  .scrolled .mediteasyHeaderLogo{
+    position:absolute;
+    top: 7px;
+    text-align: left;
+  }
+
+  .scrolled .mediteasyLogo img {
+    width: 40px;
+    height: 40px;
+    transition: all 0.5s;
+  }
+  
+  header.scrolled {
+    margin-bottom: 200px;
+  }
+
+  header.scrolled .is-layout-flex {
+    gap: 0px !important;
+  }
+
+	.wp-block-navigation__submenu-container {
+    display:block !important;
+    padding-right: 0px;
+    margin-right: 0px;
+    border-right: 2px solid var(--body-color-dark);
+  }
+	
+  .mediteasyRoundBox li::before {
+    width: 3px;
+  }
+}

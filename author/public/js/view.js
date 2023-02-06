@@ -198,7 +198,7 @@ export default class View {
     let whereToAppend = this.html.find(".sections")
     page.forEach((section, index) => {
       let content = editorByType(section.type).render(section, renderMode.EDITOR)
-      whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}</div>`)
+      whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
       this.renderSpacer(index + 1)
     })
   }
@@ -231,11 +231,11 @@ export default class View {
     this.activeSection = section
     this.activeSectionDom = $(`.section[data-id='${section.id}']`)
     this.activeSectionDom.addClass('activeSection')
-    $(".sections .activeSection").prepend(`
+    $(".sections .activeSection .fc").prepend(`
         <div class='tinyFlyoverMenu'>
           ${editor.getMenu(section)}
-          <div data-id="${section.id}" id="sectionMenuUp"     >&#8657;</div>
-          <div data-id="${section.id}" id="sectionMenuDown"   >&#8659;</div>
+          <div data-id="${section.id}" id="sectionMenuUp"     >&#9650;</div>
+          <div data-id="${section.id}" id="sectionMenuDown"   >&#9660;</div>
           <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
           <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
         </div>`)
@@ -284,7 +284,22 @@ export default class View {
   }
 
   onFlip(section) {
-    $(`[data-id='${section.id}'] .flip_box`).toggleClass('flipped')
+    let card = $(`[data-id='${section.id}'] .flip_box`)
+
+    if (card.hasClass('flipped-back')) {
+        // Restart animaton, See: https://css-tricks.com/restart-css-animation/
+        card.removeClass('flipped-back');
+        void card[0].offsetWidth;
+      
+      card.addClass('flipped-front');
+    }
+    else{
+      // Restart animaton, See: https://css-tricks.com/restart-css-animation/
+      card.removeClass('flipped-front');
+      void card[0].offsetWidth;
+
+      card.addClass('flipped-back');
+    }
   }
 
   onCommitEdit() {

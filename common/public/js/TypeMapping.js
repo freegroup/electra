@@ -8,6 +8,7 @@ let mapping = {
     "digital_timer_Delay": "digital_pulse_Delay",
     "digital_signal_High": "digital_signal_Static_High",
     "digital_signal_Low": "digital_signal_Static_Low",
+    "digital_flipflop_JKFlipFlop": "digital_flipflop_JK_FlipFlop",
     "widget_PushButton": "digital_button_PushButton",
     "widget_Slider": "analog_source_Slider",
     "widget_Sparkline": "analog_sink_Sparkline",

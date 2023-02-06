@@ -23,7 +23,6 @@ export default class Editor extends MarkdownEditor {
    * @param {String} mode Either "worksheet", "solution", "flipcard"
    */
   render(section, mode){
-    console.log(mode)
     let errorCSS = ""
     let markdown = section.content
     try {

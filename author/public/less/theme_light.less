@@ -173,67 +173,72 @@ body.light {
         box-shadow: none !important;
     }
 
+    .content {
+        background-color:rgba(0, 0, 0, 0.03);
+        .sections {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            background-color:white;
 
-    .sections {
-        .section {
-            border-color: transparent;
+            .section {
+                border-color: transparent;
 
-            &.error {
-                border-color:rgb(var(--tint-color)) ;
-            }
+                &.error {
+                    border-color:rgb(var(--tint-color)) ;
+                }
 
-            &:hover {
-                border-radius: 3px;
-                border-style: dashed;
-                border-color: rgba(0, 0, 0, 0.1);
-            }
+                &:hover {
+                    border-radius: 3px;
+                    border-style: dashed;
+                    border-color: rgba(0, 0, 0, 0.1);
+                }
 
-            .sectionContent {
-                &[data-type='image'] {
+                .sectionContent {
+                    &[data-type='image'] {
 
-                    #editor-container {
-                        &:hover {
-                            box-shadow: 0 0 45px rgba(0, 0, 0, 0.1);
-                            border-color: black;
-                        }
+                        #editor-container {
+                            &:hover {
+                                box-shadow: 0 0 45px rgba(0, 0, 0, 0.1);
+                                border-color: black;
+                            }
 
-                        #image-preview {
-                            .overlay {
-                                background: rgba(255, 255, 255, 0.5);
+                            #image-preview {
+                                .overlay {
+                                    background: rgba(255, 255, 255, 0.5);
+                                }
                             }
                         }
                     }
-                }
 
-                &[data-type='markdown'],
-                &[data-type='cloze'] {
-                    h1 ,
-                    h2 ,
-                    h3 {
-                        color: rgb(var(--tint-color)) ;
+                    &[data-type='markdown'],
+                    &[data-type='cloze'] {
+                        h1 ,
+                        h2 ,
+                        h3 {
+                            color: rgb(var(--tint-color)) ;
+                        }
+                        h1{
+                            border-bottom-color: rgb(var(--tint-color)) ;
+                        }
+                        .cloze {
+                            background-color: lightgray;
+                            padding-left: 15px;
+                            padding-right: 15px;
+                            border-radius: 3px;
+                            border-bottom: 1px dotted gray;
+                        }
                     }
-                    h1{
-                        border-bottom-color: rgb(var(--tint-color)) ;
-                    }
-                    .cloze {
-                        background-color: lightgray;
-                        padding-left: 15px;
-                        padding-right: 15px;
-                        border-radius: 3px;
-                        border-bottom: 1px dotted gray;
-                    }
-                }
 
-                &[data-type='spacer'] {
-                    .material-button {
-                        color: white;
+                    &[data-type='spacer'] {
+                        .material-button {
+                            color: white;
+                        }
                     }
                 }
             }
-        }
 
-        .activeSection {
-            box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+            .activeSection {
+                box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+            }
         }
     }
 

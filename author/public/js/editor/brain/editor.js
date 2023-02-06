@@ -85,7 +85,7 @@ export default class Editor extends GenericEditor{
       return `<img class="sectionContent" data-type="${this.type}" src="${section.content.image}">`
     }
 
-    return `<div class="sectionContent" data-type="${this.type}">-double click to edit brain-</div></div>`
+    return `<div class="sectionContent" data-type="${this.type}">-double click to edit brain-</div>`
   }
 
   resetDOM(){

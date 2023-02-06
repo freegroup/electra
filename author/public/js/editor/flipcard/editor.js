@@ -14,7 +14,8 @@ export default class Editor extends GenericEditor{
   inject(section) {
     super.inject(section)
 
-    let activeSection = section.content.front
+    this.flippedStateDuringInject  = $(`.section[data-id='${section.id}'] .flip_box`).hasClass("flipped")
+    let activeSection = this.flippedStateDuringInject  ? section.content.back : section.content.front
     this.editor = editorByType(activeSection.type).inject(activeSection)
 
     return this
@@ -44,10 +45,11 @@ export default class Editor extends GenericEditor{
       case renderMode.SOLUTION:
         return backContent
     }
-
+    let flippedClass =  this.flippedStateDuringInject ? " flipped" :""
+    this.flippedStateDuringInject  = false
     return `
         <div class="sectionContent" data-type="${this.type}">
-            <div class='flip_box'>
+            <div class='flip_box${flippedClass}'>
               <div class='front'>
                 ${frontContent}
               </div>
@@ -59,12 +61,21 @@ export default class Editor extends GenericEditor{
   }
 
   onUnselect(section){
-    $(".flipped").removeClass("flipped")
+    let card = $(".flipped-back")
+    console.log(card)
+    if (card.length >0) {
+      // Restart animaton, See: https://css-tricks.com/restart-css-animation/
+      card.removeClass('flipped-back');
+      void card[0].offsetWidth;
+
+      card.addClass('flipped-front');
+    }
   }
 
 
   getMenu(section){
-    return `<div data-id='${section.id}' id='sectionMenuFlip'>&nbsp;&#127137;&nbsp;</div>`
+    return `<div data-id='${section.id}' id='sectionMenuFlip'>&nbsp; 	
+    &#8635; &nbsp;</div>`
   }
 
   defaultContent(){

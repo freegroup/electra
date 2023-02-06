@@ -2,8 +2,10 @@
 .sections {
   list-style: none;
   padding: 0;
-  margin: 10px;
-
+  margin: 15px;
+  margin-left: 30px;
+  margin-right:30px;
+  min-height: 800px;
   .section {
     margin-left:20px;
     margin-right:20px;
@@ -27,6 +29,13 @@
       }
     }
 
+    .fc{
+      position: absolute;
+      top: 0px;
+      bottom: 0px;
+      right:0px;
+    }
+
     &[data-type='image']{
       text-align: center;
     }
@@ -42,6 +51,7 @@
 
         #editor-container {
           display: initial;
+          min-height: 200px;
           &:hover {
             border-width:1px;
             border-style: dotted;
@@ -94,13 +104,15 @@
         transform: translateX(-50%);
         max-width:100%;
       }
+
       &[data-type='flipcard']{
 
           .flip_box {
             position: relative;
             transition: all 0.5s ease-out;
             transform-style: preserve-3d;
-            display: grid;
+            display: inline-grid;
+            width:100%;
           }
 
           .front,
@@ -111,16 +123,31 @@
 
 
           .front {
-            background-color: lightgray;
           }
 
           .back {
-            background-color:lightblue;
+            background-color: rgb(243, 241, 241);
             transform: rotateY(180deg);
           }
 
-          .flipped {
-            transform: rotateY(-180deg);
+          .flipped-back {
+            animation: flip  1s normal;
+            animation-fill-mode: forwards;
+          }
+
+          .flipped-front {
+            animation: flip  1s reverse;
+            animation-fill-mode: forwards;
+          }
+          
+          @keyframes flip {
+            0% {  
+              transform: rotateY(   0deg); 
+            }
+            100%   {  
+              transform: rotateY(-180deg);
+              background-color: black;
+            }
           }
 
       }

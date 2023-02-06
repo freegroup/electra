@@ -1006,7 +1006,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       if (section.content) {
         return "<img class=\"sectionContent\" data-type=\"".concat(this.type, "\" src=\"").concat(section.content.image, "\">");
       }
-      return "<div class=\"sectionContent\" data-type=\"".concat(this.type, "\">-double click to edit brain-</div></div>");
+      return "<div class=\"sectionContent\" data-type=\"".concat(this.type, "\">-double click to edit brain-</div>");
     }
   }, {
     key: "resetDOM",
@@ -1971,7 +1971,6 @@ var Editor = /*#__PURE__*/function (_MarkdownEditor) {
   _createClass(Editor, [{
     key: "render",
     value: function render(section, mode) {
-      console.log(mode);
       var errorCSS = "";
       var markdown = section.content;
       try {
@@ -2351,7 +2350,8 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     key: "inject",
     value: function inject(section) {
       _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
-      var activeSection = section.content.front;
+      this.flippedStateDuringInject = $(".section[data-id='".concat(section.id, "'] .flip_box")).hasClass("flipped");
+      var activeSection = this.flippedStateDuringInject ? section.content.back : section.content.front;
       this.editor = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(activeSection.type).inject(activeSection);
       return this;
     }
@@ -2382,17 +2382,26 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].SOLUTION:
           return backContent;
       }
-      return "\n        <div class=\"sectionContent\" data-type=\"".concat(this.type, "\">\n            <div class='flip_box'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
+      var flippedClass = this.flippedStateDuringInject ? " flipped" : "";
+      this.flippedStateDuringInject = false;
+      return "\n        <div class=\"sectionContent\" data-type=\"".concat(this.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
     }
   }, {
     key: "onUnselect",
     value: function onUnselect(section) {
-      $(".flipped").removeClass("flipped");
+      var card = $(".flipped-back");
+      console.log(card);
+      if (card.length > 0) {
+        // Restart animaton, See: https://css-tricks.com/restart-css-animation/
+        card.removeClass('flipped-back');
+        void card[0].offsetWidth;
+        card.addClass('flipped-front');
+      }
     }
   }, {
     key: "getMenu",
     value: function getMenu(section) {
-      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp;&#127137;&nbsp;</div>");
+      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp; \t\n    &#8635; &nbsp;</div>");
     }
   }, {
     key: "defaultContent",
@@ -3212,6 +3221,7 @@ var mapping = {
   "digital_timer_Delay": "digital_pulse_Delay",
   "digital_signal_High": "digital_signal_Static_High",
   "digital_signal_Low": "digital_signal_Static_Low",
+  "digital_flipflop_JKFlipFlop": "digital_flipflop_JK_FlipFlop",
   "widget_PushButton": "digital_button_PushButton",
   "widget_Slider": "analog_source_Slider",
   "widget_Sparkline": "analog_sink_Sparkline",
