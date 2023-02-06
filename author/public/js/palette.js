@@ -12,7 +12,6 @@ export default class Palette {
     this.permissions = permissions
     commandStack.off(this).on("change", this)
 
-
     $(document)
       .off("click", "#documentPageAdd")
       .on("click", "#documentPageAdd", () => {
@@ -97,9 +96,7 @@ export default class Palette {
         }, true)
       }
 
-
       $(`.pageElement[data-page=${currentPage.id}]`).addClass("selected")
-
 
       // Allow only the drag&drop of the pages if the user has the permission
       //

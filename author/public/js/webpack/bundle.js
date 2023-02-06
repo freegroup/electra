@@ -4488,6 +4488,8 @@ var View = /*#__PURE__*/function () {
       var _this2 = this;
       // commit the current changes if an editor is active
       this.onCommitEdit().then(function () {
+        _this2.onUnselect();
+
         // scroll to top
         $(".content").scrollTop(0);
         $(".pageElement").removeClass("selected");
@@ -4534,9 +4536,10 @@ var View = /*#__PURE__*/function () {
           page.name = value;
           _this4.app.getDocument().push(page);
           _this4.setPage(page);
-          var section = _this4.addMarkdown(0);
-          _this4.onSelect(section);
-          _this4.onEdit(section);
+          _this4.addSection("markdown", 0).then(function (section) {
+            _this4.onSelect(section);
+            _this4.onEdit(section);
+          });
         });
       });
     }

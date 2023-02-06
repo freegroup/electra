@@ -119,6 +119,8 @@ export default class View {
   setPage(page) {
     // commit the current changes if an editor is active
     this.onCommitEdit().then(()=>{ 
+      this.onUnselect()
+      
       // scroll to top
       $(".content").scrollTop(0)
 
@@ -164,9 +166,10 @@ export default class View {
         page.name = value
         this.app.getDocument().push(page)
         this.setPage(page)
-        let section = this.addMarkdown(0)
-        this.onSelect(section)
-        this.onEdit(section)
+        this.addSection("markdown", 0).then( section => {
+          this.onSelect(section)
+          this.onEdit(section)
+        })
       })      
     })
   }
