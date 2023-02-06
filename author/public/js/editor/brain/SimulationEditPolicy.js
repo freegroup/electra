@@ -8,15 +8,21 @@ export default draw2d.policy.canvas.ReadOnlySelectionPolicy.extend({
 
 
   onInstall: function (canvas) {
-    canvas.getFigures().each(function (index, shape) {
-      shape.onStart();
+    this.simulationContext = {}
+
+    canvas.getFigures().each( (index, shape) => {
+      shape.onPreStart?.(this.simulationContext)
+    })
+
+    canvas.getFigures().each( (index, shape) => {
+      shape.onStart?.(this.simulationContext);
     });
   },
 
 
   onUninstall: function (canvas) {
-    canvas.getFigures().each(function (index, shape) {
-      shape.onStop();
+    canvas.getFigures().each( (index, shape)=> {
+      shape.onStop?.(this.simulationContext);
     });
   },
 

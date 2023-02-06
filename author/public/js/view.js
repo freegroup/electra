@@ -200,6 +200,7 @@ export default class View {
       let content = editorByType(section.type).render(section, renderMode.EDITOR)
       whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
       this.renderSpacer(index + 1)
+      delete section.flippedStateDuringInject
     })
   }
 

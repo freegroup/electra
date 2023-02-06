@@ -15,8 +15,6 @@ let Writer = draw2d.io.json.Writer.extend({
     let scaleH = Math.max(bb.h, 110) - bb.h
     bb = bb.scale(scaleW, scaleH)  
     
-    console.log(canvas.getBoundingBox())
-    console.log(canvas.getBoundingBox().scale(10,10))
     new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
       let writer = new draw2d.io.json.Writer()
       writer.marshal(canvas, json => {

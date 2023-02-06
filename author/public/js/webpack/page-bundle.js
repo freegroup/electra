@@ -709,13 +709,22 @@ __webpack_require__.r(__webpack_exports__);
     this.mouseDownElement = null;
   },
   onInstall: function onInstall(canvas) {
+    var _this = this;
+    this.simulationContext = {};
     canvas.getFigures().each(function (index, shape) {
-      shape.onStart();
+      var _shape$onPreStart;
+      (_shape$onPreStart = shape.onPreStart) === null || _shape$onPreStart === void 0 ? void 0 : _shape$onPreStart.call(shape, _this.simulationContext);
+    });
+    canvas.getFigures().each(function (index, shape) {
+      var _shape$onStart;
+      (_shape$onStart = shape.onStart) === null || _shape$onStart === void 0 ? void 0 : _shape$onStart.call(shape, _this.simulationContext);
     });
   },
   onUninstall: function onUninstall(canvas) {
+    var _this2 = this;
     canvas.getFigures().each(function (index, shape) {
-      shape.onStop();
+      var _shape$onStop;
+      (_shape$onStop = shape.onStop) === null || _shape$onStop === void 0 ? void 0 : _shape$onStop.call(shape, _this2.simulationContext);
     });
   },
   /**
@@ -1288,8 +1297,6 @@ var Writer = draw2d.io.json.Writer.extend({
     var scaleW = Math.max(bb.w, 110) - bb.w;
     var scaleH = Math.max(bb.h, 110) - bb.h;
     bb = bb.scale(scaleW, scaleH);
-    console.log(canvas.getBoundingBox());
-    console.log(canvas.getBoundingBox().scale(10, 10));
     new draw2d.io.png.Writer().marshal(canvas, function (imageDataUrl) {
       var writer = new draw2d.io.json.Writer();
       writer.marshal(canvas, function (json) {
@@ -2350,8 +2357,8 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     key: "inject",
     value: function inject(section) {
       _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
-      this.flippedStateDuringInject = $(".section[data-id='".concat(section.id, "'] .flip_box")).hasClass("flipped");
-      var activeSection = this.flippedStateDuringInject ? section.content.back : section.content.front;
+      section.flippedStateDuringInject = $(".section[data-id='".concat(section.id, "'] .flip_box")).hasClass("flipped-back");
+      var activeSection = section.flippedStateDuringInject ? section.content.back : section.content.front;
       this.editor = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(activeSection.type).inject(activeSection);
       return this;
     }
@@ -2376,32 +2383,29 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       var backSection = section.content.back;
       var frontContent = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(frontSection.type).render(frontSection, mode);
       var backContent = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(backSection.type).render(backSection, mode);
+      var flippedClass = section.flippedStateDuringInject ? " flipped-back" : "";
       switch (mode) {
         case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET:
           return frontContent;
         case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].SOLUTION:
           return backContent;
       }
-      var flippedClass = this.flippedStateDuringInject ? " flipped" : "";
-      this.flippedStateDuringInject = false;
       return "\n        <div class=\"sectionContent\" data-type=\"".concat(this.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
     }
   }, {
     key: "onUnselect",
     value: function onUnselect(section) {
       var card = $(".flipped-back");
-      console.log(card);
       if (card.length > 0) {
         // Restart animaton, See: https://css-tricks.com/restart-css-animation/
         card.removeClass('flipped-back');
         void card[0].offsetWidth;
-        card.addClass('flipped-front');
       }
     }
   }, {
     key: "getMenu",
     value: function getMenu(section) {
-      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp; \t\n    &#8635; &nbsp;</div>");
+      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp;&#8635;&nbsp;</div>");
     }
   }, {
     key: "defaultContent",
@@ -40864,7 +40868,8 @@ $(window).load(function () {
       var container = $("<div class='authorPage'></div>");
       $(containerId).append(container);
       page.sections.forEach(function (section) {
-        container.append((0,_editor_editorByType__WEBPACK_IMPORTED_MODULE_2__["default"])(section.type).render(section, _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET));
+        var content = (0,_editor_editorByType__WEBPACK_IMPORTED_MODULE_2__["default"])(section.type).render(section, _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET);
+        container.append("<div class='section' data-id=\"".concat(section.id, "\" data-type=\"").concat(section.type, "\">").concat(content, "<div class=\"fc\"></div></div>"));
       });
       if (index < pages.length - 1) container.append("<div style='page-break-before:always;'></div>");
     });

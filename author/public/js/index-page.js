@@ -42,7 +42,8 @@ $(window).load(function () {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)
         page.sections.forEach( (section) => {
-          container.append(editorByType(section.type).render(section, renderMode.WORKSHEET))
+          let content = editorByType(section.type).render(section, renderMode.WORKSHEET)
+          container.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
         })
         if(index < (pages.length-1))
           container.append("<div style='page-break-before:always;'></div>")
