@@ -73,7 +73,7 @@ export default class Editor extends GenericEditor{
       console.log(error)
       errorCSS = " error"
     }
-    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${this.type}">${markdown}</div>`
+    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${section.type}">${markdown}</div>`
   }
 
   defaultContent(){

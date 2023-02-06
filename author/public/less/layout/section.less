@@ -6,174 +6,173 @@
   margin-left: 30px;
   margin-right:30px;
   min-height: 800px;
-  .section {
-    margin-left:20px;
-    margin-right:20px;
-    cursor: pointer;
+}
+
+/** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
+    used in other page elements like pdf, dialog, single page, ...
+ **/ 
+.section {
+  margin-left:20px;
+  margin-right:20px;
+  cursor: pointer;
+  border-width:1px;
+  border-style:solid;
+  padding-left:3px;
+
+  &.error {
     border-width:1px;
     border-style:solid;
-    padding-left:3px;
+  }
 
-    &.error {
-      border-width:1px;
-      border-style:solid;
-    }
-
-    &:hover{
-      border-width:1px;
-      border-style:solid;
-      .sectionContent[data-type='spacer'] {
-        .material-button{
-          visibility:visible !important;
-        }
+  &:hover{
+    border-width:1px;
+    border-style:solid;
+    .sectionContent[data-type='spacer'] {
+      .material-button{
+        visibility:visible !important;
       }
     }
+  }
 
-    .fc{
-      position: absolute;
-      top: 0px;
-      bottom: 0px;
-      right:0px;
-    }
+  .fc{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right:0px;
+  }
+
+  &[data-type='image']{
+    text-align: center;
+  }
+
+  .sectionContent {
+    /* reqiered for flipcards */
+    perspective: 1000px;
+
 
     &[data-type='image']{
       text-align: center;
-    }
+      max-width: 100%;
 
-    .sectionContent {
-      /* reqiered for flipcards */
-      perspective: 1000px;
-
-
-      &[data-type='image']{
-        text-align: center;
-        max-width: 100%;
-
-        #editor-container {
-          display: initial;
-          min-height: 200px;
-          &:hover {
-            border-width:1px;
-            border-style: dotted;
-          }
-          .drop-message{
-            margin: auto;
-          }
-          #image-preview {
-            margin-top: 20px;
-            .image-view {
-              display: inline-block;
-              position: relative;
-              margin-right: 13px;
-              margin-bottom: 13px;
-              img {
-                max-width: 90%;
-              }
-            }
-            .overlay {
-              position: absolute;
-              width: 100%;
-              height: 100%;
-              top: 0;
-              right: 0;
-              z-index: 2;
-            }
-          }
+      #editor-container {
+        display: initial;
+        min-height: 200px;
+        &:hover {
+          border-width:1px;
+          border-style: dotted;
         }
-      }
-
-      &[data-type='flipcard'],
-      &[data-type='markdown'],
-      &[data-type='cloze']{
-        h1 {
-          font-weight: 400;
-          margin-bottom: 0;
-          margin-bottom: 18px;
-          margin-top: 19px;
-          border-bottom-width: 2px;
-          border-bottom-style: solid;
-          font-size: 18px;
+        .drop-message{
+          margin: auto;
         }
-        h2, h3 {
-          font-weight: 300;
-        }
-      }
-
-      &[data-type='brain']{
-        left: 50%;
-        position: relative;
-        transform: translateX(-50%);
-        max-width:100%;
-      }
-
-      &[data-type='flipcard']{
-
-          .flip_box {
+        #image-preview {
+          margin-top: 20px;
+          .image-view {
+            display: inline-block;
             position: relative;
-            transition: all 0.5s ease-out;
-            transform-style: preserve-3d;
-            display: inline-grid;
-            width:100%;
-          }
-
-          .front,
-          .back {
-            backface-visibility: hidden;
-            grid-area: 1 / 1 / 2 / 2;
-          }
-
-
-          .front {
-          }
-
-          .back {
-            background-color: rgb(243, 241, 241);
-            transform: rotateY(180deg);
-          }
-
-          .flipped-back {
-            animation: flip  1s normal;
-            animation-fill-mode: forwards;
-          }
-
-          .flipped-front {
-            animation: flip  1s reverse;
-            animation-fill-mode: forwards;
-          }
-          
-          @keyframes flip {
-            0% {  
-              transform: rotateY(   0deg); 
-            }
-            100%   {  
-              transform: rotateY(-180deg);
-              background-color: black;
+            margin-right: 13px;
+            margin-bottom: 13px;
+            img {
+              max-width: 90%;
             }
           }
-
-      }
-      &[data-type='spacer']{
-        position: relative;
-        height:36px;
-        position: relative;
-        height: 36px;
-        text-align: center;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        gap: 10px;
-        align-items: center;
-
-        .material-button{
-          visibility:hidden;
+          .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            z-index: 2;
+          }
         }
       }
     }
+
+    &[data-type='flipcard'],
+    &[data-type='markdown'],
+    &[data-type='cloze']{
+      h1 {
+        font-weight: 400;
+        margin-bottom: 0;
+        margin-bottom: 18px;
+        margin-top: 19px;
+        border-bottom-width: 2px;
+        border-bottom-style: solid;
+        font-size: 18px;
+      }
+      h2, h3 {
+        font-weight: 300;
+      }
+    }
+
+    &[data-type='brain']{
+      left: 50%;
+      position: relative;
+      transform: translateX(-50%);
+      max-width:100%;
+    }
+
+    &[data-type='flipcard']{
+      .flip_box {
+        position: relative;
+        transition: all 0.5s ease-out;
+        transform-style: preserve-3d;
+        display: inline-grid;
+        width:100%;
+      }
+
+      .front,
+      .back {
+        backface-visibility: hidden;
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .back {
+        background-color: rgb(243, 241, 241);
+        transform: rotateY(180deg);
+      }
+
+      .flipped-back {
+        animation: flip  1s normal;
+        animation-fill-mode: forwards;
+      }
+
+      .flipped-front {
+        animation: flip  1s reverse;
+        animation-fill-mode: forwards;
+      }
+      
+      @keyframes flip {
+        0% {  
+          transform: rotateY(   0deg); 
+        }
+        100%   {  
+          transform: rotateY(-180deg);
+          background-color: black;
+        }
+      }
+    }
+
+    &[data-type='spacer']{
+      position: relative;
+      height:36px;
+      position: relative;
+      height: 36px;
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+
+      .material-button{
+        visibility:hidden;
+      }
+    }
   }
-  .activeSection {
-    position:relative;
-  }
+}
+.activeSection {
+  position:relative;
 }
 
 

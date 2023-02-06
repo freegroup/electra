@@ -1013,9 +1013,9 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     key: "render",
     value: function render(section, mode) {
       if (section.content) {
-        return "<img class=\"sectionContent\" data-type=\"".concat(this.type, "\" src=\"").concat(section.content.image, "\">");
+        return "<img class=\"sectionContent\" data-type=\"".concat(section.type, "\" src=\"").concat(section.content.image, "\">");
       }
-      return "<div class=\"sectionContent\" data-type=\"".concat(this.type, "\">-double click to edit brain-</div>");
+      return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\">-double click to edit brain-</div>");
     }
   }, {
     key: "resetDOM",
@@ -1998,7 +1998,7 @@ var Editor = /*#__PURE__*/function (_MarkdownEditor) {
         console.log(error);
         errorCSS = " error";
       }
-      return "<div class=\"sectionContent markdownRendering".concat(errorCSS, "\" data-type=\"").concat(this.type, "\">").concat(markdown, "</div>");
+      return "<div class=\"sectionContent markdownRendering".concat(errorCSS, "\" data-type=\"").concat(section.type, "\">").concat(markdown, "</div>");
     }
   }, {
     key: "defaultContent",
@@ -2390,7 +2390,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].SOLUTION:
           return backContent;
       }
-      return "\n        <div class=\"sectionContent\" data-type=\"".concat(this.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
+      return "\n        <div class=\"sectionContent\" data-type=\"".concat(section.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
     }
   }, {
     key: "onUnselect",
@@ -2603,9 +2603,9 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     key: "render",
     value: function render(section, mode) {
       if (section.content) {
-        return "<img class=\"sectionContent\" data-type=\"".concat(this.type, "\" src=\"").concat(section.content, "\">");
+        return "<img class=\"sectionContent\" data-type=\"".concat(section.type, "\" src=\"").concat(section.content, "\">");
       }
-      return "<div class=\"sectionContent\" data-type=\"".concat(this.type, "\">-double click to edit image-</div>");
+      return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\">-double click to edit image-</div>");
     }
   }]);
   return Editor;
@@ -2725,7 +2725,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         console.log(error);
         errorCSS = " error";
       }
-      return "<div class=\"sectionContent markdownRendering".concat(errorCSS, "\" data-type=\"").concat(this.type, "\">").concat(markdown, "</div>");
+      return "<div class=\"sectionContent markdownRendering".concat(errorCSS, "\" data-type=\"").concat(section.type, "\">").concat(markdown, "</div>");
     }
   }, {
     key: "defaultContent",

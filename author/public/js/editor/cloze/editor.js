@@ -44,7 +44,7 @@ export default class Editor extends MarkdownEditor {
       errorCSS = " error"
     }
 
-    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${this.type}">${markdown}</div>`
+    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${section.type}">${markdown}</div>`
   }
 
   defaultContent() {

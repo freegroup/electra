@@ -48,7 +48,7 @@ export default class Editor extends GenericEditor{
         return backContent
     }
     return `
-        <div class="sectionContent" data-type="${this.type}">
+        <div class="sectionContent" data-type="${section.type}">
             <div class='flip_box${flippedClass}'>
               <div class='front'>
                 ${frontContent}

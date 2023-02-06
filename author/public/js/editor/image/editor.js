@@ -156,9 +156,9 @@ export default class Editor extends GenericEditor{
    */
    render(section, mode){
     if (section.content) {
-      return `<img class="sectionContent" data-type="${this.type}" src="${section.content}">`
+      return `<img class="sectionContent" data-type="${section.type}" src="${section.content}">`
     } 
 
-    return `<div class="sectionContent" data-type="${this.type}">-double click to edit image-</div>`
+    return `<div class="sectionContent" data-type="${section.type}">-double click to edit image-</div>`
   }
 }

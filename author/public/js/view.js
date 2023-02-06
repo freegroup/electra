@@ -1,6 +1,7 @@
 const shortid = require('short-uuid')
 
 import inputPrompt from "../../common/js/InputPrompt"
+import authorDialog from "../../common/js/AuthorDialog"
 import commandStack from "./commands/CommandStack"
 import State from "./commands/State"
 
@@ -81,6 +82,11 @@ export default class View {
       })
       .on("click", "#sectionMenuFlip", event => {
         this.onFlip(this.page.get($(event.target).data("id")))
+        return false
+      }) 
+      .on("click", "#sectionMenuHelp", event => {
+        let type = this.page.get($(event.target).data("id"))?.type ?? "generic"
+        authorDialog.show(`/readme/en/author/${type}.sheet`)
         return false
       })
       .on("click", "#sectionMenuCommitEdit", event => {
@@ -235,9 +241,10 @@ export default class View {
     $(".sections .activeSection .fc").prepend(`
         <div class='tinyFlyoverMenu'>
           ${editor.getMenu(section)}
+          <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
           <div data-id="${section.id}" id="sectionMenuUp"     >&#9650;</div>
           <div data-id="${section.id}" id="sectionMenuDown"   >&#9660;</div>
-          <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
+          <div data-id="${section.id}" id="sectionMenuHelp"   >?</div>
           <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
         </div>`)
     editor.onSelect(section)

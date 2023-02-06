@@ -84,7 +84,6 @@ body.light {
     }
 
     .welcomeMessage {
-
         background: url(../images/background.png) no-repeat;
         background-position: center top;
         background-size: 100% 50%;
@@ -174,75 +173,77 @@ body.light {
 
     .content {
         background-color:rgba(0, 0, 0, 0.03);
-        .sections {
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-            background-color:white;
+    }
 
-            .section {
-                border-color: transparent;
+    .sections {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        background-color:white;
+    }
+    /** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
+        used in other page elements like pdf, dialog, single page, ...
+    **/ 
+    .section {
+        border-color: transparent;
 
-                &.error {
-                    border-color:rgb(var(--tint-color)) ;
+        &.error {
+            border-color:rgb(var(--tint-color)) ;
+        }
+
+        &:hover {
+            border-radius: 3px;
+            border-style: dashed;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .sectionContent {
+            &[data-type='image'] {
+
+                #editor-container {
+                    &:hover {
+                        box-shadow: 0 0 45px rgba(0, 0, 0, 0.1);
+                        border-color: black;
+                    }
+
+                    #image-preview {
+                        .overlay {
+                            background: rgba(255, 255, 255, 0.5);
+                        }
+                    }
                 }
+            }
 
-                &:hover {
+            &[data-type='flipcard'],
+            &[data-type='markdown'],
+            &[data-type='cloze'] {
+                h1 ,
+                h2 ,
+                h3 {
+                    color: rgb(var(--tint-color)) ;
+                }
+                h1{
+                    border-bottom-color: rgb(var(--tint-color)) ;
+                }
+                .cloze {
+                    background-color: lightgray;
+                    padding-left: 15px;
+                    padding-right: 15px;
                     border-radius: 3px;
-                    border-style: dashed;
-                    border-color: rgba(0, 0, 0, 0.1);
-                }
-
-                .sectionContent {
-                    &[data-type='image'] {
-
-                        #editor-container {
-                            &:hover {
-                                box-shadow: 0 0 45px rgba(0, 0, 0, 0.1);
-                                border-color: black;
-                            }
-
-                            #image-preview {
-                                .overlay {
-                                    background: rgba(255, 255, 255, 0.5);
-                                }
-                            }
-                        }
-                    }
-
-                    &[data-type='flipcard'],
-                    &[data-type='markdown'],
-                    &[data-type='cloze'] {
-                        h1 ,
-                        h2 ,
-                        h3 {
-                            color: rgb(var(--tint-color)) ;
-                        }
-                        h1{
-                            border-bottom-color: rgb(var(--tint-color)) ;
-                        }
-                        .cloze {
-                            background-color: lightgray;
-                            padding-left: 15px;
-                            padding-right: 15px;
-                            border-radius: 3px;
-                            border-bottom: 1px dotted gray;
-                        }
-                    }
-
-                    &[data-type='spacer'] {
-                        .material-button {
-                            color: white;
-                        }
-                    }
+                    border-bottom: 1px dotted gray;
                 }
             }
 
-            .activeSection {
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-
-                &:hover {
-                    border-color: transparent !important;
+            &[data-type='spacer'] {
+                .material-button {
+                    color: white;
                 }
             }
+        }
+    }
+
+    .activeSection {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        &:hover {
+            border-color: transparent !important;
         }
     }
 

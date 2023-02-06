@@ -33,7 +33,6 @@ class Dialog {
         $('#markdownDialog .editButton').hide()
       }
 
-
       $('#markdownDialog').modal('show')
 
       $("#markdownDialog .editButton").off("click").on("click", () => {
