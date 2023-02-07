@@ -203,18 +203,19 @@ export default class View {
   render(page) {
     // inject the host for the rendered section
     this.html.html($("<div class='sections'></div>"))
-    this.renderSpacer(0)
     let whereToAppend = this.html.find(".sections")
+    this.renderSpacer(whereToAppend, 0)
+ 
     page.forEach((section, index) => {
       let content = editorByType(section.type).render(section, renderMode.EDITOR)
       whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
-      this.renderSpacer(index + 1)
+      this.renderSpacer(whereToAppend, index + 1)
       delete section.flippedStateDuringInject
     })
   }
 
-  renderSpacer(index) {
-    this.html.find(".sections").append(`
+  renderSpacer(whereToAppend, index) {
+    whereToAppend.append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
             <div data-index="${index}" data-type="markdown" class='sectionMenuInsertSection material-button' >&#8853; Text</div>

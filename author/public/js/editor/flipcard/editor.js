@@ -16,6 +16,7 @@ export default class Editor extends GenericEditor{
 
     section.flippedStateDuringInject  = $(`.section[data-id='${section.id}'] .flip_box`).hasClass("flipped-back")
     let activeSection = section.flippedStateDuringInject  ? section.content.back : section.content.front
+    
     this.editor = editorByType(activeSection.type).inject(activeSection)
 
     return this
@@ -78,13 +79,13 @@ export default class Editor extends GenericEditor{
     return {
       front : {
         id: shortid.generate(),
-        type: "markdown",
-        content: "## Front"
+        type: "placeholder",
+        content: "front"
       },
       back: {
         id: shortid.generate(),
-        type: "markdown",
-        content: "## Back"
+        type: "placeholder",
+        content: "back"
       }
     }
   }

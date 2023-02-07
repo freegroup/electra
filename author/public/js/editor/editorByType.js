@@ -3,6 +3,7 @@ import BrainEditor from "./brain/editor"
 import ClozeEditor from "./cloze/editor"
 import ImageEditor from "./image/editor"
 import FlipCardEditor from "./flipcard/editor"
+import PlaceholderEditor from "./placeholder/editor"
 import UnknownEditor from "./editor"
 
 let unknownEditor = new UnknownEditor()
@@ -11,6 +12,7 @@ let editors = [
   new ClozeEditor(),
   new FlipCardEditor(),
   new BrainEditor(),
+  new PlaceholderEditor(),
   new ImageEditor()
 ]
 
