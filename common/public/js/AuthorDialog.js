@@ -33,11 +33,10 @@ class Dialog {
     }
     axios.get(`../sheets/global/get?filePath=${file}${additionalParam}`)
       .then((response => {
-        $(this.containerId).html("")
+        let container = $(this.containerId)
+        container.html("")
         let pages = response.data.pages
         pages.forEach( (page, index) => {
-          let container = $("<div></div>")
-          $(this.containerId).append(container)
           let sections = page.sections
           sections.forEach( (section) => {
             switch(section.type){
