@@ -3,6 +3,8 @@ import commandStack from "./commands/CommandStack"
 import conf from "./configuration"
 let storage = require('../../common/js/BackendStorage').default(conf)
 
+import exportModePrompt from "./dialog/SelectExportMode"
+
 export default class Toolbar {
 
   constructor(app, view, elementId, permissions) {
@@ -35,27 +37,7 @@ export default class Toolbar {
     this.pdfButton = $("#editorFileToPDF")
     if (permissions.sheets.pdf || permissions.sheets.global.pdf) {
       this.pdfButton.off("click").on("click", () => {
-        let file = app.currentFile
-        if (this.app.hasUnsavedChanges
-          && ((file.scope === "global" && permissions.sheets.global.update === true)
-            ||
-            (file.scope === "user" && permissions.sheets.update === true))) {
-          // File must be save before sharing
-          app.fileSave("File must be saved before you can export it to PDF")
-          .then( ()=>{
-            return storage.shareFile(file.name,file.scope)
-          })
-          .then((response) => {
-            let filePath = response.data.filePath
-            window.open(`../sheets/pdf?sha=${filePath}`, "__blank")
-          })
-        } else {
-          storage.shareFile(file.name,file.scope)
-          .then((response)=>{
-            let filePath = response.data.filePath
-            window.open(`../sheets/pdf?sha=${filePath}`, "__blank")
-          })
-        }
+        this.onPDFExport()
       })
     } else {
       this.pdfButton.hide()
@@ -83,6 +65,43 @@ export default class Toolbar {
 
     this.stackChanged()
   }
+
+  onPDFExport() {
+    let file = app.currentFile
+    Promise.resolve()
+      .then(() => {
+        if( !((file.scope==="global" && this.permissions.sheets.global.update === true) ||
+            (file.scope==="user"   && this.permissions.sheets.update === true ))){
+              throw new Error("no permission to export")
+        }
+        return true
+      })
+      .then(() => {
+        if(this.app.hasUnsavedChanges){
+          return app.fileSave("File must be saved before you can export it to PDF")
+        }
+        return true
+      })
+      .then(() => {
+        if(this.app.getDocument().hasLearningContent()){
+          return exportModePrompt.show()
+        }
+        return "all"
+      })
+      .then((mode) => {
+        return storage.shareFile(file.name,file.scope)
+          .then( (response)=>{
+            return {sha: response.data.filePath, mode: mode}
+          })
+      })
+      .then(({sha, mode}) => {        
+        window.open(`../sheets/pdf?sha=${sha}&mode=${mode}`, "__blank")
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+  }
+
 
   stackChanged(event) {
     this.pdfButton.hide()

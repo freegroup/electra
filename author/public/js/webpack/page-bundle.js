@@ -40974,8 +40974,10 @@ function getParam(name) {
   return results[1];
 }
 $(window).load(function () {
+  var _getParam;
   var containerId = "#authorContent";
   var sha = getParam("sha");
+  var mode = (_getParam = getParam("mode")) !== null && _getParam !== void 0 ? _getParam : _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET;
   var url = "../sheets/shared/get?sha=".concat(sha);
   axios.get(url).then(function (response) {
     $(containerId).html("");
@@ -40984,7 +40986,7 @@ $(window).load(function () {
       var container = $("<div class='authorPage'></div>");
       $(containerId).append(container);
       page.sections.forEach(function (section) {
-        var content = (0,_editor_editorByType__WEBPACK_IMPORTED_MODULE_2__["default"])(section.type).render(section, _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET);
+        var content = (0,_editor_editorByType__WEBPACK_IMPORTED_MODULE_2__["default"])(section.type).render(section, mode);
         container.append("<div class='section' data-id=\"".concat(section.id, "\" data-type=\"").concat(section.type, "\">").concat(content, "<div class=\"fc\"></div></div>"));
       });
       if (index < pages.length - 1) container.append("<div style='page-break-before:always;'></div>");

@@ -32,6 +32,7 @@ function getParam(name) {
 $(window).load(function () {
   let containerId = "#authorContent"
   let sha = getParam("sha")
+  let mode = getParam("mode") ?? renderMode.WORKSHEET
   let url = `../sheets/shared/get?sha=${sha}`
 
   axios.get(url)
@@ -42,7 +43,7 @@ $(window).load(function () {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)
         page.sections.forEach( (section) => {
-          let content = editorByType(section.type).render(section, renderMode.WORKSHEET)
+          let content = editorByType(section.type).render(section, mode)
           container.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
         })
         if(index < (pages.length-1))
