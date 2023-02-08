@@ -2001,6 +2001,11 @@ var Editor = /*#__PURE__*/function (_MarkdownEditor) {
       return "<div class=\"sectionContent markdownRendering".concat(errorCSS, "\" data-type=\"").concat(section.type, "\">").concat(markdown, "</div>");
     }
   }, {
+    key: "hasLearningContent",
+    value: function hasLearningContent() {
+      return true;
+    }
+  }, {
     key: "defaultContent",
     value: function defaultContent() {
       return "### L\xFCckentext\nErstellen Sie weitere [[L\xFCcken]] mit Hilfe von doppelten eckigen \nKlammern (*Mac:* `Alt + 5` und `6`. *Windows:* `AltGr + 7` und `8`). \n\nTexte der L\xFCcken werden nur im Editor und auf dem L\xF6sungsblatt angezeigt. Das *Arbeitsblatt* PDF enth\xE4lt die L\xF6sung nicht";
@@ -2265,6 +2270,11 @@ var Editor = /*#__PURE__*/function () {
       return "";
     }
   }, {
+    key: "hasLearningContent",
+    value: function hasLearningContent() {
+      return false;
+    }
+  }, {
     key: "defaultContent",
     value: function defaultContent() {
       return null;
@@ -2410,13 +2420,18 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp;&#8635;&nbsp;</div>");
     }
   }, {
+    key: "hasLearningContent",
+    value: function hasLearningContent() {
+      return true;
+    }
+  }, {
     key: "defaultContent",
     value: function defaultContent() {
       return {
         front: {
           id: shortid.generate(),
           type: "placeholder",
-          content: "front"
+          content: "<h1>Front Side</h1>\n        This is the front side of the flashcard where the user can enter their solution \n        to a given question is typically a dedicated space on the screen that allows the \n        user to input their response. It can be a empty text field where the user can type in their answer, a cloze or\n        a partly drawn circuit where the user shold complete them. \n        <br>\n        <br>\n        The purpose of this area is to provide a place for the user \n        to enter their solution, so that it can be evaluated and compared with the correct \n        answer - which yo shold place on the backside of this flashcard.\n        <br>\n        <br>\n        The design of this area will vary depending on the system, but it typically \n        consists of a clear and intuitive interface that allows the user to input their \n        answer with ease."
         },
         back: {
           id: shortid.generate(),
@@ -2732,7 +2747,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   }, {
     key: "defaultContent",
     value: function defaultContent() {
-      return "## Header";
+      return "\n# Welcome to the Markdown Editor!\n\nWith this editor, you can format your text using simple syntax.\n\n# Headings\n## Subheadings\n\n*Italic* and **Bold** text\n\n- Bullet points\n\n";
     }
   }, {
     key: "updatePreview",
@@ -2811,8 +2826,9 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       var section = app.view.getPage().get(sectionId);
       section.type = type;
       section.content = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(type).defaultContent();
-      app.view.render(app.view.getPage());
-      console.log("clicked", type, sectionId, section, app.view);
+      var parent = app.view.getPage().parent(section);
+      app.view.onSelect(parent);
+      app.view.onEdit(parent);
     });
     return _this;
   }
@@ -2849,7 +2865,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   }, {
     key: "render",
     value: function render(section, mode) {
-      return "This is a ".concat(section.content, " FlashCard ... <div data-id=\"").concat(section.id, "\" data-type=\"markdown\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>");
+      return "".concat(section.content, " <br> <br> <div data-id=\"").concat(section.id, "\" data-type=\"markdown\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>");
     }
   }, {
     key: "defaultContent",

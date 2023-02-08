@@ -46,10 +46,12 @@ export default class View {
         let id = $(event.target).data("id")
         let index = this.page.index(id)
         if (index > 0) {
-          commandStack.push(new State(this.app))
-          let prev = this.activeSectionDom.prev()
-          this.activeSectionDom.insertBefore(prev)
-          this.page.move(index, index - 1)
+          commandStack.push(new State(this.app)).then( doneCallback => {
+            let prev = this.activeSectionDom.prev()
+            this.activeSectionDom.insertBefore(prev)
+            this.page.move(index, index - 1)
+            doneCallback()
+          })
         }
         return false
       })
@@ -57,17 +59,18 @@ export default class View {
         let id = $(event.target).data("id")
         let index = this.page.index(id)
         if (index < this.page.length - 1) {
-          commandStack.push(new State(this.app))
-          let prev = this.activeSectionDom.next()
-          this.activeSectionDom.insertAfter(prev)
-          this.page.move(index, index + 1)
+          commandStack.push(new State(this.app)).then( doneCallback => {
+            let prev = this.activeSectionDom.next()
+            this.activeSectionDom.insertAfter(prev)
+            this.page.move(index, index + 1)
+            doneCallback()
+          })
         }
         return false
       })
       .on("dblclick", ".sections .section", event => {
         let section = this.page.get($(event.target).closest(".section").data("id"))
         if(section) {
-          this.onSelect(section)
           this.onEdit(section)
         }
         return false
@@ -109,7 +112,6 @@ export default class View {
         let index = $(event.target).data("index")
         let type = $(event.target).data("type")
         this.addSection(type, index).then( section => {
-          this.onSelect(section)
           this.onEdit(section)
         })
         return false
@@ -148,11 +150,11 @@ export default class View {
           let newPage = this.app.getDocument().get(1)
           this.setPage(newPage)
         }  
-        this.app.getDocument().removePage(page)      
+        this.app.getDocument().remove(page)      
       })
     } 
     else {
-      this.app.getDocument().removePage(page)
+      this.app.getDocument().remove(page)
     }
   }
 
@@ -161,14 +163,15 @@ export default class View {
     // commit the current changes if an editor is active
     this.onCommitEdit().then(()=>{
       inputPrompt.show("Add new Chapter", "Chapter name").then( value => {
-        commandStack.push(new State(this.app))
-        let page = new Page()
-        page.name = value
-        this.app.getDocument().push(page)
-        this.setPage(page)
-        this.addSection("markdown", 0).then( section => {
-          this.onSelect(section)
-          this.onEdit(section)
+        commandStack.push(new State(this.app)).then( doneCallback => {
+          let page = new Page()
+          page.name = value
+          this.app.getDocument().push(page)
+          this.setPage(page)
+          this.addSection("markdown", 0).then( section => {
+            this.onEdit(section)
+            doneCallback()
+          })
         })
       })      
     })
@@ -177,26 +180,26 @@ export default class View {
   addSection(type, index){
     // commit the current changes if an editor is active
     return this.onCommitEdit().then(()=>{
-
       // save the last state for undo/redo
-      commandStack.push(new State(this.app))
-
-      let section = {
-        id: shortid.generate(),
-        type: type,
-        content: editorByType(type).defaultContent()
-      }
-      this.page.add(section, index)
-      // if the "index" is a number, we would insert a section in the middle of the page.
-      // in this case it is the best to render the whole page. At the moment an edit can only
-      // "append" its content to a page.
-      if (typeof index === "number") {
-        this.render(this.page)
-      } 
-      else {
-        this.html.find(".sections").append(editorByType(type).render(section, renderMode.EDITOR))
-      }
-      return section         
+      return commandStack.push(new State(this.app)).then( doneCallback => {
+        let section = {
+          id: shortid.generate(),
+          type: type,
+          content: editorByType(type).defaultContent()
+        }
+        this.page.add(section, index)
+        // if the "index" is a number, we would insert a section in the middle of the page.
+        // in this case it is the best to render the whole page. At the moment an edit can only
+        // "append" its content to a page.
+        if (typeof index === "number") {
+          this.render(this.page)
+        } 
+        else {
+          this.html.find(".sections").append(editorByType(type).render(section, renderMode.EDITOR))
+        }
+        doneCallback()
+        return section         
+      })
     })
   }
 
@@ -207,8 +210,22 @@ export default class View {
     this.renderSpacer(whereToAppend, 0)
  
     page.forEach((section, index) => {
-      let content = editorByType(section.type).render(section, renderMode.EDITOR)
-      whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
+      let editor = editorByType(section.type)
+      let content = editor.render(section, renderMode.EDITOR)
+      whereToAppend.append(`
+        <div 
+          class='section' 
+          data-id="${section.id}" 
+          data-type="${section.type}">${content}
+            <div class="fc">
+              <div class='tinyFlyoverMenu'>
+                ${editor.getMenu(section)}
+                <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
+                <div data-id="${section.id}" id="sectionMenuHelp"   >?</div>
+                <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
+              </div>  
+            </div>
+        </div>`)
       this.renderSpacer(whereToAppend, index + 1)
       delete section.flippedStateDuringInject
     })
@@ -242,15 +259,6 @@ export default class View {
     this.activeSection = section
     this.activeSectionDom = $(`.section[data-id='${section.id}']`)
     this.activeSectionDom.addClass('activeSection')
-    $(".sections .activeSection .fc").prepend(`
-        <div class='tinyFlyoverMenu'>
-          ${editor.getMenu(section)}
-          <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
-          <div data-id="${section.id}" id="sectionMenuUp"     >&#9650;</div>
-          <div data-id="${section.id}" id="sectionMenuDown"   >&#9660;</div>
-          <div data-id="${section.id}" id="sectionMenuHelp"   >?</div>
-          <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
-        </div>`)
     editor.onSelect(section)
   }
 
@@ -269,30 +277,30 @@ export default class View {
       editorByType(section.type).onUnselect(section)
     }
 
-    $(".activeSection .tinyFlyoverMenu").remove()
     this.activeSectionDom?.removeClass("activeSection")
     this.activeSectionDom = null
     this.activeSection = null
   }
 
   onEdit(section) {
-    if (this.currentEditor) {
-      return
-    }
-
-    $(".activeSection .tinyFlyoverMenu").html(`
-          <div data-id="${section.id}" id="sectionMenuCommitEdit" class="material-button">Save</div>
-          <div data-id="${section.id}" id="sectionMenuCancelEdit" class="material-button">Cancel</div>
-        `)
-    this.currentEditor = editorByType(section.type)
-    this.currentEditor.inject(section)
-    $(".sections").removeClass("activeSection")
+    this.onCommitEdit().then( () => {
+      this.onSelect(section)
+      $(".activeSection .tinyFlyoverMenu").html(`
+        <div data-id="${section.id}" id="sectionMenuCommitEdit" class="material-button">Save</div>
+        <div data-id="${section.id}" id="sectionMenuCancelEdit" class="material-button">Cancel</div>
+      `)
+      this.currentEditor = editorByType(section.type)
+      this.currentEditor.inject(section)
+      $(".sections").removeClass("activeSection")
+    })
   }
 
   onDelete(section) {
-    commandStack.push(new State(this.app))
-    this.page.remove(section.id)
-    this.render(this.page)
+    commandStack.push(new State(this.app)).then( doneCallback => {
+      this.page.remove(section.id)
+      this.render(this.page)
+      doneCallback()
+    })
   }
 
   onFlip(section) {
@@ -319,13 +327,15 @@ export default class View {
       return Promise.resolve();
     }
 
-    commandStack.push(new State(this.app))
-    return this.currentEditor.commit()
-      .then(() => {
-        this.currentEditor = null;
-        $(".editorContainerSelector").remove()
-        this.render(this.page)
-        this.palette.render()
+    return commandStack.push(new State(this.app)).then( doneCallback => {
+      return this.currentEditor.commit()
+        .then(() => {
+          this.currentEditor = null;
+          $(".editorContainerSelector").remove()
+          this.render(this.page)
+          this.palette.render()
+          doneCallback()
+        })
       })
   }
 

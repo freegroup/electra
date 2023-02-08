@@ -77,7 +77,19 @@ export default class Editor extends GenericEditor{
   }
 
   defaultContent(){
-    return "## Header"
+    return `
+# Welcome to the Markdown Editor!
+
+With this editor, you can format your text using simple syntax.
+
+# Headings
+## Subheadings
+
+*Italic* and **Bold** text
+
+- Bullet points
+
+`
   }
 
   updatePreview(){

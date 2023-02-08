@@ -1,4 +1,5 @@
 const shortid = require('short-uuid')
+import editorByType from "../editor/editorByType"
 
 export default class Page {
 
@@ -7,17 +8,9 @@ export default class Page {
    *
    */
   constructor( json) {
-
-    if(json){
-      this.sections = json.sections || []
-      this.name = json.name || "First Page"
-      this.id = json.id || shortid.generate()
-    }
-    else{
-      this.sections= []
-      this.name = "First Page"
-      this.id = shortid.generate()
-    }
+    this.sections = json?.sections ?? []
+    this.name = json?.name ?? "First Page"
+    this.id = json?.id ?? shortid.generate()
   }
 
   get(id){
@@ -30,6 +23,10 @@ export default class Page {
     let childSections = this.sections.flatMap( value => value.content?.front ? [value.content.front, value.content.back]:[])
 
     return  childSections.find( value => value.id===id)
+  }
+
+  parent(section){
+    return this.sections.find( value => value.content?.front?.id===section.id || value.content?.back?.id===section.id)
   }
 
   set(section){
@@ -67,6 +64,10 @@ export default class Page {
   move(fromIndex, toIndex){
     this.sections.splice(toIndex, 0, this.sections.splice(fromIndex, 1)[0]);
   };
+
+  hasLearningContent(){
+    return this.sections.some( section => editorByType(section.type).hasLearningContent() )
+  }
 
   forEach(callback){
     return this.sections.forEach(callback)

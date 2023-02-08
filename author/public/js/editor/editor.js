@@ -52,6 +52,10 @@ export default class Editor {
       return ""
     }
 
+    hasLearningContent(){
+      return false
+    }
+
     defaultContent(){
       return null
     }

@@ -75,12 +75,31 @@ export default class Editor extends GenericEditor{
     return `<div data-id='${section.id}' id='sectionMenuFlip'>&nbsp;&#8635;&nbsp;</div>`
   }
 
+  hasLearningContent(){
+    return true
+  }
+  
   defaultContent(){
     return {
       front : {
         id: shortid.generate(),
         type: "placeholder",
-        content: "front"
+        content: 
+        `<h1>Front Side</h1>
+        This is the front side of the flashcard where the user can enter their solution 
+        to a given question is typically a dedicated space on the screen that allows the 
+        user to input their response. It can be a empty text field where the user can type in their answer, a cloze or
+        a partly drawn circuit where the user shold complete them. 
+        <br>
+        <br>
+        The purpose of this area is to provide a place for the user 
+        to enter their solution, so that it can be evaluated and compared with the correct 
+        answer - which yo shold place on the backside of this flashcard.
+        <br>
+        <br>
+        The design of this area will vary depending on the system, but it typically 
+        consists of a clear and intuitive interface that allows the user to input their 
+        answer with ease.`
       },
       back: {
         id: shortid.generate(),

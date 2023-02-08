@@ -1,4 +1,5 @@
 import inputPrompt from "../../common/js/InputPrompt"
+import authorDialog from "../../common/js/AuthorDialog"
 
 import commandStack from "./commands/CommandStack"
 import State from "./commands/State";
@@ -19,20 +20,28 @@ export default class Palette {
       })
       .off("click", ".pageElement .page_edit_name")
       .on("click", ".pageElement .page_edit_name", (event) => {
-        let page = this.app.getDocument().getPage($(event.currentTarget).data("page"))
+        let page = this.app.getDocument().find($(event.currentTarget).data("page"))
         inputPrompt.show("Rename Pager", "Page name", page.name, value => {
-          commandStack.push(new State(this.app))
-          page.name = value
-          this.stackChanged(null)
+          commandStack.push(new State(this.app)).then( doneCallback => {
+            page.name = value
+            doneCallback()
+          })
         })
+        return false
+      })
+      
+      .off("click", ".pageElement .page_help")
+      .on("click", ".pageElement .page_help", (event) => {
+        authorDialog.show(`/readme/en/author/page.sheet`)
         return false
       })
       .off("click", ".pageElement .page_delete")
       .on("click", ".pageElement .page_delete", (event) => {
-        commandStack.push(new State(this.app))
-        let page = this.app.getDocument().getPage($(event.currentTarget).data("page"))
-        this.view.removePage(page)
-        this.stackChanged(null)
+        commandStack.push(new State(this.app)).then( doneCallback => {
+          let page = this.app.getDocument().find($(event.currentTarget).data("page"))
+          this.view.removePage(page)
+          doneCallback()
+        })
         return false
       })
       .off("click", ".pageElement")
@@ -40,7 +49,7 @@ export default class Palette {
         $(".pageElement").removeClass("selected")
         let element = $(event.currentTarget)
         let id = element.data("page")
-        let page = this.app.getDocument().getPage(id)
+        let page = this.app.getDocument().find(id)
         this.app.view.setPage(page)
         element.addClass("selected")
       })
@@ -78,12 +87,15 @@ export default class Palette {
       if (this.app.hasModifyPermissionForCurrentFile()) {
         $("#documentPageAdd").show()
         pages.forEach((page) => {
+          let tooltip = page.hasLearningContent()?"This page contains learning material which ends later in two documents: a worksheet and a solution paper.":""
+          let icon    = page.hasLearningContent()?" &#127891;":""
           this.html.append(`
-          <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" >
-            <span>${page.name}</span>
+          <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
+            <span>${page.name}${icon}</span>
             <span class="spacer"></span>
             <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action page_edit_name" >&#9998; </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page" class="page_action page_delete" >&#8855;</span>
+            <span                         data-toggle="tooltip" title="Help"                 class="page_action page_help" > ? </span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="page_action page_delete" >&#8855;</span>
           </div>`)
         }, true)
       } else {
@@ -105,19 +117,19 @@ export default class Palette {
           axis: "y",
           update: (event, dd) => {
             this.sourceIsSortEvent = true
-            try {
-              commandStack.push(new State(this.app))
+            commandStack.push(new State(this.app)).then( doneCallback => {
               // fetch the state of the new order
               let pageDivs = $(".pageElement").toArray()
               let newPageOrder = []
               pageDivs.forEach((page) => {
                 let id = $(page).data("page")
-                newPageOrder.push(document.getPage(id))
+                newPageOrder.push(document.find(id))
               })
               document.setPages(newPageOrder)
-            } finally {
+              doneCallback()
+            }).finally( () => {
               this.sourceIsSortEvent = false
-            }
+            })
           }
         })
       }

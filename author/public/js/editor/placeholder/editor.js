@@ -15,8 +15,9 @@ export default class Editor extends GenericEditor{
         let section = app.view.getPage().get(sectionId)
         section.type=type
         section.content = editorByType(type).defaultContent()
-        app.view.render(app.view.getPage())
-        console.log("clicked", type, sectionId, section, app.view)
+        let parent = app.view.getPage().parent(section)
+        app.view.onSelect(parent)
+        app.view.onEdit(parent)
       })
   }
 
@@ -43,7 +44,7 @@ export default class Editor extends GenericEditor{
 
   /* public interface */
   render(section, mode){
-    return `This is a ${section.content} FlashCard ... <div data-id="${section.id}" data-type="markdown" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
+    return `${section.content} <br> <br> <div data-id="${section.id}" data-type="markdown" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
   }
 
   defaultContent(){

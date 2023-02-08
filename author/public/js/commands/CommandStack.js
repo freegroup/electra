@@ -35,30 +35,33 @@ class CommandStack {
     /**
      **/
     push(state) {
+      return new Promise((resolve, reject) => {
 
-      if (typeof state === "undefined")
-        throw "Missing parameter [state] for method call CommandStack.execute"
+        if(state === undefined){
+          reject( new Error("Missing parameter [state] for method call CommandStack.execute"))
+        }
+        else if (state === null) {
+          resolve( () => {})
+        }
+        else {
+          this.undostack.push(state)
 
-      // nothing to do
-      if (state === null)
-        return this//silently
-
-
-      this.undostack.push(state)
-
-      // cleanup the redo stack if the user execute a new state.
-      // I think this will create a "clean" behaviour of the unde/redo mechanism.
-      //
-      this.redostack = []
-
-      // monitor only the max. undo stack size
-      //
-      if (this.undostack.length > this.maxundo) {
-        this.undostack = this.undostack.slice(this.undostack.length - this.maxundo)
-      }
-      this.notifyListeners(state)
-
-      return this
+          // cleanup the redo stack if the user execute a new state.
+          // I think this will create a "clean" behaviour of the unde/redo mechanism.
+          //
+          this.redostack = []
+    
+          // monitor only the max. undo stack size
+          //
+          if (this.undostack.length > this.maxundo) {
+            this.undostack = this.undostack.slice(this.undostack.length - this.maxundo)
+          }
+          this.notifyListeners(state)
+          resolve ( () =>{
+            this.notifyListeners(state)
+          })
+        }
+      });
     }
 
 

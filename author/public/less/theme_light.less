@@ -237,6 +237,15 @@ body.light {
                     color: white;
                 }
             }
+
+
+            /** learning content gets a special annotation on the left **/
+            &[data-type="flipcard"]::before,
+            &[data-type="cloze"]::before {
+                border-color: transparent;
+                background-color: transparent;
+                opacity: 0.4;
+            }
         }
     }
 
@@ -245,6 +254,17 @@ body.light {
         &:hover {
             border-color: transparent !important;
         }
+        
+        .sectionContent {
+            /** learning content gets a special annotation on the left **/
+            &[data-type="flipcard"]::before,
+            &[data-type="cloze"]::before {
+                border-color: #eaeaea;
+                background-color: white;
+                opacity: 1;
+            }
+        }
+          
     }
 
     #draw2dCanvasWrapper {

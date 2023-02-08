@@ -18,6 +18,7 @@
   border-width:1px;
   border-style:solid;
   padding-left:3px;
+  position: relative;
 
   &.error {
     border-width:1px;
@@ -32,6 +33,12 @@
         visibility:visible !important;
       }
     }
+    .fc{
+      .tinyFlyoverMenu {
+        opacity: 0.3;
+      }
+    }
+  
   }
 
   .fc{
@@ -39,6 +46,10 @@
     top: 0px;
     bottom: 0px;
     right:0px;
+    .tinyFlyoverMenu {
+      opacity: 0;
+      z-index: unset;
+    }
   }
 
   &[data-type='image']{
@@ -154,7 +165,7 @@
 
     &[data-type='spacer']{
       position: relative;
-      height: 16px;
+      height: 26px;
       text-align: center;
       display: flex;
       flex-direction: row;
@@ -167,10 +178,43 @@
         visibility:hidden;
       }
     }
+
+    /** learning content gets a special annotation on the left **/
+    &[data-type="flipcard"]::before,
+    &[data-type="cloze"]::before {
+      content: "🎓";
+      position: absolute;
+      border-width: 1px;
+      border-style: solid;
+      left: -50px;
+      width: 21px;
+      top: -2px;
+      border-right: 0px;
+      padding-left: 5px;
+      padding-top: 2px;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+      transition: all 0.3s ease-out;
+    }
   }
 }
 .activeSection {
   position:relative;
+
+  .fc{
+    .tinyFlyoverMenu {
+      opacity: 1 !important;
+    }
+  }
+
+  .sectionContent {
+    /** learning content gets a special annotation on the left **/
+    &[data-type="flipcard"]::before,
+    &[data-type="cloze"]::before {
+      left: -24px;
+      transition: all 0.3s ease-out;
+    }
+  }
 }
 
 

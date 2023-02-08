@@ -47,6 +47,10 @@ export default class Editor extends MarkdownEditor {
     return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${section.type}">${markdown}</div>`
   }
 
+  hasLearningContent(){
+    return true
+  }
+  
   defaultContent() {
     return  `### Lückentext
 Erstellen Sie weitere [[Lücken]] mit Hilfe von doppelten eckigen 

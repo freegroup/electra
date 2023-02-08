@@ -3,7 +3,7 @@ import Page from "./page"
 export default class Document {
 
   constructor(content) {
-    this.pages = content ? content.pages.map((page => new Page(page))) : [new Page()]
+    this.pages = content?.pages.map((page => new Page(page))) ?? [new Page()]
   }
 
   get(index) {
@@ -23,11 +23,11 @@ export default class Document {
     return this
   }
 
-  getPage(id) {
+  find(id) {
     return this.pages.find((obj => obj.id === id))
   }
 
-  removePage(page) {
+  remove(page) {
     let index = this.pages.findIndex((obj => obj.id === page.id))
     return this.pages.splice(index, 1);
   }
@@ -35,6 +35,10 @@ export default class Document {
   push(page) {
     this.pages.push(page)
     return this
+  }
+
+  hasLearningContent(){
+    return this.pages.some( page => page.hasLearningContent() )
   }
 
   toJSON() {
