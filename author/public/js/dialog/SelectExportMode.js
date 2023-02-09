@@ -6,12 +6,14 @@ class Dialog {
             <div id="exportModeDialog" class="modal fade genericDialog" tabindex="-1">
             <div class="modal-dialog ">
               <div class="modal-content">
-                <div class="modal-body section">
-                  <div class="sectionContent" data-type="markdown">
-                    <h1 class="media-heading">Export Mode</h1>
-                  </div>
-                  The document contains learning sections indicated by an 🎓 icon. When exporting the document as PDF, you can choose 
-                  between the different document types.
+                <div class="modal-body">
+                  <div class="section">
+                    <div class="sectionContent" data-type="markdown">
+                      <h1 class="media-heading">Export Mode</h1>
+                    </div>
+                    The document contains learning sections, which are indicated by an 🎓 icon. When exporting the document as PDF, you can choose 
+                    between the different document outputs you can have.
+                  </div> 
                   <br>
                   <br>
                   <div class="button-container">

@@ -7,12 +7,23 @@
         {
           "id": "NivkGYUBr",
           "type": "markdown",
-          "content": "# Digitaltechnik - Aufgaben Logik\n\n## Aufgabe\n\nStellen Sie die Wahrheitstabelle für die Funktion `f(x,y,z) = bar x * (y + z)` auf. "
+          "content": "# Digitaltechnik - Aufgaben Logik\n\n## Wahrheitstabelle erstellen\n\nStellen Sie die Wahrheitstabelle für die Funktion `f(x,y,z) = bar x * (y + z)` auf. "
         },
         {
-          "id": "5uRfu7jR7",
-          "type": "markdown",
-          "content": "## Lösung\n\n| `z`  | `y`  | `x`  | `bar x` | `y+z`| `bar x (y+z)`  |\n|------|------|------|---------|------|----------------|\n| 0  | 0  | 0  | 1  | 0  |    0     |\n| 0  | 0  | 1  | 0  | 0  |    0     |\n| 0  | 1  | 0  | 1  | 1  |    1     |\n| 0  | 1  | 1  | 0  | 1  |    0     |\n| 1  | 0  | 0  | 1  | 1  |    1     |\n| 1  | 0  | 1  | 0  | 1  |    0     |\n| 1  | 1  | 0  | 1  | 1  |    1     |\n| 1  | 1  | 1  | 0  | 1  |    0     |\n\n\n"
+          "id": "92188MCeRYuZSGdJ7dpcSt",
+          "type": "flipcard",
+          "content": {
+            "front": {
+              "id": "8GWUzAgq14BwKTkJeETmA7",
+              "type": "markdown",
+              "content": "## Lösungsbereich\nVervollständige die Tabelle\n\n| `z`  | `y`  | `x`  | `bar x` | `y+z`| `bar x (y+z)`  |\n|------|------|------|---------|------|----------------|\n|   |   |  0 |   |   |         |\n|   |   |  1 |   |   |         |\n|   |   |  0 |   |   |         |\n|   |   |  1 |   |   |         |\n|   |   |  0 |   |   |         |\n|   |   |  1 |   |   |         |\n|   |   |  0 |   |   |         |\n|   |   |  1 |   |   |         |\n\n\n\n"
+            },
+            "back": {
+              "id": "ksQnW3h7LbJTTPtZAhP49v",
+              "type": "markdown",
+              "content": "\n## Lösung\n\n| `z`  | `y`  | `x`  | `bar x` | `y+z`| `bar x (y+z)`  |\n|------|------|------|---------|------|----------------|\n| 0  | 0  | 0  | 1  | 0  |    0     |\n| 0  | 0  | 1  | 0  | 0  |    0     |\n| 0  | 1  | 0  | 1  | 1  |    1     |\n| 0  | 1  | 1  | 0  | 1  |    0     |\n| 1  | 0  | 0  | 1  | 1  |    1     |\n| 1  | 0  | 1  | 0  | 1  |    0     |\n| 1  | 1  | 0  | 1  | 1  |    1     |\n| 1  | 1  | 1  | 0  | 1  |    0     |\n\n"
+            }
+          }
         }
       ]
     },

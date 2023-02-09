@@ -829,7 +829,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 var Dialog = /*#__PURE__*/function () {
   function Dialog() {
     _classCallCheck(this, Dialog);
-    $("body").append("\n            <div id=\"exportModeDialog\" class=\"modal fade genericDialog\" tabindex=\"-1\">\n            <div class=\"modal-dialog \">\n              <div class=\"modal-content\">\n                <div class=\"modal-body section\">\n                  <div class=\"sectionContent\" data-type=\"markdown\">\n                    <h1 class=\"media-heading\">Export Mode</h1>\n                  </div>\n                  The document contains learning sections indicated by an \uD83C\uDF93 icon. When exporting the document as PDF, you can choose \n                  between the different document types.\n                  <br>\n                  <br>\n                  <div class=\"button-container\">\n                    <button data-mode=\"worksheet\" class=\"btn  exportPdfMode\">As Worksheet<img src=\"../common/images/export_mode_worksheet.svg\"></button>\n                    <button data-mode=\"solution\" class=\"btn  exportPdfMode\">As Solution<img src=\"../common/images/export_mode_solution.svg\"></button>\n                    <button data-mode=\"all\" class=\"btn  exportPdfMode\">Worksheet + Solution<img src=\"../common/images/export_mode_all.svg\"></button>\n                  </div>\n                </div>\n                <div class=\"modal-footer\">\n                  <button class=\"btn\" data-dismiss=\"modal\">Cancel</button>\n                </div>\n              </div>\n            </div>\n          </div>\n    ");
+    $("body").append("\n            <div id=\"exportModeDialog\" class=\"modal fade genericDialog\" tabindex=\"-1\">\n            <div class=\"modal-dialog \">\n              <div class=\"modal-content\">\n                <div class=\"modal-body\">\n                  <div class=\"section\">\n                    <div class=\"sectionContent\" data-type=\"markdown\">\n                      <h1 class=\"media-heading\">Export Mode</h1>\n                    </div>\n                    The document contains learning sections, which are indicated by an \uD83C\uDF93 icon. When exporting the document as PDF, you can choose \n                    between the different document outputs you can have.\n                  </div> \n                  <br>\n                  <br>\n                  <div class=\"button-container\">\n                    <button data-mode=\"worksheet\" class=\"btn  exportPdfMode\">As Worksheet<img src=\"../common/images/export_mode_worksheet.svg\"></button>\n                    <button data-mode=\"solution\" class=\"btn  exportPdfMode\">As Solution<img src=\"../common/images/export_mode_solution.svg\"></button>\n                    <button data-mode=\"all\" class=\"btn  exportPdfMode\">Worksheet + Solution<img src=\"../common/images/export_mode_all.svg\"></button>\n                  </div>\n                </div>\n                <div class=\"modal-footer\">\n                  <button class=\"btn\" data-dismiss=\"modal\">Cancel</button>\n                </div>\n              </div>\n            </div>\n          </div>\n    ");
   }
 
   /**
@@ -4457,7 +4457,7 @@ var Toolbar = /*#__PURE__*/function () {
         if (_this2.app.getDocument().hasLearningContent()) {
           return _dialog_SelectExportMode__WEBPACK_IMPORTED_MODULE_2__["default"].show();
         }
-        return "all";
+        return "worksheet";
       }).then(function (mode) {
         return storage.shareFile(file.name, file.scope).then(function (response) {
           return {
@@ -5089,6 +5089,9 @@ var Dialog = /*#__PURE__*/function () {
               case "markdown":
                 _this.renderMarkdown(container, section);
                 break;
+              case "image":
+                _this.renderImage(container, section);
+                break;
               default:
                 break;
             }
@@ -5103,6 +5106,11 @@ var Dialog = /*#__PURE__*/function () {
     value: function renderMarkdown(container, section) {
       var markdown = md.render(section.content);
       container.append("<div class=\"section\"> <div class=\"sectionContent\" data-type=\"".concat(section.type, "\" >").concat(markdown, "</div></div>"));
+    }
+  }, {
+    key: "renderImage",
+    value: function renderImage(container, section) {
+      container.append("<div class=\"section\"> <div class=\"sectionContent\" data-type=\"".concat(section.type, "\"><img src=\"").concat(section.content, "\"></div></div>"));
     }
   }, {
     key: "renderBrain",

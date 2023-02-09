@@ -17,18 +17,20 @@ module.exports = {
             let sha = req.query.sha      
             let mode = req.query.mode ?? "worksheet"     
             let all = false
+            let header = mode==="solution"?"Solution Pages":""
+            
             let {render} = require("../converter/pdf")
-
             // if "all" are requested, we start with the "worksheet" and append the "solution" later on
             //
             if(mode==="all"){
                 mode = "worksheet"
                 all = true
+                header = mode==="solution"?"Solution Pages":"Worksheet Pages"
             }
 
-            render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=${mode}`).then(pdf => {
+            render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=${mode}`, header).then(pdf => {
                 if (all){
-                    return render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=solution`).then(async pdf2 => {
+                    return render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=solution`, "Solution Pages").then(async pdf2 => {
                         var pdfsToMerge = [pdf, pdf2]
                         const mergedPdf = await PDFDocument.create(); 
                         for (const pdfBytes of pdfsToMerge) { 

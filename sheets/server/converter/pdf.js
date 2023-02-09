@@ -4,9 +4,9 @@ const fs = require('fs')
 
 module.exports = {
 
-  render: async (url) => {
+  render: async (url, headerText="") => {
     try {
-      const templateHeader = fs.readFileSync(__dirname+'/header.html', 'utf-8')
+      const templateHeader = fs.readFileSync(__dirname+'/header.html', 'utf-8').replace("{headerText}",headerText)
       const templateFooter = fs.readFileSync(__dirname+'/footer.html', 'utf-8')
     
       let browser = await puppeteer.launch()

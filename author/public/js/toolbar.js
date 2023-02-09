@@ -86,7 +86,7 @@ export default class Toolbar {
         if(this.app.getDocument().hasLearningContent()){
           return exportModePrompt.show()
         }
-        return "all"
+        return "worksheet"
       })
       .then((mode) => {
         return storage.shareFile(file.name,file.scope)

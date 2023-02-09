@@ -46,6 +46,9 @@ class Dialog {
               case "markdown":
                 this.renderMarkdown(container, section)
                 break
+                case "image":
+                  this.renderImage(container, section)
+                  break
               default:
                 break
             }
@@ -62,7 +65,9 @@ class Dialog {
     let markdown = md.render(section.content)
     container.append(`<div class="section"> <div class="sectionContent" data-type="${section.type}" >${markdown}</div></div>`)
   }
-
+  renderImage(container, section){
+    container.append(`<div class="section"> <div class="sectionContent" data-type="${section.type}"><img src="${section.content}"></div></div>` )
+  }
   renderBrain(container, section){
     container.append(`<div class="section"> <div class="sectionContent" data-type="${section.type}"><img src="${section.content.image}"></div></div>` )
   }
