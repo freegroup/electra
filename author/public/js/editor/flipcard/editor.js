@@ -12,8 +12,6 @@ export default class Editor extends GenericEditor{
 
   /* public interface */
   inject(section) {
-    super.inject(section)
-
     section.flippedStateDuringInject  = $(`.section[data-id='${section.id}'] .flip_box`).hasClass("flipped-back")
     let activeSection = section.flippedStateDuringInject  ? section.content.back : section.content.front
     
@@ -79,6 +77,11 @@ export default class Editor extends GenericEditor{
     return true
   }
   
+  startEditAfterInsert(section){
+    // start editing if the user insert a new section
+    return false;
+  }
+
   defaultContent(){
     return {
       front : {

@@ -138,7 +138,13 @@ module.exports = {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
             let reason = req.body.commitMessage || "-empty-"
+            console.log("save....")
             filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
+                .then((sanitizedRelativePath) => {
+                    let {render} = require("../converter/screenshot")
+                    console.log(path.join(conf.absoluteGlobalDataDirectory(), sanitizedRelativePath ))
+                    return sanitizedRelativePath
+                })
                 .then((sanitizedRelativePath) => {
                     return github.commit([{ path: path.join(conf.githubGlobalDataDirectory(), sanitizedRelativePath ), content} ], reason)
                 })

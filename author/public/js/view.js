@@ -68,7 +68,7 @@ export default class View {
         }
         return false
       })
-      .on("dblclick", ".sections .section", event => {
+      .on("dblclick", ".sections .section:not(.editMode)", event => {
         let section = this.page.get($(event.target).closest(".section").data("id"))
         if(section) {
           this.onEdit(section)
@@ -88,7 +88,7 @@ export default class View {
         return false
       }) 
       .on("click", "#sectionMenuHelp", event => {
-        let type = this.page.get($(event.target).data("id"))?.type ?? "generic"
+        let type = this.page.get($(event.target).closest(".section").data("id"))?.type ?? "generic"
         authorDialog.show(`/readme/en/author/${type}.sheet`)
         return false
       })
@@ -111,8 +111,14 @@ export default class View {
       .on("click", ".sectionMenuInsertSection", event => {
         let index = $(event.target).data("index")
         let type = $(event.target).data("type")
+        let editor = editorByType(type)
         this.addSection(type, index).then( section => {
-          this.onEdit(section)
+          if(editor.startEditAfterInsert(section)){
+            this.onEdit(section)
+          }
+          else {
+            this.onSelect(section)
+          }
         })
         return false
       })
@@ -221,7 +227,7 @@ export default class View {
               <div class='tinyFlyoverMenu'>
                 ${editor.getMenu(section)}
                 <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
-                <div data-id="${section.id}" id="sectionMenuHelp"   >?</div>
+                <div                         id="sectionMenuHelp"   >?</div>
                 <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
               </div>  
             </div>
@@ -235,7 +241,7 @@ export default class View {
     whereToAppend.append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
-            <div data-index="${index}" data-type="markdown" class='sectionMenuInsertSection material-button' >&#8853; Text</div>
+            <div data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection material-button' >&#8853; Text</div>
             <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
             <div data-index="${index}" data-type="flipcard" class='sectionMenuInsertSection material-button' >&#8853; FlipCard</div>
             <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>

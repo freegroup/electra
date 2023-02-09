@@ -22,27 +22,6 @@ export default class Editor extends GenericEditor{
   }
 
   /* public interface */
-  inject(section) {
-    super.inject(section)
-
-    return this
-  }
-
-  /* public interface */
-  commit() {
-    return new Promise((resolve, reject) => {
-      resolve(this.section)
-    })
-  }
-
-  /* public interface */
-  cancel() {
-    return new Promise((resolve, reject) => {
-      resolve(this.section)
-    })
-  }
-
-  /* public interface */
   render(section, mode){
     return `${section.content} <br> <br> <div data-id="${section.id}" data-type="markdown" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
   }

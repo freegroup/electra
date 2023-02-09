@@ -12,12 +12,14 @@ export default class Editor {
 
     /* public interface */
     inject(section) {
+      $(".sections .activeSection").addClass("editMode")
       this.section = section
       return this
     }
   
     /* public interface */
     commit() {
+      $(".sections .activeSection").removeClass("editMode")
       return new Promise((resolve, reject) => {
         resolve(this.section)
       })
@@ -25,6 +27,7 @@ export default class Editor {
   
     /* public interface */
     cancel() {
+      $(".sections .activeSection").removeClass("editMode")
       return new Promise((resolve, reject) => {
         resolve(this.section)
       })
@@ -35,6 +38,11 @@ export default class Editor {
       return ""
     }
   
+    startEditAfterInsert(section){
+      // start editing if the user insert a new section
+      return true;
+    }
+
     /**
      * Called if the user selects the section and the editor is responsible to handle this content
      * 

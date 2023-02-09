@@ -141,9 +141,10 @@ export default class Editor extends GenericEditor{
   }
 
   commit() {
-    return new Promise((resolve, reject) => {
+    return super.commit()
+    .then(() => {
       this.section.content = this.content
-      resolve(this.section)
+      return this.section
     })
   }
 

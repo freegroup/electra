@@ -9,13 +9,13 @@
     "serve": "webpack serve --allowed-hosts all --port 8080 --static-directory .  --static-watch  --watch-files ./**/*"
   },
   "devDependencies": {
-    "dotenv": "^16.0.3",
     "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.0",
     "bootstrap-toggle": "^2.2.2",
     "css-loader": "^6.7.3",
     "d3": "^7.8.0",
+    "dotenv": "^16.0.3",
     "fs-extra": "^11.1.0",
     "google-code-prettify": "^1.0.5",
     "hogan": "^1.0.2",
@@ -36,11 +36,13 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@toast-ui/editor": "^3.2.1",
     "axios": "^1.2.1",
     "build": "^0.1.4",
     "codemirror": "^5.65.11",
     "markdown-it": "^13.0.1",
     "markdown-it-asciimath": "^1.0.0",
+    "markdown-it-br": "^1.0.0",
     "markdown-it-container": "^3.0.0",
     "run": "^1.4.0",
     "sanitize-filename": "^1.6.3"

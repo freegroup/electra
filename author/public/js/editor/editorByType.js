@@ -4,6 +4,7 @@ import ClozeEditor from "./cloze/editor"
 import ImageEditor from "./image/editor"
 import FlipCardEditor from "./flipcard/editor"
 import PlaceholderEditor from "./placeholder/editor"
+import WysiwygEditor from "./wysiwyg/editor"
 import UnknownEditor from "./editor"
 
 let unknownEditor = new UnknownEditor()
@@ -13,6 +14,7 @@ let editors = [
   new FlipCardEditor(),
   new BrainEditor(),
   new PlaceholderEditor(),
+  new WysiwygEditor(),
   new ImageEditor()
 ]
 

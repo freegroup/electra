@@ -54,23 +54,26 @@ export default class Editor extends GenericEditor{
 
   commit(){
     this.view.simulationStop()
-    return new Promise((resolve, reject) => {
+
+    return super.commit()
+    .then(() => {
       this.resetDOM()
-      this.view.getSelection().each((index, item)=>{
-         item.unselect()
-      })
-      writer.marshal(this.view, (content)=>{
-        this.section.content = content
-        resolve(this.section)
+      this.view.getSelection().each((index, item)=>{item.unselect() })
+      return new Promise((resolve, reject) => {
+        writer.marshal(this.view, (content)=>{
+          this.section.content = content
+          resolve(this.section)
+        })
       })
     })
   }
 
   cancel(){
     this.view.simulationStop()
-    return new Promise((resolve, reject) => {
+    return super.cancel()
+    .then(() => {
       this.resetDOM()
-      resolve(this.section)
+      return this.section
     })
   }
 

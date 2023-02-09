@@ -1,0 +1,88 @@
+let md = require('markdown-it')()
+md.use(require("markdown-it-asciimath"))
+md.use(require('markdown-it-container'), "info")
+md.use(require('markdown-it-br'))
+
+
+import ToastEditor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
+
+import GenericEditor from '../editor'
+
+export default class Editor extends GenericEditor{
+
+  constructor(type="wysiwyg") {
+    super(type)
+    this.md = md
+  }
+
+  /* public interface */
+  inject(section) {
+    super.inject(section)
+    $(".sections .activeSection .sectionContent").html(`
+              <div class="editorContainerSelector" id="editor-wysiwyg">
+              </div>
+                `)
+
+    this.editor = new ToastEditor({
+      el: document.querySelector('#editor-wysiwyg'),
+      height: '500px',
+      usageStatistics: false,
+      initialEditType: 'wysiwyg',
+      initialValue: section.content,
+      toolbarItems: [
+        ['heading', 'bold', 'italic', 'strike'],
+        ['hr', 'quote'],
+        ['ul', 'ol', 'indent', 'outdent'],
+        ['table', 'link'],
+        ['code', 'codeblock'],
+      ]
+    });
+    return this
+  }
+
+  /* public interface */
+  commit(){
+    return super.commit()
+    .then(() => {
+      $(".sections .activeSection").removeClass("editMode")
+      this.section.content = this.editor.getMarkdown()
+      return this.section
+    })
+  }
+
+  /**
+   * 
+   * @param {*} whereToAppend 
+   * @param {*} section 
+   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   */
+  render(section, mode){
+    let errorCSS = ""
+    let markdown = section.content
+    try {
+      markdown = this.md.render(markdown)
+    } catch (error) {
+      console.log(error)
+      errorCSS = " error"
+    }
+    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${section.type}">${markdown}</div>`
+  }
+
+  defaultContent(){
+    return `
+# Welcome to the Markdown Editor!
+
+With this editor, you can format your text using simple syntax.
+
+# Headings
+## Subheadings
+
+*Italic* and **Bold** text
+
+- Bullet points
+
+`
+  }
+
+}

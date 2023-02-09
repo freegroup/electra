@@ -32,8 +32,17 @@ function getParam(name) {
 $(window).load(function () {
   let containerId = "#authorContent"
   let sha = getParam("sha")
+  let global = getParam("global")
   let mode = getParam("mode") ?? renderMode.WORKSHEET
-  let url = `../sheets/shared/get?sha=${sha}`
+
+  let url = `../sheets/`
+  
+  if(sha){
+    url = url +`shared/get?sha=${sha}`
+  }
+  else if(global){
+    url = url +`global/get?filePath=${global}`
+  }
 
   axios.get(url)
     .then((response => {
