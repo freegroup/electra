@@ -25,7 +25,7 @@ module.exports = {
 
         app.post('/brains/user/share', nocache, ensureLoggedIn, (req, res) => {
             let sha = shortid.generate()
-            filesystem.copy( conf.absoluteUserDataDirectory(),req.body.filePath, 
+            filesystem.copy( conf.absoluteUserDataDirectory(req),req.body.filePath, 
                              conf.absoluteSharedDataDirectory(), sha)
             .then( () => {
                 res.status(200).send({ filePath: sha})

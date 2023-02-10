@@ -4,7 +4,8 @@ const glob = require("glob")
 const path = require('path')
 const makeDir = require('make-dir');
 const sanitize = require("./sanitize-filepath");
-
+const fsPromises = require('fs').promises;
+ 
 // Generic file operations for "brains" and "shapes"
 //
 module.exports = {
