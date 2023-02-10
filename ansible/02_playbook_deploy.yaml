@@ -2,10 +2,15 @@
   hosts: electra
 
   vars_files:
-    - secrets.yaml
+    - deployment_vars.yaml
 
   tasks:
 
+  - name: Delete old deployment
+    file:
+      state: absent
+      path: /home/electra/server
+      
   - name: Git checkout electra
     become: true
     become_user: electra
@@ -15,6 +20,11 @@
       force: true
       update: true
 
+  - name: Delete local "data" directory
+    file:
+      state: absent
+      path: /home/electra/server/data
+    
   - name: Install packages in /author
     become: true
     become_user: electra
@@ -109,11 +119,23 @@
     args:
       chdir: /home/electra/server/designer
 
-  - name: Ensure GITHUB_TOKEN variable in the sesstings.ini
+  - name: Ensure correct data-directory DATADIR_SHAPES in the settings.ini
     ansible.builtin.lineinfile:
       path: /home/electra/server/settings.ini
-      regexp: '^GITHUB_TOKEN='
-      line: GITHUB_TOKEN={{ GITHUB_TOKEN }}
+      regexp: '^DATADIR_SHAPES='
+      line: DATADIR_SHAPES={{ DATADIR_SHAPES }}
+
+  - name: Ensure correct data-directory DATADIR_SHEETS in the settings.ini
+    ansible.builtin.lineinfile:
+      path: /home/electra/server/settings.ini
+      regexp: '^DATADIR_SHEETS='
+      line: DATADIR_SHEETS={{ DATADIR_SHEETS }}
+
+  - name: Ensure correct data-directory DATADIR_BRAINS in the settings.ini
+    ansible.builtin.lineinfile:
+      path: /home/electra/server/settings.ini
+      regexp: '^DATADIR_BRAINS='
+      line: DATADIR_BRAINS={{ DATADIR_BRAINS }}
 
   - name: Run the application via PM2 edosystem configuration
     become: true
