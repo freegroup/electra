@@ -13,7 +13,7 @@ module.exports = {
       await page.goto(url)
       await page.waitForFunction(() =>  mathMLdone === true)
       await page.setViewport({ width: 700, height: 990 });
-      await element.screenshot({
+      await page.screenshot({
         path: location,
       });
       await browser.close()

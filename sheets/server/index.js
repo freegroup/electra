@@ -23,7 +23,7 @@ const userApi = require("./handler/user")
 const conf = require("./configuration")
 const die = require("./utils/die")
 
-console.log("serving data from :", conf.absoluteGlobalDataDirectory())
+console.log("serving global data from :", conf.absoluteGlobalDataDirectory())
 
 const PORT = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");

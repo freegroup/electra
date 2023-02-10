@@ -141,19 +141,24 @@ module.exports = {
           res?.status(403).send('Unable to rename file')
           return reject(`'${toAbsolutePath}' not found`)
         }
-    
+
+        let isDir = fs.lstatSync(fromAbsoluteDir).isDirectory()
+        if (isDir) {
+          res?.status(403).send('Unable to rename directory')
+          return reject(`'${fromAbsoluteDir}' is a directory. rename not supported for shapes persistence`)
+        }
+
         mv(fromAbsolutePath, toAbsolutePath, err => {
           if (err) {
             reject(err)
           }
           else {
-            let isDir = fs.lstatSync(toAbsolutePath).isDirectory()
             res?.send({
               name: path.basename(toRelativePath),
               filePath: toRelativePath,
               folder:  path.dirname(toRelativePath),
-              type: isDir ? "dir" : "file",
-              dir: isDir
+              type: "file",
+              dir: false
             })
             resolve({fromRelativePath, toRelativePath, isDir})
           }
@@ -165,6 +170,50 @@ module.exports = {
     })
   },
 
+
+  /**
+   * Copy a file
+   *
+   * @param baseDir
+   * @param fromRelativePath
+   * @param toRelativePath
+   * @param res
+   */
+  copy: function (fromDir, fromFilePath, toDir, toFilePath) {
+    console.log("Copy: ",fromDir, fromFilePath, toDir, toFilePathh)
+    let fromAbsolutePath = path.join(fromDir, fromFilePath)
+    let toAbsolutePath = path.join(toDir, toFilePath)
+
+    if (fromAbsolutePath !== sanitize(fromAbsolutePath)) {
+      res?.status(403).send('Invalid file name')
+      throw new Error(`sanitized from filepath '${fromAbsolutePath}' is different than the original file`)
+    }
+
+    // "from" must be exists
+    if (!fs.existsSync(fromAbsolutePath)) {
+      res?.status(403).send('Invalid file name')
+      throw new Error(`original file '${fromAbsolutePath}' not found`)
+    }
+
+    // check that the normalize path is the same the concatenated. It is possible the these are not the same
+    // if the "from" contains dots like "/dir1/dir2/../../". It is a file path attack via API calls
+    if (fromAbsolutePath !== path.normalize(fromAbsolutePath)) {
+      res?.status(403).send('Invalid file name')
+      throw new Error(`normalized path of '${fromAbsolutePath}' is not equals to original filepath`)
+    }
+
+    if (toAbsolutePath !== path.normalize(toAbsolutePath)) {
+      res?.status(403).send('Invalid file name')
+      throw new Error(`normalized path of '${toAbsolutePath}' is not equals to original filepath`)
+    }
+
+    if (fs.existsSync(toAbsolutePath)) {
+      res?.status(403).send('File already exists')
+      throw new Error(`Targe file '${toAbsolutePath}' already exists`)
+    }
+
+    return fsPromises.copyFile(fromAbsolutePath, toAbsolutePath)
+  },
 
   /**
    * Delete a file or directory

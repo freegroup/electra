@@ -1,27 +1,23 @@
 const path = require("path")
 const die = require("./utils/die")
 
-const GITHUB_DATADIR_SHEETS = process.env.GITHUB_DATADIR_SHEETS ||  die("Environment Varialbe GITHUB_DATADIR_SHEETS missing")
-const LOCAL_DATADIR_SHEETS = path.resolve(__dirname+ "/../data")
+const PROJECT_PATH = path.resolve(__dirname+ "/../..")
+let LOCAL_DATADIR =  process.env.DATADIR_SHEETS ||  die("Environment Varialbe DATADIR_SHEETS missing")
+LOCAL_DATADIR = path.normalize(`${PROJECT_PATH}/${LOCAL_DATADIR}`)
 
 module.exports = {
 
     absoluteGlobalDataDirectory: () => {
-        return path.normalize(`${LOCAL_DATADIR_SHEETS}/global/`)
+        return path.normalize(`${LOCAL_DATADIR}/global/`)
+    },
+
+    absoluteSharedDataDirectory: () => {
+        return path.normalize(`${LOCAL_DATADIR}/shared/`)
     },
 
     absoluteUserDataDirectory: ( req ) => {
         let hash = req.get("x-hash")
-        return path.normalize(`${LOCAL_DATADIR_SHEETS}/user/${hash}/`)
-    },
-
-    githubGlobalDataDirectory: () => {
-        return `${GITHUB_DATADIR_SHEETS}/global/`
-    },
-
-    githubUserDataDirectory: ( req ) => {
-        let hash = req.get("x-hash")
-        return path.normalize(`${GITHUB_DATADIR_SHEETS}/user/${hash}/`)
+        return path.normalize(`${LOCAL_DATADIR}/user/${hash}/`)
     }
 }
 
