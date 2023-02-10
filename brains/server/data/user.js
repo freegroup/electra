@@ -1,6 +1,6 @@
+const shortid = require('short-uuid')
 const path = require('path')
-const {createHash } =  require('crypto')
-  
+
 const filesystem = require("../utils/file")
 const conf = require("../configuration")
 const {nocache, ensureLoggedIn} = require("./middleware")
@@ -24,7 +24,7 @@ module.exports = {
         })
 
         app.post('/brains/user/share', nocache, ensureLoggedIn, (req, res) => {
-            let sha = createHash('sha256')
+            let sha = shortid.generate()
             filesystem.copy( conf.absoluteUserDataDirectory(),req.body.filePath, 
                              conf.absoluteSharedDataDirectory(), sha)
             .then( () => {

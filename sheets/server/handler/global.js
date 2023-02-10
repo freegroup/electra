@@ -1,5 +1,5 @@
+const shortid = require('short-uuid')
 const fs = require('fs-extra')
-const {createHash } =  require('crypto')
 const path = require('path')
 
 const {nocache, ensureAdminLoggedIn, ensureLoggedIn} = require("./middleware")
@@ -29,7 +29,7 @@ module.exports = {
         })
 
         app.post('/sheets/global/share', ensureLoggedIn, (req, res) => {
-            let sha = createHash('sha256')
+            let sha = shortid.generate()
             filesystem.copy( conf.absoluteGlobalDataDirectory(),req.body.filePath, 
                              conf.absoluteSharedDataDirectory(), sha)
             .then( () => {

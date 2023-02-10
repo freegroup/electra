@@ -234,7 +234,7 @@ module.exports = {
    * @param res
    */
   copy: function (fromDir, fromFilePath, toDir, toFilePath) {
-    console.log("Copy: ",fromDir, fromFilePath, toDir, toFilePathh)
+    console.log("Copy: ",fromDir, fromFilePath, toDir, toFilePath)
     let fromAbsolutePath = path.join(fromDir, fromFilePath)
     let toAbsolutePath = path.join(toDir, toFilePath)
 

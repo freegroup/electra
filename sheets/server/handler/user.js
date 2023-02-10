@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+const shortid = require('short-uuid')
 const path = require('path')
 
 const filesystem = require("../utils/file")
@@ -43,8 +43,8 @@ module.exports = {
         })
 
         app.post('/sheets/user/share', nocache, ensureLoggedIn, (req, res) => {
-            let sha = createHash('sha256')
-            filesystem.copy( conf.absoluteserDataDirectory(),req.body.filePath, 
+            let sha = shortid.generate()
+            filesystem.copy( conf.absoluteUserDataDirectory(req),req.body.filePath, 
                              conf.absoluteSharedDataDirectory(), sha)
             .then( () => {
                 res.status(200).send({ filePath: sha})

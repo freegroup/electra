@@ -36,7 +36,10 @@ class BackendStorage {
   }
 
   shareFile(fileName, scope) {
-    return axios.get(this.conf.backend[scope].share(fileName))
+    let data = {
+      filePath: fileName
+    }
+    return axios.post(this.conf.backend[scope].share, data)
   }
 
   saveFile(json, fileName, scope) {

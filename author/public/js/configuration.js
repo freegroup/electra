@@ -17,7 +17,7 @@ export default {
     user: {
       list:   path  => `../sheets/user/list?path=${path}`,
       get:    file  => `../sheets/user/get?filePath=${file}`,
-      share:  file  => `../sheets/user/share?filePath=${file}`,
+      share:           `../sheets/user/share`,
       image:  file  => `../common/images/files_markdown.svg`,
       delete:          `../sheets/user/delete`,
       rename:          `../sheets/user/rename`,
@@ -28,7 +28,7 @@ export default {
     global:{
       list:   path  => `../sheets/global/list?path=${path}`,
       get:    file  => `../sheets/global/get?filePath=${file}`,
-      share:  file  => `../sheets/global/share?filePath=${file}`,
+      share:           `../sheets/global/share`,
       image:  file  => `../common/images/files_markdown.svg`,
       delete:          `../sheets/global/delete`,
       rename:          `../sheets/global/rename`,

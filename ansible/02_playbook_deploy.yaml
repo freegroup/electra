@@ -24,6 +24,16 @@
     file:
       state: absent
       path: /home/electra/server/data
+
+  - name: Delete local "youtube" directory
+    file:
+      state: absent
+      path: /home/electra/server/youtube
+
+  - name: Delete local "ansible" directory
+    file:
+      state: absent
+      path: /home/electra/server/ansible
     
   - name: Install packages in /author
     become: true

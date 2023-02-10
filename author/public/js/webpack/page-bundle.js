@@ -26023,9 +26023,7 @@ __webpack_require__.r(__webpack_exports__);
       get: function get(file) {
         return "../sheets/user/get?filePath=".concat(file);
       },
-      share: function share(file) {
-        return "../sheets/user/share?filePath=".concat(file);
-      },
+      share: "../sheets/user/share",
       image: function image(file) {
         return "../common/images/files_markdown.svg";
       },
@@ -26041,9 +26039,7 @@ __webpack_require__.r(__webpack_exports__);
       get: function get(file) {
         return "../sheets/global/get?filePath=".concat(file);
       },
-      share: function share(file) {
-        return "../sheets/global/share?filePath=".concat(file);
-      },
+      share: "../sheets/global/share",
       image: function image(file) {
         return "../common/images/files_markdown.svg";
       },

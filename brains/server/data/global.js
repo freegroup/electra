@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+const shortid = require('short-uuid')
 const path = require('path')
 
 const filesystem = require("../utils/file")
@@ -26,7 +26,7 @@ module.exports = {
 
 
         app.post('/brains/global/share', ensureLoggedIn, (req, res) => {
-            let sha = createHash('sha256')
+            let sha =shortid.generate()
             filesystem.copy( conf.absoluteGlobalDataDirectory(),req.body.filePath, 
                              conf.absoluteSharedDataDirectory(), sha)
             .then( () => {
