@@ -55,7 +55,7 @@ export default class Editor extends GenericEditor{
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   * @param {String} mode Either "worksheet", "solution", "flashcard"
    */
   render(section, mode){
     let errorCSS = ""
@@ -71,16 +71,10 @@ export default class Editor extends GenericEditor{
 
   defaultContent(){
     return `
-# Welcome to the Markdown Editor!
+**Welcome to the text Editor!**
 
-With this editor, you can format your text using simple syntax.
-
-# Headings
-## Subheadings
-
-*Italic* and **Bold** text
-
-- Bullet points
+The Editor allows you to edit your documents using text or visual mode.
+You the toolbar above to format your text...
 
 `
   }

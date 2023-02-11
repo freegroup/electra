@@ -23,7 +23,7 @@ export default class Editor extends GenericEditor{
 
   /* public interface */
   render(section, mode){
-    return `${section.content} <br> <br> <div data-id="${section.id}" data-type="markdown" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
+    return `${section.content} <br> <br> <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
   }
 
   defaultContent(){

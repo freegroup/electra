@@ -58,7 +58,7 @@
   }
 
   .sectionContent {
-    /* reqiered for flipcards */
+    /* required for flashcard */
     perspective: 1000px;
 
 
@@ -99,7 +99,7 @@
       }
     }
 
-    &[data-type='flipcard'],
+    &[data-type='flashcard'],
     &[data-type='wysiwyg'],
     &[data-type='markdown'],
     &[data-type='cloze']{
@@ -124,7 +124,7 @@
       max-width:100%;
     }
 
-    &[data-type='flipcard']{
+    &[data-type='flashcard']{
       .flip_box {
         position: relative;
         transition: all 0.5s ease-out;
@@ -182,7 +182,7 @@
     }
 
     /** learning content gets a special annotation on the left **/
-    &[data-type="flipcard"]::before,
+    &[data-type="flashcard"]::before,
     &[data-type="cloze"]::before {
       content: "🎓";
       position: absolute;
@@ -212,7 +212,7 @@
 
   .sectionContent {
     /** learning content gets a special annotation on the left **/
-    &[data-type="flipcard"]::before,
+    &[data-type="flashcard"]::before,
     &[data-type="cloze"]::before {
       left: -24px;
       transition: all 0.3s ease-out;

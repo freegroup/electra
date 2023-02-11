@@ -6,7 +6,7 @@ import GenericEditor from '../editor'
 
 export default class Editor extends GenericEditor{
 
-  constructor(type="flipcard") {
+  constructor(type="flashcard") {
     super(type)
   }
 
@@ -29,7 +29,7 @@ export default class Editor extends GenericEditor{
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   * @param {String} mode Either "worksheet", "solution", "flashcard"
    */
   render(section, mode){
     let frontSection = section.content.front
@@ -90,19 +90,7 @@ export default class Editor extends GenericEditor{
         content: 
         `<h1>Front Side</h1>
         This is the front side of the flashcard where the user can enter their solution 
-        to a given question is typically a dedicated space on the screen that allows the 
-        user to input their response. It can be a empty text field where the user can type in their answer, a cloze or
-        a partly drawn circuit where the user shold complete them. 
-        <br>
-        <br>
-        The purpose of this area is to provide a place for the user 
-        to enter their solution, so that it can be evaluated and compared with the correct 
-        answer - which yo shold place on the backside of this flashcard.
-        <br>
-        <br>
-        The design of this area will vary depending on the system, but it typically 
-        consists of a clear and intuitive interface that allows the user to input their 
-        answer with ease.`
+        to a given question. `
       },
       back: {
         id: shortid.generate(),

@@ -243,7 +243,7 @@ export default class View {
           <div class='sectionContent ' data-type="spacer" >
             <div data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection material-button' >&#8853; Text</div>
             <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
-            <div data-index="${index}" data-type="flipcard" class='sectionMenuInsertSection material-button' >&#8853; FlipCard</div>
+            <div data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection material-button' >&#8853; FlashCard</div>
             <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>
             <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection material-button' >&#8853; Picture</div>
           </div>

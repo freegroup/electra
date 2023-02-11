@@ -18,7 +18,7 @@ export default class Page {
     if(section){
       return section
     }
-    // the searched section could be a children of a top level section. This could happen e.g. in FlipCard
+    // the searched section could be a children of a top level section. This could happen e.g. in flashcard
     //
     let childSections = this.sections.flatMap( value => value.content?.front ? [value.content.front, value.content.back]:[])
 

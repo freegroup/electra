@@ -27821,7 +27821,7 @@ var Editor = /*#__PURE__*/function (_MarkdownEditor) {
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   * @param {String} mode Either "worksheet", "solution", "flashcard"
    */
   _createClass(Editor, [{
     key: "render",
@@ -28158,7 +28158,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _brain_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./brain/editor */ "./public/js/editor/brain/editor.js");
 /* harmony import */ var _cloze_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cloze/editor */ "./public/js/editor/cloze/editor.js");
 /* harmony import */ var _image_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./image/editor */ "./public/js/editor/image/editor.js");
-/* harmony import */ var _flipcard_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flipcard/editor */ "./public/js/editor/flipcard/editor.js");
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './flashcard/editor'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 /* harmony import */ var _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./placeholder/editor */ "./public/js/editor/placeholder/editor.js");
 /* harmony import */ var _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./wysiwyg/editor */ "./public/js/editor/wysiwyg/editor.js");
 /* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor */ "./public/js/editor/editor.js");
@@ -28171,141 +28171,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var unknownEditor = new _editor__WEBPACK_IMPORTED_MODULE_7__["default"]();
-var editors = [new _markdown_editor__WEBPACK_IMPORTED_MODULE_0__["default"](), new _cloze_editor__WEBPACK_IMPORTED_MODULE_2__["default"](), new _flipcard_editor__WEBPACK_IMPORTED_MODULE_4__["default"](), new _brain_editor__WEBPACK_IMPORTED_MODULE_1__["default"](), new _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__["default"](), new _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__["default"](), new _image_editor__WEBPACK_IMPORTED_MODULE_3__["default"]()];
+var editors = [new _markdown_editor__WEBPACK_IMPORTED_MODULE_0__["default"](), new _cloze_editor__WEBPACK_IMPORTED_MODULE_2__["default"](), new FlashCardEditor(), new _brain_editor__WEBPACK_IMPORTED_MODULE_1__["default"](), new _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__["default"](), new _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__["default"](), new _image_editor__WEBPACK_IMPORTED_MODULE_3__["default"]()];
 function getByType(type) {
   var _editors$find;
   return (_editors$find = editors.find(function (editor) {
     return editor.type === type;
   })) !== null && _editors$find !== void 0 ? _editors$find : unknownEditor;
 }
-
-/***/ }),
-
-/***/ "./public/js/editor/flipcard/editor.js":
-/*!*********************************************!*\
-  !*** ./public/js/editor/flipcard/editor.js ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Editor)
-/* harmony export */ });
-/* harmony import */ var _editorByType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../editorByType */ "./public/js/editor/editorByType.js");
-/* harmony import */ var _renderMode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../renderMode */ "./public/js/renderMode.js");
-/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-var shortid = __webpack_require__(/*! short-uuid */ "./node_modules/short-uuid/index.js");
-
-
-
-var Editor = /*#__PURE__*/function (_GenericEditor) {
-  _inherits(Editor, _GenericEditor);
-  var _super = _createSuper(Editor);
-  function Editor() {
-    var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "flipcard";
-    _classCallCheck(this, Editor);
-    return _super.call(this, type);
-  }
-
-  /* public interface */
-  _createClass(Editor, [{
-    key: "inject",
-    value: function inject(section) {
-      section.flippedStateDuringInject = $(".section[data-id='".concat(section.id, "'] .flip_box")).hasClass("flipped-back");
-      var activeSection = section.flippedStateDuringInject ? section.content.back : section.content.front;
-      this.editor = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(activeSection.type).inject(activeSection);
-      return this;
-    }
-
-    /* public interface */
-  }, {
-    key: "commit",
-    value: function commit() {
-      return this.editor.commit();
-    }
-
-    /**
-     * 
-     * @param {*} whereToAppend 
-     * @param {*} section 
-     * @param {String} mode Either "worksheet", "solution", "flipcard"
-     */
-  }, {
-    key: "render",
-    value: function render(section, mode) {
-      var frontSection = section.content.front;
-      var backSection = section.content.back;
-      var frontContent = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(frontSection.type).render(frontSection, mode);
-      var backContent = (0,_editorByType__WEBPACK_IMPORTED_MODULE_0__["default"])(backSection.type).render(backSection, mode);
-      var flippedClass = section.flippedStateDuringInject ? " flipped-back" : "";
-      switch (mode) {
-        case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].WORKSHEET:
-          return frontContent;
-        case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].SOLUTION:
-          return backContent;
-      }
-      return "\n        <div class=\"sectionContent\" data-type=\"".concat(section.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
-    }
-  }, {
-    key: "onUnselect",
-    value: function onUnselect(section) {
-      var card = $(".flipped-back");
-      if (card.length > 0) {
-        // Restart animaton, See: https://css-tricks.com/restart-css-animation/
-        card.removeClass('flipped-back');
-        void card[0].offsetWidth;
-      }
-    }
-  }, {
-    key: "getMenu",
-    value: function getMenu(section) {
-      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp;&#8635;&nbsp;</div>");
-    }
-  }, {
-    key: "hasLearningContent",
-    value: function hasLearningContent() {
-      return true;
-    }
-  }, {
-    key: "startEditAfterInsert",
-    value: function startEditAfterInsert(section) {
-      // start editing if the user insert a new section
-      return false;
-    }
-  }, {
-    key: "defaultContent",
-    value: function defaultContent() {
-      return {
-        front: {
-          id: shortid.generate(),
-          type: "placeholder",
-          content: "<h1>Front Side</h1>\n        This is the front side of the flashcard where the user can enter their solution \n        to a given question is typically a dedicated space on the screen that allows the \n        user to input their response. It can be a empty text field where the user can type in their answer, a cloze or\n        a partly drawn circuit where the user shold complete them. \n        <br>\n        <br>\n        The purpose of this area is to provide a place for the user \n        to enter their solution, so that it can be evaluated and compared with the correct \n        answer - which yo shold place on the backside of this flashcard.\n        <br>\n        <br>\n        The design of this area will vary depending on the system, but it typically \n        consists of a clear and intuitive interface that allows the user to input their \n        answer with ease."
-        },
-        back: {
-          id: shortid.generate(),
-          type: "placeholder",
-          content: "back"
-        }
-      };
-    }
-  }]);
-  return Editor;
-}(_editor__WEBPACK_IMPORTED_MODULE_2__["default"]);
-
 
 /***/ }),
 
@@ -28476,7 +28348,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     * 
     * @param {*} whereToAppend 
     * @param {*} section 
-    * @param {String} mode Either "worksheet", "solution", "flipcard"
+    * @param {String} mode Either "worksheet", "solution", "flashcard"
     */
   }, {
     key: "render",
@@ -28591,7 +28463,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
      * 
      * @param {*} whereToAppend 
      * @param {*} section 
-     * @param {String} mode Either "worksheet", "solution", "flipcard"
+     * @param {String} mode Either "worksheet", "solution", "flashcard"
      */
   }, {
     key: "render",
@@ -28697,7 +28569,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   _createClass(Editor, [{
     key: "render",
     value: function render(section, mode) {
-      return "".concat(section.content, " <br> <br> <div data-id=\"").concat(section.id, "\" data-type=\"markdown\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>");
+      return "".concat(section.content, " <br> <br> <div data-id=\"").concat(section.id, "\" data-type=\"wysiwyg\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>");
     }
   }, {
     key: "defaultContent",
@@ -28793,7 +28665,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
      * 
      * @param {*} whereToAppend 
      * @param {*} section 
-     * @param {String} mode Either "worksheet", "solution", "flipcard"
+     * @param {String} mode Either "worksheet", "solution", "flashcard"
      */
   }, {
     key: "render",
@@ -28811,7 +28683,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   }, {
     key: "defaultContent",
     value: function defaultContent() {
-      return "\n# Welcome to the Markdown Editor!\n\nWith this editor, you can format your text using simple syntax.\n\n# Headings\n## Subheadings\n\n*Italic* and **Bold** text\n\n- Bullet points\n\n";
+      return "\n**Welcome to the text Editor!**\n\nThe Editor allows you to edit your documents using text or visual mode.\nYou the toolbar above to format your text...\n\n";
     }
   }]);
   return Editor;

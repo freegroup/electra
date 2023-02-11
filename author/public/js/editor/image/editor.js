@@ -153,7 +153,7 @@ export default class Editor extends GenericEditor{
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flipcard"
+   * @param {String} mode Either "worksheet", "solution", "flashcard"
    */
    render(section, mode){
     if (section.content) {
