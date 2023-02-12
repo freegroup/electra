@@ -84,7 +84,7 @@ export default class View {
         return false
       })
       .on("click", "#sectionMenuFlip", event => {
-        this.onFlip(this.page.get($(event.target).data("id")))
+        this.onFlip(this.page.get($(event.currentTarget).data("id")))
         return false
       }) 
       .on("click", "#sectionMenuHelp", event => {

@@ -28258,7 +28258,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         case _renderMode__WEBPACK_IMPORTED_MODULE_1__["default"].SOLUTION:
           return backContent;
       }
-      return "\n        <div class=\"sectionContent\" data-type=\"".concat(section.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n        </div>");
+      return "\n        <div class=\"sectionContent\" data-type=\"".concat(section.type, "\">\n            <div class='flip_box").concat(flippedClass, "'>\n              <div class='front'>\n                ").concat(frontContent, "\n              </div>\n              <div class='back'>\n                ").concat(backContent, "\n              </div>\n            </div>\n            <button  data-id='").concat(section.id, "' id=\"sectionMenuFlip\"><span><svg viewBox=\"0 0 24 24\" style=\"width: 24px; height: 24px;\"><path d=\"M15.332 4.045a.75.75 0 0 0-1.091 1.028l.693.736-5.33-.173H9.6c-3.63-.107-6.683 2.772-6.79 6.401a6.58 6.58 0 0 0 1.799 4.716.75.75 0 0 0 1.091-1.03 5.08 5.08 0 0 1-1.391-3.642c.083-2.8 2.445-5.028 5.246-4.946h.001l5.343.173-.746.704a.75.75 0 1 0 1.029 1.091l2.056-1.939.014-.013a.747.747 0 0 0 .02-1.048l-1.941-2.058ZM19.434 8.167a.75.75 0 0 1 1.06.032 6.58 6.58 0 0 1 1.8 4.715c-.108 3.63-3.162 6.509-6.792 6.402H15.5l-5.33-.173.693.735a.75.75 0 0 1-1.091 1.029l-1.94-2.058a.748.748 0 0 1 .033-1.063l2.056-1.938a.75.75 0 0 1 1.029 1.092l-.746.703 5.343.173c2.802.082 5.164-2.145 5.247-4.946a5.08 5.08 0 0 0-1.392-3.643.75.75 0 0 1 .032-1.06Z\"></path></svg></span></button>\n        </div>");
     }
   }, {
     key: "onUnselect",
@@ -28269,11 +28269,6 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         card.removeClass('flipped-back');
         void card[0].offsetWidth;
       }
-    }
-  }, {
-    key: "getMenu",
-    value: function getMenu(section) {
-      return "<div data-id='".concat(section.id, "' id='sectionMenuFlip'>&nbsp;&#8635;&nbsp;</div>");
     }
   }, {
     key: "hasLearningContent",
@@ -28293,12 +28288,12 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         front: {
           id: shortid.generate(),
           type: "placeholder",
-          content: "<h1>Front Side</h1>\n        This is the front side of the flashcard where the user can enter their solution \n        to a given question. "
+          content: "frontside"
         },
         back: {
           id: shortid.generate(),
           type: "placeholder",
-          content: "back"
+          content: "backside"
         }
       };
     }
@@ -28697,7 +28692,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   _createClass(Editor, [{
     key: "render",
     value: function render(section, mode) {
-      return "".concat(section.content, " <br> <br> <div data-id=\"").concat(section.id, "\" data-type=\"wysiwyg\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>");
+      return "\n    <div class=\"placeholderContainer\">\n      <div class=\"placeholderText\">  \n        <img src=\"../common/images/pencil.svg\">\n        <h1>It's a little empty in here!</h1>\n        <h2>Add your flashcard <b>".concat(section.content, "</b> content here</h2>\n      </div>\n      <div class=\"placeholderButtons\">\n        <div data-id=\"").concat(section.id, "\" data-type=\"wysiwyg\" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>\n        <div data-id=\"").concat(section.id, "\" data-type=\"brain\" class='placeholderMenuInsertSection material-button' >&#8853; Diagram</div>\n        <div data-id=\"").concat(section.id, "\" data-type=\"image\" class='placeholderMenuInsertSection material-button' >&#8853; Image</div>\n        <div data-id=\"").concat(section.id, "\" data-type=\"cloze\" class='placeholderMenuInsertSection material-button' >&#8853; Cloze</div>\n      </div>\n    </div>\n    ");
     }
   }, {
     key: "defaultContent",

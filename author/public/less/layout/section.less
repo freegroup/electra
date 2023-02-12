@@ -59,7 +59,7 @@
 
   .sectionContent {
     /* required for flashcard */
-    perspective: 1000px;
+    perspective: 1800px;
 
 
     &[data-type='image']{
@@ -124,13 +124,26 @@
       max-width:100%;
     }
 
+
     &[data-type='flashcard']{
+      #sectionMenuFlip{
+        position:absolute;
+        left:50%;
+        bottom: 0px;
+        border:0px;
+        border-radius: 50%;
+        padding-top:6px;
+        padding-bottom:6px;
+        width:40px;
+        height:40px;
+      }
       .flip_box {
         position: relative;
         transition: all 0.5s ease-out;
         transform-style: preserve-3d;
         display: inline-grid;
         width:100%;
+        border-radius:3px;
       }
 
       .front,
@@ -143,14 +156,42 @@
         background-color: rgb(243, 241, 241);
         transform: rotateY(180deg);
       }
+      .placeholderContainer{
+        display: flex;
+        width: fit-content;
+        padding-left:30px;
+        padding-right:30px;
+        background-color:rgba(0,0,0,0.1);
+        border-radius:15px;
+        margin: 20px;
+
+        .placeholderButtons{
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          padding-left: 3vw;
+          justify-content: center;
+        }
+        .placeholderText{
+          h1{
+            font-size:14px !important;
+            font-weight: bold !important;
+            border:none !important
+          }
+          h2{
+            font-size:12px !important;
+            font-weight: 300 !important;
+          }
+        }
+      }
 
       .flipped-back {
-        animation: flip  1s normal;
+        animation: flip  0.5s normal;
         animation-fill-mode: forwards;
       }
 
       .flipped-front {
-        animation: flip  1s reverse;
+        animation: flip  0.5s reverse;
         animation-fill-mode: forwards;
       }
       
@@ -180,25 +221,6 @@
         visibility:hidden;
       }
     }
-
-    /** learning content gets a special annotation on the left **/
-    &[data-type="flashcard"]::before,
-    &[data-type="cloze"]::before {
-      content: "🎓";
-      position: absolute;
-      border-width: 1px;
-      border-style: solid;
-      left: -50px;
-      width: 21px;
-      top: -2px;
-      border-right: 0px;
-      padding-left: 5px;
-      padding-top: 2px;
-      border-top-left-radius: 5px;
-      border-bottom-left-radius: 5px;
-      transition: all 0.3s ease-out;
-      cursor: default;
-    }
   }
 }
 .activeSection {
@@ -210,14 +232,47 @@
     }
   }
 
-  .sectionContent {
-    /** learning content gets a special annotation on the left **/
-    &[data-type="flashcard"]::before,
-    &[data-type="cloze"]::before {
-      left: -24px;
-      transition: all 0.3s ease-out;
-    }
+
+  /** learning content gets a special annotation on the left **/
+  &[data-type="cloze"]::before {
+    content: "Cloze 🎓";
   }
+  &[data-type="wysiwyg"]::before {
+    content: "Text";
+  }
+  &[data-type="image"]::before {
+    content: "Image";
+  }
+  &[data-type="brain"]::before {
+    content: "Diagram";
+  }
+  &[data-type="flashcard"]::before {
+    content: "Flashcard 🎓";
+  }
+  &[data-type="markdown"]::before {
+    content: "Text 🎓";
+  }
+  
+  
+  &::before{
+    white-space: nowrap;
+    left: 7px;
+    position: absolute;
+    border-width: 1px;
+    border-style: solid;
+    top: -18px;
+    border-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    transition: all 0.3s ease-out;
+    cursor: default;
+    min-width: 50px;
+    font-size:80%;
+    text-align: center;
+  }
+
 }
 
 

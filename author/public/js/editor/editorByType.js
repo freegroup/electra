@@ -19,8 +19,8 @@ let editors = [
 ]
 
 export default function getByType(type) {
-    return editors.find( editor => editor.type ===type) ?? unknownEditor
-  }
+  return editors.find( editor => editor.type ===type) ?? unknownEditor
+}
   
   
   

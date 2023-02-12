@@ -49,6 +49,7 @@
         - libasound2
       state: latest
 
+
   - name: Install PM2 NodeJS Process manager
     npm: name=pm2 global=yes
 

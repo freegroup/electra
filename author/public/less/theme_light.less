@@ -239,13 +239,11 @@ body.light {
                 }
             }
 
-
             /** learning content gets a special annotation on the left **/
-            &[data-type="flashcard"]::before,
-            &[data-type="cloze"]::before {
-                border-color: transparent;
-                background-color: transparent;
-                opacity: 0.4;
+            &[data-type="flashcard"] {
+                #sectionMenuFlip {
+                    background-color: rgba(var(--tint-color), 0.2) ;
+                }
             }
         }
     }
@@ -255,16 +253,15 @@ body.light {
         &:hover {
             border-color: transparent !important;
         }
-        
-        .sectionContent {
-            /** learning content gets a special annotation on the left **/
-            &[data-type="flashcard"]::before,
-            &[data-type="cloze"]::before {
-                border-color: #eaeaea;
-                background-color: white;
-                opacity: 1;
-            }
+
+        /** Tab for the selected/active card **/
+        &::before {
+            color: #d9d9d9;
+            border-color: #eaeaea;
+            background-color: white;
+            opacity: 1;
         }
+
           
     }
 

@@ -23,7 +23,21 @@ export default class Editor extends GenericEditor{
 
   /* public interface */
   render(section, mode){
-    return `${section.content} <br> <br> <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>`
+    return `
+    <div class="placeholderContainer">
+      <div class="placeholderText">  
+        <img src="../common/images/pencil.svg">
+        <h1>It's a little empty in here!</h1>
+        <h2>Add your flashcard <b>${section.content}</b> content here</h2>
+      </div>
+      <div class="placeholderButtons">
+        <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>
+        <div data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection material-button' >&#8853; Diagram</div>
+        <div data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection material-button' >&#8853; Image</div>
+        <div data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection material-button' >&#8853; Cloze</div>
+      </div>
+    </div>
+    `
   }
 
   defaultContent(){
