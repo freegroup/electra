@@ -26,6 +26,10 @@ export default class Editor extends GenericEditor{
                   </div>
               </div>
                 `)
+                console.log("ddd")
+    // do not use "data(..)" method. Do not have any affect to css styling. "data" do not modifies the DOM tree.
+    // Jsut modifies the nodes.
+    $(".sections .activeSection .sectionContent").attr("data-type", this.getType())
 
     let slider = $("#imageScaleSlider")
     let dropRegion = document.getElementById("editor-container")

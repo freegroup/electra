@@ -172,10 +172,13 @@
         display: flex;
         width: fit-content;
         padding-left:30px;
-        padding-right:30px;
-        background-color:rgba(0,0,0,0.1);
+        padding-right:15px;
         border-radius:15px;
-        margin: 20px;
+        margin: 50px;
+        margin-left: auto;
+        margin-right: auto;
+        border-style: dashed;
+        border-width: 1px;
 
         .placeholderButtons{
           display: flex;
@@ -183,6 +186,9 @@
           gap: 5px;
           padding-left: 3vw;
           justify-content: center;
+          .placeholderMenuInsertSection{
+            text-align: left;
+          }
         }
         .placeholderText{
           h1{
@@ -220,7 +226,7 @@
 
     &[data-type='spacer']{
       position: relative;
-      height: 26px;
+
       text-align: center;
       display: flex;
       flex-direction: row;

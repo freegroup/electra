@@ -28348,6 +28348,10 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       var _this = this;
       this.content = this.convertToNewContentFormat(section.content);
       $(".sections .activeSection .sectionContent").html("\n              <input class=\"scaleSlider\" type=\"range\" min=\"10\" max=\"90\" value=\"".concat(this.content.scale, "\" class=\"slider\" id=\"imageScaleSlider\">\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\" data-id=\"").concat(section.id, "\" >\n                      <img src=\"").concat(this.content.src, "\" width=\"").concat(this.content.scale, "%\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n                  <div class=\"drop-message\">\n                    Drag & Drop images or click to upload\n                  </div>\n              </div>\n                "));
+      console.log("ddd");
+      // do not use "data(..)" method. Do not have any affect to css styling. "data" do not modifies the DOM tree.
+      // Jsut modifies the nodes.
+      $(".sections .activeSection .sectionContent").attr("data-type", this.getType());
       var slider = $("#imageScaleSlider");
       var dropRegion = document.getElementById("editor-container");
       var imagePreviewRegion = document.getElementById("image-preview");
