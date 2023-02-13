@@ -13,14 +13,14 @@ export default class Editor extends GenericEditor{
 
     $(".sections .activeSection .sectionContent").html(`
               <div class="editorContainerSelector" id="editor-container">
-                  <div class="drop-message">
-                        Drag & Drop images or click to upload
-                  </div>
                   <div id="image-preview">
-                    <div class="image-view">
+                    <div class="image-view" data-id="${section.id}" >
                       <img src="${this.content}">
                       <div class="overlay"></div>
                     </div>
+                  </div>
+                  <div class="drop-message">
+                    Drag & Drop images or click to upload
                   </div>
               </div>
                 `)
@@ -95,25 +95,16 @@ export default class Editor extends GenericEditor{
       for (let i = 0, len = files.length; i < len; i++) {
         if (validateImage(files[i])) {
           let image = files[i]
-          // container
-          let imgView = document.createElement("div")
-          imgView.className = "image-view"
-          imagePreviewRegion.appendChild(imgView)
 
-          // previewing image
-          let img = document.createElement("img")
-          imgView.appendChild(img)
-
-          // progress overlay
-          let overlay = document.createElement("div")
-          overlay.className = "overlay"
-          imgView.appendChild(overlay)
+          console.log(imagePreviewRegion)
+          let img = $(imagePreviewRegion).find(".image-view img")
+          console.log(img)
 
           // read the image...
           let reader = new FileReader()
           reader.onload = function (e) {
-            img.src = e.target.result
-            _this.content = img.src
+            img.attr("src", e.target.result)
+            _this.content = e.target.result
           }
           reader.readAsDataURL(image)
         }
@@ -157,7 +148,7 @@ export default class Editor extends GenericEditor{
    */
    render(section, mode){
     if (section.content) {
-      return `<img class="sectionContent" data-type="${section.type}" src="${section.content}">`
+      return `<div class="sectionContent" data-type="${section.type}"><img src="${section.content}"></div>`
     } 
 
     return `<div class="sectionContent" data-type="${section.type}">-double click to edit image-</div>`

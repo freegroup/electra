@@ -28347,7 +28347,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
       this.content = (_section$content = section.content) !== null && _section$content !== void 0 ? _section$content : "";
       var _this = this;
-      $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div class=\"drop-message\">\n                        Drag & Drop images or click to upload\n                  </div>\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\">\n                      <img src=\"".concat(this.content, "\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n              </div>\n                "));
+      $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\" data-id=\"".concat(section.id, "\" >\n                      <img src=\"").concat(this.content, "\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n                  <div class=\"drop-message\">\n                    Drag & Drop images or click to upload\n                  </div>\n              </div>\n                "));
       var dropRegion = document.getElementById("editor-container");
       var imagePreviewRegion = document.getElementById("image-preview");
 
@@ -28412,25 +28412,15 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
         var _loop = function _loop() {
           if (validateImage(files[i])) {
             var image = files[i];
-            // container
-            var imgView = document.createElement("div");
-            imgView.className = "image-view";
-            imagePreviewRegion.appendChild(imgView);
-
-            // previewing image
-            var img = document.createElement("img");
-            imgView.appendChild(img);
-
-            // progress overlay
-            var overlay = document.createElement("div");
-            overlay.className = "overlay";
-            imgView.appendChild(overlay);
+            console.log(imagePreviewRegion);
+            var img = $(imagePreviewRegion).find(".image-view img");
+            console.log(img);
 
             // read the image...
             var reader = new FileReader();
             reader.onload = function (e) {
-              img.src = e.target.result;
-              _this.content = img.src;
+              img.attr("src", e.target.result);
+              _this.content = e.target.result;
             };
             reader.readAsDataURL(image);
           }
@@ -28477,7 +28467,7 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
     key: "render",
     value: function render(section, mode) {
       if (section.content) {
-        return "<img class=\"sectionContent\" data-type=\"".concat(section.type, "\" src=\"").concat(section.content, "\">");
+        return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\"><img src=\"").concat(section.content, "\"></div>");
       }
       return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\">-double click to edit image-</div>");
     }
