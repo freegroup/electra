@@ -98,10 +98,9 @@ export default class Editor extends GenericEditor{
       for (let i = 0, len = files.length; i < len; i++) {
         if (validateImage(files[i])) {
           let image = files[i]
-
           // read the image...
           let reader = new FileReader()
-          reader.onload = function (e) {
+          reader.onload =  (e) => {
             img.attr("src", e.target.result)
             _this.content.src = e.target.result
           }
@@ -110,11 +109,35 @@ export default class Editor extends GenericEditor{
       }
     }
 
+    Mousetrap.bindGlobal(['ctrl+v', 'command+v'], () => {
+      navigator.clipboard.read()
+      .then(items => {
+        for (let item of items) {
+          for (let type of item.types) {
+            if (type.startsWith("image/")) {
+              item.getType(type)
+              .then((imageBlob) => {
+                let dataSrcUrl = window.URL.createObjectURL(imageBlob)
+                img.attr("src", dataSrcUrl)
+                _this.content.src = dataSrcUrl
+              })
+              return true
+            }      
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+      return false
+    })
+   
+
     function validateImage(image) {
       // check the type
       let validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (validTypes.indexOf(image.type) === -1) {
-        alert("Invalid File Type");
+        console.log("Invalid File Type");
         return false;
       }
 
@@ -133,8 +156,16 @@ export default class Editor extends GenericEditor{
   commit() {
     return super.commit()
     .then(() => {
+      Mousetrap.reset()
       this.section.content = this.content
       return this.section
+    })
+  }
+
+  cancel() {
+    return super.cancel()
+    .then(() => {
+      Mousetrap.reset()
     })
   }
 
