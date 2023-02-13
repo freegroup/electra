@@ -8,14 +8,16 @@ export default class Editor extends GenericEditor{
 
   inject(section) {
     super.inject(section)
-    this.content = section.content ?? ""
     let _this = this
 
+    this.content = this.convertToNewContentFormat(section.content)
+
     $(".sections .activeSection .sectionContent").html(`
+              <input class="scaleSlider" type="range" min="10" max="90" value="${this.content.scale}" class="slider" id="imageScaleSlider">
               <div class="editorContainerSelector" id="editor-container">
                   <div id="image-preview">
                     <div class="image-view" data-id="${section.id}" >
-                      <img src="${this.content}">
+                      <img src="${this.content.src}" width="${this.content.scale}%">
                       <div class="overlay"></div>
                     </div>
                   </div>
@@ -25,22 +27,22 @@ export default class Editor extends GenericEditor{
               </div>
                 `)
 
+    let slider = $("#imageScaleSlider")
     let dropRegion = document.getElementById("editor-container")
     let imagePreviewRegion = document.getElementById("image-preview")
+    let img = $(imagePreviewRegion).find(".image-view img")
 
     // open file selector when clicked on the drop region
     let fakeInput = document.createElement("input")
     fakeInput.type = "file"
     fakeInput.accept = "image/*"
     fakeInput.multiple = true
-    dropRegion.addEventListener('click', () => {
-      fakeInput.click()
+    dropRegion.addEventListener('click', () => { fakeInput.click()})
+    fakeInput.addEventListener("change", () => { handleFiles(fakeInput.files)})
+    slider.on('input', (event) => {
+      img.attr("width", slider.val()+"%")
+      this.content.scale = slider.val()
     })
-
-    fakeInput.addEventListener("change", () => {
-      handleFiles(fakeInput.files)
-    })
-
     function preventDefault(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -66,24 +68,21 @@ export default class Editor extends GenericEditor{
         let match = html && /\bsrc="?([^"\s]+)"?\s*/.exec(html)
         let url = match && match[1]
         if (url) {
-          let img = new Image
+          let image = new Image
           let c = document.createElement("canvas")
           let ctx = c.getContext("2d")
 
-          img.onload = function () {
+          image.onload = function () {
             c.width = this.naturalWidth    // update canvas size to match image
             c.height = this.naturalHeight
             ctx.drawImage(this, 0, 0)      // draw in image
-            c.toBlob(function (blob) {        // get content as PNG blob
-              // call our main function
-              handleFiles([blob])
-            }, "image/png")
+            c.toBlob( (blob) => { handleFiles([blob]) }, "image/png")
           }
-          img.onerror = function () {
+          image.onerror = function () {
             alert("Error in uploading")
           }
-          img.crossOrigin = ""              // if from different origin
-          img.src = url
+          image.crossOrigin = ""   // if from different origin
+          image.src = url
           return
         }
       }
@@ -96,15 +95,11 @@ export default class Editor extends GenericEditor{
         if (validateImage(files[i])) {
           let image = files[i]
 
-          console.log(imagePreviewRegion)
-          let img = $(imagePreviewRegion).find(".image-view img")
-          console.log(img)
-
           // read the image...
           let reader = new FileReader()
           reader.onload = function (e) {
             img.attr("src", e.target.result)
-            _this.content = e.target.result
+            _this.content.src = e.target.result
           }
           reader.readAsDataURL(image)
         }
@@ -139,7 +134,6 @@ export default class Editor extends GenericEditor{
     })
   }
 
-
    /**
    * 
    * @param {*} whereToAppend 
@@ -147,10 +141,36 @@ export default class Editor extends GenericEditor{
    * @param {String} mode Either "worksheet", "solution", "flashcard"
    */
    render(section, mode){
+    section.content = this.convertToNewContentFormat(section.content)
+ 
     if (section.content) {
-      return `<div class="sectionContent" data-type="${section.type}"><img src="${section.content}"></div>`
+      return `<div class="sectionContent" data-type="${section.type}"><img src="${section.content.src}" width="${section.content.scale}%"></div>`
     } 
-
     return `<div class="sectionContent" data-type="${section.type}">-double click to edit image-</div>`
+  }
+
+  defaultContent(){
+    return  { 
+      // 1x1 pixel transparent
+      src:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8IWtrDAAELgFXGK9V0wAAAABJRU5ErkJggg==", 
+      scale:50
+    }
+  }
+
+  convertToNewContentFormat(content){
+    // empty content. Return empty document
+    if(!content){
+      return this.defaultContent()
+    }
+
+    // convert old images format, return new format with scale attribute
+    if (typeof content === 'string' || content instanceof String) {
+      return {
+        src: content,
+        scale: 90
+      }
+    }
+    // already converted. Return content as is
+    return content
   }
 }

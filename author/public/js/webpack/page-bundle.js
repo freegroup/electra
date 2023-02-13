@@ -28343,13 +28343,15 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   _createClass(Editor, [{
     key: "inject",
     value: function inject(section) {
-      var _section$content;
+      var _this2 = this;
       _get(_getPrototypeOf(Editor.prototype), "inject", this).call(this, section);
-      this.content = (_section$content = section.content) !== null && _section$content !== void 0 ? _section$content : "";
       var _this = this;
-      $(".sections .activeSection .sectionContent").html("\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\" data-id=\"".concat(section.id, "\" >\n                      <img src=\"").concat(this.content, "\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n                  <div class=\"drop-message\">\n                    Drag & Drop images or click to upload\n                  </div>\n              </div>\n                "));
+      this.content = this.convertToNewContentFormat(section.content);
+      $(".sections .activeSection .sectionContent").html("\n              <input class=\"scaleSlider\" type=\"range\" min=\"10\" max=\"90\" value=\"".concat(this.content.scale, "\" class=\"slider\" id=\"imageScaleSlider\">\n              <div class=\"editorContainerSelector\" id=\"editor-container\">\n                  <div id=\"image-preview\">\n                    <div class=\"image-view\" data-id=\"").concat(section.id, "\" >\n                      <img src=\"").concat(this.content.src, "\" width=\"").concat(this.content.scale, "%\">\n                      <div class=\"overlay\"></div>\n                    </div>\n                  </div>\n                  <div class=\"drop-message\">\n                    Drag & Drop images or click to upload\n                  </div>\n              </div>\n                "));
+      var slider = $("#imageScaleSlider");
       var dropRegion = document.getElementById("editor-container");
       var imagePreviewRegion = document.getElementById("image-preview");
+      var img = $(imagePreviewRegion).find(".image-view img");
 
       // open file selector when clicked on the drop region
       var fakeInput = document.createElement("input");
@@ -28361,6 +28363,10 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
       });
       fakeInput.addEventListener("change", function () {
         handleFiles(fakeInput.files);
+      });
+      slider.on('input', function (event) {
+        img.attr("width", slider.val() + "%");
+        _this2.content.scale = slider.val();
       });
       function preventDefault(e) {
         e.preventDefault();
@@ -28385,48 +28391,40 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
           var match = html && /\bsrc="?([^"\s]+)"?\s*/.exec(html);
           var url = match && match[1];
           if (url) {
-            var img = new Image();
+            var image = new Image();
             var c = document.createElement("canvas");
             var ctx = c.getContext("2d");
-            img.onload = function () {
+            image.onload = function () {
               c.width = this.naturalWidth; // update canvas size to match image
               c.height = this.naturalHeight;
               ctx.drawImage(this, 0, 0); // draw in image
               c.toBlob(function (blob) {
-                // get content as PNG blob
-                // call our main function
                 handleFiles([blob]);
               }, "image/png");
             };
-            img.onerror = function () {
+            image.onerror = function () {
               alert("Error in uploading");
             };
-            img.crossOrigin = ""; // if from different origin
-            img.src = url;
+            image.crossOrigin = ""; // if from different origin
+            image.src = url;
             return;
           }
         }
       }
       dropRegion.addEventListener('drop', handleDrop, false);
       function handleFiles(files) {
-        var _loop = function _loop() {
+        for (var i = 0, len = files.length; i < len; i++) {
           if (validateImage(files[i])) {
             var image = files[i];
-            console.log(imagePreviewRegion);
-            var img = $(imagePreviewRegion).find(".image-view img");
-            console.log(img);
 
             // read the image...
             var reader = new FileReader();
             reader.onload = function (e) {
               img.attr("src", e.target.result);
-              _this.content = e.target.result;
+              _this.content.src = e.target.result;
             };
             reader.readAsDataURL(image);
           }
-        };
-        for (var i = 0, len = files.length; i < len; i++) {
-          _loop();
         }
       }
       function validateImage(image) {
@@ -28450,10 +28448,10 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   }, {
     key: "commit",
     value: function commit() {
-      var _this2 = this;
+      var _this3 = this;
       return _get(_getPrototypeOf(Editor.prototype), "commit", this).call(this).then(function () {
-        _this2.section.content = _this2.content;
-        return _this2.section;
+        _this3.section.content = _this3.content;
+        return _this3.section;
       });
     }
 
@@ -28466,10 +28464,38 @@ var Editor = /*#__PURE__*/function (_GenericEditor) {
   }, {
     key: "render",
     value: function render(section, mode) {
+      section.content = this.convertToNewContentFormat(section.content);
       if (section.content) {
-        return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\"><img src=\"").concat(section.content, "\"></div>");
+        return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\"><img src=\"").concat(section.content.src, "\" width=\"").concat(section.content.scale, "%\"></div>");
       }
       return "<div class=\"sectionContent\" data-type=\"".concat(section.type, "\">-double click to edit image-</div>");
+    }
+  }, {
+    key: "defaultContent",
+    value: function defaultContent() {
+      return {
+        // 1x1 pixel transparent
+        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mM8IWtrDAAELgFXGK9V0wAAAABJRU5ErkJggg==",
+        scale: 50
+      };
+    }
+  }, {
+    key: "convertToNewContentFormat",
+    value: function convertToNewContentFormat(content) {
+      // empty content. Return empty document
+      if (!content) {
+        return this.defaultContent();
+      }
+
+      // convert old images format, return new format with scale attribute
+      if (typeof content === 'string' || content instanceof String) {
+        return {
+          src: content,
+          scale: 90
+        };
+      }
+      // already converted. Return content as is
+      return content;
     }
   }]);
   return Editor;
