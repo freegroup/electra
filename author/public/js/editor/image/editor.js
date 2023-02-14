@@ -117,9 +117,12 @@ export default class Editor extends GenericEditor{
             if (type.startsWith("image/")) {
               item.getType(type)
               .then((imageBlob) => {
-                let dataSrcUrl = window.URL.createObjectURL(imageBlob)
-                img.attr("src", dataSrcUrl)
-                _this.content.src = dataSrcUrl
+                let reader = new FileReader()
+                reader.onload =  (e) => {
+                  img.attr("src", e.target.result)
+                  _this.content.src = e.target.result
+                }
+                reader.readAsDataURL(imageBlob)
               })
               return true
             }      

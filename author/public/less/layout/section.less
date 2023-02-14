@@ -130,15 +130,14 @@
     }
 
     &[data-type='brain']{
-      left: 50%;
+      text-align:center;
       position: relative;
-      transform: translateX(-50%);
       max-width:100%;
     }
 
 
     &[data-type='flashcard']{
-      #sectionMenuFlip{
+      .sectionMenuFlip{
         position:absolute;
         left:50%;
         bottom: 0px;
@@ -212,7 +211,7 @@
         animation: flip  0.5s reverse;
         animation-fill-mode: forwards;
       }
-      
+
       @keyframes flip {
         0% {  
           transform: rotateY(   0deg); 

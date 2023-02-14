@@ -133,14 +133,86 @@
   text-align: left !important;
   position: relative !important;
 
-  #documentPageAdd {
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    padding: 7px;
-    min-width: auto;
-    line-height: initial;
-    margin-left: 16px;
-    float: right;
+  #documentContentAdd {
+
+    left: @leftPaneWidth + @tabSize - 30;
+    top: @leftPaneTitleHeight + @appbarHeight - 25;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index:10000;
+    transform: translateX(-50%);
+
+    #toggle {
+        -webkit-appearance: none;
+    }
+
+    .button {
+        position: absolute;
+        z-index: 999;
+        width: 30px;
+        height: 30px;
+        border-radius: 100%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: -12px;
+
+        &:before {
+            position: absolute;
+            content: "";
+            width: 20px;
+            height: 2px;
+            transform: rotate(90deg);
+            transition: all 0.2s ease;
+        }
+
+        &:after {
+            position: absolute;
+            content: "";
+            width: 20px;
+            height: 2px;
+            transition: all 0.2s ease;
+        }
+    }
+
+    .nav {
+        margin-top: 20px;
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+        width: 100%;
+        border-radius: 2px;
+        transform: translateY(0%);
+        padding: 10px;
+
+        ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-align: center;
+            text-decoration: none;
+            cursor:pointer;
+            font-size: 12px;
+        }
+    }
+
+    #toggle:checked~.nav {
+        opacity: 1;
+        transform: translateY(10%);
+    }
+
+    #toggle:checked~.button:before {
+        transform: rotate(135deg);
+    }
+
+    #toggle:checked~.button:after {
+        transform: rotate(45deg);
+    }
   }
 }

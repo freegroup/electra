@@ -1,12 +1,12 @@
 
 
-export default function(text){
+export default function(text, delay=900){
   $("body").append($(`<div id="notificationToast">${text}</div>`))
   $("#notificationToast")
-    .delay(900)
-    .animate({ top: "+=20" }, 500)
+    .delay(delay)
+    .animate({ top: "+=40" }, 500)
     .delay(1500)
-    .animate({ top: "-=20" }, 300, ()=>{
+    .animate({ top: "-=50" }, 300, ()=>{
       $("#notificationToast").remove()
     })
 }

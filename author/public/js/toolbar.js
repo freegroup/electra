@@ -21,6 +21,31 @@ export default class Toolbar {
       app.fileSave()
     })
 
+    this.copyButton = $("#editorPageCopy")
+    this.copyButton.off("click").on("click", () => {
+      this.copyButton.tooltip("hide")
+      // deepcopy of the current selected section
+      //
+      let clipboardPage =  {
+        type: "page",
+        data: JSON.parse(JSON.stringify(this.view.getPage()))
+      }
+
+      let blob = new Blob([JSON.stringify(clipboardPage,undefined,4)], {type: 'text/plain'});
+      let item = new ClipboardItem({'text/plain': blob });
+      navigator.clipboard.write([item ]).then( ()=>{
+        $(`#editorPageCopy`).notify(
+          "✓ page copied to clipboard", 
+          { position: "bottom left",
+          gap: 20,
+          showDuration: 40,
+          arrowShow: false,
+          className: 'info',
+          autoHideDelay: 2000,
+        });
+      })
+    })
+
     this.shareButton = $("#editorFileShare")
     this.shareButton.off("click").on("click", () => {
       this.shareButton.tooltip("hide")
@@ -135,5 +160,4 @@ export default class Toolbar {
       this.saveButton.hide()
     }
   }
-
 }

@@ -76,8 +76,12 @@
           <div class="toolbar">
                <span class="group" id="editorgroup_fileoperations">
                   <span class="image-button" id="editorFileSave" >
-                    <img title="Save circuit" src="../common/images/toolbar_save.svg"/>
+                    <img title="Save Document" src="../common/images/toolbar_save.svg"/>
                     <div>Save</div>
+                  </span>
+                  <span class="image-button" id="editorPageCopy" >
+                    <img title="Copy Page" src="../common/images/toolbar_copy.svg"/>
+                    <div>Copy</div>
                   </span>
                </span>
 
@@ -225,7 +229,7 @@
 
 <link href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" rel="stylesheet" >
 <link href='//fonts.googleapis.com/css?family=Roboto:400,300,400italic,500,700,100,900' rel='stylesheet' type='text/css'>
-<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'/>
 <link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
 
 <!-- "include" files in a world of ES6 is not perfect. Unfortunately draw2d.js isn't complete
@@ -237,6 +241,8 @@
 
 <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
 <script src="../common/js/bootbox/bootbox.min.js"></script>
+
+<script src="../common/js/notify/notify.js"></script>
 
 <script src="../common/js/anno.js/anno.js"></script>
 <script src="../common/js/draw2d.js"></script>

@@ -3,6 +3,7 @@ const shortid = require('short-uuid')
 import inputPrompt from "../../common/js/InputPrompt"
 import authorDialog from "../../common/js/AuthorDialog"
 import commandStack from "./commands/CommandStack"
+
 import State from "./commands/State"
 
 import Page from "./model/page"
@@ -23,6 +24,7 @@ export default class View {
     this.activeSection = null
     this.currentEditor = null
     this.html = $(id)
+    this.clipboardSection = null
     this.palette = new Palette(app, this, permissions, "#paletteElements")
 
     this.palette.render()
@@ -42,32 +44,6 @@ export default class View {
         }
         return false
       })
-      .on("click", "#sectionMenuUp", event => {
-        let id = $(event.target).data("id")
-        let index = this.page.index(id)
-        if (index > 0) {
-          commandStack.push(new State(this.app)).then( doneCallback => {
-            let prev = this.activeSectionDom.prev()
-            this.activeSectionDom.insertBefore(prev)
-            this.page.move(index, index - 1)
-            doneCallback()
-          })
-        }
-        return false
-      })
-      .on("click", "#sectionMenuDown", event => {
-        let id = $(event.target).data("id")
-        let index = this.page.index(id)
-        if (index < this.page.length - 1) {
-          commandStack.push(new State(this.app)).then( doneCallback => {
-            let prev = this.activeSectionDom.next()
-            this.activeSectionDom.insertAfter(prev)
-            this.page.move(index, index + 1)
-            doneCallback()
-          })
-        }
-        return false
-      })
       .on("dblclick", ".sections .section:not(.editMode)", event => {
         let section = this.page.get($(event.target).closest(".section").data("id"))
         if(section) {
@@ -75,24 +51,28 @@ export default class View {
         }
         return false
       })
-      .on("click", "#sectionMenuEdit", event => {
+      .on("click", ".sectionMenuEdit", event => {
         this.onEdit(this.page.get($(event.target).data("id")))
         return false
       })
-      .on("click", "#sectionMenuDelete", event => {
+      .on("click", ".sectionMenuCopy", event => {
+        this.onCopy(this.page.get($(event.currentTarget).data("id")))
+        return false
+      })
+      .on("click", ".sectionMenuDelete", event => {
         this.onDelete(this.page.get($(event.target).data("id")))
         return false
       })
-      .on("click", "#sectionMenuFlip", event => {
+      .on("click", ".sectionMenuFlip", event => {
         this.onFlip(this.page.get($(event.currentTarget).data("id")))
         return false
       }) 
-      .on("click", "#sectionMenuHelp", event => {
+      .on("click", ".sectionMenuHelp", event => {
         let type = this.page.get($(event.target).closest(".section").data("id"))?.type ?? "generic"
         authorDialog.show(`/readme/en/author/${type}.sheet`)
         return false
       })
-      .on("click", "#sectionMenuCommitEdit", event => {
+      .on("click", ".sectionMenuCommitEdit", event => {
         let editedSection = this.activeSection
         this.onCommitEdit().then( ()=>{
           this.activeSection = null
@@ -100,7 +80,7 @@ export default class View {
         })
         return false
       })
-      .on("click", "#sectionMenuCancelEdit", event => {
+      .on("click", ".sectionMenuCancelEdit", event => {
         let editedSection = this.activeSection
         this.onCancelEdit().then( ()=>{
           this.activeSection = null
@@ -183,6 +163,45 @@ export default class View {
     })
   }
 
+  pastePage() {
+
+    // commit the current changes if an editor is active
+    return this.onCommitEdit()
+      .then(()=>{   
+        return commandStack.push(new State(this.app))   
+      })
+      .then( doneCallback => {
+        return navigator.clipboard.readText()
+      }) 
+      .then((clipText) => {
+        let json = JSON.parse(clipText)
+        if(!("type" in json && "data" in json)){
+          throw new Error("Clipboard data is not an electra.academy page")
+        }
+        if( json.type !== "page"){
+          throw new Error("Clipboard data is not an electra.academy page")
+        }
+        json.data.id = shortid.generate()
+        json.data.name = json.data.name+"Copy"
+        json.data.sections.forEach( section => section.id = shortid.generate())
+        let page = new Page(json.data)
+        this.app.getDocument().push(page)
+        this.setPage(page)
+        return page
+      })
+      .catch( exc => {
+        $(`#editorPageCopy`).notify(
+          "Please note that you can only paste content here if you \nhave previously copied it using the 'copy' button in the toolbar", 
+          { position: "bottom left",
+          gap: 20,
+          showDuration: 100,
+          arrowShow: true,
+          className: 'info',
+          autoHideDelay: 6000,
+        });
+      });
+  }
+
   addSection(type, index){
     // commit the current changes if an editor is active
     return this.onCommitEdit().then(()=>{
@@ -226,9 +245,10 @@ export default class View {
             <div class="fc">
               <div class='tinyFlyoverMenu'>
                 ${editor.getMenu(section)}
-                <div data-id="${section.id}" id="sectionMenuEdit"   >&#9998;</div>
-                <div                         id="sectionMenuHelp"   >?</div>
-                <div data-id="${section.id}" id="sectionMenuDelete" >&#8855;</div>
+                <div data-id="${section.id}" class="sectionMenuEdit"   >&#9998;</div>
+                <div data-id="${section.id}" class="sectionMenuCopy"   ><img src="../common/images/clipboard.svg"></div>
+                <div                         class="sectionMenuHelp"   >?</div>
+                <div data-id="${section.id}" class="sectionMenuDelete" >&#8855;</div>
               </div>  
             </div>
         </div>`)
@@ -292,13 +312,37 @@ export default class View {
     this.onCommitEdit().then( () => {
       this.onSelect(section)
       $(".activeSection .tinyFlyoverMenu").html(`
-        <div data-id="${section.id}" id="sectionMenuCommitEdit" class="material-button">Save</div>
-        <div data-id="${section.id}" id="sectionMenuCancelEdit" class="material-button">Cancel</div>
+        <div data-id="${section.id}" class="sectionMenuCommitEdit material-button">Save</div>
+        <div data-id="${section.id}" class="sectionMenuCancelEdit material-button">Cancel</div>
       `)
       this.currentEditor = editorByType(section.type)
       this.currentEditor.inject(section)
       $(".sections").removeClass("activeSection")
     })
+  }
+
+  onCopy(section) {
+    // deepcopy of the current selected section
+    //
+    let clipboardSection =  {
+      type: "section",
+      data: JSON.parse(JSON.stringify(section))
+    }
+
+    let blob = new Blob([JSON.stringify(clipboardSection,undefined,4)], {type: 'text/plain'});
+    let item = new ClipboardItem({'text/plain': blob });
+    navigator.clipboard.write([item ]).then( ()=>{
+      $(`.section[data-id='${section.id}'] .tinyFlyoverMenu`).notify(
+        "✓ section copied to clipboard", 
+        { position: "bottom center",
+        gap: 20,
+        showDuration: 40,
+        arrowShow: false,
+        className: 'info',
+        autoHideDelay: 2000,
+      });
+    })
+
   }
 
   onDelete(section) {
@@ -393,3 +437,5 @@ export default class View {
     }
   }
 }
+
+

@@ -169,6 +169,30 @@ body.light {
 
     #paletteFilter.pages {
         box-shadow: none !important;
+
+        #documentContentAdd {
+            .button {
+                background: rgb(var(--tint-color));
+                &:before {
+                    background: white;
+                }
+                &:after {
+                    background: white;
+                }
+            }
+            .nav {
+                background: white;
+                box-shadow: 2px 3px 10px 0 rgba(81, 81, 81, 0.1);
+                border: 1px solid  lightgray;
+        
+                a {
+                    color:  #6e6e6e;       
+                    &:hover {
+                        color:rgb(var(--tint-color));
+                    }
+                }
+            }
+        }
     }
 
     .content {
@@ -237,7 +261,7 @@ body.light {
 
             /** learning content gets a special annotation on the left **/
             &[data-type="flashcard"] {
-                #sectionMenuFlip {
+                .sectionMenuFlip {
                     background-color: rgba(var(--tint-color), 0.2) ;
                     border: 1px solid white;
                 }

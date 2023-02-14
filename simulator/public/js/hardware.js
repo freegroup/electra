@@ -146,7 +146,7 @@ export default {
           default:
             break;
         }
-        $.notify({message: msg}, {type: 'danger'});
+        alert(msg)
         this.emit("disconnect")
       })
     }

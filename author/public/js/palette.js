@@ -11,12 +11,24 @@ export default class Palette {
     this.app = app
     this.view = view
     this.permissions = permissions
+    this.hideMenu = ()=>{ 
+      $("body").off( "click", this.hideMenu)
+      $('#toggle').attr('checked', false); 
+    }
+
     commandStack.off(this).on("change", this)
 
     $(document)
       .off("click", "#documentPageAdd")
       .on("click", "#documentPageAdd", () => {
         this.app.view.addPage()
+      })
+      .off("click", "#documentClipboardPaste")
+      .on("click", "#documentClipboardPaste", () => {
+        this.app.view.pastePage()
+        .then( ()=>{
+          this.render()
+        })
       })
       .off("click", ".pageElement .page_edit_name")
       .on("click", ".pageElement .page_edit_name", (event) => {
@@ -57,9 +69,33 @@ export default class Palette {
 
 
   render() {
+
     // restore all classes from the other editors
     $("#paletteElementsScroll, #paletteFilter").addClass("pages")
-    $("#paletteFilter").html(`<div class='toc'>Chapters <span id="documentPageAdd" class="material-button">+</span></div>`)
+    $("#paletteFilter").html(`
+      <div class='toc'>
+        Chapters 
+        <div class="fabButton" id="documentContentAdd" >
+          <input type="checkbox" id="toggle"/>
+          <label class="button" for="toggle"></label>
+          <nav class="nav">
+            <ul>
+              <a id="documentPageAdd" >Add Chapter</a>
+              <a id="documentClipboardPaste" >Paste Clipboard</a>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    `)
+
+    let _this = this
+    $("#toggle").change(function() {
+      $("body").off( "click", _this.hideMenu)
+      if(this.checked) {
+        $("body").on( "click", _this.hideMenu)
+      }
+    });
+
     this.stackChanged(null)
   }
 
@@ -85,7 +121,7 @@ export default class Palette {
       let currentPage = this.view.getPage()
 
       if (this.app.hasModifyPermissionForCurrentFile()) {
-        $("#documentPageAdd").show()
+        $("#documentContentAdd").show()
         pages.forEach((page) => {
           let tooltip = page.hasLearningContent()?"This page contains learning material which ends later in two documents: a worksheet and a solution paper.":""
           let icon    = page.hasLearningContent()?" &#127891;":""
@@ -99,7 +135,7 @@ export default class Palette {
           </div>`)
         }, true)
       } else {
-        $("#documentPageAdd").hide()
+        $("#documentContentAdd").hide()
         pages.forEach((page) => {
           this.html.append(`
           <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" >
@@ -135,7 +171,7 @@ export default class Palette {
       }
     }
     else{
-      $("#documentPageAdd").hide()
+      $("#documentContentAdd").hide()
     }
   }
 
