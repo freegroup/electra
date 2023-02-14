@@ -30,8 +30,8 @@ export default class Palette {
           this.render()
         })
       })
-      .off("click", ".pageElement .page_edit_name")
-      .on("click", ".pageElement .page_edit_name", (event) => {
+      .off("click", ".pageElement .chapter_edit_name")
+      .on("click", ".pageElement .chapter_edit_name", (event) => {
         let page = this.app.getDocument().find($(event.currentTarget).data("page"))
         inputPrompt.show("Rename Pager", "Page name", page.name, value => {
           commandStack.push(new State(this.app)).then( doneCallback => {
@@ -42,17 +42,18 @@ export default class Palette {
         return false
       })
       
-      .off("click", ".pageElement .page_help")
-      .on("click", ".pageElement .page_help", (event) => {
+      .off("click", ".pageElement .chapter_help")
+      .on("click", ".pageElement .chapter_help", (event) => {
         authorDialog.show(`/readme/en/author/page.sheet`)
         return false
       })
-      .off("click", ".pageElement .page_delete")
-      .on("click", ".pageElement .page_delete", (event) => {
+      .off("click", ".pageElement .chapter_delete")
+      .on("click", ".pageElement .chapter_delete", (event) => {
         commandStack.push(new State(this.app)).then( doneCallback => {
           let page = this.app.getDocument().find($(event.currentTarget).data("page"))
-          this.view.removePage(page)
-          doneCallback()
+          this.view.removePage(page).then( ()=>{
+            doneCallback()
+          })
         })
         return false
       })
@@ -129,9 +130,9 @@ export default class Palette {
           <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
             <span>${page.name}${icon}</span>
             <span class="spacer"></span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action page_edit_name" >&#9998; </span>
-            <span                         data-toggle="tooltip" title="Help"                 class="page_action page_help" > ? </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="page_action page_delete" >&#8855;</span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action chapter_edit_name" >&#9998; </span>
+            <span                         data-toggle="tooltip" title="Help"                 class="page_action chapter_help" > ? </span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="page_action chapter_delete" >&#8855;</span>
           </div>`)
         }, true)
       } else {

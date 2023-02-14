@@ -125,22 +125,33 @@ export default class View {
 
   removePage(page){
     // commit the current changes if an editor is active
+    // Keep the state clean. 
+    //
     if(page === this.page) {
       let index = this.app.getDocument().index(page)
-      this.onCommitEdit().then(()=>{
-        if(index >0){
-          let newPage = this.app.getDocument().get(index-1)
-          this.setPage(newPage)
-        }
-        else if(this.app.getDocument().length >1 ){
-          let newPage = this.app.getDocument().get(1)
-          this.setPage(newPage)
-        }  
-        this.app.getDocument().remove(page)      
-      })
+      return this.onCancelEdit()
+        .then(()=>{
+          console.log(222)
+          if(index >0){
+            let newPage = this.app.getDocument().get(index-1)
+            this.setPage(newPage)
+          }
+          else if(this.app.getDocument().length >1 ){
+            let newPage = this.app.getDocument().get(1)
+            this.setPage(newPage)
+          }  
+          this.app.getDocument().remove(page)   
+          return page   
+        })
+        .catch (exc => {
+          console.log(exc)
+        })
     } 
     else {
-      this.app.getDocument().remove(page)
+      return new Promise((resolve, reject) => {
+        this.app.getDocument().remove(page)
+        resolve(page)
+      })
     }
   }
 
@@ -154,17 +165,13 @@ export default class View {
           page.name = value
           this.app.getDocument().push(page)
           this.setPage(page)
-          this.addSection("markdown", 0).then( section => {
-            this.onEdit(section)
-            doneCallback()
-          })
+          doneCallback()
         })
       })      
     })
   }
 
   pastePage() {
-
     // commit the current changes if an editor is active
     return this.onCommitEdit()
       .then(()=>{   
