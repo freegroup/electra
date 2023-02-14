@@ -60,6 +60,39 @@
     /* required for flashcard */
     perspective: 1800px;
 
+    .placeholderContainer{
+      display: flex;
+      width: fit-content;
+      padding:15px;
+      border-radius:15px;
+      margin: 50px;
+      margin-left: auto;
+      margin-right: auto;
+      border-style: dashed;
+      border-width: 1px;
+
+      .placeholderButtons{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding-left: 3vw;
+        justify-content: center;
+        .placeholderMenuInsertSection{
+          text-align: left;
+        }
+      }
+      .placeholderText{
+        h1{
+          font-size:14px !important;
+          font-weight: bold !important;
+          border:none !important
+        }
+        h2{
+          font-size:12px !important;
+          font-weight: 300 !important;
+        }
+      }
+    }
 
     &[data-type='image']{
       text-align: center;
@@ -166,40 +199,6 @@
       .back {
         background-color: rgb(243, 241, 241);
         transform: rotateY(180deg);
-      }
-      .placeholderContainer{
-        display: flex;
-        width: fit-content;
-        padding-left:30px;
-        padding-right:15px;
-        border-radius:15px;
-        margin: 50px;
-        margin-left: auto;
-        margin-right: auto;
-        border-style: dashed;
-        border-width: 1px;
-
-        .placeholderButtons{
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-          padding-left: 3vw;
-          justify-content: center;
-          .placeholderMenuInsertSection{
-            text-align: left;
-          }
-        }
-        .placeholderText{
-          h1{
-            font-size:14px !important;
-            font-weight: bold !important;
-            border:none !important
-          }
-          h2{
-            font-size:12px !important;
-            font-weight: 300 !important;
-          }
-        }
       }
 
       .flipped-back {

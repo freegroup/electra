@@ -35,7 +35,7 @@ export default class Toolbar {
       let item = new ClipboardItem({'text/plain': blob });
       navigator.clipboard.write([item ]).then( ()=>{
         $(`#editorPageCopy`).notify(
-          "✓ page copied to clipboard", 
+          "chapter copied to clipboard", 
           { position: "bottom left",
           gap: 20,
           showDuration: 40,

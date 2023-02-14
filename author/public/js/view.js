@@ -191,7 +191,7 @@ export default class View {
       })
       .catch( exc => {
         $(`#editorPageCopy`).notify(
-          "Please note that you can only paste content here if you \nhave previously copied it using the 'copy' button in the toolbar", 
+          "You can only paste chapter into this document if you have previously \ncopied it to the clipboard using this 'copy' button", 
           { position: "bottom left",
           gap: 20,
           showDuration: 100,
@@ -232,8 +232,17 @@ export default class View {
     // inject the host for the rendered section
     this.html.html($("<div class='sections'></div>"))
     let whereToAppend = this.html.find(".sections")
-    this.renderSpacer(whereToAppend, 0)
- 
+
+    if(page.length === 0){
+      let content =  editorByType("empty-chapter").render(null, renderMode.EDITOR)
+      whereToAppend.append(`
+      <div class='section'>
+          ${content}
+      </div>`)
+      return 
+    }
+
+    this.renderSpacer(whereToAppend, 0) 
     page.forEach((section, index) => {
       let editor = editorByType(section.type)
       let content = editor.render(section, renderMode.EDITOR)

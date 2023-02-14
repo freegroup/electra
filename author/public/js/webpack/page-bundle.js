@@ -28161,7 +28161,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _flashcard_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flashcard/editor */ "./public/js/editor/flashcard/editor.js");
 /* harmony import */ var _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./placeholder/editor */ "./public/js/editor/placeholder/editor.js");
 /* harmony import */ var _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./wysiwyg/editor */ "./public/js/editor/wysiwyg/editor.js");
-/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor */ "./public/js/editor/editor.js");
+/* harmony import */ var _empty_chapter_editor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./empty-chapter/editor */ "./public/js/editor/empty-chapter/editor.js");
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./editor */ "./public/js/editor/editor.js");
 
 
 
@@ -28170,14 +28171,68 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var unknownEditor = new _editor__WEBPACK_IMPORTED_MODULE_7__["default"]();
-var editors = [new _markdown_editor__WEBPACK_IMPORTED_MODULE_0__["default"](), new _cloze_editor__WEBPACK_IMPORTED_MODULE_2__["default"](), new _flashcard_editor__WEBPACK_IMPORTED_MODULE_4__["default"](), new _brain_editor__WEBPACK_IMPORTED_MODULE_1__["default"](), new _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__["default"](), new _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__["default"](), new _image_editor__WEBPACK_IMPORTED_MODULE_3__["default"]()];
+
+var unknownEditor = new _editor__WEBPACK_IMPORTED_MODULE_8__["default"]();
+var editors = [new _markdown_editor__WEBPACK_IMPORTED_MODULE_0__["default"](), new _cloze_editor__WEBPACK_IMPORTED_MODULE_2__["default"](), new _flashcard_editor__WEBPACK_IMPORTED_MODULE_4__["default"](), new _brain_editor__WEBPACK_IMPORTED_MODULE_1__["default"](), new _placeholder_editor__WEBPACK_IMPORTED_MODULE_5__["default"](), new _wysiwyg_editor__WEBPACK_IMPORTED_MODULE_6__["default"](), new _empty_chapter_editor__WEBPACK_IMPORTED_MODULE_7__["default"](), new _image_editor__WEBPACK_IMPORTED_MODULE_3__["default"]()];
 function getByType(type) {
   var _editors$find;
   return (_editors$find = editors.find(function (editor) {
     return editor.type === type;
   })) !== null && _editors$find !== void 0 ? _editors$find : unknownEditor;
 }
+
+/***/ }),
+
+/***/ "./public/js/editor/empty-chapter/editor.js":
+/*!**************************************************!*\
+  !*** ./public/js/editor/empty-chapter/editor.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Editor)
+/* harmony export */ });
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../editor */ "./public/js/editor/editor.js");
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Editor = /*#__PURE__*/function (_GenericEditor) {
+  _inherits(Editor, _GenericEditor);
+  var _super = _createSuper(Editor);
+  function Editor() {
+    var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "empty-chapter";
+    _classCallCheck(this, Editor);
+    return _super.call(this, type);
+  }
+
+  /* public interface */
+  _createClass(Editor, [{
+    key: "render",
+    value: function render(section, mode) {
+      return "\n    <div class=\"sectionContent markdownRendering\" >\n    <div class=\"placeholderContainer\">\n      <div class=\"placeholderText\">  \n        <img src=\"../common/images/pencil.svg\">\n        <h1>Welcome to our page!</h1>\n        <h2>Start by adding your first content to make it feel more alive in here!</h2>\n      </div>\n      <div class=\"placeholderButtons\">\n        <div data-index=\"0\" data-type=\"wysiwyg\"   class='sectionMenuInsertSection material-button' >&#8853; Text</div>\n        <div data-index=\"0\" data-type=\"cloze\"     class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>\n        <div data-index=\"0\" data-type=\"flashcard\" class='sectionMenuInsertSection material-button' >&#8853; FlashCard</div>\n        <div data-index=\"0\" data-type=\"brain\"     class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>\n        <div data-index=\"0\" data-type=\"image\"     class='sectionMenuInsertSection material-button' >&#8853; Picture</div>\n      </div>\n    </div>\n    </div>\n    ";
+    }
+  }, {
+    key: "defaultContent",
+    value: function defaultContent() {
+      return null;
+    }
+  }]);
+  return Editor;
+}(_editor__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
 
 /***/ }),
 
