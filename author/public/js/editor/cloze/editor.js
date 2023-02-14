@@ -2,9 +2,11 @@ import renderMode from "../../renderMode"
 
 let md_q = require('markdown-it')()
 md_q.use(require('./question_plugin'))
+md_q.use(require('markdown-it-link-target'))
 
 let md_s = require('markdown-it')()
 md_s.use(require('./solution_plugin'))
+md_s.use(require('markdown-it-link-target'))
 
 import MarkdownEditor from '../markdown/editor'
 

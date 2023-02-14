@@ -6,6 +6,7 @@ import renderMode from "./renderMode"
 
 md.use(require("markdown-it-asciimath"))
 md.use(require('markdown-it-container'), "info")
+md.use(require('markdown-it-link-target'))
 
 import editorByType from "./editor/editorByType"
 

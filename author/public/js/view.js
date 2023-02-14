@@ -38,6 +38,11 @@ export default class View {
         this.onUnselect()
       })
       .on("click", ".sections .section", event => {
+        // allow an <a href="..."> links to work within a section
+        if(event.target.nodeName === "A"){
+          return true;
+        }
+        
         let section = this.page.get($(event.target).closest(".section").data("id"))
         if(section) {
           this.onSelect(section)
@@ -426,6 +431,7 @@ export default class View {
     $("#welcomeNewDocument").on("click", ()=>{
       this.app.fileNew("NewDocument","user")
     })
+
     $("#welcomeOpenExample").on("click", ()=>{
       this.app.load("/basic/math/binary-addition.sheet","global")
     })

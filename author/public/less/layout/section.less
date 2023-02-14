@@ -19,17 +19,20 @@
   padding-left:3px;
   position: relative;
 
+
   &.error {
     border-width:1px;
     border-style:solid;
   }
 
+  &.footerSection,
   &:hover{
     border-width:1px;
     border-style:solid;
     .sectionContent[data-type='spacer'] {
       .material-button{
-        visibility:visible !important;
+        animation:pop-in 0.2s;
+        animation-fill-mode: forwards;
       }
     }
     .fc{
@@ -160,6 +163,7 @@
       h2, h3 {
         font-weight: 300;
       }
+      
     }
 
     &[data-type='brain']{
@@ -224,7 +228,6 @@
 
     &[data-type='spacer']{
       position: relative;
-
       text-align: center;
       display: flex;
       flex-direction: row;
@@ -232,9 +235,10 @@
       justify-content: center;
       gap: 10px;
       align-items: center;
-
       .material-button{
-        visibility:hidden;
+        opacity: 0;
+        animation:pop-out 0.2s;
+        animation-fill-mode: forwards;
       }
     }
   }

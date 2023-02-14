@@ -131,6 +131,7 @@ export default class Toolbar {
   stackChanged(event) {
     this.pdfButton.hide()
     this.shareButton.hide()
+    this.copyButton.hide()
     
     // check the permission if the current file is "user" scope
     if(this.app.getDocument() !==null) {
@@ -153,6 +154,7 @@ export default class Toolbar {
       $("#editUndo, #editRedo").show()
       this.pdfButton.show()
       this.saveButton.show()
+      this.copyButton.show()
     }
     else{
       $("#editUndo, #editRedo").hide()

@@ -27802,8 +27802,10 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 var md_q = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
 md_q.use(__webpack_require__(/*! ./question_plugin */ "./public/js/editor/cloze/question_plugin.js"));
+md_q.use(__webpack_require__(/*! markdown-it-link-target */ "./node_modules/markdown-it-link-target/index.js"));
 var md_s = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
 md_s.use(__webpack_require__(/*! ./solution_plugin */ "./public/js/editor/cloze/solution_plugin.js"));
+md_s.use(__webpack_require__(/*! markdown-it-link-target */ "./node_modules/markdown-it-link-target/index.js"));
 
 var Editor = /*#__PURE__*/function (_MarkdownEditor) {
   _inherits(Editor, _MarkdownEditor);
@@ -28654,6 +28656,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/index.js")();
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 md.use(__webpack_require__(/*! markdown-it-container */ "./node_modules/markdown-it-container/index.js"), "info");
+md.use(__webpack_require__(/*! markdown-it-link-target */ "./node_modules/markdown-it-link-target/index.js"));
 
 var Editor = /*#__PURE__*/function (_GenericEditor) {
   _inherits(Editor, _GenericEditor);
@@ -28864,6 +28867,7 @@ var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/inde
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 md.use(__webpack_require__(/*! markdown-it-container */ "./node_modules/markdown-it-container/index.js"), "info");
 md.use(__webpack_require__(/*! markdown-it-br */ "./node_modules/markdown-it-br/index.js"));
+md.use(__webpack_require__(/*! markdown-it-link-target */ "./node_modules/markdown-it-link-target/index.js"));
 
  // Editor's Style
 
@@ -53290,6 +53294,7 @@ function setup(md, options) {
     options = defaults;
   }
   var useKeyword = options.useKeyword;
+  console.log(useKeyword);
 
 
   //var options = assign({}, defaults, options);
@@ -53312,6 +53317,8 @@ function setup(md, options) {
 
   md.renderer.rules.code_inline = function(tokens, idx, options, env, self) {
     var token = tokens[idx];
+
+    console.log(useKeyword);
 
     if(!useKeyword) {
       console.log("1");
@@ -53615,6 +53622,47 @@ module.exports = function container_plugin(md, name, options) {
   md.renderer.rules['container_' + name + '_open'] = render;
   md.renderer.rules['container_' + name + '_close'] = render;
 };
+
+
+/***/ }),
+
+/***/ "./node_modules/markdown-it-link-target/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/markdown-it-link-target/index.js ***!
+  \*******************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+// Adapted from https://github.com/markdown-it/markdown-it/blob/fbc6b0fed563ba7c00557ab638fd19752f8e759d/docs/architecture.md
+
+function markdownitLinkTarget (md, config) {
+  config = config || {}
+
+  var defaultRender = md.renderer.rules.link_open || this.defaultRender
+  var target = config.target || '_blank'
+
+  md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    // If you are sure other plugins can't add `target` - drop check below
+    var aIndex = tokens[idx].attrIndex('target')
+
+    if (aIndex < 0) {
+      tokens[idx].attrPush(['target', target]) // add new attribute
+    } else {
+      tokens[idx].attrs[aIndex][1] = target // replace value of existing attr
+    }
+
+    // pass token to default renderer.
+    return defaultRender(tokens, idx, options, env, self)
+  }
+}
+
+markdownitLinkTarget.defaultRender = function (tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options)
+}
+
+module.exports = markdownitLinkTarget
 
 
 /***/ }),
@@ -81458,6 +81506,7 @@ var md = __webpack_require__(/*! markdown-it */ "./node_modules/markdown-it/inde
 
 md.use(__webpack_require__(/*! markdown-it-asciimath */ "./node_modules/markdown-it-asciimath/index.js"));
 md.use(__webpack_require__(/*! markdown-it-container */ "./node_modules/markdown-it-container/index.js"), "info");
+md.use(__webpack_require__(/*! markdown-it-link-target */ "./node_modules/markdown-it-link-target/index.js"));
 
 function getParam(name) {
   name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");

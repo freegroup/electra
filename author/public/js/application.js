@@ -142,9 +142,6 @@ class Application {
     this.currentFile = { name, scope }
     this.setDocument(new Document(), 0)
     commandStack.markSaveLocation()
-    let section = this.view.addSection("markdown", 0)
-    this.view.onSelect(section)
-    this.view.onEdit(section)
   }
 
   load(name, scope){
@@ -173,7 +170,6 @@ class Application {
   }
 
   stackChanged(event) {
-    console.log(this.document.hasLearningContent())
     if (event.getStack().canUndo()){
       $("#editorFileSave div").addClass("highlight")
       this.hasUnsavedChanges = true

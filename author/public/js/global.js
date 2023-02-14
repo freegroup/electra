@@ -13,8 +13,6 @@ import LabelInplaceEditor from "./editor/brain/LabelInplaceEditor"
 import "./util/mousetrap-global"
 import "./util/mousetrap-pause"
 import hardware from "./hardware"
-let markdown = require('markdown-it')()
-markdown.use(require("markdown-it-asciimath"))
 
 
 export default {
@@ -26,7 +24,6 @@ export default {
   hardware,
   ProbeFigure,
   Mousetrap,
-  markdown,
   inlineSVG,
   LabelInplaceEditor,
   ConnectionRouter,
