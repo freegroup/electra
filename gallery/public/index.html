@@ -1,0 +1,108 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+  <title>Electra Academy</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="icon" type="image/png" href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png" href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png" href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../common/images/favicon_16x16.png" sizes="16x16">
+  
+  <script src="../common/js/jquery/jquery.js"></script>
+  <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+
+  <link href='../common/css/roboto.css' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var app = null
+  </script>
+</head>
+
+<body id="container" class="light">
+
+  <div id="layout">
+  
+    <div class="appbar">
+      <img class="icon" src="../common/images/favicon_64x64.svg"/>
+      <div class="title">
+          <h1>Electra.Academy</h1>
+          <h2>Author</h2>
+      </div>
+      <div class="slogan">
+        makes digital logic accessible for anyone
+      </div>
+  
+      <div class="spacer"></div>
+  
+      <span class="group applicationSwitch">
+  
+        <label class="dropdown userinfo_toggler" >
+          <span class="image-button" data-toggle="dropdown">
+            <img  src="../common/images/toolbar_user.svg"/>
+          </span>
+          <div class="dropdown-menu" role="menu" >
+          </div>
+        </label>
+      </span>
+    </div>
+
+    <div class="workspace">
+      <div class="toolbar">
+       <div id="componentFilter">
+          <input type="radio" id="search-worksheet" name="x" checked/>
+          <label for="search-worksheet">Worksheets</label>
+          
+          <input type="radio" id="search-circuits" name="x"/>
+          <label for="search-circuits">Circuits</label>
+          
+          <input type="radio" id="search-components" name="x"/>
+          <label for="search-components">Components</label>
+        </div>
+
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Search..">
+    
+          <button class="search-button">
+            <img src="../common/images/toolbar_search.svg"/>
+          </button>
+       </div>
+
+      </div>
+
+      <div class="content">
+
+        <div class="welcomeMessage">
+          <div class="teaser">
+            <h2>Community Gallery</h2>
+            <p>
+              Discover designs and find inspiration from the community
+            </p>
+          </div>
+          <div class="description">
+            <p>
+              With <i>Documentation Author</i>, you can easily create and share documents, worksheets, and course 
+              materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more 
+              engaging and informative. Sharing your work with others has never been easier. <b>I hope you'll give it a try!</b>
+            </p>
+          </div>
+          <img src="../common/images/app_gallery.svg" width="200px">
+        </div>
+
+        <div class="searchResult">
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+<script src="../common/js/ASCIIMathTeXImg.js"></script>
+<script src="https://accounts.google.com/gsi/client" defer></script>
+<script src="./js/webpack/bundle.js"></script>
+
+</html>

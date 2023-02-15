@@ -15,7 +15,7 @@
         "name": "Rectangle",
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * Generated Code for the Draw2D touch HTML5 lib.\n * File will be generated if you save the *.shape file.\n *\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custom code and event handler here.\n *\n * Looks disconcerting - extending my own class. But this is a good method to\n * merge basic code and override them with custom methods.\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n\n    /**\n     *  Called by the simulator for every calculation\n     *  loop\n     *  @param {Object} context context where objects can store or handover global variables to other objects.\n     *  @required\n     **/\n    calculate:function( context)\n    {\n        let v1 = this.read[\"input1\"]();\n        let v2 = this.read[\"input2\"]();\n        this.write[\"output\"](v1*v2);\n    }\n});",
-        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray"
+        "markdown": "# High / Low Signal display\n\nsimple  **HIGH** / **LOW** display.\n\n    HIGH -> red\n \n    LOW -> gray"
       },
       "cssClass": "shape_designer_figure_PolyRect",
       "ports": [],

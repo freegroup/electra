@@ -1,0 +1,26 @@
+#componentFilter{
+    margin-left:20px;
+    height: 100%;
+    width: fit-content;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: no-wrap;
+    input{ 
+        display: none; 
+    }
+    label{
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom:0px;
+        font-size:1em;
+        font-weight: 300;
+    }
+    label:last-of-type{ border-right: 0; }
+    label:hover{
+    }
+    input:checked + label{
+    }
+}

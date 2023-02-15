@@ -37,6 +37,12 @@ module.exports = {
             args: "./server/index",
           },          
           {
+            name   : "gallery",
+            cwd : "./gallery",
+            script: "node",
+            args: "./server/index",
+          },          
+          {
             name   : "ingress",
             cwd : "./ingress",
             script: "node",

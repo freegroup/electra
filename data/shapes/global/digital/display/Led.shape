@@ -15,7 +15,7 @@
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        // automatic stored by the framework\n        this.value = false;\n        \n        this.on(\"added\",(emitter, event)=>{\n            this.layerAttr(\"circle\",{fill: this.value?\"#C21B7A\":\"#f0f0f0\"});\n        });\n    },\n\n    onStart: function(context)\n    {\n        this.value = this.getInputPort(0).getBooleanValue()\n        this.layerAttr(\"circle\",{fill: this.value?\"#C21B7A\":\"#f0f0f0\"});\n    },\n    \n    calculate: function()\n    {\n        var port = this.getInputPort(0);\n        //if(port.hasChangedValue()){\n            this.value = port.getBooleanValue()\n            this.layerAttr(\"circle\",{fill: this.value?\"#C21B7A\":\"#f0f0f0\"});\n        //}\n    }\n});",
         "name": "circle",
-        "markdown": "# High / Low Signal display\n\nsimple `HIGH`/ `LOW` display.\n\n    HIGH -> red\n \n    LOW -> gray",
+        "markdown": "# High / Low Signal display\n\nsimple  **HIGH** / **LOW** display.\n\n    HIGH -> red\n \n    LOW -> gray",
         "type": "Output",
         "direction": 1
       },

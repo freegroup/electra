@@ -1,0 +1,50 @@
+
+body.light {
+    --toolbar-bg-color: 254, 233, 233 ;
+    --tint-color:       199, 29, 61 ;
+    --tint-color-dark:  158, 27, 52 ;
+
+    --lefttab-font-color: 254, 233, 233;
+    --lefttab-bg-color:  199, 29, 61;
+
+    .toolbar {
+        background-color: rgb(var(--toolbar-bg-color));
+        #componentFilter{
+            border: 1px solid #666;
+            label{
+                border-right: 1px solid #ccc;
+                background-color: white;
+            }
+            label:hover{
+                background: #eee;
+            }
+            input:checked + label{
+                background:rgb(var(--tint-color));
+                color: white;
+            }
+        }
+        
+    }
+
+
+    .welcomeMessage {
+        background: url(../images/background.png) no-repeat;
+        background-position: center top;
+        background-size: 100% 50%;
+
+        img {
+            background-color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        .teaser {
+            background-color: white;
+            box-shadow: -3px 3px 8px 0 rgb(3 166 150 / 80%), 3px -3px 5px 0  rgba(var(--tint-color), 0.6);
+
+            h2 {
+                color: rgb(var(--tint-color)) ;
+            }
+        }
+    }
+
+}
