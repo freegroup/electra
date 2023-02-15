@@ -42,7 +42,7 @@ export default class View {
         if(event.target.nodeName === "A"){
           return true;
         }
-        
+
         let section = this.page.get($(event.target).closest(".section").data("id"))
         if(section) {
           this.onSelect(section)
@@ -354,7 +354,7 @@ export default class View {
     let item = new ClipboardItem({'text/plain': blob });
     navigator.clipboard.write([item ]).then( ()=>{
       $(`.section[data-id='${section.id}'] .tinyFlyoverMenu`).notify(
-        "✓ section copied to clipboard", 
+        "section copied to clipboard", 
         { position: "bottom center",
         gap: 20,
         showDuration: 40,

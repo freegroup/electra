@@ -73,7 +73,6 @@
       flex-direction: row;
       align-items: center;
       width: 100%;
-
       padding: 10px;
       cursor: pointer;
       border-left-width: 2px;
@@ -81,8 +80,8 @@
       border-bottom-width: 1px;
       border-bottom-style: solid;
       position: relative;
-
-    white-space: nowrap;
+      white-space: nowrap;
+      
       .spacer {
         flex-grow: 1;
       }
@@ -94,12 +93,16 @@
 
       &:hover {
         .page_action {
-          visibility: initial;
+          opacity: 1; 
+          transform: scale(1); 
+          transition: all 0.2s ease;
         }
       }
 
       .page_action {
-        visibility: hidden;
+        opacity: 0; 
+        transform: scale(0.5); 
+        transition: all 0.2s ease;
         font-size: 20px;
         min-width: 25px;
       }
@@ -183,6 +186,7 @@
         opacity: 0;
         transition: all 0.2s ease-in-out;
         width: 100%;
+        min-width:100px;
         border-radius: 2px;
         transform: translateY(0%);
         padding: 10px;
@@ -190,7 +194,7 @@
         ul {
             margin: 0;
             padding: 0;
-            display: flex;
+            display: none;
             flex-direction: column;
         }
 
@@ -205,6 +209,9 @@
     #toggle:checked~.nav {
         opacity: 1;
         transform: translateY(10%);
+        ul{
+          display:flex;
+        }
     }
 
     #toggle:checked~.button:before {
