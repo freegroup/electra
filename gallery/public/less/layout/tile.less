@@ -8,6 +8,26 @@
     flex-direction: row;
     border-radius: 3px;
 
+    &.editMode {
+        position: absolute;
+        margin-left: auto;
+        margin-top: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(225 223 225);
+        z-index: 10000000000000;
+        width: 60%;
+        height: 60%;
+        .details{
+            flex:1 1px;
+            max-width: unset;
+            max-height: unset;
+            .description{
+                max-height: unset;
+            }
+        }
+    }
     .image{
         display:flex;
         padding:30px;

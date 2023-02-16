@@ -29,11 +29,20 @@ class View {
                 <div class="tags">${tags}</div>
                 <div class="description" data-markdown="${conf.shapes[shape.scope].image(mkFile)}"> </div>
             </div>
-
         </div>
-        
         `)
     });
+
+    $(".tile .editIcon").on("click", (event) => {
+        let icon = $(event.currentTarget)
+        let tile = icon.closest(".tile")
+        let editor = tile.clone()
+       
+        editor.css("position","absolute")
+        editor.addClass("editMode")
+        $(".searchResult").append(editor)
+        console.log(tile)
+    })
 
     const descriptions = document.querySelectorAll(".tile .description");
     
