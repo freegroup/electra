@@ -1,27 +1,35 @@
 .tile {
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    border: 1px solid rgba(255, 255, 255, 0.20);
-
+    background-color:transparent;
   
     min-width: 150px; 
     min-height: 300px; 
     display: flex;
     flex-direction: row;
-    border-radius: 2px;
+    border-radius: 5px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+
     .image{
         display:flex;
         padding:30px;
-        background-color:  rgba(var(--tint-color), 0.1);
+        background-color:transparent;
         max-width:120px;
         img{
             max-width: 100%;
             margin-bottom: auto;
+            filter:drop-shadow(2px 0px 15px #ffffff);
         }
     }
 
     .details {
         padding:14px;
         max-width: 300px;
+        background-color: white;
+        border-radius: 5px;
+        border-bottom-left-radius: 15px;
+        border-top-left-radius: 15px;
+        border-left: 1px solid #e9e9e9;
         .displayName{
             border-bottom: 1px solid lightgray;
             padding-right: 56px;
