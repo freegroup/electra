@@ -9,8 +9,8 @@
     "serve": "webpack serve --allowed-hosts all --port 8080 --static-directory .  --static-watch  --watch-files ./**/*"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.7",
-    "@babel/preset-env": "^7.16.11",
+    "@babel/core": "^7.17.7",        
+    "babel-preset-modern-browsers": "^15.0.2",
     "babel-loader": "^8.2.3",
     "bootstrap-toggle": "^2.2.2",
     "css-loader": "^6.7.1",
@@ -25,9 +25,7 @@
     "lodash.assign": "^4.2.0",
     "mousetrap": "^1.6.5",
     "path": "^0.12.7",
-    "remarkable": "^2.0.1",
     "split.js": "^1.6.5",
-    "storage-helper": "^1.4.1",
     "style-loader": "^3.3.1",
     "svg-inline-loader": "^0.8.2",
     "webpack": "^5.70.0",
@@ -36,8 +34,10 @@
   },
   "dependencies": {
     "axios": "^0.26.1",
-    "markdown-it": "^12.3.2",
+    "markdown-it": "^13.0.1",
     "markdown-it-asciimath": "^1.0.0",
+    "markdown-it-br": "^1.0.0",
+    "markdown-it-container": "^3.0.0",
     "markdown-it-link-target": "^1.0.2",
     "sanitize-filename": "^1.6.3"
   }

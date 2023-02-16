@@ -1,8 +1,7 @@
 const axios = require("axios")
-const md = require('markdown-it')()
 
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-link-target'))
+import mdFactory  from "./markdown"
+let md = mdFactory()
 
 export default class AuthorPage {
 

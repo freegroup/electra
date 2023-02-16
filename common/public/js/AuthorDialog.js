@@ -1,8 +1,6 @@
 const axios = require("axios")
-const md = require('markdown-it')()
+const md = require('./markdown')
 
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-link-target'))
 
 class Dialog {
 

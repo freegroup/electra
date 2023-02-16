@@ -1,8 +1,6 @@
 import axios from "axios"
-let md = require('markdown-it')()
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-container'), "info")
-md.use(require('markdown-it-link-target'))
+import mdFactory from "../../../common/js/markdown"
+let md = mdFactory()
 
 import conf from "../configuration"
 
@@ -15,7 +13,8 @@ class View {
   render( shapes){
     let searchResult = $(".searchResult")
     searchResult.html("")
-
+    let writePermission = this.permissions.shapes.global.update || this.permissions.shapes.update
+    let writeIcon = writePermission?`<div class="editIcon">&#9998;</div>`:""
     shapes.forEach(shape => {
         let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
         let mkFile = shape.shapePath.replace(".shape",".md")
@@ -26,7 +25,7 @@ class View {
             </div>
 
             <div class="details">
-                <div class="displayName">${shape.displayName}</div>
+                <div class="headline"><div class="displayName">${shape.displayName}</div>${writeIcon}</div>
                 <div class="tags">${tags}</div>
                 <div class="description" data-markdown="${conf.shapes[shape.scope].image(mkFile)}"> </div>
             </div>
@@ -35,7 +34,6 @@ class View {
         
         `)
     });
-    console.log(shapes)
 
     const descriptions = document.querySelectorAll(".tile .description");
     
@@ -45,7 +43,6 @@ class View {
             if (!entry.isIntersecting) return;
             const desc = entry.target;
             const newURL = desc.getAttribute("data-markdown");
-            console.log(newURL);
             //desc.src = newURL;
             axios.get(newURL)
             .then((response) => {

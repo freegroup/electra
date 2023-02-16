@@ -1,9 +1,5 @@
-let md = require('markdown-it')()
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-container'), "info")
-md.use(require('markdown-it-br'))
-md.use(require('markdown-it-link-target'))
-
+import mdFactory from "../../../../common/js/markdown"
+let md = mdFactory()
 
 import ToastEditor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style

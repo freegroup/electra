@@ -1,5 +1,7 @@
-import {Remarkable, utils} from "remarkable"
-import CircuitFigure from "../figures/CircuitFigure";
+import mdFactory from "../../../common/js/markdown"
+let md = mdFactory()
+
+import CircuitFigure from "../figures/CircuitFigure"
 import conf from "../Configuration"
 
 class Dialog {
@@ -22,9 +24,7 @@ class Dialog {
     let contentUrl = conf.shapes[scope].file(markdownName)
     $.get(contentUrl,  (content) => {
       let version = figure.VERSION
-      let markdownParser = new Remarkable('full', this.defaults)
-      markdownParser.inline.validateLink = (url)=> this.validateLink(url)
-      $('#markdownDialog .markdownRendering').html(markdownParser.render(content))
+      $('#markdownDialog .markdownRendering').html(md.render(content))
       $('#markdownDialog .version').html(version)
       if(figure instanceof CircuitFigure){
         $('#markdownDialog .editButton').show()

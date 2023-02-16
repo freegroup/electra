@@ -1,8 +1,7 @@
 # JK-FlipFlop
 
-## Description
 
-The `JK flip-flop` is a simple enhancement of the SR flip-flop 
+The *JK flip-flop* is a simple enhancement of the SR flip-flop 
 where the state J=K=1 is not forbidden. It works just like a 
 SR flip-flop where J is serving as set input and K serving 
 as reset. The only difference is that for the formerly 

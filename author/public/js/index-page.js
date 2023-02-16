@@ -1,12 +1,8 @@
 
 import "../less/index-page.less"
 const axios = require("axios")
-const md = require('markdown-it')()
 import renderMode from "./renderMode"
 
-md.use(require("markdown-it-asciimath"))
-md.use(require('markdown-it-container'), "info")
-md.use(require('markdown-it-link-target'))
 
 import editorByType from "./editor/editorByType"
 
