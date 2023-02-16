@@ -1,7 +1,7 @@
 import Hogan from "hogan.js"
 import axios from "axios"
 import "./PopConfirm"
-import fs from "path"
+import fs from "path-browserify"
 
 import inputPrompt  from "./InputPrompt"
 

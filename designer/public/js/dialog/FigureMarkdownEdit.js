@@ -1,29 +1,18 @@
-import {Remarkable, utils} from "remarkable"
+import mdFactory from "../../../common/js/markdown"
+let md = mdFactory()
 
 export default class FigureMarkdownEdit {
 
   constructor() {
-    this.mdHtml = null
     this.scrollMap = null
-
     this.lineHeight = 1.45
-    this.defaults = {
-      html: true,               // Enable HTML tags in source
-      xhtmlOut: false,          // Use '/' to close single tags (<br />)
-      breaks: false,            // Convert '\n' in paragraphs into <br>
-      langPrefix: 'language-',  // CSS language prefix for fenced blocks
-      linkTarget: '_blank',     // set target to open link in
-      typographer: true         // Enable smartypants and other sweet transforms
-    }
   }
 
   /**
    */
   show() {
     Mousetrap.pause()
-    this.mdHtml = new Remarkable('full', this.defaults)
-    this.mdHtml.inline.validateLink = this.validateLink
-
+  
 
     let markdown = shape_designer.app.getConfiguration("markdown")
     markdown = markdown ? markdown : "# Header \n## Subheader \nbe nice and write a help file for your new \ncreated ***Brainbox*** shape. \n\n  - point 1\n  - point 2\n  - point 3"
@@ -69,27 +58,6 @@ export default class FigureMarkdownEdit {
       splash.addClass("open")
     }, 100)
 
-
-    // Inject line numbers for sync scroll.
-    //
-    this.mdHtml.renderer.rules.paragraph_open =  (tokens, idx) =>{
-      let line
-      if (tokens[idx].lines && tokens[idx].level === 0) {
-        line = tokens[idx].lines[0]
-        return '<p class="line" data-line="' + line + '">'
-      }
-      return '<p>'
-    }
-
-    this.mdHtml.renderer.rules.heading_open =  (tokens, idx) =>{
-      let line
-      if (tokens[idx].lines && tokens[idx].level === 0) {
-        line = tokens[idx].lines[0]
-        return '<h' + tokens[idx].hLevel + ' class="line" data-line="' + line + '">'
-      }
-      return '<h' + tokens[idx].hLevel + '>'
-    }
-
     this.$preview = $("#FigureMarkdownEdit .markdownRendering")
     this.$source = $('#FigureMarkdownEdit .source')
 
@@ -109,7 +77,7 @@ export default class FigureMarkdownEdit {
 
   updateResult() {
     var source = this.editor.getValue()
-    this.$preview.html(this.mdHtml.render(source))
+    this.$preview.html(md.render(source))
     // reset lines mapping cache on content update
     this.scrollMap = null
   }
@@ -209,17 +177,6 @@ export default class FigureMarkdownEdit {
     this.$preview.stop(true).animate({
       scrollTop: posTo
     }, 400, 'linear')
-  }
-
-  validateLink(url) {
-    let BAD_PROTOCOLS = [ 'vbscript', 'javascript', 'file'];
-    let str = url.trim().toLowerCase();
-    // Care about digital entities "javascript&#x3A;alert(1)"
-    str = utils.replaceEntities(str);
-    if (str.indexOf(':') !== -1 && BAD_PROTOCOLS.indexOf(str.split(':')[0]) !== -1) {
-      return false;
-    }
-    return true;
   }
 
   // Returns a function, that, as long as it continues to be invoked, will not

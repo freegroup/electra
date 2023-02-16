@@ -1,5 +1,5 @@
 import conf from "../Configuration"
-import fs from "path"
+import fs from "path-browserify"
 
 class Dialog {
 
