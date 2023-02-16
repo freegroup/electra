@@ -253,7 +253,7 @@
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}
     <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="palette_item">
-      <img loading="lazy" data-name="{{name}}"  data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+      <img loading="lazy" data-name="{{name}}"  data-displayname="{{displayName}}" data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
       <div>{{displayName}}</div>
     </div>
 {{/shapes}}
@@ -345,7 +345,7 @@
   <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="media-heading">Shape Documentation <span class="version">0.0.0</span></h4>
+        <h4 class="media-heading">Shape Documentation</h4>
       </div>
       <div class="modal-body">
         <div class="markdownRendering">

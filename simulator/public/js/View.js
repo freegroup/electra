@@ -1,6 +1,6 @@
-/**
- * @author Andreas Herz
- */
+
+import path from 'path'
+
 import ProbeWindow from "./ProbeWindow"
 import ConnectionRouter from "./ConnectionRouter"
 import DropInterceptorPolicy from "./DropInterceptorPolicy"
@@ -473,6 +473,8 @@ export default draw2d.Canvas.extend({
    * @private
    **/
   onDrop: function (droppedDomNode, x, y, shiftKey, ctrlKey) {
+
+    let displayName = $(droppedDomNode).data("displayname")
     let name = $(droppedDomNode).data("name")
     let file = $(droppedDomNode).data("file")
     let scope = $(droppedDomNode).data("scope")
@@ -481,8 +483,11 @@ export default draw2d.Canvas.extend({
       figure = eval(`new ${name}();`) // jshint ignore:line
       // required to calculate the filepath for markdown/js/shape
       //
+      figure.attr("userData.displayName", displayName)
       figure.attr("userData.file", file)
       figure.attr("userData.scope", scope)
+
+      console.log(path.basename(file, ".shape"))
     }
     catch(exc){
       console.log(exc)

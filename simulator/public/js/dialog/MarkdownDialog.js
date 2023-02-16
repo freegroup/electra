@@ -1,3 +1,5 @@
+import fs from "path"
+
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()
 
@@ -18,14 +20,16 @@ class Dialog {
   }
 
   show(figure) {
+    console.log(figure)
     let scope = figure.attr("userData.scope")
     let shapeName = figure.attr("userData.file")
+    let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName,".shape")
     let markdownName = shapeName.replace(/\.shape$/, ".md")
     let contentUrl = conf.shapes[scope].file(markdownName)
     $.get(contentUrl,  (content) => {
       let version = figure.VERSION
       $('#markdownDialog .markdownRendering').html(md.render(content))
-      $('#markdownDialog .version').html(version)
+      $('#markdownDialog .media-heading').html(displayName)
       if(figure instanceof CircuitFigure){
         $('#markdownDialog .editButton').show()
       }

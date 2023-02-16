@@ -9,9 +9,9 @@
     "serve": "webpack serve --allowed-hosts all --port 8080 --static-directory .  --static-watch  --watch-files ./**/*"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.7",        
-    "babel-preset-modern-browsers": "^15.0.2",
+    "@babel/core": "^7.17.7",
     "babel-loader": "^8.2.3",
+    "babel-preset-modern-browsers": "^15.0.2",
     "bootstrap-toggle": "^2.2.2",
     "css-loader": "^6.7.1",
     "d3": "^7.3.0",
@@ -39,6 +39,7 @@
     "markdown-it-br": "^1.0.0",
     "markdown-it-container": "^3.0.0",
     "markdown-it-link-target": "^1.0.2",
+    "path-browserify": "^1.0.1",
     "sanitize-filename": "^1.6.3"
   }
 }

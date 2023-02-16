@@ -72,9 +72,8 @@ class Dialog {
       new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
         $("#fileSaveDialog .filePreview").attr("src", imageDataUrl)
         $("#fileSaveDialog .directoryName").val(fs.dirname(currentFile.name))
-        $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name).replace(conf.fileSuffix, ""))
-        $("#fileSaveDialog .githubCommitMessage").val('commit message')
-  
+        $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name,conf.fileSuffix))
+ 
         $('#fileSaveDialog').on('shown.bs.modal', (event) => {
           $(event.currentTarget).find('input:first').focus()
         })
@@ -95,8 +94,7 @@ class Dialog {
             // It is not an seccurity issue, but we remove all entered directorie paths from the filename
             // This happens on the server-side as well.
             let name = $("#fileSaveDialog .fileName").val()
-            name = name.replace(conf.fileSuffix, "")
-            name = fs.basename(name) // remove any directories
+            name = fs.basename(name,conf.fileSuffix) // remove any directories
   
             // generate the current filename. This gets an update after the "save" request comes back.
             // The new reals filename is in the "save" response

@@ -93,7 +93,6 @@ module.exports = {
         app.post('/shapes/user/save', ensureLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            let reason = req.body.commitMessage || "-empty-"
             filesystem.writeFile(conf.absoluteUserDataDirectory(req), shapeRelativePath, content, res)
             .then( (sanitizedRelativePath) => {
                 let body = { 
