@@ -19,10 +19,18 @@ class View {
     searchResult.html("")
     let writePermission = this.permissions.shapes.global.update || this.permissions.shapes.update
     let writeIcon = writePermission?`<div class="editIcon">&#9998;</div>`:""
+    searchResult.append(`
+    <div class="curratedListSlogan">The list you are currently viewing contains every component 
+    that you will need to build your digital circuit designs. We have worked hard to ensure that our 
+    component library is comprehensive and includes a wide range of components to suit your needs.
+     So whether you're a beginner or an experienced designer, our library has got you covered!
+    </div>`)
+
     shapes.forEach(shape => {
       let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
       let mkFile = shape.fullName+".md"
       searchResult.append(`
+    
       <div class="tile" data-type="${shape.type}" data-fullname="${shape.fullName}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
         <div class="image">
           <img loading="lazy" src="${conf.shapes.backend[shape.scope].image(shape.imagePath)}"/>
@@ -43,6 +51,11 @@ class View {
 
     $(".tile .editIcon").on("click", this.onEdit.bind(this))
     $(".tile .expandIcon").on("click", this.onExpand.bind(this))
+    $(".tile .tag").on("click", event => { 
+      $(".search-input").val(event.currentTarget.innerText)
+      this.filter(event.currentTarget.innerText)
+      $(".search-input").focus()
+    })
 
     const descriptions = document.querySelectorAll(".tile .description");
     let observer = new IntersectionObserver((entries, observer) => {
@@ -72,13 +85,31 @@ class View {
   }
 
 
+  filter( text) {
+    if(text.length===0){
+      $(".tile.hidden").removeClass("hidden")
+      return
+    }
+    text = text.toLowerCase()
+    $(".tile").each( (i, e) => {
+      e = $(e)
+      if(e.data("fullname").trim().toLowerCase().includes(text)){
+        e.removeClass("hidden")
+      }
+      else{
+        e.addClass("hidden")
+      }
+    })
+  }
+
+
   onExpand(event){
     let icon = $(event.currentTarget)
     let tile = icon.closest(".tile")
     let editor = tile.clone()
    
     editor.css("position","absolute")
-    editor.addClass("editMode")
+    editor.addClass("displayMode")
     let saveButton = editor.find(".icons")
     saveButton.html("<button>Close</button>")
     saveButton.on("click", (event) =>{

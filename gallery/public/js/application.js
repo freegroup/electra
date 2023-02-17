@@ -17,9 +17,14 @@ class Application {
     this.appSwitch = new AppSwitch(permissions)
     this.shapeView = new ShapeView(permissions)
 
+    this.currentView = this.shapeView
+
     $(".search-button").on("click", ()=>{
-      alert("search")
+      this.currentView.filter($('.search-input').val())
     })
+    $('.search-input').on("keyup", (event) => {
+       this.currentView.filter($('.search-input').val())
+    });
 
     // load the worksheets first
     axios.get(conf.shapes.jsonUrl)

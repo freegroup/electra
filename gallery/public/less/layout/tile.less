@@ -8,6 +8,7 @@
     flex-direction: row;
     border-radius: 3px;
 
+    &.displayMode,
     &.editMode {
         position: absolute;
         margin-left: auto;
@@ -23,12 +24,17 @@
             flex:1 1px;
             max-width: unset;
             max-height: unset;
-            .description{
-                max-height: unset;
-                overflow:hidden;
-            }
+
         }
     }
+    &.editMode .description{
+        max-height: unset !important;
+        overflow:hidden !important;
+    }
+    &.displayMode .description{
+        max-height: unset !important;
+    }
+
     .image{
         display:flex;
         padding:30px;
@@ -97,6 +103,7 @@
                 padding-left: 8px;
                 padding-right: 8px;
                 font-size: 0.8em;
+                cursor:pointer;
             }
         }
         .description{
