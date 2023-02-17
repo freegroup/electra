@@ -1,7 +1,7 @@
 var digital_register_8_BitRegister = CircuitFigure.extend({
 
    NAME: "digital_register_8_BitRegister",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {

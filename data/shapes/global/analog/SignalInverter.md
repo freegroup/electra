@@ -8,4 +8,4 @@ Internally the module does nothing else but:
 output = 5-input
 ```
 
-<em>Internally the maximum signal value is <strong>5</strong>.</em>
+*Internally the maximum signal value is **5**.*

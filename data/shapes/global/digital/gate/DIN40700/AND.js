@@ -1,38 +1,42 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_gate_DIN40700_AND = CircuitFigure.extend({
 
    NAME: "digital_gate_DIN40700_AND",
-   VERSION: "2.0.343_1136",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:25,height:40 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:25,height:40},attr), setter, getter);
-     var port;
+     let port;
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.16960000000108, y: 50 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
+     this.read["output"] = port.getValue.bind(port)
+     this.write["output"]= port.setValue.bind(port)
+
      // input0
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.4128000000018801, y: 21.25 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input0");
      port.setMaxFanOut(20);
+     this.read["input0"] = port.getValue.bind(port)
+     this.write["input0"]= port.setValue.bind(port)
+
      // input1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.4128000000018801, y: 80 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input1");
      port.setMaxFanOut(20);
+     this.read["input1"] = port.getValue.bind(port)
+     this.write["input1"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()

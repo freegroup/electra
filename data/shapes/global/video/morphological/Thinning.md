@@ -1,4 +1,7 @@
-# Flip Horizontal
+A **Thinning** node is a tool that reduces the thickness of a shape or object in an image or video to just its outline. The process works by removing pixels from the object while preserving its overall shape and structure, resulting in a thin and crisp outline that can be used for various applications.
 
-A flip (mirror effect) is done by reversing the pixels horizontally or 
-vertically.
+Thinning is typically *applied to black-white images* or images with a limited number of colors. In the case of black areas, thinning can be achieved by iteratively removing connected sets of pixels until only a one-pixel-wide line is left to represent the original shape or object. This one-pixel-wide line effectively represents the outline of the original shape or object, with the interior filled with black pixels removed.
+
+Thinning can be used for various purposes in a video processing pipeline. For example, it can be used to simplify the representation of objects in the video, making it easier to analyze and process. It can also be used for artistic or aesthetic purposes, such as creating stylized or abstract visual effects.
+
+It is important to note that thinning may not always provide the desired results, particularly in cases where the object has complex or irregular shapes. In these cases, other image processing techniques or manual adjustments may still be necessary to achieve the desired video output.

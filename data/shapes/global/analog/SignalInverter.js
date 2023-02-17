@@ -1,7 +1,7 @@
 var analog_SignalInverter = CircuitFigure.extend({
 
    NAME: "analog_SignalInverter",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {

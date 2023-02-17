@@ -1,13 +1,14 @@
-# T-FlipFlop
+The **AND** gate is a basic digital logic gate that implements logical conjunction - it behaves according to the truth table at the bottom.
 
-## Description
+A HIGH output results only if both the inputs to the AND gate are HIGH. If neither or only one input to the AND gate is HIGH, a LOW output results. In another sense, the function of AND effectively finds the minimum between two binary digits, just as the OR function finds the maximum.
 
-The D FlipFLop is widely used. It is also known as a 
-*toggle*  flip-flop.
+**Therefore, the output is always 0 except when all the inputs are 1.**
 
-A T flip-flop is a device which swaps or **toggles** state 
-every time it is triggered if the T input is asserted, 
-otherwise it holds the current output.
+## Logic table
 
-
-The toggle flip-flop is also a frequency divider.
+| INPUT A | INPUT B | OUTPUT |
+| :-----: | :-----: | :----: |
+| Low | Low | Low |
+| `High` | Low | Low |
+| Low | `High` | Low |
+| `High` | `High` | `High` |

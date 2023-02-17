@@ -1,32 +1,33 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var video_morphological_Erode = CircuitFigure.extend({
 
    NAME: "video_morphological_Erode",
-   VERSION: "2.0.343_1136",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:80,height:80 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:80,height:80},attr), setter, getter);
-     var port;
+     let port;
      // input_port1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9640000000001692, y: 49.886999999999944 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
      port.setMaxFanOut(20);
+     this.read["input_port1"] = port.getValue.bind(port)
+     this.write["input_port1"]= port.setValue.bind(port)
+
      // output_port1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.32506249999983, y: 49.886999999999944 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_port1");
      port.setMaxFanOut(20);
+     this.read["output_port1"] = port.getValue.bind(port)
+     this.write["output_port1"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -53,7 +54,7 @@ var video_morphological_Erode = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Erode');
-       shape.attr({"x":21.76637911823309,"y":66.77074080000239,"text-anchor":"start","text":"Erode","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":21.76637911823309,"y":66.52074080000239,"text-anchor":"start","text":"Erode","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Rectangle
@@ -87,47 +88,47 @@ var video_morphological_Erode = CircuitFigure.extend({
        shape.data("name","Small_Circle");
        
        // Line
-       shape = this.canvas.paper.path('M33.73613164062499 34.29746328124929L33.90303164062061,34.96506328124815');
+       shape = this.canvas.paper.path('M33.74 34.30L33.90,34.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M33.73613164062499 39.29746328124929L33.90303164062061,39.96506328124815');
+       shape = this.canvas.paper.path('M33.74 39.30L33.90,39.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M34.23613164062499 49.79746328124929L34.40303164062061,50.46506328124815');
+       shape = this.canvas.paper.path('M34.24 49.80L34.40,50.47');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M35.73613164062499 9.297463281249293L35.90303164062061,9.965063281248149');
+       shape = this.canvas.paper.path('M35.74 9.30L35.90,9.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M44.73613164062499 11.297463281249293L44.044038181421456,12.072437463648384');
+       shape = this.canvas.paper.path('M44.74 11.30L44.04,12.07');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M45.23613164062499 49.29746328124929L45.40303164062061,49.96506328124815');
+       shape = this.canvas.paper.path('M45.24 49.30L45.40,49.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M44.23613164062499 38.79746328124929L44.40303164062061,39.46506328124815');
+       shape = this.canvas.paper.path('M44.24 38.80L44.40,39.47');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M43.73613164062499 34.29746328124929L43.90303164062061,34.96506328124815');
+       shape = this.canvas.paper.path('M43.74 34.30L43.90,34.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M39.14973648001251 5.040281344015057L39.31750864001151,52.63687542400294');
+       shape = this.canvas.paper.path('M39.15 5.04L39.32,52.64');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,5,38,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

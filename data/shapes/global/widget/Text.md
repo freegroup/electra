@@ -1,3 +1,1 @@
-# Text 
-
-simple long text element with automatic word wrap. 
+"Simple long text element with automatic word wrap."

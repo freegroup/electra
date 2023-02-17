@@ -1,32 +1,33 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var video_morphological_Dilate = CircuitFigure.extend({
 
    NAME: "video_morphological_Dilate",
-   VERSION: "2.0.343_1136",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:80,height:80 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:80,height:80},attr), setter, getter);
-     var port;
+     let port;
      // input_port1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9640000000001692, y: 49.886999999999944 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
      port.setMaxFanOut(20);
+     this.read["input_port1"] = port.getValue.bind(port)
+     this.write["input_port1"]= port.setValue.bind(port)
+
      // output_port1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 100.32506249999983, y: 49.886999999999944 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_port1");
      port.setMaxFanOut(20);
+     this.read["output_port1"] = port.getValue.bind(port)
+     this.write["output_port1"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -53,7 +54,7 @@ var video_morphological_Dilate = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Dilate');
-       shape.attr({"x":21.76637911823309,"y":66.77074080000239,"text-anchor":"start","text":"Dilate","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":21.76637911823309,"y":66.52074080000239,"text-anchor":"start","text":"Dilate","font-family":"\"Arial\"","font-size":14,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Rectangle
@@ -71,6 +72,11 @@ var video_morphological_Dilate = CircuitFigure.extend({
        shape.attr({"stroke":"none","stroke-width":0,"fill":"rgba(0,0,0,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","TOP_Body");
        
+       // Line
+       shape = this.canvas.paper.path('M39.65 5.04L39.82,52.64');
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":3,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Line");
+       
        // TOP_Body
        shape = this.canvas.paper.path('M38.91283164062497,47.87030333208804Q38.91283164062497,51.87030333208804 42.91260138990854, 51.91322130869542L47.000230250716434,51.95708202339262Q51,52 50.20924821365575, 48.07893998867738L48.238790665599616,38.30813399225801Q47.448038879255364,34.387073980935384 47.38749484212394, 33.74569801339612L47.38749484212394,33.74569801339612Q47.32695080499252,33.10432204585686 47.14715829352963, 32.482433962538835L47.14715829352963,32.482433962538835Q46.967365782066736,31.86054587922081 46.67378770075311, 31.27704143484425L46.67378770075311,31.27704143484425Q46.38020961943948,30.693536990467692 45.981766189717746, 30.166145672311814L45.981766189717746,30.166145672311814Q45.58332275999601,29.638754354155935 45.09212048385734, 29.183500680543148L45.09212048385734,29.183500680543148Q44.60091820771868,28.72824700693036 44.031882017763564, 28.358963630369544L44.031882017763564,28.358963630369544Q43.46284582780845,27.98968025380873 42.83326560072146, 27.717587662828464L42.83326560072146,27.717587662828464Q42.20368537363447,27.4454950718482 41.53269058603291, 27.278860662142506L41.53269058603291,27.278860662142506Q40.861695798431356,27.112226252436813 40.16967428739645, 27.056113126218406L40.16967428739645,27.056113126218406Q39.47765277636154,27 39.195242208493255, 27.022899490243617L39.195242208493255,27.022899490243617Q38.91283164062497,27.045798980487234 38.91283164062497, 31.045798980487234L38.91283164062497,47.87030333208804');
        shape.attr({"stroke":"none","stroke-width":0,"fill":"rgba(0,0,0,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
@@ -82,27 +88,22 @@ var video_morphological_Dilate = CircuitFigure.extend({
        shape.data("name","TOP_Circle");
        
        // Line
-       shape = this.canvas.paper.path('M39.64973648001251 5.040281344015057L39.81750864001151,52.63687542400294');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":3,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M33.73613164062499 34.29746328124929L33.90303164062061,34.96506328124815');
+       shape = this.canvas.paper.path('M33.74 34.30L33.90,34.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M33.73613164062499 39.29746328124929L33.90303164062061,39.96506328124815');
+       shape = this.canvas.paper.path('M33.74 39.30L33.90,39.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M34.23613164062499 49.79746328124929L34.40303164062061,50.46506328124815');
+       shape = this.canvas.paper.path('M34.24 49.80L34.40,50.47');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
        // Line
-       shape = this.canvas.paper.path('M35.73613164062499 9.297463281249293L35.90303164062061,9.965063281248149');
+       shape = this.canvas.paper.path('M35.74 9.30L35.90,9.97');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(255,255,255,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

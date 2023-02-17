@@ -1,4 +1,4 @@
-The Roberts cross operator is used in image processing and computer vision
+The **Roberts cross operator** is used in image processing and computer vision
 for edge detection. It was one of the first edge detectors and was initially
 proposed by Lawrence Roberts in 1963.[1] As a differential operator, the idea
 behind the Roberts cross operator is to approximate the gradient of an image

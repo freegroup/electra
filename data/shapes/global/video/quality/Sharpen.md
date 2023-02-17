@@ -1,19 +1,6 @@
-## Full Adder
+A **Sharpen filter** for a video is a video processing filter that enhances the edges and details in an image to create a clearer and more defined appearance. This filter works by increasing the contrast between neighboring pixels, resulting in a sharper image.
+To apply the Sharpen filter, a convolution matrix is used to adjust the brightness of each pixel in the image based on its surrounding pixels. The matrix typically consists of negative values in the center and positive values around the edges, creating a high-pass filter that enhances the edges and details in the image.
 
-Full adder is developed to overcome the drawback of 
-Half Adder circuit. It can add two one-bit numbers 
-A and B, and carry c. The full adder is a three 
-input and two output combinational circuit.
+When the Sharpen filter is applied to a video, it can enhance the clarity and detail of objects in the scene. For example, if you have a video of a person's face, the Sharpen filter can be used to bring out the finer details in their features, such as their eyes, nose, and mouth. Similarly, if you have a video of a landscape, the Sharpen filter can be used to bring out the details in the trees, rocks, and other features in the scene.
 
-
-
-|  A    |    B    |  Cin     |    S    |    C   |
-|:-----:|:-------:|:--------:|:--------:|:-------|
-|   0   |    0    |     0    |     0    |     0  |
-|   0   |    0    |     1    |     1    |     0  |
-|   0   |    1    |     0    |     1    |     0  |
-|   0   |    1    |     1    |     0    |     1  |
-|   1   |    0    |     0    |     0    |     1  |
-|   1   |    0    |     1    |     0    |     1  |
-|   1   |    1    |     0    |     0    |     1  |
-|   1   |    1    |     1    |     0    |     1  |
+It's important to note that the Sharpen filter can also increase noise and artifacts in the image, particularly in areas of low contrast. Therefore, it's important to use the filter judiciously and adjust the settings to achieve the desired balance between clarity and noise. Some video processing software includes additional features to mitigate the noise and artifacts introduced by the Sharpen filter, such as noise reduction and edge protection.

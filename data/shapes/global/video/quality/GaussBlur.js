@@ -1,45 +1,49 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var video_quality_GaussBlur = CircuitFigure.extend({
 
    NAME: "video_quality_GaussBlur",
-   VERSION: "2.0.343_1136",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:82.9140625,height:85.37877759999992 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:83.375,height:84.37877759999992},attr), setter, getter);
-     var port;
+     let port;
      // input_port1
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.5997001499250375, y: 47.298149054958564 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.6030340148874023, y: 46.744168892856095 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
      port.setMaxFanOut(20);
+     this.read["input_port1"] = port.getValue.bind(port)
+     this.write["input_port1"]= port.setValue.bind(port)
+
      // input_port2
-     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.5997001499250375, y: 79.13214993055605 }));
+     port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0.6030340148874023, y: 78.20531363522642 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port2");
      port.setMaxFanOut(1);
+     this.read["input_port2"] = port.getValue.bind(port)
+     this.write["input_port2"]= port.setValue.bind(port)
+
      // output_port1
-     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 97.78860569715143, y: 47.298149054958564 }));
+     port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.33223405257704, y: 46.744168892856095 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_port1");
      port.setMaxFanOut(20);
+     this.read["output_port1"] = port.getValue.bind(port)
+     this.write["output_port1"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
    {
       var shape = this._super();
-      this.originalWidth = 83.375;
-      this.originalHeight= 84.37877759999992;
+      this.originalWidth = 82.9140625;
+      this.originalHeight= 85.37877759999992;
       return shape;
    },
 
@@ -48,7 +52,7 @@ var video_quality_GaussBlur = CircuitFigure.extend({
        this.canvas.paper.setStart();
        var shape = null;
        // BoundingBox
-       shape = this.canvas.paper.path("M0,0 L83.375,0 L83.375,84.37877759999992 L0,84.37877759999992");
+       shape = this.canvas.paper.path("M0,0 L82.9140625,0 L82.9140625,85.37877759999992 L0,85.37877759999992");
        shape.attr({"stroke":"none","stroke-width":0,"fill":"none"});
        shape.data("name","BoundingBox");
        
@@ -59,8 +63,13 @@ var video_quality_GaussBlur = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'GaussBlur');
-       shape.attr({"x":4,"y":71.87877759999992,"text-anchor":"start","text":"GaussBlur","font-family":"\"Arial\"","font-size":16,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4,"y":72.37877759999992,"text-anchor":"start","text":"GaussBlur","font-family":"\"Arial\"","font-size":16,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
+       
+       // Line
+       shape = this.canvas.paper.path('M12.26 59.68L7.80,60.46L0.99,67.44');
+       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
+       shape.data("name","Line");
        
        // Rectangle
        shape = this.canvas.paper.path('M5.586624000003212,7.770740800002386Q5.586624000003212,3.770740800002386 9.586624000003212, 3.770740800002386L72.58662400000321,3.770740800002386Q76.58662400000321,3.770740800002386 76.58662400000321, 7.770740800002386L76.58662400000321,49.770740800002386Q76.58662400000321,53.770740800002386 72.58662400000321, 53.770740800002386L9.586624000003212,53.770740800002386Q5.586624000003212,53.770740800002386 5.586624000003212, 49.770740800002386L5.586624000003212,7.770740800002386');
@@ -97,20 +106,15 @@ var video_quality_GaussBlur = CircuitFigure.extend({
        shape.attr({"stroke":"none","stroke-width":0,"fill":"rgba(199,29,61,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","TOP_Body");
        
-       // Label
-       shape = this.canvas.paper.text(0,0,'radius');
-       shape.attr({"x":12.9609375,"y":59.423763799999506,"text-anchor":"start","text":"radius","font-family":"\"Arial\"","font-size":9,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
-       shape.data("name","Label");
-       
        // Line
-       shape = this.canvas.paper.path('M12.259241500002645 59.67813280000246L7.8027935000027355,60.464564800002336L0.9870495000031951,67.44414879999931');
-       shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
-       shape.data("name","Line");
-       
-       // Line
-       shape = this.canvas.paper.path('M39.96760448001169 4.038881344014044L40.13537664001069,53.47137542400378');
+       shape = this.canvas.paper.path('M39.97 4.04L40.14,53.47');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
+       
+       // Label
+       shape = this.canvas.paper.text(0,0,'radius');
+       shape.attr({"x":12.9609375,"y":59.424388799999505,"text-anchor":"start","text":"radius","font-family":"\"Arial\"","font-size":9,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.data("name","Label");
        
 
        return this.canvas.paper.setFinish();
