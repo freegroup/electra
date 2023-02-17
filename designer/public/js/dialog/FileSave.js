@@ -72,7 +72,7 @@ class Dialog {
       new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
         $("#fileSaveDialog .filePreview").attr("src", imageDataUrl)
         $("#fileSaveDialog .directoryName").val(fs.dirname(currentFile.name))
-        $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name,conf.fileSuffix))
+        $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name, conf.fileSuffix))
  
         $('#fileSaveDialog').on('shown.bs.modal', (event) => {
           $(event.currentTarget).find('input:first').focus()

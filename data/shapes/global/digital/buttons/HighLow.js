@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_buttons_HighLow = CircuitFigure.extend({
 
    NAME: "digital_buttons_HighLow",
@@ -11,16 +5,20 @@ var digital_buttons_HighLow = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:42,height:43 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:42,height:43},attr), setter, getter);
-     var port;
+     let port;
      // Port
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.80952380952381, y: 52.32558139534884 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
+     this.read["Port"] = port.getValue.bind(port)
+     this.write["Port"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -56,12 +54,12 @@ var digital_buttons_HighLow = CircuitFigure.extend({
        shape.data("name","Circle");
        
        // high
-       shape = this.canvas.paper.path('M39.29830000000038 22.446912500003236L13.857399999998961,11.091512500001045');
+       shape = this.canvas.paper.path('M39.30 22.45L13.86,11.09');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","high");
        
        // low
-       shape = this.canvas.paper.path('M38.75319999999738 22.70831250000083L13.644500000000335,32.35131249999904');
+       shape = this.canvas.paper.path('M38.75 22.71L13.64,32.35');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","low");
        

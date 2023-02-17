@@ -1,5 +1,5 @@
 import conf from "./../configuration"
-import fs from "path"
+import fs from "path-browserify"
 
 class Dialog {
 
@@ -68,7 +68,7 @@ class Dialog {
   show(currentFile, storage, document, description="") {
     return new Promise( (resolve, reject) => {
       $("#fileSaveDialog .description").html(description)
-      $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name).replace(conf.fileSuffix, ""))
+      $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name, conf.fileSuffix))
 
       $('#fileSaveDialog').on('shown.bs.modal', (event) => {
         $(event.currentTarget).find('input:first').focus()
@@ -88,8 +88,7 @@ class Dialog {
       $("#fileSaveDialog .okButton").off('click').on("click", () => {
         Mousetrap.unpause()
         let name = $("#fileSaveDialog .fileName").val()
-        name = name.replace(conf.fileSuffix, "")
-        name = fs.basename(name) // remove any directories
+        name = fs.basename(name,conf.fileSuffix) // remove any directories
         currentFile.name = fs.join(fs.dirname(currentFile.name), name + conf.fileSuffix)
         this.save(currentFile, storage, document)
           .then( () => {

@@ -1,4 +1,4 @@
-import fs from "path"
+import fs from "path-browserify"
 
 import conf from "../Configuration"
 import writer from '../io/Writer'
@@ -62,7 +62,7 @@ class Dialog {
    */
   show(currentFile, canvas, callback) {
     Mousetrap.pause()
-    $("#fileSaveDialog .githubFileName").val(fs.basename(currentFile.name).replace(conf.fileSuffix, ""))
+    $("#fileSaveDialog .githubFileName").val(fs.basename(currentFile.name,conf.fileSuffix))
 
     $('#fileSaveDialog').off('shown.bs.modal').on('shown.bs.modal', (event) => {
       $(event.currentTarget).find('input:first').focus()

@@ -1,3 +1,4 @@
+import "../../common/js/polyfill"
 import axios from "axios"
 import "../less/index.less"
 import conf from "./configuration"

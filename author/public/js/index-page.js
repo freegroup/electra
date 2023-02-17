@@ -1,3 +1,4 @@
+import "../../common/js/polyfill"
 
 import "../less/index-page.less"
 const axios = require("axios")

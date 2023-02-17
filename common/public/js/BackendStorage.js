@@ -50,6 +50,9 @@ class BackendStorage {
     return axios.post(this.conf.backend[scope].save, data)
   }
 
+  loadFile(fileName, scope) {
+    return axios.get(this.conf.backend[scope].file(fileName))
+  }
 
   deleteFile(fileName, scope) {
     let data = {

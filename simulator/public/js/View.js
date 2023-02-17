@@ -1,6 +1,3 @@
-
-import path from 'path'
-
 import ProbeWindow from "./ProbeWindow"
 import ConnectionRouter from "./ConnectionRouter"
 import DropInterceptorPolicy from "./DropInterceptorPolicy"
@@ -486,8 +483,6 @@ export default draw2d.Canvas.extend({
       figure.attr("userData.displayName", displayName)
       figure.attr("userData.file", file)
       figure.attr("userData.scope", scope)
-
-      console.log(path.basename(file, ".shape"))
     }
     catch(exc){
       console.log(exc)

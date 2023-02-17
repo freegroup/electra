@@ -1,8 +1,12 @@
 import axios from "axios"
+import ToastEditor from '@toast-ui/editor';
+import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
+
+import conf from "../configuration"
+let storage = require('../../../common/js/BackendStorage').default(conf.shapes)
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()
 
-import conf from "../configuration"
 
 class View {
 
@@ -16,60 +20,112 @@ class View {
     let writePermission = this.permissions.shapes.global.update || this.permissions.shapes.update
     let writeIcon = writePermission?`<div class="editIcon">&#9998;</div>`:""
     shapes.forEach(shape => {
-        let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
-        let mkFile = shape.shapePath.replace(".shape",".md")
-        searchResult.append(`
-        <div class="tile">
-            <div class="image">
-                <img loading="lazy" src="${conf.shapes[shape.scope].image(shape.imagePath)}"/>
-            </div>
-
-            <div class="details">
-                <div class="headline"><div class="displayName">${shape.displayName}</div>${writeIcon}</div>
-                <div class="tags">${tags}</div>
-                <div class="description" data-markdown="${conf.shapes[shape.scope].image(mkFile)}"> </div>
-            </div>
+      let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
+      let mkFile = shape.shapePath.replace(".shape",".md")
+      searchResult.append(`
+      <div class="tile" data-file="${shape.shapePath}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
+        <div class="image">
+          <img loading="lazy" src="${conf.shapes.backend[shape.scope].image(shape.imagePath)}"/>
         </div>
-        `)
+
+        <div class="details">
+          <div class="headline"><div class="displayName">${shape.displayName}</div>${writeIcon}</div>
+          <div class="tags">${tags}</div>
+          <div class="description"> </div>
+        </div>
+      </div>`)
     });
 
-    $(".tile .editIcon").on("click", (event) => {
-        let icon = $(event.currentTarget)
-        let tile = icon.closest(".tile")
-        let editor = tile.clone()
-       
-        editor.css("position","absolute")
-        editor.addClass("editMode")
-        $(".searchResult").append(editor)
-        console.log(tile)
-    })
+    $(".tile .editIcon").on("click", this.onEdit.bind(this))
 
     const descriptions = document.querySelectorAll(".tile .description");
-    
-    let observer = new IntersectionObserver(
-        (entries, observer) => {
+    let observer = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
-            const desc = entry.target;
-            const newURL = desc.getAttribute("data-markdown");
-            //desc.src = newURL;
-            axios.get(newURL)
-            .then((response) => {
-              let docu = response.data
-              let html = md.render(docu)
-              desc.innerHTML = html
-            })
-            .catch( exc => {
-              console.log(exc)
-            })
-            observer.unobserve(desc);
+            const desc = $(entry.target)
+            const tile = desc.closest(".tile")
+            this.loadTile(tile)
+            observer.unobserve(entry.target)
         });
         }, {threshold: [0.1]}
     );
     
-    descriptions.forEach((desc) => {
-        observer.observe(desc);
-    });
+    descriptions.forEach((desc) => {observer.observe(desc)})
+  }
+
+  loadTile(tile){
+    console.log(tile)
+    let desc = tile.find(".description")
+    const newURL = tile.data("markdown")
+    axios.get(newURL)
+    .then((response) => {
+      desc.html(md.render(response.data))
+    })
+    .catch( exc => {
+      console.log(exc)
+    })
+  }
+
+  onEdit(event){
+    let icon = $(event.currentTarget)
+    let tile = icon.closest(".tile")
+    let mdUrl = tile.data("markdown")
+    let editor = tile.clone()
+   
+    editor.css("position","absolute")
+    editor.addClass("editMode")
+    let saveButton = editor.find(".editIcon")
+    saveButton.html("<button>Save</button>")
+    saveButton.on("click", this.onSave.bind(this))
+
+    $(".searchResult").append(editor)
+    axios.get(mdUrl)
+    .then( response =>{
+      $(".tile.editMode .description").html("")
+      this.editor = new ToastEditor({
+        el: document.querySelector(".tile.editMode .description"),
+        usageStatistics: false,
+        initialEditType: 'wysiwyg',
+        initialValue: response.data,
+        toolbarItems: [
+          ['heading', 'bold', 'italic'],
+          ['hr', 'quote'],
+          ['ul', 'ol', 'indent', 'outdent'],
+          ['table', 'link'],
+          ['code', 'codeblock'],
+        ]
+      });
+    })
+  }
+
+  onSave(event){
+    let icon = $(event.currentTarget)
+    let tile = icon.closest(".tile")
+    let scope = tile.data("scope")
+    let shapeFile = tile.data("file")
+    
+    $(".tile.editMode").remove()
+
+    storage.loadFile(shapeFile, scope)
+    .then( response =>{
+      let json = response.data
+      let userData = json.draw2d[0].userData
+
+      userData.markdown =  this.editor.getMarkdown().tuiMarkdownFix()
+
+      storage.saveFile( json , shapeFile , scope)
+      .then((response) => {
+        let tile = $(`.tile[data-file="${shapeFile}"]`)
+        let desc = tile.find(".description")
+        desc.html(md.render(userData.markdown))
+        // because the processing of the shape file is async on the backend
+        // the "loadTile" do not work at this point
+        //this.loadTile(tile)
+      })
+      .catch(exc => {
+        console.log(exc)
+      })
+    })
   }
 }
 

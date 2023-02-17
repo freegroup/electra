@@ -1,4 +1,5 @@
 import inlineSVG from "../../common/js/inlineSVG"
+import "../../common/js/polyfill"
 
 import axios from "axios"
 import "../less/index.less"

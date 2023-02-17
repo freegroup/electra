@@ -1,4 +1,4 @@
-import fs from "path"
+import fs from "path-browserify"
 
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()

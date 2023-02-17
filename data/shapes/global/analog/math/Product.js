@@ -37,7 +37,6 @@ var analog_math_Product = CircuitFigure.extend({
      this.read["input2"] = port.getValue.bind(port)
      this.write["input2"]= port.setValue.bind(port)
 
-
    },
 
    createShapeElement : function()

@@ -41,7 +41,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['modern-browser']
+            presets: ['modern-browsers']
           }
         }
       }

@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_buttons_HighLowArray = CircuitFigure.extend({
 
    NAME: "digital_buttons_HighLowArray",
@@ -11,58 +5,83 @@ var digital_buttons_HighLowArray = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:20,height:160 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:20,height:160},attr), setter, getter);
-     var port;
+     let port;
      // port01
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 6.25 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port01");
      port.setMaxFanOut(20);
+     this.read["port01"] = port.getValue.bind(port)
+     this.write["port01"]= port.setValue.bind(port)
+
      // port02
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 18.75 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port02");
      port.setMaxFanOut(20);
+     this.read["port02"] = port.getValue.bind(port)
+     this.write["port02"]= port.setValue.bind(port)
+
      // port03
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 31.25 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port03");
      port.setMaxFanOut(20);
+     this.read["port03"] = port.getValue.bind(port)
+     this.write["port03"]= port.setValue.bind(port)
+
      // port04
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 43.75 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port04");
      port.setMaxFanOut(20);
+     this.read["port04"] = port.getValue.bind(port)
+     this.write["port04"]= port.setValue.bind(port)
+
      // port05
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 56.434937500000046 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port05");
      port.setMaxFanOut(20);
+     this.read["port05"] = port.getValue.bind(port)
+     this.write["port05"]= port.setValue.bind(port)
+
      // port06
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 68.72787499999959 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port06");
      port.setMaxFanOut(20);
+     this.read["port06"] = port.getValue.bind(port)
+     this.write["port06"]= port.setValue.bind(port)
+
      // port07
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 81.1621875000003 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port07");
      port.setMaxFanOut(20);
+     this.read["port07"] = port.getValue.bind(port)
+     this.write["port07"]= port.setValue.bind(port)
+
      // port08
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 93.93256250000036 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port08");
      port.setMaxFanOut(20);
+     this.read["port08"] = port.getValue.bind(port)
+     this.write["port08"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
