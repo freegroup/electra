@@ -85,7 +85,7 @@ class View {
       editor.remove()
     })
     editor.hide()
-    $(".content").append(editor)
+    $("body").append(editor)
     editor.fadeIn(300)
   }
 
