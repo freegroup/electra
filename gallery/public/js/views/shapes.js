@@ -75,7 +75,6 @@ class View {
   onExpand(event){
     let icon = $(event.currentTarget)
     let tile = icon.closest(".tile")
-    let mdUrl = tile.data("markdown")
     let editor = tile.clone()
    
     editor.css("position","absolute")
@@ -85,7 +84,9 @@ class View {
     saveButton.on("click", (event) =>{
       editor.remove()
     })
+    editor.hide()
     $(".content").append(editor)
+    editor.fadeIn(300)
   }
 
   onEdit(event){
@@ -94,16 +95,21 @@ class View {
     let mdUrl = tile.data("markdown")
     let editor = tile.clone()
    
-    editor.css("position","absolute")
+    editor.css("position", "absolute")
     editor.addClass("editMode")
+    editor.hide()
     editor.find(".description").html("")
     let saveButton = editor.find(".icons")
     saveButton.html("<button>Save</button>")
     saveButton.on("click", this.onSave.bind(this))
 
+    // for some reasons the insert of the editor changes the scroll position of a DIV.
+    // Read the position and restore them after the editor is inserted
+    let scrollTop = $(".content").scrollTop()
+    console.log(scrollTop)
     axios.get(mdUrl)
     .then( response =>{
-      $(".content").prepend(editor)
+      $("body").append(editor)
       this.editor = new ToastEditor({
         el: document.querySelector(".tile.editMode .description"),
         usageStatistics: false,
@@ -117,6 +123,10 @@ class View {
           ['code', 'codeblock'],
         ]
       });
+      $(".content").scrollTop(scrollTop)
+      editor.fadeIn(300, ()=>{
+        $(".content").scrollTop(scrollTop)
+      })
     })
   }
 
@@ -129,7 +139,9 @@ class View {
 
     let shapeFile = fullName + ".shape"
     
-    $(".tile.editMode").remove()
+    $(".tile.editMode").fadeOut(300, ()=>{
+      $(".tile.editMode").remove()
+    })
 
     if(type ==="shape") {
       storage.loadFile(shapeFile, scope)
