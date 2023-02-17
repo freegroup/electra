@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_buttons_4_Bit_Switch = CircuitFigure.extend({
 
    NAME: "digital_buttons_4_Bit_Switch",
@@ -11,34 +5,47 @@ var digital_buttons_4_Bit_Switch = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:20,height:80 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:20,height:80},attr), setter, getter);
-     var port;
+     let port;
      // port01
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 11.86262499999998 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port01");
      port.setMaxFanOut(20);
+     this.read["port01"] = port.getValue.bind(port)
+     this.write["port01"]= port.setValue.bind(port)
+
      // port02
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 38.125 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port02");
      port.setMaxFanOut(20);
+     this.read["port02"] = port.getValue.bind(port)
+     this.write["port02"]= port.setValue.bind(port)
+
      // port03
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 62.5 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port03");
      port.setMaxFanOut(20);
+     this.read["port03"] = port.getValue.bind(port)
+     this.write["port03"]= port.setValue.bind(port)
+
      // port04
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.5, y: 87.5 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("port04");
      port.setMaxFanOut(20);
+     this.read["port04"] = port.getValue.bind(port)
+     this.write["port04"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -60,22 +67,22 @@ var digital_buttons_4_Bit_Switch = CircuitFigure.extend({
        
        // rect01
        shape = this.canvas.paper.path('M20 20L0 20L0 0L20 0Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect01");
        
        // rect02
        shape = this.canvas.paper.path('M20 40L0 40L0 20L20 20Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect02");
        
        // rect03
        shape = this.canvas.paper.path('M20 60L0 60L0 40L20 40Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect03");
        
        // rect04
        shape = this.canvas.paper.path('M20 80L0 80L0 60L20 60Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","rect04");
        
 

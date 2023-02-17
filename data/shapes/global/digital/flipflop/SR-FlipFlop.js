@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SR_FlipFlop",
@@ -11,40 +5,56 @@ var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:40.02111999999852,height:63.065120000000206 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:40.02111999999852,height:63.065120000000206},attr), setter, getter);
-     var port;
+     let port;
      // output_q
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.51898247725282, y: 18.286748681362393 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q");
      port.setMaxFanOut(20);
+     this.read["output_q"] = port.getValue.bind(port)
+     this.write["output_q"]= port.setValue.bind(port)
+
      // output_q_not
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 102.49868069659229, y: 81.71325131863617 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_q_not");
      port.setMaxFanOut(20);
+     this.read["output_q_not"] = port.getValue.bind(port)
+     this.write["output_q_not"]= port.setValue.bind(port)
+
      // input_s
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -4.997361393184583, y: 81.65908508538081 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_s");
      port.setMaxFanOut(1);
+     this.read["input_s"] = port.getValue.bind(port)
+     this.write["input_s"]= port.setValue.bind(port)
+
      // input_r
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -4.997361393184583, y: 18.286748681362393 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_r");
      port.setMaxFanOut(1);
+     this.read["input_r"] = port.getValue.bind(port)
+     this.write["input_r"]= port.setValue.bind(port)
+
      // input_clk
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -4.997361393184583, y: 49.99999999999928 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_clk");
      port.setMaxFanOut(1);
+     this.read["input_clk"] = port.getValue.bind(port)
+     this.write["input_clk"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -71,7 +81,7 @@ var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q');
-       shape.attr({"x":26.30236999999852,"y":51.373287500000515,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":26.30236999999852,"y":51.373600000000515,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Rectangle
@@ -81,21 +91,21 @@ var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
        
        // Label
        shape = this.canvas.paper.text(0,0,'Q');
-       shape.attr({"x":26.30236999999852,"y":10.6796875,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":26.30236999999852,"y":10.68,"text-anchor":"start","text":"Q","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'S');
-       shape.attr({"x":6,"y":50.373287500000515,"text-anchor":"start","text":"S","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":6,"y":50.373600000000515,"text-anchor":"start","text":"S","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Label
        shape = this.canvas.paper.text(0,0,'R');
-       shape.attr({"x":5.72265625,"y":11.122407500001827,"text-anchor":"start","text":"R","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":5.72265625,"y":11.122720000001827,"text-anchor":"start","text":"R","font-family":"\"Arial\"","font-size":10,"stroke":"#000000","fill":"#080808","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M26.369119999998475 45.49839999999767L33.895919999998114,45.49839999999767');
+       shape = this.canvas.paper.path('M26.37 45.50L33.90,45.50');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":1,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

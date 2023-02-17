@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_gate_IEC60617_12_AND_3 = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_AND_3",
@@ -11,34 +5,47 @@ var digital_gate_IEC60617_12_AND_3 = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:30,height:60 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:30,height:60},attr), setter, getter);
-     var port;
+     let port;
      // input03
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -0.9208333333329696, y: 83.28749999999977 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input03");
      port.setMaxFanOut(1);
+     this.read["input03"] = port.getValue.bind(port)
+     this.write["input03"]= port.setValue.bind(port)
+
      // input02
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.6666666666666667, y: 50 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
      port.setMaxFanOut(1);
+     this.read["input02"] = port.getValue.bind(port)
+     this.write["input02"]= port.setValue.bind(port)
+
      // input01
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.6666666666666667, y: 16.666666666666668 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
      port.setMaxFanOut(1);
+     this.read["input01"] = port.getValue.bind(port)
+     this.write["input01"]= port.setValue.bind(port)
+
      // out
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 104.42708333333334, y: 49.16666666666667 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("out");
      port.setMaxFanOut(20);
+     this.read["out"] = port.getValue.bind(port)
+     this.write["out"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()

@@ -15,7 +15,7 @@
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n    },\n    \n    calculate:function()\n    {\n        var i1 = this.getInputPort(0);\n        var o1 = this.getOutputPort(0);\n        \n        o1.setValue(!i1.getBooleanValue());\n    }\n\n});",
         "name": "Rectangle",
-        "markdown": "# NOT Gate\n\n## Description\nIn digital logic, an inverter or `NOT gate` is a logic \ngate which implements logical negation.\n\n\n## Logic table\n\n| INPUT   |  OUTPUT    |\n|:-------:|:----------:|\n| Low     |  `High`      |\n| `High`    |  Low       |\n\n",
+        "markdown": "In digital logic, an inverter or *NOT-Gate* is a logic gate which implements logical negation.\n\n## Logic table\n\n| INPUT | OUTPUT |\n| :---: | :----: |\n| Low | `High` |\n| `High` | Low |\n",
         "type": "Output",
         "direction": 1
       },

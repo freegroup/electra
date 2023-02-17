@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_display_8_Bit_Display = CircuitFigure.extend({
 
    NAME: "digital_display_8_Bit_Display",
@@ -11,58 +5,83 @@ var digital_display_8_Bit_Display = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:189,height:158 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:189,height:158},attr), setter, getter);
-     var port;
+     let port;
      // input_bit1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 5.063291139240507 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit1");
      port.setMaxFanOut(1);
+     this.read["input_bit1"] = port.getValue.bind(port)
+     this.write["input_bit1"]= port.setValue.bind(port)
+
      // input_bit2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 17.721518987341774 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit2");
      port.setMaxFanOut(1);
+     this.read["input_bit2"] = port.getValue.bind(port)
+     this.write["input_bit2"]= port.setValue.bind(port)
+
      // input_bit3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 30.37974683544304 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit3");
      port.setMaxFanOut(1);
+     this.read["input_bit3"] = port.getValue.bind(port)
+     this.write["input_bit3"]= port.setValue.bind(port)
+
      // input_bit4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 43.037974683544306 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit4");
      port.setMaxFanOut(1);
+     this.read["input_bit4"] = port.getValue.bind(port)
+     this.write["input_bit4"]= port.setValue.bind(port)
+
      // input_bit5
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 55.696202531645575 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit5");
      port.setMaxFanOut(1);
+     this.read["input_bit5"] = port.getValue.bind(port)
+     this.write["input_bit5"]= port.setValue.bind(port)
+
      // input_bit6
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 68.35443037974684 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit6");
      port.setMaxFanOut(1);
+     this.read["input_bit6"] = port.getValue.bind(port)
+     this.write["input_bit6"]= port.setValue.bind(port)
+
      // input_bit7
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 81.0126582278481 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit7");
      port.setMaxFanOut(1);
+     this.read["input_bit7"] = port.getValue.bind(port)
+     this.write["input_bit7"]= port.setValue.bind(port)
+
      // input_bit8
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 0, y: 93.67088607594937 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit8");
      port.setMaxFanOut(1);
+     this.read["input_bit8"] = port.getValue.bind(port)
+     this.write["input_bit8"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()

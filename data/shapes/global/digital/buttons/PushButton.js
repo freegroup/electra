@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_buttons_PushButton = CircuitFigure.extend({
 
    NAME: "digital_buttons_PushButton",
@@ -11,16 +5,20 @@ var digital_buttons_PushButton = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:35.04322500000035,height:28.93699999999899 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:35.04322500000035,height:28.93699999999899},attr), setter, getter);
-     var port;
+     let port;
      // Port
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 131.7741517796944, y: 82.88350554653319 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
+     this.read["Port"] = port.getValue.bind(port)
+     this.write["Port"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -56,7 +54,7 @@ var digital_buttons_PushButton = CircuitFigure.extend({
        shape.data("name","low");
        
        // Line
-       shape = this.canvas.paper.path('M30.043225000000348 23.93699999999899L37.699524999999994,23.93699999999899L45.35582500000055,23.93699999999899');
+       shape = this.canvas.paper.path('M30.04 23.94L37.70,23.94L45.36,23.94');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

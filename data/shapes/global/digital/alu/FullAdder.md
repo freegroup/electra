@@ -1,4 +1,4 @@
-Full adder is developed to overcome the drawback of
+The Full adder is developed to overcome the drawback of
 Half Adder circuit. It can add two one-bit numbers
 A and B, and carry c. The full adder is a three
 input and two output combinational circuit.

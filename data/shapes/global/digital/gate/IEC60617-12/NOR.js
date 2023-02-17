@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_NOR",
@@ -11,28 +5,38 @@ var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:37,height:40 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:37,height:40},attr), setter, getter);
-     var port;
+     let port;
      // input01
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.3513513513513513, y: 18.75 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
      port.setMaxFanOut(1);
+     this.read["input01"] = port.getValue.bind(port)
+     this.write["input01"]= port.setValue.bind(port)
+
      // input02
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.7027027027027026, y: 81.25 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
      port.setMaxFanOut(1);
+     this.read["input02"] = port.getValue.bind(port)
+     this.write["input02"]= port.setValue.bind(port)
+
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.64864864864865, y: 50 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
+     this.read["output"] = port.getValue.bind(port)
+     this.write["output"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -68,7 +72,7 @@ var digital_gate_IEC60617_12_NOR = CircuitFigure.extend({
        shape.data("name","Circle");
        
        // Line
-       shape = this.canvas.paper.path('M5.158499999999549 23.71140000000014L9.793649999999616,23.59254999999939L14.428799999999683,23.473699999999553');
+       shape = this.canvas.paper.path('M5.16 23.71L9.79,23.59L14.43,23.47');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

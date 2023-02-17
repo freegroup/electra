@@ -15,7 +15,7 @@
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n\n        this.last_t = false;\n    },\n    \n    calculate:function(context)\n    {\n        var t = this.getInputPort(\"input_t\").getBooleanValue();\n        \n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        \n        var rising = this.last_t===false && t===true; \n        \n        if(rising===true){\n            var v = q.getBooleanValue();\n            q.setValue(!v);\n            q_.setValue(v)\n        }\n        this.last_t = t;\n    }\n});",
         "name": "Rectangle",
-        "markdown": "# T-FlipFlop\n\n## Description\n\nThe D FlipFLop is widely used. It is also known as a \n*toggle*  flip-flop.\n\nA T flip-flop is a device which swaps or **toggles** state \nevery time it is triggered if the T input is asserted, \notherwise it holds the current output.\n\n\nThe toggle flip-flop is also a frequency divider.",
+        "markdown": "The T-FlipFLop is widely used. It is also known as a *toggle* flip-flop.\n\nA T-Flip-Flop is a device which swaps or **toggles** state\nevery time it is triggered if the T input is asserted,\notherwise, it holds the current output.\n\nThe toggle flip-flop is also a frequency divider.",
         "type": "Output",
         "direction": 1
       },

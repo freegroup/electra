@@ -1,19 +1,13 @@
-# OR Gate
-
-The `OR gate` is a digital logic gate that implements logical 
+The *OR-Gate* is a digital logic gate that implements logical
 disjunction - it behaves according to the truth table to the
- 
- 
 
-**Therefore, A `High` output results if one or both the 
-inputs to the gate are `High`**
+Therefore, a high output results if one or both the inputs to the gate are
 
 ## Logic table
 
-| INPUT 1   | INPUT   |  OUTPUT    |
-|:---------:|:-------:|:----------:|
-| Low       | Low     |  Low       |
-| `High`      | Low     |  `High`       |
-| Low       | `High`    |  `High`       |
-| `High`      | `High`    |  `High`    |
-
+| INPUT 1 | INPUT | OUTPUT |
+| :-----: | :---: | :----: |
+| Low | Low | Low |
+| `High` | Low | `High` |
+| Low | `High` | `High` |
+| `High` | `High` | `High` |

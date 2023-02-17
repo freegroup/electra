@@ -1,5 +1,1 @@
-# High / Low Array
-
-The High Low Array is a macro object for 8 toggle switches in row.
-
-
+The High Low Array is a macro object for 4 toggle switches in a row. The physical counterpart here is the so-called DIP switch.

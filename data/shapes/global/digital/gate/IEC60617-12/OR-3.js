@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_gate_IEC60617_12_OR_3 = CircuitFigure.extend({
 
    NAME: "digital_gate_IEC60617_12_OR_3",
@@ -11,34 +5,47 @@ var digital_gate_IEC60617_12_OR_3 = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:31.3046875,height:60 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:31.3046875,height:60},attr), setter, getter);
-     var port;
+     let port;
      // input03
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5972048914399801, y: 86.66666666666667 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input03");
      port.setMaxFanOut(20);
+     this.read["input03"] = port.getValue.bind(port)
+     this.write["input03"]= port.setValue.bind(port)
+
      // input02
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -1.5972048914399801, y: 50 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input02");
      port.setMaxFanOut(20);
+     this.read["input02"] = port.getValue.bind(port)
+     this.write["input02"]= port.setValue.bind(port)
+
      // input01
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -3.1944097828799602, y: 15 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input01");
      port.setMaxFanOut(20);
+     this.read["input01"] = port.getValue.bind(port)
+     this.write["input01"]= port.setValue.bind(port)
+
      // output
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 97.1300224606938, y: 50 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output");
      port.setMaxFanOut(20);
+     this.read["output"] = port.getValue.bind(port)
+     this.write["output"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -69,7 +76,7 @@ var digital_gate_IEC60617_12_OR_3 = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M15.99265000000014 36.66859999999997L11.291849999999613,36.81550000000061L6.591049999999996,36.96240000000034');
+       shape = this.canvas.paper.path('M15.99 36.67L11.29,36.82L6.59,36.96');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        

@@ -21,9 +21,9 @@ class View {
     let writeIcon = writePermission?`<div class="editIcon">&#9998;</div>`:""
     shapes.forEach(shape => {
       let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
-      let mkFile = shape.shapePath.replace(".shape",".md")
+      let mkFile = shape.fullName+".md"
       searchResult.append(`
-      <div class="tile" data-file="${shape.shapePath}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
+      <div class="tile" data-type="${shape.type}" data-fullname="${shape.fullName}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
         <div class="image">
           <img loading="lazy" src="${conf.shapes.backend[shape.scope].image(shape.imagePath)}"/>
         </div>
@@ -54,9 +54,8 @@ class View {
   }
 
   loadTile(tile){
-    console.log(tile)
     let desc = tile.find(".description")
-    const newURL = tile.data("markdown")
+    let newURL = tile.data("markdown")
     axios.get(newURL)
     .then((response) => {
       desc.html(md.render(response.data))
@@ -74,14 +73,14 @@ class View {
    
     editor.css("position","absolute")
     editor.addClass("editMode")
+    editor.find(".description").html("")
     let saveButton = editor.find(".editIcon")
     saveButton.html("<button>Save</button>")
     saveButton.on("click", this.onSave.bind(this))
 
-    $(".searchResult").append(editor)
     axios.get(mdUrl)
     .then( response =>{
-      $(".tile.editMode .description").html("")
+      $(".searchResult").append(editor)
       this.editor = new ToastEditor({
         el: document.querySelector(".tile.editMode .description"),
         usageStatistics: false,
@@ -102,22 +101,41 @@ class View {
     let icon = $(event.currentTarget)
     let tile = icon.closest(".tile")
     let scope = tile.data("scope")
-    let shapeFile = tile.data("file")
+    let fullName = tile.data("fullname")
+    let type = tile.data("type")
+
+    let shapeFile = fullName + ".shape"
     
     $(".tile.editMode").remove()
 
-    storage.loadFile(shapeFile, scope)
-    .then( response =>{
-      let json = response.data
-      let userData = json.draw2d[0].userData
+    if(type ==="shape") {
+      storage.loadFile(shapeFile, scope)
+      .then( response =>{
+        let json = response.data
+        let userData = json.draw2d[0].userData
+        userData.markdown =  this.editor.getMarkdown().tuiMarkdownFix()
+        storage.saveFile( json , shapeFile , scope)
+        .then((response) => {
+          let tile = $(`.tile[data-fullname="${fullName}"]`)
+          let desc = tile.find(".description")
+          desc.html(md.render(userData.markdown))
+          // because the processing of the shape file is async on the backend
+          // the "loadTile" do not work at this point
+          //this.loadTile(tile)
+        })
+        .catch(exc => {
+          console.log(exc)
+        })
+      })
+    }
+    else if(type === "code"){
+      let markdown = this.editor.getMarkdown().tuiMarkdownFix()
 
-      userData.markdown =  this.editor.getMarkdown().tuiMarkdownFix()
-
-      storage.saveFile( json , shapeFile , scope)
+      storage.saveFile( markdown , fullName+".md" , scope)
       .then((response) => {
-        let tile = $(`.tile[data-file="${shapeFile}"]`)
+        let tile = $(`.tile[data-fullname="${fullName}"]`)
         let desc = tile.find(".description")
-        desc.html(md.render(userData.markdown))
+        desc.html(md.render(markdown))
         // because the processing of the shape file is async on the backend
         // the "loadTile" do not work at this point
         //this.loadTile(tile)
@@ -125,7 +143,10 @@ class View {
       .catch(exc => {
         console.log(exc)
       })
-    })
+    }
+    else{
+      console.log("type not found...")
+    }
   }
 }
 

@@ -1,7 +1,1 @@
-# High / Low Signal display
-
-simple  **HIGH** / **LOW** display.
-
-    HIGH -> red
- 
-    LOW -> gray
+simple **HIGH** / **LOW** 4-bit LED display in a row

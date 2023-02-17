@@ -15,7 +15,7 @@
         "baseClass": "draw2d.SetFigure",
         "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n        this._super(attr, setter, getter);\n\n    },\n    \n    calculate:function(context)\n    {\n        let val = this.getInputPort(\"input_bit1\").getBooleanValue()?1:0;\n        val    += this.getInputPort(\"input_bit2\").getBooleanValue()?2:0;\n        val    += this.getInputPort(\"input_bit3\").getBooleanValue()?4:0;\n        val    += this.getInputPort(\"input_bit4\").getBooleanValue()?8:0;\n        this.layerAttr(\"digit\", {text: val.toString(16).toUpperCase()});\n    }\n\n});",
         "name": "circle",
-        "markdown": "# 8-Bit Number display\n\nConverts the 8-Input bis into the corresponding dezimal number and shows them\nin the display.",
+        "markdown": "Converts the 4-input bis into the corresponding decimal number and shows them\nin the display.",
         "type": "Output",
         "direction": 1
       },

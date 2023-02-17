@@ -1,7 +1,2 @@
-# High / Low Signal display
+simple **HIGH** / **LOW** array display with 8 LED in a row.
 
-simple  **HIGH** / **LOW** display.
-
-    HIGH -> red
- 
-    LOW -> gray

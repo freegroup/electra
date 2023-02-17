@@ -17,8 +17,6 @@ dotenv.config({ debug: false,path: envFile })
 
 const thisDir = path.normalize(__dirname)
 
-const version =  process.env.VERSION || "local-version"
-
 const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
 const DESIGNER_URL =  `http://localhost:${PORT_INGRESS}/designer`
 
@@ -45,22 +43,29 @@ function concatFiles(dataDirectory, scope) {
       let list = []
       files.forEach( (filename)=>  {
         let relativePath = filename.replace(dataDirectory, "")
-        let basenamePath = relativePath.replace(".js", "")
+        let fullName = relativePath.replace(".js", "")
        
-        let name = basenamePath.replace(/\//g , "_").replace(/-/g , "_")
-        let basename = relativePath.split('/').pop()
-        let displayName = basename.replace(".js", "")
+        let name = fullName.replace(/\//g , "_").replace(/-/g , "_")
+        let baseDir = path.dirname(relativePath)
+        let baseName = path.basename(relativePath)
+        let displayName = path.basename(relativePath, ".js")
+
+        // check if a *.shape" file exists. If yes, the shape is created in the designer. If not
+        // the shape is created hand crafted
+        //
+        let isDesigner = fs.existsSync(path.join(dataDirectory,  fullName+".shape"))
+
         let tags = name.split("_")
         list.push({
           name: name,
           tags: tags,
+          type: isDesigner?"shape":"code", 
           scope: scope,
-          version: version,
-          basename: basename,
+          baseName: baseName,
           displayName: displayName,
-          basedir: relativePath.substring(0, relativePath.lastIndexOf('/')),
-          shapePath:  basenamePath + ".shape",
-          imagePath:  basenamePath + ".png"
+          basedir: baseDir,
+          fullName: fullName,
+          imagePath:  fullName + ".png"
         });
         content += (fs.readFileSync(filename, 'utf8') + "\n\n\n")
       });
@@ -142,7 +147,6 @@ module.exports = {
         // replace the generated "testShape" with the real figure name
         //
         jsCode = jsCode.replace(/testShape/g, pkg);
-        jsCode = jsCode.replace(/\$\{VERSION\}/g, version);
         customCode = customCode.replace(/testShape/g, pkg);
   
         console.log("writing file to disc....", jsAbsolutePath)

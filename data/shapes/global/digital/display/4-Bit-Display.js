@@ -1,9 +1,3 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_display_4_Bit_Display = CircuitFigure.extend({
 
    NAME: "digital_display_4_Bit_Display",
@@ -11,34 +5,47 @@ var digital_display_4_Bit_Display = CircuitFigure.extend({
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:97,height:97.5 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:97,height:97.5},attr), setter, getter);
-     var port;
+     let port;
      // input_bit1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 1.0309278350515463, y: 19.323487179487223 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit1");
      port.setMaxFanOut(1);
+     this.read["input_bit1"] = port.getValue.bind(port)
+     this.write["input_bit1"]= port.setValue.bind(port)
+
      // input_bit2
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 1.0309278350515463, y: 39.836307692307734 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit2");
      port.setMaxFanOut(1);
+     this.read["input_bit2"] = port.getValue.bind(port)
+     this.write["input_bit2"]= port.setValue.bind(port)
+
      // input_bit3
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 1.0309278350515463, y: 60.349128205128245 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit3");
      port.setMaxFanOut(1);
+     this.read["input_bit3"] = port.getValue.bind(port)
+     this.write["input_bit3"]= port.setValue.bind(port)
+
      // input_bit4
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 1.0309278350515463, y: 80.86194871794876 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_bit4");
      port.setMaxFanOut(1);
+     this.read["input_bit4"] = port.getValue.bind(port)
+     this.write["input_bit4"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()

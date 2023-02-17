@@ -1,7 +1,7 @@
-# High / Low Signal display
+simple **HIGH** / **LOW** display.
 
-simple  **HIGH** / **LOW** display.
+```
+HIGH -> red
 
-    HIGH -> red
- 
-    LOW -> gray
+LOW -> gray
+```
