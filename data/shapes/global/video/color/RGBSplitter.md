@@ -1,6 +1,7 @@
-## RGB Splitter
+A **RGBSplitter** has three video frame output channels, which converts an input into red, green, and blue color channels is known as a color separation filter. The filter works by extracting the red, green, and blue color channels from the input video frame and outputting them as separate video frames.
 
-Returns a Black&White Image for each RGB channel.
+Each output frame will contain only the corresponding color channel, with all other color information removed. This means that the red output frame will contain only the red channel of the input frame, the green output frame will contain only the green channel of the input frame, and the blue output frame will contain only the blue channel of the input frame.
 
-A pixel is colored as black if a channel dominates a pixel. The result contains
-highlighted reagions wich can be used as a mask for further processing. 
+The color separation filter is commonly used in video processing pipelines for various applications such as color correction, color grading, and special effects. By isolating the color channels, it is possible to manipulate the color information independently, allowing for precise adjustments to be made to the color balance, hue, saturation, and brightness of the image.
+
+Once the three color channels have been separated, they can be processed separately using different filters or combined back together to create the final output video frame. By working with the individual color channels, the color separation filter offers a powerful tool for manipulating the color of video frames and creating visually compelling effects.

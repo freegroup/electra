@@ -1,4 +1,7 @@
-Converts the image to white and black pixels depending if they
-are above or below the threshold defined by the level parameter.
+A **WhiteBlack** filter converts a color video frame into a black and white image (not grayscale) is known as a binary thresholding filter. The filter works by converting each pixel in the input color image to either black or white based on a threshold value.
 
-The parameter must be between 0.0 (white) and 5.0 (black).
+The threshold value is a input parameter that determines whether a pixel is classified as black or white. If the brightness value of a pixel is above the threshold, the pixel is set to white, and if it is below the threshold, the pixel is set to black.
+
+The binary thresholding filter is commonly used in video processing pipelines for applications such as object detection and recognition, as well as for enhancing the performance of other filters that expect binary input. By converting the input color video frame into a binary image, the filter simplifies the processing of subsequent filters that only require binary data.
+
+The binary thresholding filter can be adjusted by changing the threshold value to achieve different levels of contrast and emphasis between black and white regions of the image. However, it is important to choose the threshold value carefully to avoid overemphasizing noise or other unwanted artifacts in the image
