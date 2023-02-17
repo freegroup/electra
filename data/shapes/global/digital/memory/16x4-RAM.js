@@ -1,7 +1,7 @@
 var digital_memory_16x4_RAM = CircuitFigure.extend({
 
    NAME: "digital_memory_16x4_RAM",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
