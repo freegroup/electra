@@ -429,12 +429,18 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = void 0;
 var _Userinfo = _interopRequireDefault(__webpack_require__(/*! ../../common/js/Userinfo */ "../common/public/js/Userinfo.js"));
 var _AppSwitch = _interopRequireDefault(__webpack_require__(/*! ../../common/js/AppSwitch */ "../common/public/js/AppSwitch.js"));
+var _partyJs = _interopRequireDefault(__webpack_require__(/*! party-js */ "./node_modules/party-js/lib/index.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class Application {
   constructor() {}
   init(permissions) {
     this.userinfo = new _Userinfo.default(permissions);
     this.appSwitch = new _AppSwitch.default(permissions);
+    $(".launchArea .launch_button").one("mouseover", function (event) {
+      console.log("ddfd");
+      let button = $(this);
+      _partyJs.default.confetti(this);
+    });
   }
 }
 let app = new Application();
@@ -469,7 +475,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\n  font-family: 'Roboto', sans-serif !important;\n  font-weight: 300;\n}\n@keyframes spinner {\n  to {\n    transform: translate(-50%, -50%) rotate(360deg);\n  }\n}\n.spinner > * {\n  opacity: 0.08 !important;\n}\n.spinner:before {\n  content: '';\n  transform: translate(-50%, -50%);\n  position: absolute;\n  z-index: 2000;\n  top: 50%;\n  left: 50%;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  border-width: 2px;\n  border-style: solid;\n  animation: spinner 0.6s linear infinite;\n}\n.material-button {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n  border: none;\n  border-radius: 4px;\n  padding: 0 16px;\n  min-width: 64px;\n  height: 36px;\n  vertical-align: middle;\n  text-align: center;\n  text-overflow: ellipsis;\n  text-transform: uppercase;\n  font-size: 14px;\n  font-weight: 500;\n  line-height: 36px;\n  overflow: hidden;\n  outline: none;\n  cursor: pointer;\n  transition: box-shadow 0.2s;\n}\n.material-button::-moz-focus-inner {\n  border: none;\n}\n/* Overlay */\n.material-button::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n/* Ripple */\n.material-button::after {\n  content: \"\";\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  border-radius: 50%;\n  padding: 50%;\n  width: 32px;\n  /* Safari */\n  height: 32px;\n  /* Safari */\n  opacity: 0;\n  transform: translate(-50%, -50%) scale(1);\n  transition: opacity 1s, transform 0.5s;\n}\n.material-button:active::after {\n  transform: translate(-50%, -50%) scale(0);\n  transition: transform 0s;\n}\n/* Disabled */\n.material-button:disabled {\n  cursor: initial;\n}\n.tooltip {\n  z-index: 1000000;\n}\n.userinfo_toggler .userContainer {\n  text-align: center;\n}\n.userinfo_toggler .userContainer img {\n  width: 90px;\n}\n.appbar {\n  height: 70px;\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-left: 10px;\n  padding-right: 10px;\n}\n.appbar .icon {\n  height: 40;\n}\n.appbar .title h1 {\n  font-size: 24px;\n  font-weight: 100;\n  letter-spacing: 6px;\n  margin: 0;\n}\n.appbar .title h2 {\n  font-size: 14px;\n  font-weight: 100;\n  letter-spacing: 4px;\n  margin: 0;\n}\n.appbar .spacer {\n  flex-grow: 1;\n}\n.appbar .group {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.toolbar {\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-right: 10px;\n  height: 60;\n}\n.toolbar * {\n  outline: none;\n}\n.toolbar .spacer {\n  flex-grow: 1;\n}\n.toolbar .group {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.toolbar .group .statusIndicator {\n  margin: 20px;\n}\n.toolbar .group .statusIndicator img {\n  display: block;\n  cursor: pointer;\n  margin: auto;\n}\n.toolbar .group .statusIndicator span {\n  font-size: 0.8em;\n  text-align: center;\n  width: 100%;\n  display: inline-block;\n  white-space: nowrap;\n}\n.toolbar .group .statusIndicator .notSupported {\n  display: none;\n  font-weight: bold;\n}\n.toolbar .group .statusIndicator .connected {\n  display: block;\n}\n.toolbar .group .statusIndicator .disconnected {\n  display: none;\n}\n.toolbar .group .statusIndicator.disabled img {\n  cursor: not-allowed;\n}\n.toolbar .group .statusIndicator.disabled img:hover {\n  box-shadow: none;\n}\n.toolbar .group .statusIndicator.disabled .notSupported {\n  display: block;\n}\n.toolbar .group .statusIndicator.disabled .connected {\n  display: none;\n}\n.toolbar .group .statusIndicator.disabled .disconnected {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) span {\n  font-weight: bold;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .notSupported {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .connected {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .disconnected {\n  display: block;\n}\n.modal-backdrop.in {\n  transition: all 0.4s linear;\n}\n.genericDialog .modal-content {\n  border-radius: 4px;\n}\n.genericDialog .modal-content .modal-header {\n  border-bottom: 0;\n  font-weight: 400;\n}\n.genericDialog .modal-content .modal-body {\n  min-height: 120px;\n  max-height: 80%;\n  overflow: auto;\n}\n.genericDialog .modal-content .modal-body .section {\n  border: 0px solid transparent !important;\n  cursor: default !important;\n}\n.genericDialog .modal-content .modal-body .form-control {\n  appearance: none;\n  box-sizing: border-box;\n  border-radius: 4px;\n  margin: 0;\n  padding: 0;\n  display: inline-block;\n  font: inherit;\n  border-width: 1px;\n  border-style: solid;\n  box-shadow: none;\n  height: 24px;\n  padding: 0 3px;\n}\n.genericDialog .modal-content .modal-body .list-group {\n  overflow-y: auto;\n  overflow-x: auto;\n}\n.genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"true\"] {\n  font-weight: bold;\n}\n.genericDialog .modal-content .modal-body .list-group .list-group-item {\n  background-color: transparent;\n  font-weight: 300;\n}\n.genericDialog .modal-content .modal-body .list-group .list-group-item:hover {\n  text-decoration: underline;\n}\n.genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"false\"][data-type=\"file\"] {\n  cursor: default;\n  text-decoration: none !important;\n}\n.genericDialog .modal-content .modal-footer {\n  border-top: 0;\n}\n.genericDialog .modal-content .modal-footer .btn,\n.genericDialog .modal-content .modal-footer .btn-group {\n  border: 0;\n  text-transform: uppercase;\n  background-color: transparent;\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn:hover,\n.genericDialog .modal-content .modal-footer .btn-group:hover {\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-group {\n  border: 0;\n  text-transform: uppercase;\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-group .dropdown-toggle .caret {\n  margin-top: 7px;\n}\n.genericDialog .modal-content .modal-footer .btn-group:hover {\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-primary {\n  font-weight: bold;\n}\n.context-menu-list {\n  margin: 0;\n  padding: 0;\n  min-width: 120px;\n  max-width: unset;\n  display: inline-block;\n  position: absolute;\n  list-style-type: none;\n  border-width: 1px;\n  border-style: solid;\n  border-left-width: 2px;\n  font-size: 15px;\n  white-space: nowrap;\n  /* vertically align inside labels */\n  /* position checkboxes and radios as icons */\n}\n.context-menu-list .context-menu-item {\n  padding: 5px 5px 5px 24px;\n  position: relative;\n  user-select: none;\n}\n.context-menu-list .context-menu-item.hover {\n  cursor: pointer;\n}\n.context-menu-list .context-menu-item > label > input,\n.context-menu-list .context-menu-item > label > textarea {\n  user-select: text;\n}\n.context-menu-list .context-menu-separator {\n  padding-bottom: 0;\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n}\n.context-menu-list .context-menu-input.hover,\n.context-menu-list .context-menu-item.disabled.hover {\n  cursor: default;\n}\n.context-menu-list .context-menu-submenu:after {\n  content: \">\";\n  position: absolute;\n  top: 0;\n  right: 3px;\n  z-index: 1;\n}\n.context-menu-list .context-menu-item.icon {\n  min-height: 18px;\n}\n.context-menu-list .context-menu-item.icon:before {\n  position: relative;\n  left: -15px;\n  font-size: 19px;\n}\n.context-menu-list .context-menu-input > label > * {\n  vertical-align: top;\n}\n.context-menu-list .context-menu-input > label > input[type=\"checkbox\"],\n.context-menu-list .context-menu-input > label > input[type=\"radio\"] {\n  margin-left: -17px;\n}\n.context-menu-list .context-menu-input > label > span {\n  margin-left: 5px;\n}\n.context-menu-list .context-menu-input > label,\n.context-menu-list .context-menu-input > label > input[type=\"text\"],\n.context-menu-list .context-menu-input > label > textarea,\n.context-menu-list .context-menu-input > label > select {\n  display: block;\n  width: 100%;\n  box-sizing: border-box;\n}\n.context-menu-list .context-menu-input > label > textarea {\n  height: 100px;\n}\n.context-menu-list .context-menu-item > .context-menu-list {\n  display: none;\n  /* re-positioned by js */\n  right: -5px;\n  top: 5px;\n}\n.context-menu-list .context-menu-item.hover > .context-menu-list {\n  display: block;\n}\n.context-menu-list .context-menu-accesskey {\n  text-decoration: underline;\n}\n.context-menu-list .context-menu-list {\n  border-color: #DDD;\n  background: white;\n  border-left-color: #C71D3D;\n  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n}\n.context-menu-list .context-menu-list .context-menu-separator {\n  border-bottom: 1px solid #DDD;\n}\n.context-menu-list .context-menu-list .context-menu-item.hover {\n  background-color: #C71D3D;\n  color: white;\n}\n.context-menu-list .context-menu-list .context-menu-item.disabled {\n  color: #666;\n}\n.context-menu-list .context-menu-list .context-menu-item.disabled.hover {\n  background-color: #EEE;\n}\n.context-menu-list .context-menu-list .context-menu-item .context-menu-submenu:after {\n  color: #666;\n}\n#githubNewFileDialog .filePreview {\n  font-size: 115px;\n}\n#fileOpenDialog .list-group {\n  height: 60%;\n}\n#fileSaveDialog .filePreview {\n  max-width: 200px;\n  max-height: 200px;\n}\n#fileSaveDialog .modal-body .media {\n  padding: 20px;\n}\n#githubFileSaveAsDialog .filePreview {\n  max-width: 200px;\n  max-height: 200px;\n}\n#githubFileSaveAsDialog .list-group {\n  height: 250px;\n}\n#canvas_zoom {\n  position: fixed;\n  bottom: 20px;\n  right: 20px;\n  border-radius: 5px;\n  display: flex;\n  flex-wrap: nowrap;\n  align-items: center;\n}\n#canvas_zoom button {\n  background-color: transparent;\n  font-weight: 300;\n  padding: 5px;\n  padding-left: 10px;\n  padding-right: 10px;\n  border-width: 1px;\n  border-style: solid;\n  outline: none;\n  transition: all 0.5s;\n}\n#canvas_zoom button:hover {\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering img {\n  max-width: 100%;\n}\n.markdownRendering p {\n  font-size: 16px;\n  margin-top: 30px;\n}\n.markdownRendering table {\n  /* we need important to override some setting in the wysiwyg editor **/\n  margin-left: auto !important;\n  margin-right: auto !important;\n  font-family: Arial, Helvetica, sans-serif;\n  font-size: 12px;\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 3px;\n}\n.markdownRendering table th {\n  padding: 10px;\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering table th:first-child {\n  text-align: left;\n  padding-left: 20px;\n}\n.markdownRendering table tr:first-child th:first-child {\n  border-top-left-radius: 3px;\n}\n.markdownRendering table tr:first-child th:last-child {\n  border-top-right-radius: 3px;\n}\n.markdownRendering table tr {\n  text-align: center;\n  padding-left: 20px;\n}\n.markdownRendering table tr td:first-child {\n  text-align: left;\n  padding-left: 20px;\n  border-left: 0;\n}\n.markdownRendering table tr td {\n  padding: 18px;\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering table tr:last-child td {\n  border-bottom: 0;\n}\n.markdownRendering table tr:last-child td:first-child {\n  border-bottom-left-radius: 3px;\n}\n.markdownRendering table tr:last-child td:last-child {\n  border-bottom-right-radius: 3px;\n}\n.markdownRendering .info {\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 5px;\n  font-weight: 400;\n  letter-spacing: 2px;\n  padding: 5px;\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.markdownRendering .info p {\n  padding: 0;\n  margin: 0;\n}\n.tinyFlyoverMenu {\n  border-width: 1px;\n  border-style: solid;\n  position: absolute;\n  top: -15px;\n  right: 20px;\n  border-radius: 2px;\n  font-size: 20px;\n  z-index: 1;\n  padding: 3px;\n  display: flex;\n  flex-direction: row;\n  align-items: stretch;\n  justify-content: center;\n  gap: 10px;\n  flex-wrap: nowrap;\n}\n.tinyFlyoverMenu div {\n  border-width: 1px;\n  border-style: solid;\n  padding-right: 5px;\n  padding-left: 5px;\n}\n.tinyFlyoverMenu div:hover {\n  border-width: 1px;\n  border-style: solid;\n  cursor: pointer;\n}\n.section .tinyFlyoverMenu {\n  position: sticky;\n  float: right;\n  top: 10px;\n}\n#notificationToast {\n  position: absolute;\n  top: -40px;\n  left: 50%;\n  transform: translateX(-50%);\n  padding-left: 20px;\n  padding-right: 20px;\n  border-radius: 0 0 8px 8px;\n  font-weight: 100;\n  z-index: 30000;\n  padding-top: 20px;\n  font-size: 16px;\n}\n#leftTabStrip {\n  height: 100%;\n  position: absolute;\n  width: 60px;\n  padding-top: 60px;\n  overflow: hidden;\n}\n#leftTabStrip:after {\n  transform: rotate(-90deg) translate(-90px, -70px);\n  font-size: 55px;\n  white-space: nowrap;\n  font-weight: 200;\n  letter-spacing: 3px;\n}\n#leftTabStrip .leftTab {\n  border-radius: 0 !important;\n  width: 60px;\n  height: 60px;\n  padding: 4px;\n}\n.tab-content {\n  position: absolute;\n  left: 60px;\n  right: 0px;\n  top: 70px;\n  bottom: 0;\n}\n.tab-content .tab-pane {\n  display: none;\n  padding: 0;\n  height: 100%;\n  position: relative;\n}\n.tab-content .tab-pane.active {\n  display: flex !important;\n  flex-direction: column;\n  align-items: stretch;\n}\n.tab-content .tab-pane .workspace #canvas_config {\n  position: relative;\n  width: 40px;\n  top: 65;\n  left: 5px;\n  cursor: pointer;\n  border-width: 1px;\n  border-style: solid;\n}\n.tab-content .tab-pane .workspace #canvas_config:hover {\n  border-width: 1px !important;\n  border-style: solid !important;\n}\n.tab-content .tab-pane .workspace #canvas_config_items {\n  position: absolute;\n  top: 90;\n  left: 5px;\n  cursor: pointer;\n  padding: 10px;\n  white-space: nowrap;\n  min-width: 250px;\n}\n#editor .toolbar {\n  right: 0;\n  left: 0;\n  position: absolute;\n}\n#editor .workspace {\n  position: relative;\n  height: 100%;\n}\n#files {\n  overflow-y: scroll;\n  padding: 40px;\n}\n#files .teaser {\n  display: inline-block;\n  padding-left: 20px;\n  padding-right: 20px;\n  margin-bottom: 0;\n}\n#files .teaser .title {\n  font-weight: 200;\n  font-size: 4vw;\n  white-space: nowrap;\n  margin-bottom: 10px;\n}\n#files .teaser .title img {\n  padding-right: 40px;\n  height: 100px;\n}\n#files .teaser .slogan {\n  font-size: 2vw;\n  font-weight: 200;\n}\n#files .deleteIcon {\n  position: absolute;\n  right: 24px;\n  top: 18px;\n  cursor: pointer;\n  font-size: 25px;\n  padding: 4px;\n  border-radius: 2px;\n}\n#files .list-group-item {\n  cursor: pointer;\n}\n#files .list-group-item .thumb .thumbnail {\n  cursor: pointer;\n}\n#files .list-group-item .thumb .media-body {\n  padding-top: 14px;\n  padding-left: 20px;\n}\n#files .list-group-item .thumb .filenameInplaceEdit {\n  font-size: 18px;\n  margin-top: -5px;\n}\n#files .list-group-item .thumb h4 {\n  font-size: 18px;\n  display: inline-block;\n}\n#files .list-group-item .thumb .editIcon {\n  padding-left: 10px;\n  font-size: 14px;\n  display: none;\n}\n#files .list-group-item .thumb:hover h4 {\n  text-decoration: underline;\n}\n#files .list-group-item .thumb:hover .editIcon {\n  display: inline-block;\n}\n#files .thumbAdd {\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 1s;\n}\n#files .thumbAdd div {\n  font-size: 160px;\n  text-align: center;\n}\n#files .thumbAdd h4 {\n  text-align: center;\n}\n#files .thumbAdd:hover {\n  border-width: 1px;\n  border-style: solid;\n  transition: all 1s;\n}\n#files .fileOperations {\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n  padding-bottom: 9px;\n}\n#files #material-tabs {\n  position: relative;\n  display: block;\n  padding: 0;\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n}\n#files #material-tabs a {\n  position: relative;\n  display: inline-block;\n  text-decoration: none;\n  padding-bottom: 15px;\n  padding-left: 20px;\n  padding-right: 20px;\n  padding-top: 5px;\n  text-transform: uppercase;\n  font-size: 14px;\n  font-weight: 300;\n  text-align: center;\n  transition: all 0.3s ease;\n  outline: none;\n  z-index: 1001;\n}\n#files #material-tabs a.active {\n  font-weight: 400;\n  transition: all 0.3s ease;\n}\n#files .material-tab-content > div {\n  padding: 10px;\n  min-height: 600px;\n}\n#files header {\n  position: relative;\n}\n#files .yellow-bar {\n  position: absolute;\n  z-index: 1000;\n  bottom: -2px;\n  height: 50px;\n  display: block;\n  left: 0;\n  transition: all 0.3s ease;\n  border-radius: 10px 10px 0 0;\n  border-width: 1px 1px 0 1px;\n  border-style: solid;\n}\n#home {\n  overflow: scroll;\n}\n#home .authorPage {\n  padding: 40px !important;\n  font-size: calc(12px + 0.5vw);\n  font-weight: 400;\n}\n#home .authorPage h1 {\n  font-weight: 200;\n  font-size: calc(16px + 2.5vw);\n  white-space: nowrap;\n  margin-bottom: 10px;\n}\n#home .authorPage h2 {\n  font-size: calc(14px + 1.5vw);\n  font-weight: 200;\n}\n#home footer {\n  text-align: center;\n  margin-top: 100px;\n}\n#home footer a {\n  text-decoration: underline;\n}\n#configMenuIcon {\n  font-size: 25px;\n  cursor: pointer;\n}\n#figureConfigDialog .figureAddLabel {\n  font-size: 12px;\n  font-weight: 200;\n  cursor: pointer;\n}\n#figureConfigDialog textarea.figureAttribute,\n#figureConfigDialog textarea.lineNumbering {\n  font-family: lucida console, courier new, courier, monospace;\n  margin: 0;\n  padding: 10px 0;\n  height: 300px;\n  border-radius: 0;\n  resize: none;\n  font-size: 16px;\n  line-height: 1.2;\n  outline: none;\n  box-sizing: border-box;\n}\n#figureConfigDialog textarea.figureAttribute:focus-visible,\n#figureConfigDialog textarea.lineNumbering:focus-visible {\n  outline: none;\n}\n#figureConfigDialog textarea.figureAttribute {\n  padding-left: calc(3.5rem + 5px);\n  width: 100%;\n}\n#figureConfigDialog textarea.lineNumbering {\n  border-color: transparent;\n  overflow-y: hidden;\n  text-align: right;\n  box-shadow: none;\n  position: absolute;\n  width: 3.5rem;\n}\n.applicationSwitch .application-waffel svg,\n.applicationSwitch .application-waffel img {\n  width: 60px;\n}\n.applicationSwitch .open .dropdown-menu {\n  z-index: 10000;\n  right: 0;\n  left: initial;\n  display: grid;\n  max-width: 200px;\n  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));\n  grid-auto-rows: minmax(80px, auto);\n  grid-gap: 5px;\n}\n.applicationSwitch .dropdown-menu {\n  display: none;\n}\n.image-button {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  font-weight: 400;\n}\n.image-button img,\n.image-button svg {\n  margin: 5px;\n  margin-bottom: 0;\n  padding: 0;\n  width: 40;\n  height: 40;\n  text-align: center;\n  font-size: 45px;\n  transition: all 0.5s;\n  border-radius: 4px;\n  border-width: 1px;\n  border-style: solid;\n}\n.image-button div {\n  text-align: center;\n  font-size: 10px;\n  cursor: default;\n}\n.image-button:not(.disabled) img,\n.image-button:not(.disabled) svg {\n  cursor: pointer;\n}\n.notifyjs-bootstrap-base {\n  font-size: 12px;\n  border: none;\n  border-radius: 1px;\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.notifyjs-bootstrap-info {\n  background-image: none;\n}\n:root {\n  --shadow-color: #C71D3D;\n  --shadow-color-light: white;\n}\n@keyframes neon {\n  0% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light), 0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n  }\n  50% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);\n  }\n  100% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light), 0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n  }\n}\nbody.light {\n  /* Overlay */\n  /* Ripple */\n  /* Hover, Focus */\n  /* Active */\n  /* Disabled */\n}\nbody.light .notifyjs-bootstrap-base {\n  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n}\nbody.light .notifyjs-bootstrap-info {\n  background-color: #f7f7f7;\n  color: #292929;\n}\nbody.light .appbar {\n  background-color: #202b3b;\n}\nbody.light .appbar .title h1 {\n  color: white;\n}\nbody.light .appbar .title h2 {\n  color: white;\n  animation: neon 3s infinite;\n}\nbody.light .appbar .slogan {\n  color: white;\n  letter-spacing: 0.2vw;\n}\nbody.light .appbar .application-waffel img,\nbody.light .appbar .application-waffel svg {\n  color: white;\n  border-color: transparent;\n}\nbody.light .appbar .application-waffel img circle[stroke],\nbody.light .appbar .application-waffel svg circle[stroke],\nbody.light .appbar .application-waffel img polyline[stroke],\nbody.light .appbar .application-waffel svg polyline[stroke],\nbody.light .appbar .application-waffel img path[stroke],\nbody.light .appbar .application-waffel svg path[stroke],\nbody.light .appbar .application-waffel img g[stroke],\nbody.light .appbar .application-waffel svg g[stroke] {\n  stroke: white !important;\n}\nbody.light .appbar .application-waffel img rect[fill],\nbody.light .appbar .application-waffel svg rect[fill],\nbody.light .appbar .application-waffel img circle[fill],\nbody.light .appbar .application-waffel svg circle[fill] {\n  fill: white !important;\n}\nbody.light .appbar .application-waffel div {\n  color: white;\n}\nbody.light .appbar .application-waffel div.highlight {\n  animation: highlight 3s infinite;\n}\nbody.light .appbar .application-waffel.disabled {\n  opacity: 0.2;\n}\nbody.light .appbar .application-waffel:not(.disabled) img:hover,\nbody.light .appbar .application-waffel:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  border-color: white;\n}\nbody.light .spinner:before {\n  border-color: #ccc;\n  border-top-color: #C71D3D;\n  background-color: #fef9f9;\n}\nbody.light .material-button {\n  color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));\n  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button::before {\n  background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  opacity: 0;\n}\nbody.light .material-button::after {\n  background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  opacity: 0;\n}\nbody.light .material-button:hover,\nbody.light .material-button:focus {\n  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button:hover::before {\n  opacity: 0.08;\n}\nbody.light .material-button:focus::before {\n  opacity: 0.24;\n}\nbody.light .material-button:hover:focus::before {\n  opacity: 0.3;\n}\nbody.light .material-button:active {\n  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button:active::after {\n  opacity: 0.32;\n}\nbody.light .material-button:disabled {\n  color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);\n  background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);\n  box-shadow: none;\n}\nbody.light .material-button:disabled::before {\n  opacity: 0;\n}\nbody.light .material-button:disabled::after {\n  opacity: 0;\n}\nbody.light .confirm-dialog-btn-confirm {\n  background-color: #C71D3D;\n}\nbody.light .context-menu-list {\n  border-color: #DDD;\n  background: white;\n  border-left-color: #C71D3D;\n  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n}\nbody.light .context-menu-list .context-menu-separator {\n  border-bottom: 1px solid #DDD;\n}\nbody.light .context-menu-list .context-menu-item.hover {\n  background-color: #C71D3D;\n  color: white;\n}\nbody.light .context-menu-list .context-menu-item.disabled {\n  color: #666;\n}\nbody.light .context-menu-list .context-menu-item.disabled.hover {\n  background-color: #EEE;\n}\nbody.light .context-menu-list .context-menu-item .context-menu-submenu:after {\n  color: #666;\n}\nbody.light .gutter {\n  background-color: #eee;\n  background-repeat: no-repeat;\n  background-position: center;\n}\nbody.light .gutter.gutter-vertical {\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\nbody.light .gutter.gutter-horizontal {\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\nbody.light .tinyFlyoverMenu {\n  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n  border-color: lightgray;\n  background-color: #fde9e9;\n}\nbody.light .tinyFlyoverMenu div {\n  border-color: transparent;\n}\nbody.light .tinyFlyoverMenu div:hover {\n  border-color: lightgray;\n}\nbody.light #home .authorPage h1 {\n  color: #C71D3D;\n}\nbody.light #home .authorPage h2 {\n  color: #C71D3D;\n}\nbody.light #home footer {\n  color: #C71D3D;\n}\nbody.light #home footer a {\n  color: #C71D3D;\n}\nbody.light #canvas_zoom {\n  background-color: rgba(178, 226, 242, 0.3);\n}\nbody.light #canvas_zoom button {\n  background-color: transparent;\n  border-color: transparent;\n  transition: all 0.5s;\n}\nbody.light #canvas_zoom button:hover {\n  border-color: #C71D3D;\n}\nbody.light #configMenuIcon:hover {\n  opacity: 1;\n  color: #C71D3D;\n}\nbody.light .modal-backdrop.in {\n  opacity: 0.7;\n  background-color: black;\n}\nbody.light .genericDialog .modal-content {\n  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);\n  background-color: #ffffff;\n}\nbody.light .genericDialog .modal-content .modal-header {\n  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);\n}\nbody.light .genericDialog .modal-content .modal-body .form-control {\n  color: #4D4D4D;\n  border-color: #DFDFDF;\n  box-shadow: none;\n}\nbody.light .genericDialog .modal-content .modal-body .form-control:focus {\n  background-color: #f5f5f5;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"true\"] {\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group .list-group-item {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"false\"][data-type=\"file\"] {\n  color: gray;\n}\nbody.light .genericDialog .modal-content .modal-footer {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn,\nbody.light .genericDialog .modal-content .modal-footer .btn-group {\n  background-color: transparent;\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn:hover,\nbody.light .genericDialog .modal-content .modal-footer .btn-group:hover {\n  background-color: rgba(199, 29, 61, 0.04);\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group {\n  background-color: transparent;\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group .btn:hover {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group:hover {\n  background-color: rgba(199, 29, 61, 0.04);\n}\nbody.light .tab-pane {\n  box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);\n}\nbody.light #files .teaser {\n  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.4) 70%, #fff 100%), radial-gradient(ellipse at center, rgba(247, 249, 250, 0.7) 0%, rgba(247, 249, 250, 0) 60%), linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);\n}\nbody.light #files .teaser .title {\n  color: #C71D3D;\n}\nbody.light #files .teaser .slogan {\n  color: #34495e;\n}\nbody.light #files .deleteIcon:hover {\n  background-color: rgba(0, 0, 0, 0.03);\n}\nbody.light #files .list-group-item {\n  cursor: pointer;\n}\nbody.light #files .list-group-item .thumb .filenameInplaceEdit {\n  color: #C71D3D;\n}\nbody.light #files .list-group-item .thumb h4 {\n  color: #C71D3D;\n}\nbody.light #files .thumbAdd {\n  color: #0078f2;\n  border-color: rgba(0, 120, 242, 0.33);\n}\nbody.light #files .thumbAdd:hover {\n  border-color: #0078f2;\n}\nbody.light #files #material-tabs {\n  border-bottom-color: #e0e0e0;\n}\nbody.light #files #material-tabs a {\n  color: #424f5a;\n}\nbody.light #files .material-tab-content > div {\n  background-color: #fef9f9;\n}\nbody.light #files #material-tabs > a:not(.active):hover {\n  background-color: inherit;\n  color: #C71D3D;\n}\nbody.light #files .yellow-bar {\n  background: #fef9f9;\n  transition: all 0.3s ease;\n  border-color: #e0e0e0;\n}\nbody.light #githubNewFileDialog .filePreview {\n  color: #C71D3D;\n}\nbody.light #figureConfigDialog textarea.figureAttribute {\n  background-color: #272822;\n  border-color: #272822;\n  color: #ffffff;\n}\nbody.light #figureConfigDialog textarea.lineNumbering {\n  background-color: #3E3D32;\n  border-color: #3E3D32;\n  color: #928869;\n}\nbody.light #notificationToast {\n  background-color: #C71D3D;\n  color: white;\n}\nbody.light .markdownRendering table {\n  color: #666;\n  text-shadow: 1px 1px 0px #fff;\n  background: #eaebec;\n  border-color: #ccc;\n  box-shadow: 0 1px 2px #d1d1d1;\n}\nbody.light .markdownRendering table th {\n  border-top-color: #fafafa;\n  border-bottom-color: #e0e0e0;\n}\nbody.light .markdownRendering table tr td {\n  border-top-color: #ffffff;\n  border-bottom-color: #e0e0e0;\n  border-left-color: #e0e0e0;\n}\nbody.light .markdownRendering tbody tr:nth-child(odd) {\n  background: #fafafa;\n}\nbody.light .markdownRendering tbody tr:nth-child(even) {\n  background: #f3f3f3;\n}\nbody.light .markdownRendering .info {\n  border-color: #B4E1E4;\n  background-color: #81c7e1;\n  color: white;\n}\nbody.light .toolbar {\n  background-color: #B2E2F2;\n}\nbody.light .image-button img,\nbody.light .image-button svg {\n  color: #777;\n  border-color: transparent;\n}\nbody.light .image-button img circle[stroke],\nbody.light .image-button svg circle[stroke],\nbody.light .image-button img polyline[stroke],\nbody.light .image-button svg polyline[stroke],\nbody.light .image-button img path[stroke],\nbody.light .image-button svg path[stroke],\nbody.light .image-button img g[stroke],\nbody.light .image-button svg g[stroke] {\n  stroke: #777 !important;\n}\nbody.light .image-button img rect[fill],\nbody.light .image-button svg rect[fill],\nbody.light .image-button img circle[fill],\nbody.light .image-button svg circle[fill] {\n  fill: #777 !important;\n}\nbody.light .image-button div {\n  color: #777;\n}\nbody.light .image-button div.highlight {\n  animation: highlight 3s infinite;\n}\nbody.light .image-button.disabled {\n  opacity: 0.2;\n}\nbody.light .image-button:not(.disabled) img:hover,\nbody.light .image-button:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  border-color: rgba(0, 0, 0, 0.15);\n}\n@keyframes highlight {\n  0% {\n    color: #C71D3D;\n  }\n  50% {\n    color: rgba(0, 0, 0, 0.4);\n  }\n  100% {\n    color: #C71D3D;\n  }\n}\n/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */\n.hero {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  z-index: 20;\n  height: 100vh;\n  background-color: #fff;\n  color: #333;\n  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);\n  border-bottom: 2px solid #C71D3D;\n  scroll-snap-align: start;\n}\n.hero .toolbar {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  font-size: 30px;\n  color: white;\n  background-color: white;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n}\n.hero .toolbar .title img {\n  height: 30px;\n  margin-left: 30px;\n  margin-top: 5px;\n}\n.hero .toolbar .title .app_name {\n  font-weight: 200;\n  display: inline-block;\n  top: 6px;\n  position: relative;\n  left: 20px;\n  color: #C71D3D;\n}\n.hero .toolbar .title .app_slogan {\n  font-weight: 200;\n  display: inline-block;\n  top: 6px;\n  position: relative;\n  left: 20px;\n  color: #C71D3D;\n  font-size: 70%;\n  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n}\n@media (max-width: 990px) {\n  .hero .toolbar .title .app_slogan {\n    font-size: 50%;\n    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  }\n}\n@media (max-width: 890px) {\n  .hero .toolbar .title .app_slogan {\n    display: none;\n    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  }\n}\n.hero .teaserContainer {\n  flex-grow: 4;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: center;\n  align-items: center;\n  align-content: center;\n  gap: 50px;\n}\n.hero .teaserContainer .teaser {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  align-items: center;\n  align-content: center;\n}\n.hero .teaserContainer .teaser .slogan {\n  font-weight: 300;\n  line-height: 1.2;\n  font-size: calc(8px + 1vw);\n  color: black;\n  padding-left: 60px;\n}\n.hero .teaserContainer .teaser .slogan h1 {\n  font-weight: 500;\n  font-size: calc(20px + 1vw);\n  line-height: 1.2;\n  color: #C71D3D;\n}\n.hero .teaserContainer .teaser .imageContainer {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  align-items: center;\n  align-content: center;\n}\n.hero .teaserContainer .teaser .imageContainer img {\n  width: 33vw;\n}\n.hero .teaserContainer .launch_button:hover {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n}\n.hero .avatarContainer {\n  flex-grow: 0;\n  display: flex;\n  flex-direction: row;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  align-items: flex-end;\n}\n.hero .avatarContainer .avatar {\n  text-align: center;\n  font-weight: 400;\n  font-size: 16px;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  align-content: flex-end;\n  justify-content: flex-end;\n  align-items: center;\n}\n.hero .avatarContainer .avatar img {\n  height: 120px;\n}\n.hero .avatarContainer .arrow {\n  animation: mover 2s infinite alternate;\n  font-size: 20px;\n}\n.hero .avatarContainer .arrow i {\n  height: 20px;\n  display: inline-block;\n  border-left: 4px solid #000;\n  border-radius: 4px;\n}\n.hero .avatarContainer .arrow i.left {\n  transform: rotate(-45deg);\n}\n.hero .avatarContainer .arrow i.right {\n  transform: rotate(45deg) translate(3px, -2px);\n}\n@keyframes mover {\n  0% {\n    transform: translateY(0);\n  }\n  100% {\n    transform: translateY(-10px);\n  }\n}\n.intro {\n  background-color: white;\n  background-image: none;\n  text-align: left;\n  position: relative;\n  z-index: 20;\n  height: 100vh;\n  padding-bottom: 20px;\n  color: #333;\n  font-size: 30px;\n}\n.intro .header {\n  font-size: calc(19px + 1vw);\n  line-height: 1.2;\n  top: 2vw;\n  padding-left: 50px;\n  color: #C71D3D;\n  position: absolute;\n  padding-top: 30px;\n  background-color: rgba(255, 255, 255, 0.8);\n}\n.intro .header div {\n  font-size: calc(6px + 1vw);\n  font-weight: 200;\n  color: black;\n  padding-top: 30px;\n}\n.intro img {\n  width: 50%;\n  vertical-align: middle;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  margin: auto;\n  left: 0;\n  right: 0;\n}\n.intro .launch_button {\n  position: absolute;\n  right: 50px;\n  bottom: 100px;\n}\n.intro .launch_button:hover {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n}\n.slidedeck {\n  position: absolute;\n  height: 400vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #e13f4d, #d34657);\n}\n.slidedeck .pink_bg {\n  position: absolute;\n  top: 100vh;\n  height: 300vh;\n  width: 100%;\n  background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);\n}\n.slidedeck .orange_bg {\n  position: absolute;\n  top: 100vh;\n  height: 200vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);\n}\n.slidedeck .blue_bg {\n  position: absolute;\n  top: 100vh;\n  height: 100vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #242533, #2a3079);\n}\n.slidedeck .section_header {\n  color: white;\n  font-size: calc(16px + 2vw);\n  text-align: center;\n  font-weight: 100;\n  padding-top: 30px;\n  position: sticky;\n  top: 20px;\n}\n.slidedeck .card {\n  position: sticky;\n  z-index: 1000;\n  width: 25%;\n  height: 50vh;\n  border-radius: 10px;\n  background-color: #fff;\n  box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.25);\n  top: 0;\n}\n.slidedeck .card .text {\n  position: absolute;\n  top: -40px;\n  text-align: center;\n  color: white;\n  font-size: 24px;\n  font-weight: 100;\n  width: 100%;\n}\n.slidedeck .card .media {\n  position: absolute;\n  top: 10px;\n  left: 50%;\n  transform: translateX(-50%);\n}\n.slidedeck .card .content {\n  position: absolute;\n  top: 80px;\n  padding: 10px;\n}\n.slidedeck .card .content .header {\n  color: #C71D3D;\n  text-align: center;\n  margin-bottom: 10px;\n}\n.slidedeck .card .launch_button {\n  position: absolute;\n  left: 50%;\n  bottom: 10px;\n  transform: translateX(-50%);\n  border-radius: 4px;\n  font-size: 14px;\n  padding: 10px;\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.slidedeck .card.left {\n  left: 5%;\n  transform: translateY(50%);\n}\n.slidedeck .card.center {\n  left: 50%;\n  transform: translateY(50%) translateX(-50%);\n}\n.slidedeck .card.right {\n  left: 70%;\n  transform: translateY(50%);\n}\nbody {\n  margin: 0;\n  padding: 0;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  scroll-snap-type: y mandatory;\n}\n.launch_button {\n  margin-top: 20px;\n  border-radius: 5px;\n  display: inline-block;\n  padding: 5px;\n  padding-left: 10px;\n  padding-right: 10px;\n  font-size: calc(10px + 1vw);\n  cursor: pointer;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  text-decoration: none;\n  background-color: #C71D3D;\n  color: white;\n  font-weight: 300;\n}\n.image-button img,\n.image-button svg {\n  color: #777;\n}\n.image-button img circle[stroke],\n.image-button svg circle[stroke],\n.image-button img polyline[stroke],\n.image-button svg polyline[stroke],\n.image-button img path[stroke],\n.image-button svg path[stroke],\n.image-button img g[stroke],\n.image-button svg g[stroke] {\n  stroke: #777 !important;\n}\n.image-button img rect[fill],\n.image-button svg rect[fill],\n.image-button img circle[fill],\n.image-button svg circle[fill] {\n  fill: #777 !important;\n}\n.image-button div {\n  color: #777;\n}\n.image-button div.highlight {\n  animation: highlight 3s infinite;\n}\n.image-button.disabled {\n  opacity: 0.2;\n}\n.image-button:not(.disabled) img,\n.image-button:not(.disabled) svg {\n  cursor: pointer;\n}\n.image-button:not(.disabled) img:hover,\n.image-button:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n}\n", "",{"version":3,"sources":["webpack://./common/less/layout/common.less","webpack://./public/less/index.less","webpack://./common/less/layout/userinfo.less","webpack://./common/less/layout/appbar.less","webpack://./common/less/layout/toolbar.less","webpack://./common/less/layout/dialog.less","webpack://./common/less/layout/contextmenu.less","webpack://./common/less/layout/file_new_dialog.less","webpack://./common/less/layout/file_open_dialog.less","webpack://./common/less/layout/file_save_dialog.less","webpack://./common/less/layout/file_saveas_dialog.less","webpack://./common/less/layout/canvas_zoom.less","webpack://./common/less/layout/markdown_rendering.less","webpack://./common/less/layout/tiny_flyover_menu.less","webpack://./common/less/layout/notification.less","webpack://./common/less/layout/tab_strip.less","webpack://./common/less/layout/tab_content.less","webpack://./common/less/layout/tabpane_editor.less","webpack://./common/less/layout/tabpane_files.less","webpack://./common/less/layout/author_page.less","webpack://./common/less/layout/config_dialog.less","webpack://./common/less/layout/appSwitch.less","webpack://./common/less/layout/image_button.less","webpack://./common/less/layout/notify.less","webpack://./common/less/theme_light.less","webpack://./public/less/hero.less","webpack://./public/less/intro.less","webpack://./public/less/slidedeck.less"],"names":[],"mappings":"AACA;EACI,4CAAA;EACA,gBAAA;ACAJ;ADGA;EACI;IACI,+CAAA;ECDN;AACF;ADIA;EAEQ,wBAAA;ACHR;ADKI;EACI,WAAA;EACA,gCAAA;EACA,kBAAA;EACA,aAAA;EACA,QAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;EACA,kBAAA;EACA,iBAAA;EACA,mBAAA;EACA,uCAAA;ACHR;ADQA;EACI,kBAAA;EACA,qBAAA;EACA,sBAAA;EACA,YAAA;EACA,kBAAA;EACA,eAAA;EACA,eAAA;EACA,YAAA;EACA,sBAAA;EACA,kBAAA;EACA,uBAAA;EACA,yBAAA;EACA,eAAA;EACA,gBAAA;EACA,iBAAA;EACA,gBAAA;EACA,aAAA;EACA,eAAA;EACA,2BAAA;ACNJ;ADSA;EACI,YAAA;ACPJ;AACA,YAAY;ADUZ;EACI,WAAA;EACA,kBAAA;EACA,MAAA;EACA,SAAA;EACA,OAAA;EACA,QAAA;EACA,UAAA;EACA,wBAAA;ACRJ;AACA,WAAW;ADWX;EACI,WAAA;EACA,kBAAA;EACA,SAAA;EACA,QAAA;EACA,kBAAA;EACA,YAAA;EACA,WAAA;ECTF,WAAW;EDUT,YAAA;ECRF,WAAW;EDST,UAAA;EACA,yCAAA;EACA,sCAAA;ACPJ;ADUA;EACI,yCAAA;EACA,wBAAA;ACRJ;AACA,aAAa;ADWb;EACI,eAAA;ACTJ;ADaA;EACI,gBAAA;ACXJ;ACvFA;EAGI,kBAAA;ADuFJ;AC1FA;EAKM,WAAA;ADwFN;AE7FA;EACI,YAAA;EACA,kBAAA;EACA,uBAAA;EACA,aAAA;EACA,mBAAA;EACA,SAAA;EACA,kBAAA;EACA,mBAAA;AF+FJ;AEvGA;EAWQ,UAAA;AF+FR;AE1GA;EAeY,eAAA;EACA,gBAAA;EACA,mBAAA;EACA,SAAA;AF8FZ;AEhHA;EAqBY,eAAA;EACA,gBAAA;EACA,mBAAA;EACA,SAAA;AF8FZ;AEtHA;EA6BQ,YAAA;AF4FR;AEzHA;EAiCQ,aAAA;EACA,mBAAA;EACA,mBAAA;AF2FR;AG9HA;EACE,kBAAA;EACA,uBAAA;EACA,aAAA;EACA,mBAAA;EACA,SAAA;EACA,mBAAA;EACA,UAAA;AHgIF;AGvIA;EAUI,aAAA;AHgIJ;AG1IA;EAcI,YAAA;AH+HJ;AG7IA;EAkBI,aAAA;EACA,mBAAA;EACA,mBAAA;AH8HJ;AGlJA;EAuBM,YAAA;AH8HN;AGrJA;EA0BQ,cAAA;EACA,eAAA;EACA,YAAA;AH8HR;AG1JA;EAgCQ,gBAAA;EACA,kBAAA;EACA,WAAA;EACA,qBAAA;EACA,mBAAA;AH6HR;AGjKA;EAwCQ,aAAA;EACA,iBAAA;AH4HR;AGrKA;EA6CQ,cAAA;AH2HR;AGxKA;EAiDQ,aAAA;AH0HR;AG3KA;EAuDQ,mBAAA;AHuHR;AGrHQ;EACE,gBAAA;AHuHV;AGjLA;EA+DQ,cAAA;AHqHR;AGpLA;EAmEQ,aAAA;AHoHR;AGvLA;EAuEQ,aAAA;AHmHR;AG1LA;EA6EQ,iBAAA;AHgHR;AG7LA;EAiFQ,aAAA;AH+GR;AGhMA;EAqFQ,aAAA;AH8GR;AGnMA;EAyFQ,cAAA;AH6GR;AItMA;EACE,2BAAA;AJwMF;AIrMA;EAEI,kBAAA;AJsMJ;AIxMA;EAKM,gBAAA;EACA,gBAAA;AJsMN;AI5MA;EAUM,iBAAA;EACA,eAAA;EACA,cAAA;AJqMN;AIjNA;EAeQ,wCAAA;EACA,0BAAA;AJqMR;AIrNA;EAoBQ,gBAAA;EACA,sBAAA;EACA,kBAAA;EACA,SAAA;EACA,UAAA;EACA,qBAAA;EACA,aAAA;EACA,iBAAA;EACA,mBAAA;EACA,gBAAA;EACA,YAAA;EACA,cAAA;AJoMR;AInOA;EAmCQ,gBAAA;EACA,gBAAA;AJmMR;AIvOA;EAuCU,iBAAA;AJmMV;AI1OA;EA2CU,6BAAA;EACA,gBAAA;AJkMV;AIhMU;EACE,0BAAA;AJkMZ;AIjPA;EAoDU,eAAA;EACA,gCAAA;AJgMV;AIrPA;EA4DM,aAAA;AJ4LN;AIxPA;;EA+DQ,SAAA;EACA,yBAAA;EACA,6BAAA;EACA,oBAAA;AJ6LR;AI3LQ;;EACE,oBAAA;AJ8LV;AInQA;EA8EQ,SAAA;EACA,yBAAA;EACA,oBAAA;AJwLR;AIxQA;EA2EY,eAAA;AJgMZ;AIzLQ;EACE,oBAAA;AJ2LV;AI9QA;EAwFQ,iBAAA;AJyLR;AKrRA;EACE,SAAA;EACA,UAAA;EAEA,gBAAA;EACA,gBAAA;EACA,qBAAA;EACA,kBAAA;EACA,qBAAA;EAEA,iBAAA;EACA,mBAAA;EACA,sBAAA;EACA,eAAA;EACA,mBAAA;ELqRA,mCAAmC;EACnC,4CAA4C;AAC9C;AKrSA;EAiBI,yBAAA;EACA,kBAAA;EACA,iBAAA;ALuRJ;AKrRI;EACE,eAAA;ALuRN;AK7SA;;EA6BQ,iBAAA;ALoRR;AKjTA;EAmCI,iBAAA;EACA,wBAAA;EACA,0BAAA;ALiRJ;AKtTA;;EA0CI,eAAA;ALgRJ;AK1TA;EA8CI,YAAA;EACA,kBAAA;EACA,MAAA;EACA,UAAA;EACA,UAAA;AL+QJ;AKjUA;EAsDI,gBAAA;AL8QJ;AKpUA;EA0DI,kBAAA;EACA,WAAA;EACA,eAAA;AL6QJ;AKzUA;EAiEI,mBAAA;AL2QJ;AK5UA;;EAuEI,kBAAA;ALyQJ;AKhVA;EA2EI,gBAAA;ALwQJ;AKnVA;;;;EAkFI,cAAA;EACA,WAAA;EACA,sBAAA;ALuQJ;AK3VA;EAwFI,aAAA;ALsQJ;AK9VA;EA4FI,aAAA;ELqQF,wBAAwB;EKnQtB,WAAA;EACA,QAAA;ALqQJ;AKpWA;EAmGI,cAAA;ALoQJ;AKvWA;EAuGI,0BAAA;ALmQJ;AK1WA;EA2GI,kBAAA;EACA,iBAAA;EACA,0BAAA;EACA,wCAAA;ALkQJ;AKhXA;EAiHM,6BAAA;ALkQN;AK9PM;EACE,yBAAA;EACA,YAAA;ALgQR;AK7PM;EACE,WAAA;AL+PR;AK7PQ;EACE,sBAAA;AL+PV;AK7XA;EAmIQ,WAAA;AL6PR;AM/XA;EAGI,gBAAA;AN+XJ;AOlYA;EAGI,WAAA;APkYJ;AQrYA;EAGI,gBAAA;EACA,iBAAA;ARqYJ;AQzYA;EASM,aAAA;ARmYN;AS5YA;EAGI,gBAAA;EACA,iBAAA;AT4YJ;AShZA;EASI,aAAA;AT0YJ;AUpZA;EACE,eAAA;EACA,YAAA;EACA,WAAA;EACA,kBAAA;EACA,aAAA;EACA,iBAAA;EACA,mBAAA;AVsZF;AU7ZA;EAUI,6BAAA;EACA,gBAAA;EACA,YAAA;EACA,kBAAA;EACA,mBAAA;EACA,iBAAA;EACA,mBAAA;EACA,aAAA;EACA,oBAAA;AVsZJ;AUrZI;EACE,iBAAA;EACA,mBAAA;AVuZN;AW5aA;EAGI,eAAA;AX4aJ;AW/aA;EAOI,eAAA;EACA,gBAAA;AX2aJ;AWnbA;EXqbE,sEAAsE;EWzapE,4BAAA;EACA,6BAAA;EACA,yCAAA;EACA,eAAA;EACA,iBAAA;EACA,mBAAA;EACA,kBAAA;AX2aJ;AW7bA;EAqBI,aAAA;EACA,iBAAA;EACA,mBAAA;AX2aJ;AWlcA;EA2BI,gBAAA;EACA,kBAAA;AX0aJ;AWtcA;EA+BI,2BAAA;AX0aJ;AWzcA;EAkCI,4BAAA;AX0aJ;AW5cA;EAqCI,kBAAA;EACA,kBAAA;AX0aJ;AWhdA;EAyCI,gBAAA;EACA,kBAAA;EACA,cAAA;AX0aJ;AWrdA;EA8CI,aAAA;EACA,iBAAA;EACA,mBAAA;AX0aJ;AW1dA;EAoDI,gBAAA;AXyaJ;AW7dA;EAwDI,8BAAA;AXwaJ;AWheA;EA4DI,+BAAA;AXuaJ;AWneA;EAgEI,iBAAA;EACA,mBAAA;EACA,kBAAA;EACA,gBAAA;EACA,mBAAA;EAEA,YAAA;EACA,kBAAA;EACA,mBAAA;AXqaJ;AW7eA;EA0EM,UAAA;EACA,SAAA;AXsaN;AYhfA;EACE,iBAAA;EACA,mBAAA;EACA,kBAAA;EACA,UAAA;EACA,WAAA;EACA,kBAAA;EACA,eAAA;EACA,UAAA;EACA,YAAA;EAEA,aAAA;EACA,mBAAA;EACA,oBAAA;EACA,uBAAA;EACA,SAAA;EACA,iBAAA;AZifF;AYjgBA;EAmBI,iBAAA;EACA,mBAAA;EACA,kBAAA;EACA,iBAAA;AZifJ;AYhfI;EACE,iBAAA;EACA,mBAAA;EACA,eAAA;AZkfN;AY7eA;EAGI,gBAAA;EACA,YAAA;EACA,SAAA;AZ6eJ;AajhBA;EACE,kBAAA;EACA,UAAA;EACA,SAAA;EACA,2BAAA;EACA,kBAAA;EACA,mBAAA;EACA,0BAAA;EACA,gBAAA;EACA,cAAA;EACA,iBAAA;EACA,eAAA;AbmhBF;Ac/hBA;EACI,YAAA;EACA,kBAAA;EACA,WAAA;EACA,iBAAA;EACA,gBAAA;AdiiBJ;AchiBI;EACI,iDAAA;EACA,eAAA;EACA,mBAAA;EACA,gBAAA;EACA,mBAAA;AdkiBR;Ac7iBA;EAeM,2BAAA;EACA,WAAA;EACA,YAAA;EACA,YAAA;AdiiBN;AeljBE;EACE,kBAAA;EACA,UAAA;EACA,UAAA;EACA,SAAA;EACA,SAAA;AfojBJ;AezjBE;EAOI,aAAA;EACA,UAAA;EACA,YAAA;EACA,kBAAA;AfqjBN;AenjBM;EACE,wBAAA;EACA,sBAAA;EACA,oBAAA;AfqjBR;AepkBE;EAqBQ,kBAAA;EACA,WAAA;EACA,OAAA;EACA,SAAA;EACA,eAAA;EACA,iBAAA;EACA,mBAAA;AfkjBV;AehjBU;EACE,4BAAA;EACA,8BAAA;AfkjBZ;AejlBE;EAqCQ,kBAAA;EACA,OAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,mBAAA;EACA,gBAAA;Af+iBV;AgB1lBA;EAGI,QAAA;EACA,OAAA;EACA,kBAAA;AhB0lBJ;AgB/lBA;EASI,kBAAA;EACA,YAAA;AhBylBJ;AiBpmBA;EACE,kBAAA;EACA,aAAA;AjBsmBF;AiBxmBA;EAKI,qBAAA;EACA,kBAAA;EACA,mBAAA;EACA,gBAAA;AjBsmBJ;AiB9mBA;EAWM,gBAAA;EACA,cAAA;EACA,mBAAA;EACA,mBAAA;AjBsmBN;AiBpnBA;EAiBQ,mBAAA;EACA,aAAA;AjBsmBR;AiBxnBA;EAuBM,cAAA;EACA,gBAAA;AjBomBN;AiB5nBA;EA6BI,kBAAA;EACA,WAAA;EACA,SAAA;EACA,eAAA;EACA,eAAA;EACA,YAAA;EACA,kBAAA;AjBkmBJ;AiBroBA;EAuCI,eAAA;AjBimBJ;AiBxoBA;EA2CQ,eAAA;AjBgmBR;AiB3oBA;EA+CQ,iBAAA;EACA,kBAAA;AjB+lBR;AiB/oBA;EAoDQ,eAAA;EACA,gBAAA;AjB8lBR;AiBnpBA;EAyDQ,eAAA;EACA,qBAAA;AjB6lBR;AiBvpBA;EA8DQ,kBAAA;EACA,eAAA;EACA,aAAA;AjB4lBR;AiBzlBM;EAEI,0BAAA;AjB0lBV;AiB5lBM;EAMI,qBAAA;AjBylBV;AiBlqBA;EAiFI,iBAAA;EACA,mBAAA;EACA,kBAAA;EACA,eAAA;EACA,kBAAA;AjBolBJ;AiBzqBA;EAwFM,gBAAA;EACA,kBAAA;AjBolBN;AiB7qBA;EA6FM,kBAAA;AjBmlBN;AiBhlBI;EACE,iBAAA;EACA,mBAAA;EACA,kBAAA;AjBklBN;AiBrrBA;EAwGI,wBAAA;EACA,0BAAA;EACA,mBAAA;AjBglBJ;AiB1rBA;EA+GI,kBAAA;EACA,cAAA;EACA,UAAA;EACA,wBAAA;EACA,0BAAA;AjB8kBJ;AiBjsBA;EAsHM,kBAAA;EACA,qBAAA;EACA,qBAAA;EACA,oBAAA;EACA,kBAAA;EACA,mBAAA;EACA,gBAAA;EACA,yBAAA;EACA,eAAA;EACA,gBAAA;EACA,kBAAA;EACA,yBAAA;EACA,aAAA;EACA,aAAA;AjB8kBN;AiB5kBM;EACE,gBAAA;EACA,yBAAA;AjB8kBR;AiBxkBI;EACE,aAAA;EACA,iBAAA;AjB0kBN;AiBztBA;EAoJI,kBAAA;AjBwkBJ;AiB5tBA;EAwJI,kBAAA;EACA,aAAA;EACA,YAAA;EACA,YAAA;EACA,cAAA;EACA,OAAA;EACA,yBAAA;EACA,4BAAA;EACA,2BAAA;EACA,mBAAA;AjBukBJ;AkBxuBA;EACE,gBAAA;AlB0uBF;AkB3uBA;EAII,wBAAA;EACA,6BAAA;EACA,gBAAA;AlB0uBJ;AkBhvBA;EAUM,gBAAA;EACA,6BAAA;EACA,mBAAA;EACA,mBAAA;AlByuBN;AkBtvBA;EAiBM,6BAAA;EACA,gBAAA;AlBwuBN;AkB1vBA;EAuBI,kBAAA;EACA,iBAAA;AlBsuBJ;AkB9vBA;EA2BM,0BAAA;AlBsuBN;AmBhwBA;EACE,eAAA;EACA,eAAA;AnBkwBF;AmB9vBA;EAEI,eAAA;EACA,gBAAA;EACA,eAAA;AnB+vBJ;AmB3vBI;;EACE,4DAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,gBAAA;EACA,YAAA;EACA,eAAA;EACA,gBAAA;EACA,aAAA;EACA,sBAAA;AnB8vBN;AmB7vBM;;EACE,aAAA;AnBgwBR;AmB5vBI;EACE,gCAAA;EACA,WAAA;AnB8vBN;AmB3vBI;EACE,yBAAA;EACA,kBAAA;EACA,iBAAA;EACA,gBAAA;EACA,kBAAA;EACA,aAAA;AnB6vBN;AoBtyBA;;EAKM,WAAA;ApBqyBN;AoB1yBA;EAWM,cAAA;EACA,QAAA;EACA,aAAA;EAEA,aAAA;EACA,gBAAA;EACA,0DAAA;EACA,kCAAA;EACA,aAAA;ApBiyBN;AoBpzBA;EAuBI,aAAA;ApBgyBJ;AqBxzBA;EACI,aAAA;EACA,sBAAA;EACA,mBAAA;EACA,uBAAA;EACA,gBAAA;ArB0zBJ;AqB/zBA;;EAQM,WAAA;EACA,gBAAA;EACA,UAAA;EACA,SAAA;EACA,UAAA;EACA,kBAAA;EACA,eAAA;EACA,oBAAA;EACA,kBAAA;EACA,iBAAA;EACA,mBAAA;ArB2zBN;AqB70BA;EAsBM,kBAAA;EACA,eAAA;EACA,eAAA;ArB0zBN;AqBvzBI;;EAII,eAAA;ArBuzBR;AsBt1BA;EACI,eAAA;EACA,YAAA;EACA,kBAAA;EACA,iBAAA;EACA,kBAAA;AtBw1BJ;AsBr1BA;EACI,sBAAA;AtBu1BJ;AuBh2BA;EACI,uBAAA;EACA,2BAAA;AvBk2BJ;AuB91BA;EACI;IACE,4cAAA;EvBg2BJ;EuB51BE;IACE,4cAAA;EvB81BJ;EuB11BE;IACE,4cAAA;EvB41BJ;AACF;AuBv1BA;EvBy1BE,YAAY;EACZ,WAAW;EACX,iBAAiB;EACjB,WAAW;EACX,aAAa;AACf;AuB91BA;EAEQ,gHAAA;AvB+1BR;AuBj2BA;EAMQ,yBAAA;EACA,cAAA;AvB81BR;AuBr2BA;EAWQ,yBAAA;AvB61BR;AuBx2BA;EAcgB,YAAA;AvB61BhB;AuB32BA;EAiBgB,YAAA;EACA,2BAAA;AvB61BhB;AuB/2BA;EAsBY,YAAA;EACA,qBAAA;AvB41BZ;AuBn3BA;;EA8BgB,YAAA;EACA,yBAAA;AvBy1BhB;AuBx3BA;;;;;;;;EAqCoB,wBAAA;AvB61BpB;AuBl4BA;;;;EA0CoB,sBAAA;AvB81BpB;AuBx4BA;EA+CgB,YAAA;AvB41BhB;AuB11BgB;EACI,gCAAA;AvB41BpB;AuBx1BY;EACI,YAAA;AvB01BhB;AuBp1BoB;;EACI,wEAAA;EACA,mBAAA;AvBu1BxB;AuBt5BA;EAuEQ,kBAAA;EACA,yBAAA;EACA,yBAAA;AvBk1BR;AuB35BA;EA6EQ,6DAAA;EACA,qEAAA;EACA,+GAAA;AvBi1BR;AuBh6BA;EAoFQ,wEAAA;EACA,UAAA;AvB+0BR;AuBp6BA;EA0FQ,wEAAA;EACA,UAAA;AvB60BR;AuBx6BA;;EAiGQ,gHAAA;AvB20BR;AuB56BA;EAqGQ,aAAA;AvB00BR;AuB/6BA;EAyGQ,aAAA;AvBy0BR;AuBl7BA;EA6GQ,YAAA;AvBw0BR;AuBr7BA;EAkHQ,qHAAA;AvBs0BR;AuBx7BA;EAsHQ,aAAA;AvBq0BR;AuB37BA;EA2HQ,8DAAA;EACA,yEAAA;EACA,gBAAA;AvBm0BR;AuBh8BA;EAiIQ,UAAA;AvBk0BR;AuBn8BA;EAqIQ,UAAA;AvBi0BR;AuBt8BA;EA0IQ,yBAAA;AvB+zBR;AuBz8BA;EA8IQ,kBAAA;EACA,iBAAA;EACA,0BAAA;EACA,wCAAA;AvB8zBR;AuB/8BA;EAoJY,6BAAA;AvB8zBZ;AuB1zBY;EACI,yBAAA;EACA,YAAA;AvB4zBhB;AuBzzBY;EACI,WAAA;AvB2zBhB;AuBzzBgB;EACI,sBAAA;AvB2zBpB;AuB59BA;EAsKgB,WAAA;AvByzBhB;AuB/9BA;EA6KQ,sBAAA;EACA,4BAAA;EACA,2BAAA;AvBqzBR;AuBpzBQ;EACI,yDAAA;AvBszBZ;AuBnzBQ;EACI,yDAAA;AvBqzBZ;AuB1+BA;EA0LQ,gHAAA;EACA,uBAAA;EACA,yBAAA;AvBmzBR;AuB/+BA;EA+LY,yBAAA;AvBmzBZ;AuBlzBY;EACI,uBAAA;AvBozBhB;AuBr/BA;EAyMgB,cAAA;AvB+yBhB;AuBx/BA;EA6MgB,cAAA;AvB8yBhB;AuB3/BA;EAkNY,cAAA;AvB4yBZ;AuB9/BA;EAqNgB,cAAA;AvB4yBhB;AuBjgCA;EA2NQ,0CAAA;AvByyBR;AuBpgCA;EA8NY,6BAAA;EACA,yBAAA;EACA,oBAAA;AvByyBZ;AuBvyBY;EACI,qBAAA;AvByyBhB;AuBnyBQ;EACI,UAAA;EACA,cAAA;AvBqyBZ;AuBhhCA;EAgPQ,YAAA;EACA,uBAAA;AvBmyBR;AuBphCA;EAsPY,2EAAA;EACA,yBAAA;AvBiyBZ;AuBxhCA;EA0PgB,2CAAA;AvBiyBhB;AuB3hCA;EA+PoB,cAAA;EACA,qBAAA;EACA,gBAAA;AvB+xBpB;AuB7xBoB;EACI,yBAAA;AvB+xBxB;AuBniCA;EA2QwB,cAAA;AvB2xBxB;AuBtiCA;EA+QwB,6BAAA;AvB0xBxB;AuBziCA;EAmRwB,WAAA;AvByxBxB;AuB5iCA;EAyRgB,6BAAA;AvBsxBhB;AuB/iCA;;EA6RoB,6BAAA;EACA,cAAA;AvBsxBpB;AuBpxBoB;;EACI,yCAAA;AvBuxBxB;AuBxjCA;EA4SoB,6BAAA;EACA,cAAA;AvB+wBpB;AuBrxBwB;EACI,6BAAA;AvBuxB5B;AuBhxBoB;EACI,yCAAA;AvBkxBxB;AuBlkCA;EAwTQ,mDAAA;AvB6wBR;AuBrkCA;EA6TY,mRAAA;AvB2wBZ;AuBxkCA;EAmUgB,cAAA;AvBwwBhB;AuB3kCA;EAuUgB,cAAA;AvBuwBhB;AuBlwBY;EACI,qCAAA;AvBowBhB;AuBjlCA;EAkVY,eAAA;AvBkwBZ;AuBplCA;EAuVoB,cAAA;AvBgwBpB;AuBvlCA;EA2VoB,cAAA;AvB+vBpB;AuB1lCA;EAmWY,cAAA;EACA,qCAAA;AvB0vBZ;AuBxvBY;EACI,qBAAA;AvB0vBhB;AuBjmCA;EA6WY,4BAAA;AvBuvBZ;AuBpmCA;EAgXgB,cAAA;AvBuvBhB;AuBlvBY;EACI,yBAAA;AvBovBhB;AuB1mCA;EA2XY,yBAAA;EACA,cAAA;AvBkvBZ;AuB9mCA;EAgYY,mBAAA;EACA,yBAAA;EACA,qBAAA;AvBivBZ;AuBnnCA;EAwYY,cAAA;AvB8uBZ;AuBxuBY;EACI,yBAAA;EACA,qBAAA;EACA,cAAA;AvB0uBhB;AuBxuBY;EACI,yBAAA;EACA,qBAAA;EACA,cAAA;AvB0uBhB;AuBhoCA;EA4ZQ,yBAAA;EACA,YAAA;AvBuuBR;AuBpoCA;EAkaY,WAAA;EACA,6BAAA;EACA,mBAAA;EACA,kBAAA;EACA,6BAAA;AvBquBZ;AuB3oCA;EA0aY,yBAAA;EACA,4BAAA;AvBouBZ;AuB/oCA;EA+aY,yBAAA;EACA,4BAAA;EACA,0BAAA;AvBmuBZ;AuBppCA;EAqbY,mBAAA;AvBkuBZ;AuBvpCA;EAybY,mBAAA;AvBiuBZ;AuB1pCA;EA6bY,qBAAA;EACA,yBAAA;EACA,YAAA;AvBguBZ;AuB/pCA;EAscQ,yBAAA;AvB4tBR;AuBlqCA;;EA6cY,WAAA;EACA,yBAAA;AvBytBZ;AuBvqCA;;;;;;;;EAodgB,uBAAA;AvB6tBhB;AuBjrCA;;;;EAydgB,qBAAA;AvB8tBhB;AuBvrCA;EA8dY,WAAA;AvB4tBZ;AuB1tBY;EACI,gCAAA;AvB4tBhB;AuBxtBQ;EACI,YAAA;AvB0tBZ;AuBptBgB;;EACI,wEAAA;EACA,iCAAA;AvButBpB;AuBltBI;EACI;IACI,cAAA;EvBotBV;EuBjtBM;IACI,yBAAA;EvBmtBV;EuBhtBM;IACI,cAAA;EvBktBV;AACF;AACA,4DAA4D;AwBvuC5D;EACI,kBAAA;EACA,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,8BAAA;EAEA,WAAA;EACA,aAAA;EACA,sBAAA;EACA,WAAA;EACA,mEAAA;EACA,gCAAA;EACA,wBAAA;AxBwuCJ;AwBrvCA;EAgBQ,aAAA;EACA,mBAAA;EACA,iBAAA;EACA,8BAAA;EAEA,eAAA;EACA,YAAA;EACA,uBAAA;EACA,wEAAA;AxBuuCR;AwB/vCA;EA4BY,YAAA;EACA,iBAAA;EACA,eAAA;AxBsuCZ;AwBpwCA;EAkCY,gBAAA;EACA,qBAAA;EACA,QAAA;EACA,kBAAA;EACA,UAAA;EACA,cAAA;AxBquCZ;AwB5wCA;EA2CY,gBAAA;EACA,qBAAA;EACA,QAAA;EACA,kBAAA;EACA,UAAA;EACA,cAAA;EACA,cAAA;EACA,qDAAA;AxBouCZ;AwBluCU;EAAA;IAEI,cAAA;IACA,qDAAA;ExBouCZ;AACF;AwBluCU;EAAA;IAEI,aAAA;IACA,qDAAA;ExBouCZ;AACF;AwBlyCA;EAoEQ,YAAA;EAEA,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,uBAAA;EACA,mBAAA;EACA,qBAAA;EACA,SAAA;AxBguCR;AwB5yCA;EA8EY,aAAA;EACA,mBAAA;EACA,iBAAA;EACA,8BAAA;EACA,mBAAA;EACA,qBAAA;AxBiuCZ;AwBpzCA;EA6FgB,gBAAA;EACA,gBAAA;EACA,0BAAA;EACA,YAAA;EACA,kBAAA;AxB0tChB;AwB3zCA;EAwFoB,gBAAA;EACA,2BAAA;EACA,gBAAA;EACA,cAAA;AxBsuCpB;AwBj0CA;EAoGgB,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,8BAAA;EACA,mBAAA;EACA,qBAAA;AxBguChB;AwBz0CA;EA2GoB,WAAA;AxBiuCpB;AwB5tCY;EACI,wEAAA;AxB8tChB;AwB/0CA;EAuHQ,YAAA;EAEA,aAAA;EACA,mBAAA;EACA,iBAAA;EACA,8BAAA;EACA,qBAAA;AxB0tCR;AwBv1CA;EA+HY,kBAAA;EACA,gBAAA;EACA,eAAA;EACA,aAAA;EACA,sBAAA;EACA,iBAAA;EACA,uBAAA;EACA,yBAAA;EACA,mBAAA;AxB2tCZ;AwBl2CA;EAyIgB,aAAA;AxB4tChB;AwBr2CA;EA8IY,sCAAA;EACA,eAAA;AxB0tCZ;AwBz2CA;EAiJgB,YAAA;EACA,qBAAA;EACA,2BAAA;EACA,kBAAA;AxB2tChB;AwB1tCgB;EACI,yBAAA;AxB4tCpB;AwBztCgB;EACI,6CAAA;AxB2tCpB;AwBrtCI;EACI;IAAK,wBAAA;ExBwtCX;EwBvtCM;IAAO,4BAAA;ExB0tCb;AACF;AyB/3CA;EACI,uBAAA;EACA,sBAAA;EACA,gBAAA;EACA,kBAAA;EACA,WAAA;EACA,aAAA;EACA,oBAAA;EACA,WAAA;EACA,eAAA;AzBi4CJ;AyB14CA;EAYQ,2BAAA;EACA,gBAAA;EACA,QAAA;EACA,kBAAA;EACA,cAAA;EACA,kBAAA;EACA,iBAAA;EACA,0CAAA;AzBi4CR;AyBp5CA;EAqBY,0BAAA;EACA,gBAAA;EACA,YAAA;EACA,iBAAA;AzBk4CZ;AyB15CA;EA6BQ,UAAA;EACA,sBAAA;EACA,kBAAA;EACA,MAAA;EACA,SAAA;EACA,YAAA;EACA,OAAA;EACA,QAAA;AzBg4CR;AyBp6CA;EAwCQ,kBAAA;EACA,WAAA;EACA,aAAA;AzB+3CR;AyB73CQ;EACI,wEAAA;AzB+3CZ;A0B56CA;EACI,kBAAA;EACA,aAAA;EACA,WAAA;EACA,2DAAA;A1B86CJ;A0Bl7CA;EAOQ,kBAAA;EACA,UAAA;EACA,aAAA;EACA,WAAA;EACA,2DAAA;A1B86CR;A0Bz7CA;EAeQ,kBAAA;EACA,UAAA;EACA,aAAA;EACA,WAAA;EACA,2DAAA;A1B66CR;A0Bh8CA;EAuBQ,kBAAA;EACA,UAAA;EACA,aAAA;EACA,WAAA;EACA,2DAAA;A1B46CR;A0Bv8CA;EAgCQ,YAAA;EACA,2BAAA;EACA,kBAAA;EACA,gBAAA;EACA,iBAAA;EACA,gBAAA;EACA,SAAA;A1B06CR;A0Bh9CA;EA0CQ,gBAAA;EACA,aAAA;EACA,UAAA;EACA,YAAA;EACA,mBAAA;EACA,sBAAA;EACA,6CAAA;EACA,MAAA;A1By6CR;A0B19CA;EAoDY,kBAAA;EACA,UAAA;EACA,kBAAA;EACA,YAAA;EACA,eAAA;EACA,gBAAA;EACA,WAAA;A1By6CZ;A0Bn+CA;EA6DY,kBAAA;EACA,SAAA;EACA,SAAA;EACA,2BAAA;A1By6CZ;A0Bz+CA;EAmEY,kBAAA;EACA,SAAA;EACA,aAAA;A1By6CZ;A0B9+CA;EAwEgB,cAAA;EACA,kBAAA;EACA,mBAAA;A1By6ChB;A0Bn/CA;EA+EY,kBAAA;EACA,SAAA;EACA,YAAA;EACA,2BAAA;EACA,kBAAA;EACA,eAAA;EACA,aAAA;EACA,kBAAA;EACA,mBAAA;A1Bu6CZ;A0Bp6CQ;EACI,QAAA;EACA,0BAAA;A1Bs6CZ;A0Bn6CQ;EACI,SAAA;EACA,2CAAA;A1Bq6CZ;A0Bl6CQ;EACI,SAAA;EACA,0BAAA;A1Bo6CZ;AAlgDA;EACI,SAAA;EACA,UAAA;EACA,kBAAA;EACA,kBAAA;EACA,6BAAA;AAogDJ;AAhgDA;EACI,gBAAA;EACA,kBAAA;EACA,qBAAA;EACA,YAAA;EACA,kBAAA;EACA,mBAAA;EACA,2BAAA;EACA,eAAA;EACA,wEAAA;EACA,qDAAA;EACA,qBAAA;EACA,yBAAA;EACA,YAAA;EACA,gBAAA;AAkgDJ;AA9/CA;;EAIQ,WAAA;AA8/CR;AAlgDA;;;;;;;;EAUY,uBAAA;AAkgDZ;AA5gDA;;;;EAeY,qBAAA;AAmgDZ;AAlhDA;EAoBQ,WAAA;AAigDR;AA//CQ;EACI,gCAAA;AAigDZ;AA7/CI;EACI,YAAA;AA+/CR;AA5/CI;;EAIQ,eAAA;AA4/CZ;AA1/CY;;EACI,wEAAA;AA6/ChB","sourcesContent":["\nbody {\n    font-family: 'Roboto', sans-serif !important;\n    font-weight: 300;\n}\n  \n@keyframes spinner {\n    to {\n        transform: translate(-50%, -50%) rotate(360deg);\n    }\n}\n\n.spinner {\n    >*{\n        opacity: 0.08 !important;\n    }\n    &:before {\n        content: '';\n        transform: translate(-50%, -50%) ;\n        position: absolute;\n        z-index: 2000;\n        top: 50%;\n        left: 50%;\n        width: 30px;\n        height: 30px;\n        border-radius: 50%;\n        border-width:2px;\n        border-style: solid;\n        animation: spinner .6s linear infinite;\n    }\n}\n\n\n.material-button {\n    position: relative;\n    display: inline-block;\n    box-sizing: border-box;\n    border: none;\n    border-radius: 4px;\n    padding: 0 16px;\n    min-width: 64px;\n    height: 36px;\n    vertical-align: middle;\n    text-align: center;\n    text-overflow: ellipsis;\n    text-transform: uppercase;\n    font-size: 14px;\n    font-weight: 500;\n    line-height: 36px;\n    overflow: hidden;\n    outline: none;\n    cursor: pointer;\n    transition: box-shadow 0.2s;\n}\n\n.material-button::-moz-focus-inner {\n    border: none;\n}\n\n/* Overlay */\n.material-button::before {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    opacity: 0;\n    transition: opacity 0.2s;\n}\n\n/* Ripple */\n.material-button::after {\n    content: \"\";\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    border-radius: 50%;\n    padding: 50%;\n    width: 32px; /* Safari */\n    height: 32px; /* Safari */\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(1);\n    transition: opacity 1s, transform 0.5s;\n}\n\n.material-button:active::after {\n    transform: translate(-50%, -50%) scale(0);\n    transition: transform 0s;\n}\n\n/* Disabled */\n.material-button:disabled {\n    cursor: initial;\n}\n\n\n.tooltip{\n    z-index: 1000000;\n}\n  ","@import \"../../common/less/index\";\n\n@import \"variables\";\n@import \"hero\";\n@import \"intro\";\n@import \"slidedeck\";\n\n\nbody {\n    margin: 0;\n    padding: 0;\n    overflow-x: hidden;\n    overflow-y: scroll;\n    scroll-snap-type: y mandatory;\n}\n\n\n.launch_button {\n    margin-top: 20px;\n    border-radius: 5px;\n    display: inline-block;\n    padding: 5px;\n    padding-left: 10px;\n    padding-right: 10px;\n    font-size: calc(10px + 1vw);\n    cursor: pointer;\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n    text-decoration: none;\n    background-color: #C71D3D;\n    color: white;\n    font-weight: 300;\n}\n\n\n.image-button {\n\n    img,\n    svg {\n        color: #777;\n\n        circle[stroke],\n        polyline[stroke],\n        path[stroke],\n        g[stroke] {\n            stroke: #777 !important;\n        }\n\n        rect[fill],\n        circle[fill] {\n            fill: #777 !important;\n        }\n    }\n\n    div {\n        color: #777;\n\n        &.highlight {\n            animation: highlight 3s infinite;\n        }\n    }\n\n    &.disabled {\n        opacity: 0.2;\n    }\n\n    &:not(.disabled) {\n\n        img,\n        svg {\n            cursor: pointer;\n\n            &:hover {\n                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n            }\n        }\n    }\n}",".userinfo_toggler{\n\n  .userContainer {\n    text-align: center;\n    img {\n      width: 90px;\n    }\n  }\n}\n",".appbar {\n    height:@appbarHeight;\n    position: relative;\n    border: none !important;\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    padding-left:10px;\n    padding-right:10px;\n\n    .icon {\n        height: @toolbarHeight - 20;\n    }\n    .title {\n        h1 {\n            font-size: 24px;\n            font-weight: 100;\n            letter-spacing: 6px;\n            margin: 0;\n        }\n        h2 {\n            font-size: 14px;\n            font-weight: 100;\n            letter-spacing:4px;\n            margin: 0;\n        }\n    }\n\n    .spacer {\n        flex-grow: 1;\n    }\n\n    .group {\n        display: flex;\n        flex-direction: row;\n        align-items: center;\n    }    \n}\n",".toolbar {\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-right: 10px;\n  height: @toolbarHeight;\n\n  * {\n    outline: none;\n  }\n\n  .spacer {\n    flex-grow: 1;\n  }\n\n  .group {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n\n    .statusIndicator {\n      margin: 20px;\n\n      img {\n        display: block;\n        cursor: pointer;\n        margin: auto;\n      }\n\n      span {\n        font-size: .8em;\n        text-align: center;\n        width: 100%;\n        display: inline-block;\n        white-space: nowrap;\n      }\n\n      .notSupported {\n        display: none;\n        font-weight: bold;\n      }\n\n      .connected {\n        display: block;\n      }\n\n      .disconnected {\n        display: none;\n      }\n    }\n\n    .statusIndicator.disabled {\n      img {\n        cursor: not-allowed;\n\n        &:hover {\n          box-shadow: none;\n        }\n      }\n\n      .notSupported {\n        display: block;\n      }\n\n      .connected {\n        display: none;\n      }\n\n      .disconnected {\n        display: none;\n      }\n    }\n\n    .statusIndicator.error:not(.disabled) {\n      span {\n        font-weight: bold;\n      }\n\n      .notSupported {\n        display: none;\n      }\n\n      .connected {\n        display: none;\n      }\n\n      .disconnected {\n        display: block;\n      }\n    }\n  }\n}",".modal-backdrop.in{\n  transition: all .4s linear;\n}\n\n.genericDialog {\n  .modal-content{\n    border-radius:4px;\n\n    .modal-header{\n      border-bottom:0;\n      font-weight:400;\n    }\n\n    .modal-body {\n      min-height:120px;\n      max-height:80%;\n      overflow:auto;\n\n      .section {\n        border: 0px solid transparent !important;  \n        cursor: default !important;\n      }\n\n      .form-control{\n        appearance: none;\n        box-sizing: border-box;\n        border-radius: 4px;\n        margin: 0;\n        padding: 0;\n        display: inline-block;\n        font: inherit;\n        border-width:1px;\n        border-style: solid;\n        box-shadow: none;\n        height: 24px;\n        padding: 0 3px;\n      }\n\n      .list-group {\n        overflow-y: auto;\n        overflow-x: auto;\n\n        *[data-draw2d=\"true\"] {\n          font-weight: bold;\n        }\n\n        .list-group-item {\n          background-color: transparent;\n          font-weight: 300;\n\n          &:hover {\n            text-decoration: underline;\n          }\n        }\n\n        *[data-draw2d=\"false\"][data-type=\"file\"] {\n          cursor: default;\n          text-decoration: none !important;\n\n        }\n      }\n    }\n\n    .modal-footer {\n      border-top:0;\n\n      .btn, .btn-group{\n        border:0;\n        text-transform: uppercase;\n        background-color:transparent;\n        transition: all 0.5s;\n\n        &:hover{\n          transition: all 0.5s;\n        }\n      }\n      .btn-group{\n        .dropdown-toggle{\n          .caret{\n            margin-top:7px;\n          }\n        }\n        border:0;\n        text-transform: uppercase;\n        transition: all 0.5s;\n\n        &:hover{\n          transition: all 0.5s;\n        }\n      }\n\n      .btn-primary{\n        font-weight: bold;\n      }\n    }\n  }\n}\n",".context-menu-list {\n  margin: 0;\n  padding: 0;\n\n  min-width: 120px;\n  max-width: unset;\n  display: inline-block;\n  position: absolute;\n  list-style-type: none;\n\n  border-width: 1px;\n  border-style: solid;\n  border-left-width: 2px;\n  font-size: 15px;\n  white-space: nowrap;\n\n  .context-menu-item {\n    padding: 5px 5px 5px 24px;\n    position: relative;\n    user-select: none;\n\n    &.hover {\n      cursor: pointer;\n    }\n\n    >label {\n\n      >input,\n      >textarea {\n        user-select: text;\n      }\n    }\n  }\n\n  .context-menu-separator {\n    padding-bottom: 0;\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n  }\n\n  .context-menu-input.hover,\n  .context-menu-item.disabled.hover {\n    cursor: default;\n  }\n\n  .context-menu-submenu:after {\n    content: \">\";\n    position: absolute;\n    top: 0;\n    right: 3px;\n    z-index: 1;\n  }\n\n  .context-menu-item.icon {\n    min-height: 18px;\n  }\n\n  .context-menu-item.icon:before {\n    position: relative;\n    left: -15px;\n    font-size: 19px;\n  }\n\n  /* vertically align inside labels */\n  .context-menu-input>label>* {\n    vertical-align: top;\n  }\n\n  /* position checkboxes and radios as icons */\n  .context-menu-input>label>input[type=\"checkbox\"],\n  .context-menu-input>label>input[type=\"radio\"] {\n    margin-left: -17px;\n  }\n\n  .context-menu-input>label>span {\n    margin-left: 5px;\n  }\n\n  .context-menu-input>label,\n  .context-menu-input>label>input[type=\"text\"],\n  .context-menu-input>label>textarea,\n  .context-menu-input>label>select {\n    display: block;\n    width: 100%;\n    box-sizing: border-box;\n  }\n\n  .context-menu-input>label>textarea {\n    height: 100px;\n  }\n\n  .context-menu-item>.context-menu-list {\n    display: none;\n    /* re-positioned by js */\n    right: -5px;\n    top: 5px;\n  }\n\n  .context-menu-item.hover>.context-menu-list {\n    display: block;\n  }\n\n  .context-menu-accesskey {\n    text-decoration: underline;\n  }\n\n  .context-menu-list {\n    border-color: #DDD;\n    background: white;\n    border-left-color: #C71D3D;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n\n    .context-menu-separator {\n      border-bottom: 1px solid #DDD;\n    }\n\n    .context-menu-item {\n      &.hover {\n        background-color: #C71D3D;\n        color: white;\n      }\n\n      &.disabled {\n        color: #666;\n\n        &.hover {\n          background-color: #EEE;\n        }\n      }\n\n      .context-menu-submenu:after {\n        color: #666;\n      }\n    }\n  }\n}","\n#githubNewFileDialog {\n\n  .filePreview{\n    font-size:115px;\n  }\n\n}\n","\n#fileOpenDialog {\n\n  .list-group{\n    height:60%;\n  }\n}\n","\n#fileSaveDialog {\n\n  .filePreview{\n    max-width: 200px;\n    max-height: 200px;\n  }\n\n  .modal-body {\n    .media {\n      padding: 20px;\n    }\n  }\n}\n","\n#githubFileSaveAsDialog {\n\n  .filePreview{\n    max-width: 200px;\n    max-height: 200px;\n  }\n\n\n  .list-group{\n    height:250px;\n  }\n}\n","#canvas_zoom{\n  position: fixed;\n  bottom: 20px;\n  right: @rightMenuWidth + 20px;\n  border-radius:5px;\n  display: flex;\n  flex-wrap: nowrap;\n  align-items: center;\n\n  button {\n    background-color:transparent;\n    font-weight:300;\n    padding:5px;\n    padding-left:10px;\n    padding-right:10px;\n    border-width:1px;\n    border-style: solid;\n    outline:none;\n    transition: all 0.5s;\n    &:hover {\n      border-width:1px;\n      border-style: solid;\n    }\n  }\n}\n",".markdownRendering{\n\n  img {\n    max-width: 100%;\n  }\n\n  p{\n    font-size: 16px;\n    margin-top: 30px;\n  }\n  table {\n    /* we need important to override some setting in the wysiwyg editor **/\n    margin-left:auto !important;\n    margin-right:auto !important;\n    font-family:Arial, Helvetica, sans-serif;\n    font-size:12px;\n    border-width:1px;\n    border-style: solid;\n    border-radius:3px;\n  }\n  table th {\n    padding:10px;\n    border-width:1px;\n    border-style: solid;\n  }\n\n  table th:first-child{\n    text-align: left;\n    padding-left:20px;\n  }\n  table tr:first-child th:first-child{\n    border-top-left-radius:3px;\n  }\n  table tr:first-child th:last-child{\n    border-top-right-radius:3px;\n  }\n  table tr{\n    text-align: center;\n    padding-left:20px;\n  }\n  table tr td:first-child{\n    text-align: left;\n    padding-left:20px;\n    border-left: 0;\n  }\n  table tr td {\n    padding:18px;\n    border-width:1px;\n    border-style: solid;\n  }\n\n  table tr:last-child td{\n    border-bottom:0;\n  }\n\n  table tr:last-child td:first-child{\n    border-bottom-left-radius:3px;\n  }\n\n  table tr:last-child td:last-child{\n    border-bottom-right-radius:3px;\n  }\n\n  .info{\n    border-width:1px;\n    border-style: solid;\n    border-radius: 5px;\n    font-weight: 400;\n    letter-spacing: 2px;\n    padding: 5px;\n    padding: 5px;\n    padding-left: 20px;\n    padding-right: 20px;\n    p{\n      padding: 0;\n      margin:0;\n    }\n  }\n}\n","\n.tinyFlyoverMenu {\n  border-width:1px;\n  border-style: solid;\n  position:absolute;\n  top:-15px;\n  right:20px;\n  border-radius: 2px;\n  font-size:20px;\n  z-index:1;\n  padding: 3px;\n  \n  display: flex;\n  flex-direction: row;\n  align-items: stretch;\n  justify-content: center;\n  gap: 10px;\n  flex-wrap: nowrap;\n\n  div{\n    border-width:1px;\n    border-style: solid;\n    padding-right: 5px;\n    padding-left: 5px;\n    &:hover{\n      border-width:1px;\n      border-style: solid;\n      cursor:pointer;\n    }\n  }\n}\n\n.section {\n\n  .tinyFlyoverMenu {\n    position:sticky;\n    float:right;\n    top:10px;\n  }\n}\n","\n#notificationToast{\n  position: absolute;\n  top: -40px;\n  left: 50%;\n  transform: translateX(-50%);\n  padding-left: 20px;\n  padding-right: 20px;\n  border-radius: 0 0 8px 8px;\n  font-weight: 100;\n  z-index:30000;\n  padding-top:20px;\n  font-size:16px;\n}\n","#leftTabStrip {\n    height: 100%;\n    position:absolute;\n    width: @tabSize;\n    padding-top: @tabSize;\n    overflow:hidden;\n    &:after {\n        transform: rotate(-90deg) translate(-90px, -70px);\n        font-size: 55px;\n        white-space: nowrap;\n        font-weight: 200;\n        letter-spacing: 3px;\n    }\n  \n    .leftTab {\n      border-radius: 0 !important;\n      width:@tabSize;\n      height:@tabSize;\n      padding: 4px;\n    }\n\n  }\n","\n  .tab-content {\n    position: absolute;\n    left: @tabSize;\n    right: 0px;\n    top: @appbarHeight;\n    bottom:0;\n    .tab-pane {\n      display: none;\n      padding: 0;\n      height: 100%;\n      position: relative;\n\n      &.active {\n        display: flex !important;\n        flex-direction: column;\n        align-items: stretch;\n      }\n\n      .workspace {\n\n        #canvas_config {\n          position: relative;\n          width: 40px;\n          top: @toolbarHeight + 5;\n          left: unit(@leftPaneWidth+5, px);\n          cursor: pointer;\n          border-width: 1px;\n          border-style: solid;\n\n          &:hover {\n            border-width: 1px !important;\n            border-style: solid !important;\n          }\n        }\n\n\n        #canvas_config_items {\n          position: absolute;\n          top: @toolbarHeight+30;\n          left: unit(@leftPaneWidth+5, px);;\n          cursor: pointer;\n          padding: 10px;\n          white-space: nowrap;\n          min-width: 250px;\n        }\n\n      }\n    }\n  }\n","\n#editor{\n\n  .toolbar {\n    right: 0;\n    left: @leftPaneWidth;\n    position: absolute;\n  }\n\n  .workspace {\n    position: relative;\n    height:100%;\n  }\n}\n","#files {\n  overflow-y: scroll;\n  padding: 40px;\n\n  .teaser {\n    display: inline-block;\n    padding-left: 20px;\n    padding-right: 20px;\n    margin-bottom: 0;\n\n    .title {\n      font-weight: 200;\n      font-size: 4vw;\n      white-space: nowrap;\n      margin-bottom: 10px;\n\n      img {\n        padding-right: 40px;\n        height: 100px;\n      }\n    }\n\n    .slogan {\n      font-size: 2vw;\n      font-weight: 200;\n    }\n  }\n\n  .deleteIcon {\n    position: absolute;\n    right: 24px;\n    top: 18px;\n    cursor: pointer;\n    font-size: 25px;\n    padding: 4px;\n    border-radius: 2px;\n  }\n\n  .list-group-item {\n    cursor: pointer;\n\n    .thumb {\n      .thumbnail {\n        cursor: pointer;\n      }\n\n      .media-body {\n        padding-top: 14px;\n        padding-left: 20px;\n      }\n\n      .filenameInplaceEdit {\n        font-size: 18px;\n        margin-top: -5px;\n      }\n\n      h4 {\n        font-size: 18px;\n        display: inline-block;\n      }\n\n      .editIcon {\n        padding-left: 10px;\n        font-size: 14px;\n        display: none;\n      }\n\n      &:hover {\n        h4 {\n          text-decoration: underline;\n        }\n\n        .editIcon {\n          display: inline-block;\n        }\n      }\n    }\n\n  }\n\n  .thumbAdd {\n    border-width: 1px;\n    border-style: solid;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: all 1s;\n\n    div {\n      font-size: 160px;\n      text-align: center;\n    }\n\n    h4 {\n      text-align: center;\n    }\n\n    &:hover {\n      border-width: 1px;\n      border-style: solid;\n      transition: all 1s;\n    }\n  }\n\n  .fileOperations {\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n    padding-bottom: 9px;\n  }\n\n\n  #material-tabs {\n    position: relative;\n    display: block;\n    padding: 0;\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n\n    a {\n      position: relative;\n      display: inline-block;\n      text-decoration: none;\n      padding-bottom: 15px;\n      padding-left: 20px;\n      padding-right: 20px;\n      padding-top: 5px;\n      text-transform: uppercase;\n      font-size: 14px;\n      font-weight: 300;\n      text-align: center;\n      transition: all 0.3s ease;\n      outline: none;\n      z-index: 1001;\n\n      &.active {\n        font-weight: 400;\n        transition: all 0.3s ease;\n      }\n    }\n  }\n\n  .material-tab-content {\n    &>div {\n      padding: 10px;\n      min-height: 600px;\n    }\n  }\n\n  header {\n    position: relative;\n  }\n\n  .yellow-bar {\n    position: absolute;\n    z-index: 1000;\n    bottom: -2px;\n    height: 50px;\n    display: block;\n    left: 0;\n    transition: all 0.3s ease;\n    border-radius: 10px 10px 0 0;\n    border-width: 1px 1px 0 1px;\n    border-style: solid;\n  }\n}","#home {\n  overflow:scroll;\n\n  .authorPage {\n    padding: 40px !important;\n    font-size: calc(12px + 0.5vw);\n    font-weight: 400;\n\n\n    h1 {\n      font-weight: 200;\n      font-size: calc(16px + 2.5vw);\n      white-space: nowrap;\n      margin-bottom: 10px;\n    }\n\n    h2 {\n      font-size: calc(14px + 1.5vw);\n      font-weight: 200;\n    }\n\n  }\n  footer {\n    text-align: center;\n    margin-top: 100px;\n\n    a {\n      text-decoration: underline;\n    }\n  }\n}\n","\n#configMenuIcon{\n  font-size: 25px;\n  cursor:pointer;\n}\n\n\n#figureConfigDialog{\n  .figureAddLabel{\n    font-size:12px;\n    font-weight: 200;\n    cursor:pointer;\n  }\n\n  textarea {\n    &.figureAttribute, &.lineNumbering {\n      font-family: lucida console, courier new, courier, monospace;\n      margin: 0;\n      padding: 10px 0;\n      height: 300px;\n      border-radius: 0;\n      resize: none;\n      font-size: 16px;\n      line-height: 1.2;\n      outline: none;\n      box-sizing: border-box;\n      &:focus-visible {\n        outline:none;\n      }\n    }\n\n    &.figureAttribute {\n      padding-left: calc(3.5rem + 5px);\n      width:100%;\n    }\n\n    &.lineNumbering {\n      border-color: transparent;\n      overflow-y: hidden;\n      text-align: right;\n      box-shadow: none;\n      position: absolute;\n      width: 3.5rem;\n    }\n  }\n}\n","\n.applicationSwitch {\n\n  .application-waffel {\n    svg,\n    img{\n      width:60px;\n    }\n  }\n\n  .open {\n    .dropdown-menu{\n      z-index: 10000;\n      right:0;\n      left: initial;\n\n      display: grid;\n      max-width:200px;\n      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));\n      grid-auto-rows: minmax(80px, auto);\n      grid-gap: 5px;\n    }\n  }\n  .dropdown-menu{\n    display: none;\n  }\n}\n",".image-button {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-weight: 400;\n    img,\n    svg {\n      margin: 5px;\n      margin-bottom: 0;\n      padding: 0;\n      width: @toolbarHeight - 20;\n      height: @toolbarHeight - 20;\n      text-align: center;\n      font-size: 45px;\n      transition: all 0.5s;\n      border-radius: 4px;\n      border-width: 1px;\n      border-style: solid;\n    }\n\n    div {\n      text-align: center;\n      font-size: 10px;\n      cursor: default;\n    }\n\n    &:not(.disabled) {\n\n      img,\n      svg {\n        cursor: pointer;\n        &:hover {\n        }\n      }\n    }\n  }",".notifyjs-bootstrap-base {\n    font-size:12px;\n    border: none;\n    border-radius: 1px;\n    padding-left: 5px;\n    padding-right: 5px;\n}\n\n.notifyjs-bootstrap-info {\n    background-image: none;\n}",":root {\n    --shadow-color: #C71D3D;\n    --shadow-color-light: white;\n}\n\n\n@keyframes neon {\n    0% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),\n      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n    }\n    50% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light),\n      0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);\n    }\n    100% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),\n      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n    }\n  }\n\nbody.light {\n    .notifyjs-bootstrap-base {\n        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n    }\n    \n    .notifyjs-bootstrap-info {\n        background-color: #f7f7f7;\n        color:rgb(41, 41, 41);\n    }\n\n    .appbar {\n        background-color:rgb(32, 43, 59);\n        .title {\n            h1 {\n                color: white;\n            }\n            h2 {\n                color: white;\n                animation: neon 3s infinite;\n            }\n        }\n        .slogan{\n            color: white;\n            letter-spacing: 0.2vw;\n        }\n\n        .application-waffel {\n\n            img,\n            svg {\n                color: white;\n                border-color:transparent;\n    \n                circle[stroke],\n                polyline[stroke],\n                path[stroke],\n                g[stroke] {\n                    stroke: white !important;\n                }\n    \n                rect[fill],\n                circle[fill] {\n                    fill: white !important;\n                }\n            }\n    \n            div {\n                color: white;\n    \n                &.highlight {\n                    animation: highlight 3s infinite;\n                }\n            }\n    \n            &.disabled {\n                opacity: 0.2;\n            }\n    \n            &:not(.disabled) {\n                img,\n                svg {\n                    &:hover {\n                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n                        border-color:white;\n                    }\n                }\n            }\n        }\n    }\n\n    .spinner:before {\n        border-color: #ccc;\n        border-top-color: #C71D3D;\n        background-color: #fef9f9;\n    }\n\n    .material-button {\n        color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));\n        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);\n    }\n\n    /* Overlay */\n    .material-button::before {\n        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        opacity: 0;\n    }\n\n    /* Ripple */\n    .material-button::after {\n        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        opacity: 0;\n    }\n\n    /* Hover, Focus */\n    .material-button:hover,\n    .material-button:focus {\n        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);\n    }\n\n    .material-button:hover::before {\n        opacity: 0.08;\n    }\n\n    .material-button:focus::before {\n        opacity: 0.24;\n    }\n\n    .material-button:hover:focus::before {\n        opacity: 0.3;\n    }\n\n    /* Active */\n    .material-button:active {\n        box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);\n    }\n\n    .material-button:active::after {\n        opacity: 0.32;\n    }\n\n    /* Disabled */\n    .material-button:disabled {\n        color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);\n        background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);\n        box-shadow: none;\n    }\n\n    .material-button:disabled::before {\n        opacity: 0;\n    }\n\n    .material-button:disabled::after {\n        opacity: 0;\n    }\n\n\n    .confirm-dialog-btn-confirm {\n        background-color: #C71D3D;\n    }\n\n    .context-menu-list {\n        border-color: #DDD;\n        background: white;\n        border-left-color: #C71D3D;\n        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n\n        .context-menu-separator {\n            border-bottom: 1px solid #DDD;\n        }\n\n        .context-menu-item {\n            &.hover {\n                background-color: #C71D3D;\n                color: white;\n            }\n\n            &.disabled {\n                color: #666;\n\n                &.hover {\n                    background-color: #EEE;\n                }\n            }\n\n            .context-menu-submenu:after {\n                color: #666;\n            }\n        }\n\n    }\n\n    .gutter {\n        background-color: #eee;\n        background-repeat: no-repeat;\n        background-position: center;\n        &.gutter-vertical {\n            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');\n        }\n\n        &.gutter-horizontal {\n            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');\n        }\n    }\n\n    .tinyFlyoverMenu {\n        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n        border-color: lightgray;\n        background-color: rgb(253 233 233);\n\n        div {\n            border-color: transparent;\n            &:hover {\n                border-color: lightgray;\n            }\n        }\n    }\n\n    #home {\n        .authorPage {\n            h1 {\n                color: #C71D3D;\n            }\n\n            h2 {\n                color: #C71D3D;\n            }\n        }\n\n        footer {\n            color: #C71D3D;\n\n            a {\n                color: #C71D3D;\n            }\n        }\n    }\n\n    #canvas_zoom {\n        background-color: fadeout(#B2E2F2, 70%);\n\n        button {\n            background-color: transparent;\n            border-color: transparent;\n            transition: all 0.5s;\n\n            &:hover {\n                border-color: #C71D3D;\n            }\n        }\n    }\n\n    #configMenuIcon {\n        &:hover {\n            opacity: 1;\n            color: #C71D3D;\n        }\n    }\n\n    .modal-backdrop.in {\n        opacity: 0.7;\n        background-color: black;\n    }\n\n    .genericDialog {\n        .modal-content {\n            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);\n            background-color: rgb(255, 255, 255);\n\n            .modal-header {\n                box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);\n            }\n\n            .modal-body {\n                .form-control {\n                    color: #4D4D4D;\n                    border-color: #DFDFDF;\n                    box-shadow: none;\n\n                    &:focus {\n                        background-color: rgb(245, 245, 245);\n                    }\n                }\n\n                .list-group {\n\n                    *[data-draw2d=\"true\"] {\n                        color: #C71D3D;\n                    }\n\n                    .list-group-item {\n                        background-color: transparent;\n                    }\n\n                    *[data-draw2d=\"false\"][data-type=\"file\"] {\n                        color: gray;\n                    }\n                }\n            }\n\n            .modal-footer {\n                background-color: transparent;\n\n                .btn,\n                .btn-group {\n                    background-color: transparent;\n                    color: #C71D3D;\n\n                    &:hover {\n                        background-color: fadeout(#C71D3D, 96);\n                    }\n                }\n\n                .btn-group {\n                    .btn {\n                        &:hover {\n                            background-color: transparent;\n                        }\n                    }\n\n                    background-color:transparent;\n                    color:#C71D3D;\n\n                    &:hover {\n                        background-color: fadeout(#C71D3D, 96);\n                    }\n                }\n            }\n        }\n    }\n\n    .tab-pane {\n        box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);\n    }\n\n    #files {\n        .teaser {\n            background-image:\n                linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, .4) 70%, #fff 100%),\n                radial-gradient(ellipse at center, rgba(247, 249, 250, .7) 0%, rgba(247, 249, 250, 0) 60%),\n                linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);\n\n            .title {\n                color: #C71D3D;\n            }\n\n            .slogan {\n                color: #34495e;\n            }\n        }\n\n        .deleteIcon {\n            &:hover {\n                background-color: rgba(0, 0, 0, 0.03);\n            }\n        }\n\n        .list-group-item {\n            cursor: pointer;\n\n            .thumb {\n\n                .filenameInplaceEdit {\n                    color: #C71D3D;\n                }\n\n                h4 {\n                    color: #C71D3D;\n                }\n\n            }\n\n        }\n\n        .thumbAdd {\n            color: #0078f2;\n            border-color: rgba(0, 120, 242, 0.33);\n\n            &:hover {\n                border-color: rgba(0, 120, 242, 1);\n            }\n        }\n\n\n        #material-tabs {\n            border-bottom-color: #e0e0e0;\n\n            a {\n                color: #424f5a;\n            }\n        }\n\n        .material-tab-content {\n            &>div {\n                background-color: rgb(254 249 249);\n            }\n        }\n\n        #material-tabs>a:not(.active):hover {\n            background-color: inherit;\n            color: #C71D3D;\n        }\n\n        .yellow-bar {\n            background: rgb(254 249 249);\n            transition: all 0.3s ease;\n            border-color: #e0e0e0;\n        }\n    }\n\n    #githubNewFileDialog {\n        .filePreview {\n            color: #C71D3D;\n        }\n    }\n\n    #figureConfigDialog{\n        textarea {\n            &.figureAttribute {\n                background-color:#272822;\n                border-color:#272822;\n                color:#ffffff;\n            }\n            &.lineNumbering {\n                background-color:#3E3D32;\n                border-color:#3E3D32;\n                color:#928869;\n            }\n        }\n    }\n  \n    #notificationToast {\n        background-color: #C71D3D;\n        color: white;\n    }\n\n    .markdownRendering {\n        table {\n            color: #666;\n            text-shadow: 1px 1px 0px #fff;\n            background: #eaebec;\n            border-color: #ccc;\n            box-shadow: 0 1px 2px #d1d1d1;\n        }\n\n        table th {\n            border-top-color: #fafafa;\n            border-bottom-color: #e0e0e0;\n        }\n\n        table tr td {\n            border-top-color: #ffffff;\n            border-bottom-color: #e0e0e0;\n            border-left-color: #e0e0e0;\n        }\n\n        tbody tr:nth-child(odd) {\n            background: #fafafa;\n        }\n\n        tbody tr:nth-child(even) {\n            background: #f3f3f3;\n        }\n\n        .info {\n            border-color: #B4E1E4;\n            background-color: #81c7e1;\n            color: white;\n\n            p {}\n        }\n    }\n\n    .toolbar {\n        background-color: #B2E2F2;\n    }\n\n    .image-button {\n\n        img,\n        svg {\n            color: #777;\n            border-color:transparent;\n\n            circle[stroke],\n            polyline[stroke],\n            path[stroke],\n            g[stroke] {\n                stroke: #777 !important;\n            }\n\n            rect[fill],\n            circle[fill] {\n                fill: #777 !important;\n            }\n        }\n\n        div {\n            color: #777;\n\n            &.highlight {\n                animation: highlight 3s infinite;\n            }\n        }\n\n        &.disabled {\n            opacity: 0.2;\n        }\n\n        &:not(.disabled) {\n            img,\n            svg {\n                &:hover {\n                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n                    border-color:rgba(0,0,0,0.15);\n                }\n            }\n        }\n    }\n    @keyframes highlight {\n        0% {\n            color: #C71D3D;\n        }\n\n        50% {\n            color: rgba(0, 0, 0, 0.4);\n        }\n\n        100% {\n            color: #C71D3D;\n        }\n    }\n\n}","/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */\n\n.hero {\n    position: relative;\n    display: flex; \n    flex-direction: column;\n    flex-wrap: nowrap;\n    justify-content:space-between;\n\n    z-index: 20;\n    height: 100vh;\n    background-color: #fff;\n    color: #333;\n    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);\n    border-bottom: 2px solid #C71D3D;\n    scroll-snap-align: start;\n\n    .toolbar {\n        display: flex; \n        flex-direction: row;\n        flex-wrap: nowrap;\n        justify-content:space-between;\n\n        font-size: 30px;\n        color:white;\n        background-color:white;\n        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);\n      \n        .title {\n          img{\n            height:30px;\n            margin-left:30px;\n            margin-top:5px;\n          }\n      \n          .app_name {\n            font-weight: 200;\n            display: inline-block;\n            top: 6px;\n            position: relative;\n            left: 20px;\n            color:#C71D3D;\n          }\n      \n          .app_slogan {\n            font-weight: 200;\n            display: inline-block;\n            top: 6px;\n            position: relative;\n            left: 20px;\n            color:#C71D3D;\n            font-size:70%;\n            transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n          }\n          @media (max-width: 990px) {\n            .app_slogan {\n              font-size:50%;\n              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n            }\n          }\n          @media (max-width: 890px) {\n            .app_slogan {\n              display: none;\n              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n            }\n          }\n        }\n    }\n      \n    .teaserContainer {\n        flex-grow: 4;\n\n        display: flex; \n        flex-direction: column;\n        flex-wrap: nowrap;\n        justify-content:center;\n        align-items: center;\n        align-content: center;\n        gap: 50px;\n        .teaser {\n            display: flex; \n            flex-direction: row;\n            flex-wrap: nowrap;\n            justify-content:space-between;\n            align-items: center;\n            align-content: center;\n\n            .slogan {\n\n                h1{\n                    font-weight: 500;\n                    font-size: calc(20px + 1vw);\n                    line-height: 1.2;        \n                    color: #C71D3D;\n                }\n                font-weight: 300;\n                line-height: 1.2;\n                font-size: calc(8px + 1vw);\n                color: black;\n                padding-left:60px;\n            }\n            .imageContainer {\n                display: flex; \n                flex-direction: column;\n                flex-wrap: nowrap;\n                justify-content:space-between;\n                align-items: center;\n                align-content: center;\n                img{\n                    width:33vw;\n                }\n            }\n        }\n        .launch_button {\n            &:hover {\n                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n            }\n        }    \n    }\n\n    .avatarContainer {\n        flex-grow: 0;\n\n        display: flex; \n        flex-direction: row;\n        flex-wrap: nowrap;\n        justify-content:space-between;\n        align-items: flex-end;\n        .avatar {\n            text-align: center;\n            font-weight: 400;\n            font-size: 16px;\n            display: flex;\n            flex-direction: column;\n            flex-wrap: nowrap;\n            align-content: flex-end;\n            justify-content: flex-end;\n            align-items: center;\n            img {\n                height: 120px;\n            }\n        }\n\n        .arrow {\n            animation: mover 2s infinite alternate;\n            font-size:20px;\n            i {\n                height: 20px;\n                display: inline-block;\n                border-left: 4px solid #000;\n                border-radius:4px;\n                &.left {\n                    transform: rotate(-45deg);\n                }\n    \n                &.right {\n                    transform: rotate(45deg) translate(3px, -2px);\n                }\n            }\n        }\n    }\n\n    @keyframes mover {\n        0% { transform: translateY(0); }\n        100% { transform: translateY(-10px); }\n    }\n}",".intro {\n    background-color: white;\n    background-image: none;\n    text-align: left;\n    position: relative;\n    z-index: 20;\n    height: 100vh;\n    padding-bottom: 20px;\n    color: #333;\n    font-size: 30px;\n\n    .header {\n        font-size: calc(19px + 1vw);\n        line-height: 1.2;\n        top: 2vw;\n        padding-left: 50px;\n        color: #C71D3D;\n        position: absolute;\n        padding-top: 30px;\n        background-color: rgba(255, 255, 255, 0.8);\n        div {\n            font-size: calc(6px + 1vw);\n            font-weight: 200;\n            color: black;\n            padding-top: 30px;\n        }\n    }\n\n    img {\n        width: 50%;\n        vertical-align: middle;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        margin: auto;\n        left: 0;\n        right: 0;\n    }\n\n    .launch_button {\n        position: absolute;\n        right: 50px;\n        bottom: 100px;\n\n        &:hover {\n            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n        }\n    }\n}",".slidedeck {\n    position: absolute;\n    height: 400vh;\n    width: 100%;\n    background-image: linear-gradient(135deg, #e13f4d, #d34657);\n\n    .pink_bg {\n        position: absolute;\n        top: 100vh;\n        height: 300vh;\n        width: 100%;\n        background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);\n    }\n\n    .orange_bg {\n        position: absolute;\n        top: 100vh;\n        height: 200vh;\n        width: 100%;\n        background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);\n    }\n\n    .blue_bg {\n        position: absolute;\n        top: 100vh;\n        height: 100vh;\n        width: 100%;\n        background-image: linear-gradient(135deg, #242533, #2a3079);\n    }\n\n\n    .section_header {\n        color: white;\n        font-size: calc(16px + 2vw);\n        text-align: center;\n        font-weight: 100;\n        padding-top: 30px;\n        position: sticky;\n        top: 20px;\n    }\n\n    .card {\n        position: sticky;\n        z-index: 1000;\n        width: 25%;\n        height: 50vh;\n        border-radius: 10px;\n        background-color: #fff;\n        box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);\n        top: 0;\n\n        .text {\n            position: absolute;\n            top: -40px;\n            text-align: center;\n            color: white;\n            font-size: 24px;\n            font-weight: 100;\n            width: 100%;\n        }\n        .media {\n            position: absolute;\n            top: 10px;\n            left: 50%;\n            transform: translateX(-50%);\n        }\n        .content {\n            position: absolute;\n            top: 80px;\n            padding: 10px;\n\n            .header {\n                color: #C71D3D;\n                text-align: center;\n                margin-bottom: 10px;\n            }\n        }\n\n        .launch_button {\n            position: absolute;\n            left: 50%;\n            bottom: 10px;\n            transform: translateX(-50%);\n            border-radius: 4px;\n            font-size: 14px;\n            padding: 10px;\n            padding-left: 20px;\n            padding-right: 20px;\n        }\n\n        &.left {\n            left: 5%;\n            transform: translateY(50%);\n        }\n\n        &.center {\n            left: 50%;\n            transform: translateY(50%) translateX(-50%);\n        }\n\n        &.right {\n            left: 70%;\n            transform: translateY(50%);\n        }\n    }\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body {\n  font-family: 'Roboto', sans-serif !important;\n  font-weight: 300;\n}\n@keyframes spinner {\n  to {\n    transform: translate(-50%, -50%) rotate(360deg);\n  }\n}\n.spinner > * {\n  opacity: 0.08 !important;\n}\n.spinner:before {\n  content: '';\n  transform: translate(-50%, -50%);\n  position: absolute;\n  z-index: 2000;\n  top: 50%;\n  left: 50%;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  border-width: 2px;\n  border-style: solid;\n  animation: spinner 0.6s linear infinite;\n}\n.material-button {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n  border: none;\n  border-radius: 4px;\n  padding: 0 16px;\n  min-width: 64px;\n  height: 36px;\n  vertical-align: middle;\n  text-align: center;\n  text-overflow: ellipsis;\n  text-transform: uppercase;\n  font-size: 14px;\n  font-weight: 500;\n  line-height: 36px;\n  overflow: hidden;\n  outline: none;\n  cursor: pointer;\n  transition: box-shadow 0.2s;\n}\n.material-button::-moz-focus-inner {\n  border: none;\n}\n/* Overlay */\n.material-button::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n/* Ripple */\n.material-button::after {\n  content: \"\";\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  border-radius: 50%;\n  padding: 50%;\n  width: 32px;\n  /* Safari */\n  height: 32px;\n  /* Safari */\n  opacity: 0;\n  transform: translate(-50%, -50%) scale(1);\n  transition: opacity 1s, transform 0.5s;\n}\n.material-button:active::after {\n  transform: translate(-50%, -50%) scale(0);\n  transition: transform 0s;\n}\n/* Disabled */\n.material-button:disabled {\n  cursor: initial;\n}\n.tooltip {\n  z-index: 1000000;\n}\n.userinfo_toggler .userContainer {\n  text-align: center;\n}\n.userinfo_toggler .userContainer img {\n  width: 90px;\n}\n.appbar {\n  height: 70px;\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-left: 10px;\n  padding-right: 10px;\n}\n.appbar .icon {\n  height: 40;\n}\n.appbar .title h1 {\n  font-size: 24px;\n  font-weight: 100;\n  letter-spacing: 6px;\n  margin: 0;\n}\n.appbar .title h2 {\n  font-size: 14px;\n  font-weight: 100;\n  letter-spacing: 4px;\n  margin: 0;\n}\n.appbar .spacer {\n  flex-grow: 1;\n}\n.appbar .group {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.toolbar {\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-right: 10px;\n  height: 60;\n}\n.toolbar * {\n  outline: none;\n}\n.toolbar .spacer {\n  flex-grow: 1;\n}\n.toolbar .group {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n.toolbar .group .statusIndicator {\n  margin: 20px;\n}\n.toolbar .group .statusIndicator img {\n  display: block;\n  cursor: pointer;\n  margin: auto;\n}\n.toolbar .group .statusIndicator span {\n  font-size: 0.8em;\n  text-align: center;\n  width: 100%;\n  display: inline-block;\n  white-space: nowrap;\n}\n.toolbar .group .statusIndicator .notSupported {\n  display: none;\n  font-weight: bold;\n}\n.toolbar .group .statusIndicator .connected {\n  display: block;\n}\n.toolbar .group .statusIndicator .disconnected {\n  display: none;\n}\n.toolbar .group .statusIndicator.disabled img {\n  cursor: not-allowed;\n}\n.toolbar .group .statusIndicator.disabled img:hover {\n  box-shadow: none;\n}\n.toolbar .group .statusIndicator.disabled .notSupported {\n  display: block;\n}\n.toolbar .group .statusIndicator.disabled .connected {\n  display: none;\n}\n.toolbar .group .statusIndicator.disabled .disconnected {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) span {\n  font-weight: bold;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .notSupported {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .connected {\n  display: none;\n}\n.toolbar .group .statusIndicator.error:not(.disabled) .disconnected {\n  display: block;\n}\n.modal-backdrop.in {\n  transition: all 0.4s linear;\n}\n.genericDialog .modal-content {\n  border-radius: 4px;\n}\n.genericDialog .modal-content .modal-header {\n  border-bottom: 0;\n  font-weight: 400;\n}\n.genericDialog .modal-content .modal-body {\n  min-height: 120px;\n  max-height: 80%;\n  overflow: auto;\n}\n.genericDialog .modal-content .modal-body .section {\n  border: 0px solid transparent !important;\n  cursor: default !important;\n}\n.genericDialog .modal-content .modal-body .form-control {\n  appearance: none;\n  box-sizing: border-box;\n  border-radius: 4px;\n  margin: 0;\n  padding: 0;\n  display: inline-block;\n  font: inherit;\n  border-width: 1px;\n  border-style: solid;\n  box-shadow: none;\n  height: 24px;\n  padding: 0 3px;\n}\n.genericDialog .modal-content .modal-body .list-group {\n  overflow-y: auto;\n  overflow-x: auto;\n}\n.genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"true\"] {\n  font-weight: bold;\n}\n.genericDialog .modal-content .modal-body .list-group .list-group-item {\n  background-color: transparent;\n  font-weight: 300;\n}\n.genericDialog .modal-content .modal-body .list-group .list-group-item:hover {\n  text-decoration: underline;\n}\n.genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"false\"][data-type=\"file\"] {\n  cursor: default;\n  text-decoration: none !important;\n}\n.genericDialog .modal-content .modal-footer {\n  border-top: 0;\n}\n.genericDialog .modal-content .modal-footer .btn,\n.genericDialog .modal-content .modal-footer .btn-group {\n  border: 0;\n  text-transform: uppercase;\n  background-color: transparent;\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn:hover,\n.genericDialog .modal-content .modal-footer .btn-group:hover {\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-group {\n  border: 0;\n  text-transform: uppercase;\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-group .dropdown-toggle .caret {\n  margin-top: 7px;\n}\n.genericDialog .modal-content .modal-footer .btn-group:hover {\n  transition: all 0.5s;\n}\n.genericDialog .modal-content .modal-footer .btn-primary {\n  font-weight: bold;\n}\n.context-menu-list {\n  margin: 0;\n  padding: 0;\n  min-width: 120px;\n  max-width: unset;\n  display: inline-block;\n  position: absolute;\n  list-style-type: none;\n  border-width: 1px;\n  border-style: solid;\n  border-left-width: 2px;\n  font-size: 15px;\n  white-space: nowrap;\n  /* vertically align inside labels */\n  /* position checkboxes and radios as icons */\n}\n.context-menu-list .context-menu-item {\n  padding: 5px 5px 5px 24px;\n  position: relative;\n  user-select: none;\n}\n.context-menu-list .context-menu-item.hover {\n  cursor: pointer;\n}\n.context-menu-list .context-menu-item > label > input,\n.context-menu-list .context-menu-item > label > textarea {\n  user-select: text;\n}\n.context-menu-list .context-menu-separator {\n  padding-bottom: 0;\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n}\n.context-menu-list .context-menu-input.hover,\n.context-menu-list .context-menu-item.disabled.hover {\n  cursor: default;\n}\n.context-menu-list .context-menu-submenu:after {\n  content: \">\";\n  position: absolute;\n  top: 0;\n  right: 3px;\n  z-index: 1;\n}\n.context-menu-list .context-menu-item.icon {\n  min-height: 18px;\n}\n.context-menu-list .context-menu-item.icon:before {\n  position: relative;\n  left: -15px;\n  font-size: 19px;\n}\n.context-menu-list .context-menu-input > label > * {\n  vertical-align: top;\n}\n.context-menu-list .context-menu-input > label > input[type=\"checkbox\"],\n.context-menu-list .context-menu-input > label > input[type=\"radio\"] {\n  margin-left: -17px;\n}\n.context-menu-list .context-menu-input > label > span {\n  margin-left: 5px;\n}\n.context-menu-list .context-menu-input > label,\n.context-menu-list .context-menu-input > label > input[type=\"text\"],\n.context-menu-list .context-menu-input > label > textarea,\n.context-menu-list .context-menu-input > label > select {\n  display: block;\n  width: 100%;\n  box-sizing: border-box;\n}\n.context-menu-list .context-menu-input > label > textarea {\n  height: 100px;\n}\n.context-menu-list .context-menu-item > .context-menu-list {\n  display: none;\n  /* re-positioned by js */\n  right: -5px;\n  top: 5px;\n}\n.context-menu-list .context-menu-item.hover > .context-menu-list {\n  display: block;\n}\n.context-menu-list .context-menu-accesskey {\n  text-decoration: underline;\n}\n.context-menu-list .context-menu-list {\n  border-color: #DDD;\n  background: white;\n  border-left-color: #C71D3D;\n  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n}\n.context-menu-list .context-menu-list .context-menu-separator {\n  border-bottom: 1px solid #DDD;\n}\n.context-menu-list .context-menu-list .context-menu-item.hover {\n  background-color: #C71D3D;\n  color: white;\n}\n.context-menu-list .context-menu-list .context-menu-item.disabled {\n  color: #666;\n}\n.context-menu-list .context-menu-list .context-menu-item.disabled.hover {\n  background-color: #EEE;\n}\n.context-menu-list .context-menu-list .context-menu-item .context-menu-submenu:after {\n  color: #666;\n}\n#githubNewFileDialog .filePreview {\n  font-size: 115px;\n}\n#fileOpenDialog .list-group {\n  height: 60%;\n}\n#fileSaveDialog .filePreview {\n  max-width: 200px;\n  max-height: 200px;\n}\n#fileSaveDialog .modal-body .media {\n  padding: 20px;\n}\n#githubFileSaveAsDialog .filePreview {\n  max-width: 200px;\n  max-height: 200px;\n}\n#githubFileSaveAsDialog .list-group {\n  height: 250px;\n}\n#canvas_zoom {\n  position: fixed;\n  bottom: 20px;\n  right: 20px;\n  border-radius: 5px;\n  display: flex;\n  flex-wrap: nowrap;\n  align-items: center;\n}\n#canvas_zoom button {\n  background-color: transparent;\n  font-weight: 300;\n  padding: 5px;\n  padding-left: 10px;\n  padding-right: 10px;\n  border-width: 1px;\n  border-style: solid;\n  outline: none;\n  transition: all 0.5s;\n}\n#canvas_zoom button:hover {\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering img {\n  max-width: 100%;\n}\n.markdownRendering p {\n  font-size: 16px;\n  margin-top: 30px;\n}\n.markdownRendering table {\n  /* we need important to override some setting in the wysiwyg editor **/\n  margin-left: auto !important;\n  margin-right: auto !important;\n  font-family: Arial, Helvetica, sans-serif;\n  font-size: 12px;\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 3px;\n}\n.markdownRendering table th {\n  padding: 10px;\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering table th:first-child {\n  text-align: left;\n  padding-left: 20px;\n}\n.markdownRendering table tr:first-child th:first-child {\n  border-top-left-radius: 3px;\n}\n.markdownRendering table tr:first-child th:last-child {\n  border-top-right-radius: 3px;\n}\n.markdownRendering table tr {\n  text-align: center;\n  padding-left: 20px;\n}\n.markdownRendering table tr td:first-child {\n  text-align: left;\n  padding-left: 20px;\n  border-left: 0;\n}\n.markdownRendering table tr td {\n  padding: 18px;\n  border-width: 1px;\n  border-style: solid;\n}\n.markdownRendering table tr:last-child td {\n  border-bottom: 0;\n}\n.markdownRendering table tr:last-child td:first-child {\n  border-bottom-left-radius: 3px;\n}\n.markdownRendering table tr:last-child td:last-child {\n  border-bottom-right-radius: 3px;\n}\n.markdownRendering .info {\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 5px;\n  font-weight: 400;\n  letter-spacing: 2px;\n  padding: 5px;\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.markdownRendering .info p {\n  padding: 0;\n  margin: 0;\n}\n.tinyFlyoverMenu {\n  border-width: 1px;\n  border-style: solid;\n  position: absolute;\n  top: -15px;\n  right: 20px;\n  border-radius: 2px;\n  font-size: 20px;\n  z-index: 1;\n  padding: 3px;\n  display: flex;\n  flex-direction: row;\n  align-items: stretch;\n  justify-content: center;\n  gap: 10px;\n  flex-wrap: nowrap;\n}\n.tinyFlyoverMenu div {\n  border-width: 1px;\n  border-style: solid;\n  padding-right: 5px;\n  padding-left: 5px;\n}\n.tinyFlyoverMenu div:hover {\n  border-width: 1px;\n  border-style: solid;\n  cursor: pointer;\n}\n.section .tinyFlyoverMenu {\n  position: sticky;\n  float: right;\n  top: 10px;\n}\n#notificationToast {\n  position: absolute;\n  top: -40px;\n  left: 50%;\n  transform: translateX(-50%);\n  padding-left: 20px;\n  padding-right: 20px;\n  border-radius: 0 0 8px 8px;\n  font-weight: 100;\n  z-index: 30000;\n  padding-top: 20px;\n  font-size: 16px;\n}\n#leftTabStrip {\n  height: 100%;\n  position: absolute;\n  width: 60px;\n  padding-top: 60px;\n  overflow: hidden;\n}\n#leftTabStrip:after {\n  transform: rotate(-90deg) translate(-90px, -70px);\n  font-size: 55px;\n  white-space: nowrap;\n  font-weight: 200;\n  letter-spacing: 3px;\n}\n#leftTabStrip .leftTab {\n  border-radius: 0 !important;\n  width: 60px;\n  height: 60px;\n  padding: 4px;\n}\n.tab-content {\n  position: absolute;\n  left: 60px;\n  right: 0px;\n  top: 70px;\n  bottom: 0;\n}\n.tab-content .tab-pane {\n  display: none;\n  padding: 0;\n  height: 100%;\n  position: relative;\n}\n.tab-content .tab-pane.active {\n  display: flex !important;\n  flex-direction: column;\n  align-items: stretch;\n}\n.tab-content .tab-pane .workspace #canvas_config {\n  position: relative;\n  width: 40px;\n  top: 65;\n  left: 5px;\n  cursor: pointer;\n  border-width: 1px;\n  border-style: solid;\n}\n.tab-content .tab-pane .workspace #canvas_config:hover {\n  border-width: 1px !important;\n  border-style: solid !important;\n}\n.tab-content .tab-pane .workspace #canvas_config_items {\n  position: absolute;\n  top: 90;\n  left: 5px;\n  cursor: pointer;\n  padding: 10px;\n  white-space: nowrap;\n  min-width: 250px;\n}\n#editor .toolbar {\n  right: 0;\n  left: 0;\n  position: absolute;\n}\n#editor .workspace {\n  position: relative;\n  height: 100%;\n}\n#files {\n  overflow-y: scroll;\n  padding: 40px;\n}\n#files .teaser {\n  display: inline-block;\n  padding-left: 20px;\n  padding-right: 20px;\n  margin-bottom: 0;\n}\n#files .teaser .title {\n  font-weight: 200;\n  font-size: 4vw;\n  white-space: nowrap;\n  margin-bottom: 10px;\n}\n#files .teaser .title img {\n  padding-right: 40px;\n  height: 100px;\n}\n#files .teaser .slogan {\n  font-size: 2vw;\n  font-weight: 200;\n}\n#files .deleteIcon {\n  position: absolute;\n  right: 24px;\n  top: 18px;\n  cursor: pointer;\n  font-size: 25px;\n  padding: 4px;\n  border-radius: 2px;\n}\n#files .list-group-item {\n  cursor: pointer;\n}\n#files .list-group-item .thumb .thumbnail {\n  cursor: pointer;\n}\n#files .list-group-item .thumb .media-body {\n  padding-top: 14px;\n  padding-left: 20px;\n}\n#files .list-group-item .thumb .filenameInplaceEdit {\n  font-size: 18px;\n  margin-top: -5px;\n}\n#files .list-group-item .thumb h4 {\n  font-size: 18px;\n  display: inline-block;\n}\n#files .list-group-item .thumb .editIcon {\n  padding-left: 10px;\n  font-size: 14px;\n  display: none;\n}\n#files .list-group-item .thumb:hover h4 {\n  text-decoration: underline;\n}\n#files .list-group-item .thumb:hover .editIcon {\n  display: inline-block;\n}\n#files .thumbAdd {\n  border-width: 1px;\n  border-style: solid;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 1s;\n}\n#files .thumbAdd div {\n  font-size: 160px;\n  text-align: center;\n}\n#files .thumbAdd h4 {\n  text-align: center;\n}\n#files .thumbAdd:hover {\n  border-width: 1px;\n  border-style: solid;\n  transition: all 1s;\n}\n#files .fileOperations {\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n  padding-bottom: 9px;\n}\n#files #material-tabs {\n  position: relative;\n  display: block;\n  padding: 0;\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n}\n#files #material-tabs a {\n  position: relative;\n  display: inline-block;\n  text-decoration: none;\n  padding-bottom: 15px;\n  padding-left: 20px;\n  padding-right: 20px;\n  padding-top: 5px;\n  text-transform: uppercase;\n  font-size: 14px;\n  font-weight: 300;\n  text-align: center;\n  transition: all 0.3s ease;\n  outline: none;\n  z-index: 1001;\n}\n#files #material-tabs a.active {\n  font-weight: 400;\n  transition: all 0.3s ease;\n}\n#files .material-tab-content > div {\n  padding: 10px;\n  min-height: 600px;\n}\n#files header {\n  position: relative;\n}\n#files .yellow-bar {\n  position: absolute;\n  z-index: 1000;\n  bottom: -2px;\n  height: 50px;\n  display: block;\n  left: 0;\n  transition: all 0.3s ease;\n  border-radius: 10px 10px 0 0;\n  border-width: 1px 1px 0 1px;\n  border-style: solid;\n}\n#home {\n  overflow: scroll;\n}\n#home .authorPage {\n  padding: 40px !important;\n  font-size: calc(12px + 0.5vw);\n  font-weight: 400;\n}\n#home .authorPage h1 {\n  font-weight: 200;\n  font-size: calc(16px + 2.5vw);\n  white-space: nowrap;\n  margin-bottom: 10px;\n}\n#home .authorPage h2 {\n  font-size: calc(14px + 1.5vw);\n  font-weight: 200;\n}\n#home footer {\n  text-align: center;\n  margin-top: 100px;\n}\n#home footer a {\n  text-decoration: underline;\n}\n#configMenuIcon {\n  font-size: 25px;\n  cursor: pointer;\n}\n#figureConfigDialog .figureAddLabel {\n  font-size: 12px;\n  font-weight: 200;\n  cursor: pointer;\n}\n#figureConfigDialog textarea.figureAttribute,\n#figureConfigDialog textarea.lineNumbering {\n  font-family: lucida console, courier new, courier, monospace;\n  margin: 0;\n  padding: 10px 0;\n  height: 300px;\n  border-radius: 0;\n  resize: none;\n  font-size: 16px;\n  line-height: 1.2;\n  outline: none;\n  box-sizing: border-box;\n}\n#figureConfigDialog textarea.figureAttribute:focus-visible,\n#figureConfigDialog textarea.lineNumbering:focus-visible {\n  outline: none;\n}\n#figureConfigDialog textarea.figureAttribute {\n  padding-left: calc(3.5rem + 5px);\n  width: 100%;\n}\n#figureConfigDialog textarea.lineNumbering {\n  border-color: transparent;\n  overflow-y: hidden;\n  text-align: right;\n  box-shadow: none;\n  position: absolute;\n  width: 3.5rem;\n}\n.applicationSwitch .application-waffel svg,\n.applicationSwitch .application-waffel img {\n  width: 60px;\n}\n.applicationSwitch .open .dropdown-menu {\n  z-index: 10000;\n  right: 0;\n  left: initial;\n  display: grid;\n  max-width: 200px;\n  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));\n  grid-auto-rows: minmax(80px, auto);\n  grid-gap: 5px;\n}\n.applicationSwitch .dropdown-menu {\n  display: none;\n}\n.image-button {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  font-weight: 400;\n}\n.image-button img,\n.image-button svg {\n  margin: 5px;\n  margin-bottom: 0;\n  padding: 0;\n  width: 40;\n  height: 40;\n  text-align: center;\n  font-size: 45px;\n  transition: all 0.5s;\n  border-radius: 4px;\n  border-width: 1px;\n  border-style: solid;\n}\n.image-button div {\n  text-align: center;\n  font-size: 10px;\n  cursor: default;\n}\n.image-button:not(.disabled) img,\n.image-button:not(.disabled) svg {\n  cursor: pointer;\n}\n.notifyjs-bootstrap-base {\n  font-size: 12px;\n  border: none;\n  border-radius: 1px;\n  padding-left: 5px;\n  padding-right: 5px;\n}\n.notifyjs-bootstrap-info {\n  background-image: none;\n}\n:root {\n  --shadow-color: #C71D3D;\n  --shadow-color-light: white;\n}\n@keyframes neon {\n  0% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light), 0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n  }\n  50% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);\n  }\n  100% {\n    text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light), 0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light), 0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n  }\n}\nbody.light {\n  /* Overlay */\n  /* Ripple */\n  /* Hover, Focus */\n  /* Active */\n  /* Disabled */\n}\nbody.light .notifyjs-bootstrap-base {\n  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n}\nbody.light .notifyjs-bootstrap-info {\n  background-color: #f7f7f7;\n  color: #292929;\n}\nbody.light .appbar {\n  background-color: #202b3b;\n}\nbody.light .appbar .title h1 {\n  color: white;\n}\nbody.light .appbar .title h2 {\n  color: white;\n  animation: neon 3s infinite;\n}\nbody.light .appbar .slogan {\n  color: white;\n  letter-spacing: 0.2vw;\n}\nbody.light .appbar .application-waffel img,\nbody.light .appbar .application-waffel svg {\n  color: white;\n  border-color: transparent;\n}\nbody.light .appbar .application-waffel img circle[stroke],\nbody.light .appbar .application-waffel svg circle[stroke],\nbody.light .appbar .application-waffel img polyline[stroke],\nbody.light .appbar .application-waffel svg polyline[stroke],\nbody.light .appbar .application-waffel img path[stroke],\nbody.light .appbar .application-waffel svg path[stroke],\nbody.light .appbar .application-waffel img g[stroke],\nbody.light .appbar .application-waffel svg g[stroke] {\n  stroke: white !important;\n}\nbody.light .appbar .application-waffel img rect[fill],\nbody.light .appbar .application-waffel svg rect[fill],\nbody.light .appbar .application-waffel img circle[fill],\nbody.light .appbar .application-waffel svg circle[fill] {\n  fill: white !important;\n}\nbody.light .appbar .application-waffel div {\n  color: white;\n}\nbody.light .appbar .application-waffel div.highlight {\n  animation: highlight 3s infinite;\n}\nbody.light .appbar .application-waffel.disabled {\n  opacity: 0.2;\n}\nbody.light .appbar .application-waffel:not(.disabled) img:hover,\nbody.light .appbar .application-waffel:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  border-color: white;\n}\nbody.light .spinner:before {\n  border-color: #ccc;\n  border-top-color: #C71D3D;\n  background-color: #fef9f9;\n}\nbody.light .material-button {\n  color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));\n  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button::before {\n  background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  opacity: 0;\n}\nbody.light .material-button::after {\n  background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n  opacity: 0;\n}\nbody.light .material-button:hover,\nbody.light .material-button:focus {\n  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button:hover::before {\n  opacity: 0.08;\n}\nbody.light .material-button:focus::before {\n  opacity: 0.24;\n}\nbody.light .material-button:hover:focus::before {\n  opacity: 0.3;\n}\nbody.light .material-button:active {\n  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);\n}\nbody.light .material-button:active::after {\n  opacity: 0.32;\n}\nbody.light .material-button:disabled {\n  color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);\n  background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);\n  box-shadow: none;\n}\nbody.light .material-button:disabled::before {\n  opacity: 0;\n}\nbody.light .material-button:disabled::after {\n  opacity: 0;\n}\nbody.light .confirm-dialog-btn-confirm {\n  background-color: #C71D3D;\n}\nbody.light .context-menu-list {\n  border-color: #DDD;\n  background: white;\n  border-left-color: #C71D3D;\n  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n}\nbody.light .context-menu-list .context-menu-separator {\n  border-bottom: 1px solid #DDD;\n}\nbody.light .context-menu-list .context-menu-item.hover {\n  background-color: #C71D3D;\n  color: white;\n}\nbody.light .context-menu-list .context-menu-item.disabled {\n  color: #666;\n}\nbody.light .context-menu-list .context-menu-item.disabled.hover {\n  background-color: #EEE;\n}\nbody.light .context-menu-list .context-menu-item .context-menu-submenu:after {\n  color: #666;\n}\nbody.light .gutter {\n  background-color: #eee;\n  background-repeat: no-repeat;\n  background-position: center;\n}\nbody.light .gutter.gutter-vertical {\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\nbody.light .gutter.gutter-horizontal {\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\nbody.light .tinyFlyoverMenu {\n  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n  border-color: lightgray;\n  background-color: #fde9e9;\n}\nbody.light .tinyFlyoverMenu div {\n  border-color: transparent;\n}\nbody.light .tinyFlyoverMenu div:hover {\n  border-color: lightgray;\n}\nbody.light #home .authorPage h1 {\n  color: #C71D3D;\n}\nbody.light #home .authorPage h2 {\n  color: #C71D3D;\n}\nbody.light #home footer {\n  color: #C71D3D;\n}\nbody.light #home footer a {\n  color: #C71D3D;\n}\nbody.light #canvas_zoom {\n  background-color: rgba(178, 226, 242, 0.3);\n}\nbody.light #canvas_zoom button {\n  background-color: transparent;\n  border-color: transparent;\n  transition: all 0.5s;\n}\nbody.light #canvas_zoom button:hover {\n  border-color: #C71D3D;\n}\nbody.light #configMenuIcon:hover {\n  opacity: 1;\n  color: #C71D3D;\n}\nbody.light .modal-backdrop.in {\n  opacity: 0.7;\n  background-color: black;\n}\nbody.light .genericDialog .modal-content {\n  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);\n  background-color: #ffffff;\n}\nbody.light .genericDialog .modal-content .modal-header {\n  box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);\n}\nbody.light .genericDialog .modal-content .modal-body .form-control {\n  color: #4D4D4D;\n  border-color: #DFDFDF;\n  box-shadow: none;\n}\nbody.light .genericDialog .modal-content .modal-body .form-control:focus {\n  background-color: #f5f5f5;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"true\"] {\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group .list-group-item {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-body .list-group *[data-draw2d=\"false\"][data-type=\"file\"] {\n  color: gray;\n}\nbody.light .genericDialog .modal-content .modal-footer {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn,\nbody.light .genericDialog .modal-content .modal-footer .btn-group {\n  background-color: transparent;\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn:hover,\nbody.light .genericDialog .modal-content .modal-footer .btn-group:hover {\n  background-color: rgba(199, 29, 61, 0.04);\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group {\n  background-color: transparent;\n  color: #C71D3D;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group .btn:hover {\n  background-color: transparent;\n}\nbody.light .genericDialog .modal-content .modal-footer .btn-group:hover {\n  background-color: rgba(199, 29, 61, 0.04);\n}\nbody.light .tab-pane {\n  box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);\n}\nbody.light #files .teaser {\n  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.4) 70%, #fff 100%), radial-gradient(ellipse at center, rgba(247, 249, 250, 0.7) 0%, rgba(247, 249, 250, 0) 60%), linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);\n}\nbody.light #files .teaser .title {\n  color: #C71D3D;\n}\nbody.light #files .teaser .slogan {\n  color: #34495e;\n}\nbody.light #files .deleteIcon:hover {\n  background-color: rgba(0, 0, 0, 0.03);\n}\nbody.light #files .list-group-item {\n  cursor: pointer;\n}\nbody.light #files .list-group-item .thumb .filenameInplaceEdit {\n  color: #C71D3D;\n}\nbody.light #files .list-group-item .thumb h4 {\n  color: #C71D3D;\n}\nbody.light #files .thumbAdd {\n  color: #0078f2;\n  border-color: rgba(0, 120, 242, 0.33);\n}\nbody.light #files .thumbAdd:hover {\n  border-color: #0078f2;\n}\nbody.light #files #material-tabs {\n  border-bottom-color: #e0e0e0;\n}\nbody.light #files #material-tabs a {\n  color: #424f5a;\n}\nbody.light #files .material-tab-content > div {\n  background-color: #fef9f9;\n}\nbody.light #files #material-tabs > a:not(.active):hover {\n  background-color: inherit;\n  color: #C71D3D;\n}\nbody.light #files .yellow-bar {\n  background: #fef9f9;\n  transition: all 0.3s ease;\n  border-color: #e0e0e0;\n}\nbody.light #githubNewFileDialog .filePreview {\n  color: #C71D3D;\n}\nbody.light #figureConfigDialog textarea.figureAttribute {\n  background-color: #272822;\n  border-color: #272822;\n  color: #ffffff;\n}\nbody.light #figureConfigDialog textarea.lineNumbering {\n  background-color: #3E3D32;\n  border-color: #3E3D32;\n  color: #928869;\n}\nbody.light #notificationToast {\n  background-color: #C71D3D;\n  color: white;\n}\nbody.light .markdownRendering table {\n  color: #666;\n  text-shadow: 1px 1px 0px #fff;\n  background: #eaebec;\n  border-color: #ccc;\n  box-shadow: 0 1px 2px #d1d1d1;\n}\nbody.light .markdownRendering table th {\n  border-top-color: #fafafa;\n  border-bottom-color: #e0e0e0;\n}\nbody.light .markdownRendering table tr td {\n  border-top-color: #ffffff;\n  border-bottom-color: #e0e0e0;\n  border-left-color: #e0e0e0;\n}\nbody.light .markdownRendering tbody tr:nth-child(odd) {\n  background: #fafafa;\n}\nbody.light .markdownRendering tbody tr:nth-child(even) {\n  background: #f3f3f3;\n}\nbody.light .markdownRendering .info {\n  border-color: #B4E1E4;\n  background-color: #81c7e1;\n  color: white;\n}\nbody.light .toolbar {\n  background-color: #B2E2F2;\n}\nbody.light .image-button img,\nbody.light .image-button svg {\n  color: #777;\n  border-color: transparent;\n}\nbody.light .image-button img circle[stroke],\nbody.light .image-button svg circle[stroke],\nbody.light .image-button img polyline[stroke],\nbody.light .image-button svg polyline[stroke],\nbody.light .image-button img path[stroke],\nbody.light .image-button svg path[stroke],\nbody.light .image-button img g[stroke],\nbody.light .image-button svg g[stroke] {\n  stroke: #777 !important;\n}\nbody.light .image-button img rect[fill],\nbody.light .image-button svg rect[fill],\nbody.light .image-button img circle[fill],\nbody.light .image-button svg circle[fill] {\n  fill: #777 !important;\n}\nbody.light .image-button div {\n  color: #777;\n}\nbody.light .image-button div.highlight {\n  animation: highlight 3s infinite;\n}\nbody.light .image-button.disabled {\n  opacity: 0.2;\n}\nbody.light .image-button:not(.disabled) img:hover,\nbody.light .image-button:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  border-color: rgba(0, 0, 0, 0.15);\n}\n@keyframes highlight {\n  0% {\n    color: #C71D3D;\n  }\n  50% {\n    color: rgba(0, 0, 0, 0.4);\n  }\n  100% {\n    color: #C71D3D;\n  }\n}\n/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */\n.hero {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  z-index: 20;\n  height: 100vh;\n  background-color: #fff;\n  color: #333;\n  background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);\n  border-bottom: 2px solid #C71D3D;\n  scroll-snap-align: start;\n}\n.hero .toolbar {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  font-size: 30px;\n  color: white;\n  background-color: white;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n}\n.hero .toolbar .title img {\n  height: 30px;\n  margin-left: 30px;\n  margin-top: 5px;\n}\n.hero .toolbar .title .app_name {\n  font-weight: 200;\n  display: inline-block;\n  top: 6px;\n  position: relative;\n  left: 20px;\n  color: #C71D3D;\n}\n.hero .toolbar .title .app_slogan {\n  font-weight: 200;\n  display: inline-block;\n  top: 6px;\n  position: relative;\n  left: 20px;\n  color: #C71D3D;\n  font-size: 70%;\n  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n}\n@media (max-width: 990px) {\n  .hero .toolbar .title .app_slogan {\n    font-size: 50%;\n    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  }\n}\n@media (max-width: 890px) {\n  .hero .toolbar .title .app_slogan {\n    display: none;\n    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  }\n}\n.hero .teaserContainer {\n  flex-grow: 4;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: start;\n  align-items: center;\n  align-content: center;\n  gap: 50px;\n}\n.hero .teaserContainer .teaser {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: start;\n  align-content: center;\n}\n.hero .teaserContainer .teaser .slogan {\n  max-width: 80%;\n  font-weight: 300;\n  line-height: 1.2;\n  font-size: calc(8px + 1vw);\n  color: black;\n  padding-left: 60px;\n}\n.hero .teaserContainer .teaser .slogan h1 {\n  font-weight: 500;\n  font-size: calc(20px + 1vw);\n  line-height: 1.2;\n  color: #C71D3D;\n}\n.hero .teaserContainer .launchArea {\n  display: flex;\n  flex-direction: row;\n  max-height: 20vh;\n  justify-content: space-evenly;\n}\n.hero .teaserContainer .launchArea .imageContainer {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  align-items: center;\n  align-content: center;\n}\n.hero .teaserContainer .launchArea .imageContainer img {\n  max-height: 100%;\n}\n.hero .avatarContainer {\n  flex-grow: 0;\n  display: flex;\n  flex-direction: row;\n  flex-wrap: nowrap;\n  justify-content: space-between;\n  align-items: flex-end;\n}\n.hero .avatarContainer .avatar {\n  text-align: center;\n  font-weight: 400;\n  font-size: 16px;\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  align-content: flex-end;\n  justify-content: flex-end;\n  align-items: center;\n  height: 15vh;\n  max-height: 160px;\n}\n.hero .avatarContainer .avatar img {\n  height: 100%;\n}\n.hero .avatarContainer .arrow {\n  animation: mover 2s infinite alternate;\n  font-size: 20px;\n}\n.hero .avatarContainer .arrow i {\n  height: 20px;\n  display: inline-block;\n  border-left: 4px solid #000;\n  border-radius: 4px;\n}\n.hero .avatarContainer .arrow i.left {\n  transform: rotate(-45deg);\n}\n.hero .avatarContainer .arrow i.right {\n  transform: rotate(45deg) translate(3px, -2px);\n}\n@keyframes mover {\n  0% {\n    transform: translateY(0);\n  }\n  100% {\n    transform: translateY(-10px);\n  }\n}\n.intro {\n  background-color: white;\n  background-image: none;\n  text-align: left;\n  position: relative;\n  z-index: 20;\n  height: 100vh;\n  padding-bottom: 20px;\n  color: #333;\n  font-size: 30px;\n}\n.intro .header {\n  font-size: calc(19px + 1vw);\n  line-height: 1.2;\n  top: 2vw;\n  padding-left: 50px;\n  color: #C71D3D;\n  position: absolute;\n  padding-top: 30px;\n  background-color: rgba(255, 255, 255, 0.8);\n}\n.intro .header div {\n  font-size: calc(6px + 1vw);\n  font-weight: 200;\n  color: black;\n  padding-top: 30px;\n}\n.intro img {\n  width: 50%;\n  vertical-align: middle;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  margin: auto;\n  left: 0;\n  right: 0;\n}\n.intro .launch_button {\n  position: absolute;\n  right: 50px;\n  bottom: 100px;\n}\n.intro .launch_button:hover {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n}\n.slidedeck {\n  position: absolute;\n  height: 400vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #e13f4d, #d34657);\n}\n.slidedeck .pink_bg {\n  position: absolute;\n  top: 100vh;\n  height: 300vh;\n  width: 100%;\n  background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);\n}\n.slidedeck .orange_bg {\n  position: absolute;\n  top: 100vh;\n  height: 200vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);\n}\n.slidedeck .blue_bg {\n  position: absolute;\n  top: 100vh;\n  height: 100vh;\n  width: 100%;\n  background-image: linear-gradient(135deg, #242533, #2a3079);\n}\n.slidedeck .section_header {\n  color: white;\n  font-size: calc(16px + 2vw);\n  text-align: center;\n  font-weight: 100;\n  padding-top: 30px;\n  position: sticky;\n  top: 20px;\n}\n.slidedeck .card {\n  position: sticky;\n  z-index: 1000;\n  width: 25%;\n  height: 50vh;\n  border-radius: 10px;\n  background-color: #fff;\n  box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.25);\n  top: 0;\n}\n.slidedeck .card .text {\n  position: absolute;\n  top: -40px;\n  text-align: center;\n  color: white;\n  font-size: 24px;\n  font-weight: 100;\n  width: 100%;\n}\n.slidedeck .card .media {\n  position: absolute;\n  top: 10px;\n  left: 50%;\n  transform: translateX(-50%);\n}\n.slidedeck .card .content {\n  position: absolute;\n  top: 80px;\n  padding: 10px;\n}\n.slidedeck .card .content .header {\n  color: #C71D3D;\n  text-align: center;\n  margin-bottom: 10px;\n}\n.slidedeck .card .launch_button {\n  position: absolute;\n  left: 50%;\n  bottom: 10px;\n  transform: translateX(-50%);\n  border-radius: 4px;\n  font-size: 14px;\n  padding: 10px;\n  padding-left: 20px;\n  padding-right: 20px;\n}\n.slidedeck .card.left {\n  left: 5%;\n  transform: translateY(50%);\n}\n.slidedeck .card.center {\n  left: 50%;\n  transform: translateY(50%) translateX(-50%);\n}\n.slidedeck .card.right {\n  left: 70%;\n  transform: translateY(50%);\n}\nbody {\n  margin: 0;\n  padding: 0;\n  overflow-x: hidden;\n  overflow-y: scroll;\n  scroll-snap-type: y mandatory;\n}\n.launch_button {\n  margin-top: 20px;\n  border-radius: 5px;\n  display: inline-block;\n  padding: 5px;\n  padding-left: 10px;\n  padding-right: 10px;\n  font-size: calc(10px + 1vw);\n  cursor: pointer;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);\n  text-decoration: none;\n  background-color: #C71D3D;\n  color: white;\n  font-weight: 300;\n}\n.launch_button:hover {\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n  color: white;\n}\n.image-button img,\n.image-button svg {\n  color: #777;\n}\n.image-button img circle[stroke],\n.image-button svg circle[stroke],\n.image-button img polyline[stroke],\n.image-button svg polyline[stroke],\n.image-button img path[stroke],\n.image-button svg path[stroke],\n.image-button img g[stroke],\n.image-button svg g[stroke] {\n  stroke: #777 !important;\n}\n.image-button img rect[fill],\n.image-button svg rect[fill],\n.image-button img circle[fill],\n.image-button svg circle[fill] {\n  fill: #777 !important;\n}\n.image-button div {\n  color: #777;\n}\n.image-button div.highlight {\n  animation: highlight 3s infinite;\n}\n.image-button.disabled {\n  opacity: 0.2;\n}\n.image-button:not(.disabled) img,\n.image-button:not(.disabled) svg {\n  cursor: pointer;\n}\n.image-button:not(.disabled) img:hover,\n.image-button:not(.disabled) svg:hover {\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n}\n", "",{"version":3,"sources":["webpack://./common/less/layout/common.less","webpack://./public/less/index.less","webpack://./common/less/layout/userinfo.less","webpack://./common/less/layout/appbar.less","webpack://./common/less/layout/toolbar.less","webpack://./common/less/layout/dialog.less","webpack://./common/less/layout/contextmenu.less","webpack://./common/less/layout/file_new_dialog.less","webpack://./common/less/layout/file_open_dialog.less","webpack://./common/less/layout/file_save_dialog.less","webpack://./common/less/layout/file_saveas_dialog.less","webpack://./common/less/layout/canvas_zoom.less","webpack://./common/less/layout/markdown_rendering.less","webpack://./common/less/layout/tiny_flyover_menu.less","webpack://./common/less/layout/notification.less","webpack://./common/less/layout/tab_strip.less","webpack://./common/less/layout/tab_content.less","webpack://./common/less/layout/tabpane_editor.less","webpack://./common/less/layout/tabpane_files.less","webpack://./common/less/layout/author_page.less","webpack://./common/less/layout/config_dialog.less","webpack://./common/less/layout/appSwitch.less","webpack://./common/less/layout/image_button.less","webpack://./common/less/layout/notify.less","webpack://./common/less/theme_light.less","webpack://./public/less/hero.less","webpack://./public/less/intro.less","webpack://./public/less/slidedeck.less"],"names":[],"mappings":"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","sourcesContent":["\nbody {\n    font-family: 'Roboto', sans-serif !important;\n    font-weight: 300;\n}\n  \n@keyframes spinner {\n    to {\n        transform: translate(-50%, -50%) rotate(360deg);\n    }\n}\n\n.spinner {\n    >*{\n        opacity: 0.08 !important;\n    }\n    &:before {\n        content: '';\n        transform: translate(-50%, -50%) ;\n        position: absolute;\n        z-index: 2000;\n        top: 50%;\n        left: 50%;\n        width: 30px;\n        height: 30px;\n        border-radius: 50%;\n        border-width:2px;\n        border-style: solid;\n        animation: spinner .6s linear infinite;\n    }\n}\n\n\n.material-button {\n    position: relative;\n    display: inline-block;\n    box-sizing: border-box;\n    border: none;\n    border-radius: 4px;\n    padding: 0 16px;\n    min-width: 64px;\n    height: 36px;\n    vertical-align: middle;\n    text-align: center;\n    text-overflow: ellipsis;\n    text-transform: uppercase;\n    font-size: 14px;\n    font-weight: 500;\n    line-height: 36px;\n    overflow: hidden;\n    outline: none;\n    cursor: pointer;\n    transition: box-shadow 0.2s;\n}\n\n.material-button::-moz-focus-inner {\n    border: none;\n}\n\n/* Overlay */\n.material-button::before {\n    content: \"\";\n    position: absolute;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    opacity: 0;\n    transition: opacity 0.2s;\n}\n\n/* Ripple */\n.material-button::after {\n    content: \"\";\n    position: absolute;\n    left: 50%;\n    top: 50%;\n    border-radius: 50%;\n    padding: 50%;\n    width: 32px; /* Safari */\n    height: 32px; /* Safari */\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(1);\n    transition: opacity 1s, transform 0.5s;\n}\n\n.material-button:active::after {\n    transform: translate(-50%, -50%) scale(0);\n    transition: transform 0s;\n}\n\n/* Disabled */\n.material-button:disabled {\n    cursor: initial;\n}\n\n\n.tooltip{\n    z-index: 1000000;\n}\n  ","@import \"../../common/less/index\";\n\n@import \"variables\";\n@import \"hero\";\n@import \"intro\";\n@import \"slidedeck\";\n\n\nbody {\n    margin: 0;\n    padding: 0;\n    overflow-x: hidden;\n    overflow-y: scroll;\n    scroll-snap-type: y mandatory;\n}\n\n\n.launch_button {\n    margin-top: 20px;\n    border-radius: 5px;\n    display: inline-block;\n    padding: 5px;\n    padding-left: 10px;\n    padding-right: 10px;\n    font-size: calc(10px + 1vw);\n    cursor: pointer;\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n    text-decoration: none;\n    background-color: #C71D3D;\n    color: white;\n    font-weight: 300;\n}\n\n.launch_button {\n    &:hover {\n        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n        color:white;\n    }\n}  \n\n.image-button {\n\n    img,\n    svg {\n        color: #777;\n\n        circle[stroke],\n        polyline[stroke],\n        path[stroke],\n        g[stroke] {\n            stroke: #777 !important;\n        }\n\n        rect[fill],\n        circle[fill] {\n            fill: #777 !important;\n        }\n    }\n\n    div {\n        color: #777;\n\n        &.highlight {\n            animation: highlight 3s infinite;\n        }\n    }\n\n    &.disabled {\n        opacity: 0.2;\n    }\n\n    &:not(.disabled) {\n\n        img,\n        svg {\n            cursor: pointer;\n\n            &:hover {\n                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n            }\n        }\n    }\n}",".userinfo_toggler{\n\n  .userContainer {\n    text-align: center;\n    img {\n      width: 90px;\n    }\n  }\n}\n",".appbar {\n    height:@appbarHeight;\n    position: relative;\n    border: none !important;\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    padding-left:10px;\n    padding-right:10px;\n\n    .icon {\n        height: @toolbarHeight - 20;\n    }\n    .title {\n        h1 {\n            font-size: 24px;\n            font-weight: 100;\n            letter-spacing: 6px;\n            margin: 0;\n        }\n        h2 {\n            font-size: 14px;\n            font-weight: 100;\n            letter-spacing:4px;\n            margin: 0;\n        }\n    }\n\n    .spacer {\n        flex-grow: 1;\n    }\n\n    .group {\n        display: flex;\n        flex-direction: row;\n        align-items: center;\n    }    \n}\n",".toolbar {\n  position: relative;\n  border: none !important;\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-right: 10px;\n  height: @toolbarHeight;\n\n  * {\n    outline: none;\n  }\n\n  .spacer {\n    flex-grow: 1;\n  }\n\n  .group {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n\n    .statusIndicator {\n      margin: 20px;\n\n      img {\n        display: block;\n        cursor: pointer;\n        margin: auto;\n      }\n\n      span {\n        font-size: .8em;\n        text-align: center;\n        width: 100%;\n        display: inline-block;\n        white-space: nowrap;\n      }\n\n      .notSupported {\n        display: none;\n        font-weight: bold;\n      }\n\n      .connected {\n        display: block;\n      }\n\n      .disconnected {\n        display: none;\n      }\n    }\n\n    .statusIndicator.disabled {\n      img {\n        cursor: not-allowed;\n\n        &:hover {\n          box-shadow: none;\n        }\n      }\n\n      .notSupported {\n        display: block;\n      }\n\n      .connected {\n        display: none;\n      }\n\n      .disconnected {\n        display: none;\n      }\n    }\n\n    .statusIndicator.error:not(.disabled) {\n      span {\n        font-weight: bold;\n      }\n\n      .notSupported {\n        display: none;\n      }\n\n      .connected {\n        display: none;\n      }\n\n      .disconnected {\n        display: block;\n      }\n    }\n  }\n}",".modal-backdrop.in{\n  transition: all .4s linear;\n}\n\n.genericDialog {\n  .modal-content{\n    border-radius:4px;\n\n    .modal-header{\n      border-bottom:0;\n      font-weight:400;\n    }\n\n    .modal-body {\n      min-height:120px;\n      max-height:80%;\n      overflow:auto;\n\n      .section {\n        border: 0px solid transparent !important;  \n        cursor: default !important;\n      }\n\n      .form-control{\n        appearance: none;\n        box-sizing: border-box;\n        border-radius: 4px;\n        margin: 0;\n        padding: 0;\n        display: inline-block;\n        font: inherit;\n        border-width:1px;\n        border-style: solid;\n        box-shadow: none;\n        height: 24px;\n        padding: 0 3px;\n      }\n\n      .list-group {\n        overflow-y: auto;\n        overflow-x: auto;\n\n        *[data-draw2d=\"true\"] {\n          font-weight: bold;\n        }\n\n        .list-group-item {\n          background-color: transparent;\n          font-weight: 300;\n\n          &:hover {\n            text-decoration: underline;\n          }\n        }\n\n        *[data-draw2d=\"false\"][data-type=\"file\"] {\n          cursor: default;\n          text-decoration: none !important;\n\n        }\n      }\n    }\n\n    .modal-footer {\n      border-top:0;\n\n      .btn, .btn-group{\n        border:0;\n        text-transform: uppercase;\n        background-color:transparent;\n        transition: all 0.5s;\n\n        &:hover{\n          transition: all 0.5s;\n        }\n      }\n      .btn-group{\n        .dropdown-toggle{\n          .caret{\n            margin-top:7px;\n          }\n        }\n        border:0;\n        text-transform: uppercase;\n        transition: all 0.5s;\n\n        &:hover{\n          transition: all 0.5s;\n        }\n      }\n\n      .btn-primary{\n        font-weight: bold;\n      }\n    }\n  }\n}\n",".context-menu-list {\n  margin: 0;\n  padding: 0;\n\n  min-width: 120px;\n  max-width: unset;\n  display: inline-block;\n  position: absolute;\n  list-style-type: none;\n\n  border-width: 1px;\n  border-style: solid;\n  border-left-width: 2px;\n  font-size: 15px;\n  white-space: nowrap;\n\n  .context-menu-item {\n    padding: 5px 5px 5px 24px;\n    position: relative;\n    user-select: none;\n\n    &.hover {\n      cursor: pointer;\n    }\n\n    >label {\n\n      >input,\n      >textarea {\n        user-select: text;\n      }\n    }\n  }\n\n  .context-menu-separator {\n    padding-bottom: 0;\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n  }\n\n  .context-menu-input.hover,\n  .context-menu-item.disabled.hover {\n    cursor: default;\n  }\n\n  .context-menu-submenu:after {\n    content: \">\";\n    position: absolute;\n    top: 0;\n    right: 3px;\n    z-index: 1;\n  }\n\n  .context-menu-item.icon {\n    min-height: 18px;\n  }\n\n  .context-menu-item.icon:before {\n    position: relative;\n    left: -15px;\n    font-size: 19px;\n  }\n\n  /* vertically align inside labels */\n  .context-menu-input>label>* {\n    vertical-align: top;\n  }\n\n  /* position checkboxes and radios as icons */\n  .context-menu-input>label>input[type=\"checkbox\"],\n  .context-menu-input>label>input[type=\"radio\"] {\n    margin-left: -17px;\n  }\n\n  .context-menu-input>label>span {\n    margin-left: 5px;\n  }\n\n  .context-menu-input>label,\n  .context-menu-input>label>input[type=\"text\"],\n  .context-menu-input>label>textarea,\n  .context-menu-input>label>select {\n    display: block;\n    width: 100%;\n    box-sizing: border-box;\n  }\n\n  .context-menu-input>label>textarea {\n    height: 100px;\n  }\n\n  .context-menu-item>.context-menu-list {\n    display: none;\n    /* re-positioned by js */\n    right: -5px;\n    top: 5px;\n  }\n\n  .context-menu-item.hover>.context-menu-list {\n    display: block;\n  }\n\n  .context-menu-accesskey {\n    text-decoration: underline;\n  }\n\n  .context-menu-list {\n    border-color: #DDD;\n    background: white;\n    border-left-color: #C71D3D;\n    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n\n    .context-menu-separator {\n      border-bottom: 1px solid #DDD;\n    }\n\n    .context-menu-item {\n      &.hover {\n        background-color: #C71D3D;\n        color: white;\n      }\n\n      &.disabled {\n        color: #666;\n\n        &.hover {\n          background-color: #EEE;\n        }\n      }\n\n      .context-menu-submenu:after {\n        color: #666;\n      }\n    }\n  }\n}","\n#githubNewFileDialog {\n\n  .filePreview{\n    font-size:115px;\n  }\n\n}\n","\n#fileOpenDialog {\n\n  .list-group{\n    height:60%;\n  }\n}\n","\n#fileSaveDialog {\n\n  .filePreview{\n    max-width: 200px;\n    max-height: 200px;\n  }\n\n  .modal-body {\n    .media {\n      padding: 20px;\n    }\n  }\n}\n","\n#githubFileSaveAsDialog {\n\n  .filePreview{\n    max-width: 200px;\n    max-height: 200px;\n  }\n\n\n  .list-group{\n    height:250px;\n  }\n}\n","#canvas_zoom{\n  position: fixed;\n  bottom: 20px;\n  right: @rightMenuWidth + 20px;\n  border-radius:5px;\n  display: flex;\n  flex-wrap: nowrap;\n  align-items: center;\n\n  button {\n    background-color:transparent;\n    font-weight:300;\n    padding:5px;\n    padding-left:10px;\n    padding-right:10px;\n    border-width:1px;\n    border-style: solid;\n    outline:none;\n    transition: all 0.5s;\n    &:hover {\n      border-width:1px;\n      border-style: solid;\n    }\n  }\n}\n",".markdownRendering{\n\n  img {\n    max-width: 100%;\n  }\n\n  p{\n    font-size: 16px;\n    margin-top: 30px;\n  }\n  table {\n    /* we need important to override some setting in the wysiwyg editor **/\n    margin-left:auto !important;\n    margin-right:auto !important;\n    font-family:Arial, Helvetica, sans-serif;\n    font-size:12px;\n    border-width:1px;\n    border-style: solid;\n    border-radius:3px;\n  }\n  table th {\n    padding:10px;\n    border-width:1px;\n    border-style: solid;\n  }\n\n  table th:first-child{\n    text-align: left;\n    padding-left:20px;\n  }\n  table tr:first-child th:first-child{\n    border-top-left-radius:3px;\n  }\n  table tr:first-child th:last-child{\n    border-top-right-radius:3px;\n  }\n  table tr{\n    text-align: center;\n    padding-left:20px;\n  }\n  table tr td:first-child{\n    text-align: left;\n    padding-left:20px;\n    border-left: 0;\n  }\n  table tr td {\n    padding:18px;\n    border-width:1px;\n    border-style: solid;\n  }\n\n  table tr:last-child td{\n    border-bottom:0;\n  }\n\n  table tr:last-child td:first-child{\n    border-bottom-left-radius:3px;\n  }\n\n  table tr:last-child td:last-child{\n    border-bottom-right-radius:3px;\n  }\n\n  .info{\n    border-width:1px;\n    border-style: solid;\n    border-radius: 5px;\n    font-weight: 400;\n    letter-spacing: 2px;\n    padding: 5px;\n    padding: 5px;\n    padding-left: 20px;\n    padding-right: 20px;\n    p{\n      padding: 0;\n      margin:0;\n    }\n  }\n}\n","\n.tinyFlyoverMenu {\n  border-width:1px;\n  border-style: solid;\n  position:absolute;\n  top:-15px;\n  right:20px;\n  border-radius: 2px;\n  font-size:20px;\n  z-index:1;\n  padding: 3px;\n  \n  display: flex;\n  flex-direction: row;\n  align-items: stretch;\n  justify-content: center;\n  gap: 10px;\n  flex-wrap: nowrap;\n\n  div{\n    border-width:1px;\n    border-style: solid;\n    padding-right: 5px;\n    padding-left: 5px;\n    &:hover{\n      border-width:1px;\n      border-style: solid;\n      cursor:pointer;\n    }\n  }\n}\n\n.section {\n\n  .tinyFlyoverMenu {\n    position:sticky;\n    float:right;\n    top:10px;\n  }\n}\n","\n#notificationToast{\n  position: absolute;\n  top: -40px;\n  left: 50%;\n  transform: translateX(-50%);\n  padding-left: 20px;\n  padding-right: 20px;\n  border-radius: 0 0 8px 8px;\n  font-weight: 100;\n  z-index:30000;\n  padding-top:20px;\n  font-size:16px;\n}\n","#leftTabStrip {\n    height: 100%;\n    position:absolute;\n    width: @tabSize;\n    padding-top: @tabSize;\n    overflow:hidden;\n    &:after {\n        transform: rotate(-90deg) translate(-90px, -70px);\n        font-size: 55px;\n        white-space: nowrap;\n        font-weight: 200;\n        letter-spacing: 3px;\n    }\n  \n    .leftTab {\n      border-radius: 0 !important;\n      width:@tabSize;\n      height:@tabSize;\n      padding: 4px;\n    }\n\n  }\n","\n  .tab-content {\n    position: absolute;\n    left: @tabSize;\n    right: 0px;\n    top: @appbarHeight;\n    bottom:0;\n    .tab-pane {\n      display: none;\n      padding: 0;\n      height: 100%;\n      position: relative;\n\n      &.active {\n        display: flex !important;\n        flex-direction: column;\n        align-items: stretch;\n      }\n\n      .workspace {\n\n        #canvas_config {\n          position: relative;\n          width: 40px;\n          top: @toolbarHeight + 5;\n          left: unit(@leftPaneWidth+5, px);\n          cursor: pointer;\n          border-width: 1px;\n          border-style: solid;\n\n          &:hover {\n            border-width: 1px !important;\n            border-style: solid !important;\n          }\n        }\n\n\n        #canvas_config_items {\n          position: absolute;\n          top: @toolbarHeight+30;\n          left: unit(@leftPaneWidth+5, px);;\n          cursor: pointer;\n          padding: 10px;\n          white-space: nowrap;\n          min-width: 250px;\n        }\n\n      }\n    }\n  }\n","\n#editor{\n\n  .toolbar {\n    right: 0;\n    left: @leftPaneWidth;\n    position: absolute;\n  }\n\n  .workspace {\n    position: relative;\n    height:100%;\n  }\n}\n","#files {\n  overflow-y: scroll;\n  padding: 40px;\n\n  .teaser {\n    display: inline-block;\n    padding-left: 20px;\n    padding-right: 20px;\n    margin-bottom: 0;\n\n    .title {\n      font-weight: 200;\n      font-size: 4vw;\n      white-space: nowrap;\n      margin-bottom: 10px;\n\n      img {\n        padding-right: 40px;\n        height: 100px;\n      }\n    }\n\n    .slogan {\n      font-size: 2vw;\n      font-weight: 200;\n    }\n  }\n\n  .deleteIcon {\n    position: absolute;\n    right: 24px;\n    top: 18px;\n    cursor: pointer;\n    font-size: 25px;\n    padding: 4px;\n    border-radius: 2px;\n  }\n\n  .list-group-item {\n    cursor: pointer;\n\n    .thumb {\n      .thumbnail {\n        cursor: pointer;\n      }\n\n      .media-body {\n        padding-top: 14px;\n        padding-left: 20px;\n      }\n\n      .filenameInplaceEdit {\n        font-size: 18px;\n        margin-top: -5px;\n      }\n\n      h4 {\n        font-size: 18px;\n        display: inline-block;\n      }\n\n      .editIcon {\n        padding-left: 10px;\n        font-size: 14px;\n        display: none;\n      }\n\n      &:hover {\n        h4 {\n          text-decoration: underline;\n        }\n\n        .editIcon {\n          display: inline-block;\n        }\n      }\n    }\n\n  }\n\n  .thumbAdd {\n    border-width: 1px;\n    border-style: solid;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: all 1s;\n\n    div {\n      font-size: 160px;\n      text-align: center;\n    }\n\n    h4 {\n      text-align: center;\n    }\n\n    &:hover {\n      border-width: 1px;\n      border-style: solid;\n      transition: all 1s;\n    }\n  }\n\n  .fileOperations {\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n    padding-bottom: 9px;\n  }\n\n\n  #material-tabs {\n    position: relative;\n    display: block;\n    padding: 0;\n    border-bottom-width: 1px;\n    border-bottom-style: solid;\n\n    a {\n      position: relative;\n      display: inline-block;\n      text-decoration: none;\n      padding-bottom: 15px;\n      padding-left: 20px;\n      padding-right: 20px;\n      padding-top: 5px;\n      text-transform: uppercase;\n      font-size: 14px;\n      font-weight: 300;\n      text-align: center;\n      transition: all 0.3s ease;\n      outline: none;\n      z-index: 1001;\n\n      &.active {\n        font-weight: 400;\n        transition: all 0.3s ease;\n      }\n    }\n  }\n\n  .material-tab-content {\n    &>div {\n      padding: 10px;\n      min-height: 600px;\n    }\n  }\n\n  header {\n    position: relative;\n  }\n\n  .yellow-bar {\n    position: absolute;\n    z-index: 1000;\n    bottom: -2px;\n    height: 50px;\n    display: block;\n    left: 0;\n    transition: all 0.3s ease;\n    border-radius: 10px 10px 0 0;\n    border-width: 1px 1px 0 1px;\n    border-style: solid;\n  }\n}","#home {\n  overflow:scroll;\n\n  .authorPage {\n    padding: 40px !important;\n    font-size: calc(12px + 0.5vw);\n    font-weight: 400;\n\n\n    h1 {\n      font-weight: 200;\n      font-size: calc(16px + 2.5vw);\n      white-space: nowrap;\n      margin-bottom: 10px;\n    }\n\n    h2 {\n      font-size: calc(14px + 1.5vw);\n      font-weight: 200;\n    }\n\n  }\n  footer {\n    text-align: center;\n    margin-top: 100px;\n\n    a {\n      text-decoration: underline;\n    }\n  }\n}\n","\n#configMenuIcon{\n  font-size: 25px;\n  cursor:pointer;\n}\n\n\n#figureConfigDialog{\n  .figureAddLabel{\n    font-size:12px;\n    font-weight: 200;\n    cursor:pointer;\n  }\n\n  textarea {\n    &.figureAttribute, &.lineNumbering {\n      font-family: lucida console, courier new, courier, monospace;\n      margin: 0;\n      padding: 10px 0;\n      height: 300px;\n      border-radius: 0;\n      resize: none;\n      font-size: 16px;\n      line-height: 1.2;\n      outline: none;\n      box-sizing: border-box;\n      &:focus-visible {\n        outline:none;\n      }\n    }\n\n    &.figureAttribute {\n      padding-left: calc(3.5rem + 5px);\n      width:100%;\n    }\n\n    &.lineNumbering {\n      border-color: transparent;\n      overflow-y: hidden;\n      text-align: right;\n      box-shadow: none;\n      position: absolute;\n      width: 3.5rem;\n    }\n  }\n}\n","\n.applicationSwitch {\n\n  .application-waffel {\n    svg,\n    img{\n      width:60px;\n    }\n  }\n\n  .open {\n    .dropdown-menu{\n      z-index: 10000;\n      right:0;\n      left: initial;\n\n      display: grid;\n      max-width:200px;\n      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));\n      grid-auto-rows: minmax(80px, auto);\n      grid-gap: 5px;\n    }\n  }\n  .dropdown-menu{\n    display: none;\n  }\n}\n",".image-button {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n    font-weight: 400;\n    img,\n    svg {\n      margin: 5px;\n      margin-bottom: 0;\n      padding: 0;\n      width: @toolbarHeight - 20;\n      height: @toolbarHeight - 20;\n      text-align: center;\n      font-size: 45px;\n      transition: all 0.5s;\n      border-radius: 4px;\n      border-width: 1px;\n      border-style: solid;\n    }\n\n    div {\n      text-align: center;\n      font-size: 10px;\n      cursor: default;\n    }\n\n    &:not(.disabled) {\n\n      img,\n      svg {\n        cursor: pointer;\n        &:hover {\n        }\n      }\n    }\n  }",".notifyjs-bootstrap-base {\n    font-size:12px;\n    border: none;\n    border-radius: 1px;\n    padding-left: 5px;\n    padding-right: 5px;\n}\n\n.notifyjs-bootstrap-info {\n    background-image: none;\n}",":root {\n    --shadow-color: #C71D3D;\n    --shadow-color-light: white;\n}\n\n\n@keyframes neon {\n    0% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),\n      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n    }\n    50% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light),\n      0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);\n    }\n    100% {\n      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),\n      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),\n      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);\n    }\n  }\n\nbody.light {\n    .notifyjs-bootstrap-base {\n        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n    }\n    \n    .notifyjs-bootstrap-info {\n        background-color: #f7f7f7;\n        color:rgb(41, 41, 41);\n    }\n\n    .appbar {\n        background-color:rgb(32, 43, 59);\n        .title {\n            h1 {\n                color: white;\n            }\n            h2 {\n                color: white;\n                animation: neon 3s infinite;\n            }\n        }\n        .slogan{\n            color: white;\n            letter-spacing: 0.2vw;\n        }\n\n        .application-waffel {\n\n            img,\n            svg {\n                color: white;\n                border-color:transparent;\n    \n                circle[stroke],\n                polyline[stroke],\n                path[stroke],\n                g[stroke] {\n                    stroke: white !important;\n                }\n    \n                rect[fill],\n                circle[fill] {\n                    fill: white !important;\n                }\n            }\n    \n            div {\n                color: white;\n    \n                &.highlight {\n                    animation: highlight 3s infinite;\n                }\n            }\n    \n            &.disabled {\n                opacity: 0.2;\n            }\n    \n            &:not(.disabled) {\n                img,\n                svg {\n                    &:hover {\n                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n                        border-color:white;\n                    }\n                }\n            }\n        }\n    }\n\n    .spinner:before {\n        border-color: #ccc;\n        border-top-color: #C71D3D;\n        background-color: #fef9f9;\n    }\n\n    .material-button {\n        color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));\n        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);\n    }\n\n    /* Overlay */\n    .material-button::before {\n        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        opacity: 0;\n    }\n\n    /* Ripple */\n    .material-button::after {\n        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));\n        opacity: 0;\n    }\n\n    /* Hover, Focus */\n    .material-button:hover,\n    .material-button:focus {\n        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);\n    }\n\n    .material-button:hover::before {\n        opacity: 0.08;\n    }\n\n    .material-button:focus::before {\n        opacity: 0.24;\n    }\n\n    .material-button:hover:focus::before {\n        opacity: 0.3;\n    }\n\n    /* Active */\n    .material-button:active {\n        box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);\n    }\n\n    .material-button:active::after {\n        opacity: 0.32;\n    }\n\n    /* Disabled */\n    .material-button:disabled {\n        color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);\n        background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);\n        box-shadow: none;\n    }\n\n    .material-button:disabled::before {\n        opacity: 0;\n    }\n\n    .material-button:disabled::after {\n        opacity: 0;\n    }\n\n\n    .confirm-dialog-btn-confirm {\n        background-color: #C71D3D;\n    }\n\n    .context-menu-list {\n        border-color: #DDD;\n        background: white;\n        border-left-color: #C71D3D;\n        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);\n\n        .context-menu-separator {\n            border-bottom: 1px solid #DDD;\n        }\n\n        .context-menu-item {\n            &.hover {\n                background-color: #C71D3D;\n                color: white;\n            }\n\n            &.disabled {\n                color: #666;\n\n                &.hover {\n                    background-color: #EEE;\n                }\n            }\n\n            .context-menu-submenu:after {\n                color: #666;\n            }\n        }\n\n    }\n\n    .gutter {\n        background-color: #eee;\n        background-repeat: no-repeat;\n        background-position: center;\n        &.gutter-vertical {\n            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');\n        }\n\n        &.gutter-horizontal {\n            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');\n        }\n    }\n\n    .tinyFlyoverMenu {\n        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);\n        border-color: lightgray;\n        background-color: rgb(253 233 233);\n\n        div {\n            border-color: transparent;\n            &:hover {\n                border-color: lightgray;\n            }\n        }\n    }\n\n    #home {\n        .authorPage {\n            h1 {\n                color: #C71D3D;\n            }\n\n            h2 {\n                color: #C71D3D;\n            }\n        }\n\n        footer {\n            color: #C71D3D;\n\n            a {\n                color: #C71D3D;\n            }\n        }\n    }\n\n    #canvas_zoom {\n        background-color: fadeout(#B2E2F2, 70%);\n\n        button {\n            background-color: transparent;\n            border-color: transparent;\n            transition: all 0.5s;\n\n            &:hover {\n                border-color: #C71D3D;\n            }\n        }\n    }\n\n    #configMenuIcon {\n        &:hover {\n            opacity: 1;\n            color: #C71D3D;\n        }\n    }\n\n    .modal-backdrop.in {\n        opacity: 0.7;\n        background-color: black;\n    }\n\n    .genericDialog {\n        .modal-content {\n            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);\n            background-color: rgb(255, 255, 255);\n\n            .modal-header {\n                box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);\n            }\n\n            .modal-body {\n                .form-control {\n                    color: #4D4D4D;\n                    border-color: #DFDFDF;\n                    box-shadow: none;\n\n                    &:focus {\n                        background-color: rgb(245, 245, 245);\n                    }\n                }\n\n                .list-group {\n\n                    *[data-draw2d=\"true\"] {\n                        color: #C71D3D;\n                    }\n\n                    .list-group-item {\n                        background-color: transparent;\n                    }\n\n                    *[data-draw2d=\"false\"][data-type=\"file\"] {\n                        color: gray;\n                    }\n                }\n            }\n\n            .modal-footer {\n                background-color: transparent;\n\n                .btn,\n                .btn-group {\n                    background-color: transparent;\n                    color: #C71D3D;\n\n                    &:hover {\n                        background-color: fadeout(#C71D3D, 96);\n                    }\n                }\n\n                .btn-group {\n                    .btn {\n                        &:hover {\n                            background-color: transparent;\n                        }\n                    }\n\n                    background-color:transparent;\n                    color:#C71D3D;\n\n                    &:hover {\n                        background-color: fadeout(#C71D3D, 96);\n                    }\n                }\n            }\n        }\n    }\n\n    .tab-pane {\n        box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);\n    }\n\n    #files {\n        .teaser {\n            background-image:\n                linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, .4) 70%, #fff 100%),\n                radial-gradient(ellipse at center, rgba(247, 249, 250, .7) 0%, rgba(247, 249, 250, 0) 60%),\n                linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);\n\n            .title {\n                color: #C71D3D;\n            }\n\n            .slogan {\n                color: #34495e;\n            }\n        }\n\n        .deleteIcon {\n            &:hover {\n                background-color: rgba(0, 0, 0, 0.03);\n            }\n        }\n\n        .list-group-item {\n            cursor: pointer;\n\n            .thumb {\n\n                .filenameInplaceEdit {\n                    color: #C71D3D;\n                }\n\n                h4 {\n                    color: #C71D3D;\n                }\n\n            }\n\n        }\n\n        .thumbAdd {\n            color: #0078f2;\n            border-color: rgba(0, 120, 242, 0.33);\n\n            &:hover {\n                border-color: rgba(0, 120, 242, 1);\n            }\n        }\n\n\n        #material-tabs {\n            border-bottom-color: #e0e0e0;\n\n            a {\n                color: #424f5a;\n            }\n        }\n\n        .material-tab-content {\n            &>div {\n                background-color: rgb(254 249 249);\n            }\n        }\n\n        #material-tabs>a:not(.active):hover {\n            background-color: inherit;\n            color: #C71D3D;\n        }\n\n        .yellow-bar {\n            background: rgb(254 249 249);\n            transition: all 0.3s ease;\n            border-color: #e0e0e0;\n        }\n    }\n\n    #githubNewFileDialog {\n        .filePreview {\n            color: #C71D3D;\n        }\n    }\n\n    #figureConfigDialog{\n        textarea {\n            &.figureAttribute {\n                background-color:#272822;\n                border-color:#272822;\n                color:#ffffff;\n            }\n            &.lineNumbering {\n                background-color:#3E3D32;\n                border-color:#3E3D32;\n                color:#928869;\n            }\n        }\n    }\n  \n    #notificationToast {\n        background-color: #C71D3D;\n        color: white;\n    }\n\n    .markdownRendering {\n        table {\n            color: #666;\n            text-shadow: 1px 1px 0px #fff;\n            background: #eaebec;\n            border-color: #ccc;\n            box-shadow: 0 1px 2px #d1d1d1;\n        }\n\n        table th {\n            border-top-color: #fafafa;\n            border-bottom-color: #e0e0e0;\n        }\n\n        table tr td {\n            border-top-color: #ffffff;\n            border-bottom-color: #e0e0e0;\n            border-left-color: #e0e0e0;\n        }\n\n        tbody tr:nth-child(odd) {\n            background: #fafafa;\n        }\n\n        tbody tr:nth-child(even) {\n            background: #f3f3f3;\n        }\n\n        .info {\n            border-color: #B4E1E4;\n            background-color: #81c7e1;\n            color: white;\n\n            p {}\n        }\n    }\n\n    .toolbar {\n        background-color: #B2E2F2;\n    }\n\n    .image-button {\n\n        img,\n        svg {\n            color: #777;\n            border-color:transparent;\n\n            circle[stroke],\n            polyline[stroke],\n            path[stroke],\n            g[stroke] {\n                stroke: #777 !important;\n            }\n\n            rect[fill],\n            circle[fill] {\n                fill: #777 !important;\n            }\n        }\n\n        div {\n            color: #777;\n\n            &.highlight {\n                animation: highlight 3s infinite;\n            }\n        }\n\n        &.disabled {\n            opacity: 0.2;\n        }\n\n        &:not(.disabled) {\n            img,\n            svg {\n                &:hover {\n                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);\n                    border-color:rgba(0,0,0,0.15);\n                }\n            }\n        }\n    }\n    @keyframes highlight {\n        0% {\n            color: #C71D3D;\n        }\n\n        50% {\n            color: rgba(0, 0, 0, 0.4);\n        }\n\n        100% {\n            color: #C71D3D;\n        }\n    }\n\n}","/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */\n\n.hero {\n    position: relative;\n    display: flex; \n    flex-direction: column;\n    flex-wrap: nowrap;\n    justify-content:space-between;\n\n    z-index: 20;\n    height: 100vh;\n    background-color: #fff;\n    color: #333;\n    background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);\n    border-bottom: 2px solid #C71D3D;\n    scroll-snap-align: start;\n\n    .toolbar {\n        display: flex; \n        flex-direction: row;\n        flex-wrap: nowrap;\n        justify-content:space-between;\n\n        font-size: 30px;\n        color:white;\n        background-color:white;\n        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);\n      \n        .title {\n          img{\n            height:30px;\n            margin-left:30px;\n            margin-top:5px;\n          }\n      \n          .app_name {\n            font-weight: 200;\n            display: inline-block;\n            top: 6px;\n            position: relative;\n            left: 20px;\n            color:#C71D3D;\n          }\n      \n          .app_slogan {\n            font-weight: 200;\n            display: inline-block;\n            top: 6px;\n            position: relative;\n            left: 20px;\n            color:#C71D3D;\n            font-size:70%;\n            transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n          }\n          @media (max-width: 990px) {\n            .app_slogan {\n              font-size:50%;\n              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n            }\n          }\n          @media (max-width: 890px) {\n            .app_slogan {\n              display: none;\n              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);\n            }\n          }\n        }\n    }\n      \n    .teaserContainer {\n        flex-grow: 4;\n        display: flex; \n        flex-direction: column;\n        flex-wrap: nowrap;\n        justify-content:start;\n        align-items: center;\n        align-content: center;\n        gap: 50px;\n        .teaser {\n            display: flex; \n            flex-direction: row;\n            justify-content:space-between;\n            align-items: start;\n            align-content: center;\n\n            .slogan {\n                max-width: 80%;\n                h1{\n                    font-weight: 500;\n                    font-size: calc(20px + 1vw);\n                    line-height: 1.2;        \n                    color: #C71D3D;\n                }\n                font-weight: 300;\n                line-height: 1.2;\n                font-size: calc(8px + 1vw);\n                color: black;\n                padding-left:60px;\n            }\n        }\n        .launchArea{\n            display: flex; \n            flex-direction: row;\n            max-height:20vh;\n            justify-content: space-evenly;\n            .imageContainer {\n                display: flex; \n                flex-direction: column;\n                flex-wrap: nowrap;\n                justify-content:space-between;\n                align-items: center;\n                align-content: center;\n                img{\n                    max-height:100%;\n                }\n            }\n        }\n          \n    }\n\n    .avatarContainer {\n        flex-grow: 0;\n\n        display: flex; \n        flex-direction: row;\n        flex-wrap: nowrap;\n        justify-content:space-between;\n        align-items: flex-end;\n        .avatar {\n            text-align: center;\n            font-weight: 400;\n            font-size: 16px;\n            display: flex;\n            flex-direction: column;\n            flex-wrap: nowrap;\n            align-content: flex-end;\n            justify-content: flex-end;\n            align-items: center;\n            height:15vh;\n            max-height:160px;\n            img {\n                height: 100%;\n            }\n        }\n\n        .arrow {\n            animation: mover 2s infinite alternate;\n            font-size:20px;\n            i {\n                height: 20px;\n                display: inline-block;\n                border-left: 4px solid #000;\n                border-radius:4px;\n                &.left {\n                    transform: rotate(-45deg);\n                }\n    \n                &.right {\n                    transform: rotate(45deg) translate(3px, -2px);\n                }\n            }\n        }\n    }\n\n    @keyframes mover {\n        0% { transform: translateY(0); }\n        100% { transform: translateY(-10px); }\n    }\n}",".intro {\n    background-color: white;\n    background-image: none;\n    text-align: left;\n    position: relative;\n    z-index: 20;\n    height: 100vh;\n    padding-bottom: 20px;\n    color: #333;\n    font-size: 30px;\n\n    .header {\n        font-size: calc(19px + 1vw);\n        line-height: 1.2;\n        top: 2vw;\n        padding-left: 50px;\n        color: #C71D3D;\n        position: absolute;\n        padding-top: 30px;\n        background-color: rgba(255, 255, 255, 0.8);\n        div {\n            font-size: calc(6px + 1vw);\n            font-weight: 200;\n            color: black;\n            padding-top: 30px;\n        }\n    }\n\n    img {\n        width: 50%;\n        vertical-align: middle;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        margin: auto;\n        left: 0;\n        right: 0;\n    }\n\n    .launch_button {\n        position: absolute;\n        right: 50px;\n        bottom: 100px;\n\n        &:hover {\n            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);\n        }\n    }\n}",".slidedeck {\n    position: absolute;\n    height: 400vh;\n    width: 100%;\n    background-image: linear-gradient(135deg, #e13f4d, #d34657);\n\n    .pink_bg {\n        position: absolute;\n        top: 100vh;\n        height: 300vh;\n        width: 100%;\n        background-image: linear-gradient(153deg, #fa7e93, #f5d8d8);\n    }\n\n    .orange_bg {\n        position: absolute;\n        top: 100vh;\n        height: 200vh;\n        width: 100%;\n        background-image: linear-gradient(135deg, #f8ac5c, #fcbe78);\n    }\n\n    .blue_bg {\n        position: absolute;\n        top: 100vh;\n        height: 100vh;\n        width: 100%;\n        background-image: linear-gradient(135deg, #242533, #2a3079);\n    }\n\n\n    .section_header {\n        color: white;\n        font-size: calc(16px + 2vw);\n        text-align: center;\n        font-weight: 100;\n        padding-top: 30px;\n        position: sticky;\n        top: 20px;\n    }\n\n    .card {\n        position: sticky;\n        z-index: 1000;\n        width: 25%;\n        height: 50vh;\n        border-radius: 10px;\n        background-color: #fff;\n        box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);\n        top: 0;\n\n        .text {\n            position: absolute;\n            top: -40px;\n            text-align: center;\n            color: white;\n            font-size: 24px;\n            font-weight: 100;\n            width: 100%;\n        }\n        .media {\n            position: absolute;\n            top: 10px;\n            left: 50%;\n            transform: translateX(-50%);\n        }\n        .content {\n            position: absolute;\n            top: 80px;\n            padding: 10px;\n\n            .header {\n                color: #C71D3D;\n                text-align: center;\n                margin-bottom: 10px;\n            }\n        }\n\n        .launch_button {\n            position: absolute;\n            left: 50%;\n            bottom: 10px;\n            transform: translateX(-50%);\n            border-radius: 4px;\n            font-size: 14px;\n            padding: 10px;\n            padding-left: 20px;\n            padding-right: 20px;\n        }\n\n        &.left {\n            left: 5%;\n            transform: translateY(50%);\n        }\n\n        &.center {\n            left: 50%;\n            transform: translateY(50%) translateX(-50%);\n        }\n\n        &.right {\n            left: 70%;\n            transform: translateY(50%);\n        }\n    }\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -627,6 +633,2433 @@ module.exports = function (item) {
   }
   return [content].join("\n");
 };
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/circle.js":
+/*!********************************************************!*\
+  !*** ./node_modules/party-js/lib/components/circle.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Circle = void 0;
+/**
+ * Represents a circle.
+ */
+var Circle = /** @class */ (function () {
+    /**
+     * Creates a new circle at the specified coordinates, with a default radius of 0.
+     */
+    function Circle(x, y, radius) {
+        if (radius === void 0) { radius = 0; }
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+    }
+    Circle.zero = new Circle(0, 0);
+    return Circle;
+}());
+exports.Circle = Circle;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/color.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/party-js/lib/components/color.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Color = void 0;
+var math_1 = __webpack_require__(/*! ../systems/math */ "./node_modules/party-js/lib/systems/math.js");
+/**
+ * Represents a color consisting of RGB values. The components of it are
+ * represented as integers in the range 0 to 255.
+ *
+ * @example
+ * ```ts
+ * const a = new Color(12, 59, 219);
+ * const b = Color.fromHex("#ffa68d");
+ * const result = a.mix(b);
+ * ```
+ */
+var Color = /** @class */ (function () {
+    /**
+     * Creates a new color instance from the specified RGB components.
+     */
+    function Color(r, g, b) {
+        this.values = new Float32Array(3);
+        this.rgb = [r, g, b];
+    }
+    Object.defineProperty(Color.prototype, "r", {
+        /**
+         * Returns the r-component of the color.
+         */
+        get: function () {
+            return this.values[0];
+        },
+        /**
+         * Modifies the r-component of the color.
+         * Note that this also floors the value.
+         */
+        set: function (value) {
+            this.values[0] = Math.floor(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "g", {
+        /**
+         * Returns the g-component of the color.
+         */
+        get: function () {
+            return this.values[1];
+        },
+        /**
+         * Modifies the g-component of the color.
+         * Note that this also floors the value.
+         */
+        set: function (value) {
+            this.values[1] = Math.floor(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "b", {
+        /**
+         * Returns the b-component of the color.
+         * Note that this also floors the value.
+         */
+        get: function () {
+            return this.values[2];
+        },
+        /**
+         * Modifies the b-component of the color.
+         */
+        set: function (value) {
+            this.values[2] = Math.floor(value);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "rgb", {
+        /**
+         * Returns the rgb-components of the color, bundled as a copied array.
+         */
+        get: function () {
+            return [this.r, this.g, this.b];
+        },
+        /**
+         * Simultaneously updates the rgb-components of the color, by passing an array.
+         */
+        set: function (values) {
+            this.r = values[0];
+            this.g = values[1];
+            this.b = values[2];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Mixes the two color together with an optional mixing weight.
+     * This weight is 0.5 by default, perfectly averaging the color.
+     */
+    Color.prototype.mix = function (color, weight) {
+        if (weight === void 0) { weight = 0.5; }
+        return new Color(math_1.lerp(this.r, color.r, weight), math_1.lerp(this.g, color.g, weight), math_1.lerp(this.b, color.b, weight));
+    };
+    /**
+     * Returns the hexadecimal representation of the color, prefixed by '#'.
+     */
+    Color.prototype.toHex = function () {
+        var hex = function (v) { return v.toString(16).padStart(2, "0"); };
+        return "#" + hex(this.r) + hex(this.g) + hex(this.b);
+    };
+    /**
+     * Returns a formatted representation of the color.
+     */
+    Color.prototype.toString = function () {
+        return "rgb(" + this.values.join(", ") + ")";
+    };
+    /**
+     * Creates a color from the specified hexadecimal string.
+     * This string can optionally be prefixed by '#'.
+     */
+    Color.fromHex = function (hex) {
+        if (hex.startsWith("#")) {
+            hex = hex.substr(1);
+        }
+        return new Color(parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16), parseInt(hex.substr(4, 2), 16));
+    };
+    /**
+     * Creates a color from the specified HSL components.
+     *
+     * @see https://stackoverflow.com/a/9493060/5507624
+     */
+    Color.fromHsl = function (h, s, l) {
+        h /= 360;
+        s /= 100;
+        l /= 100;
+        if (s === 0) {
+            return new Color(l, l, l);
+        }
+        else {
+            var hue2rgb = function (p, q, t) {
+                if (t < 0)
+                    t += 1;
+                if (t > 1)
+                    t -= 1;
+                if (t < 1 / 6)
+                    return p + (q - p) * 6 * t;
+                if (t < 1 / 2)
+                    return q;
+                if (t < 2 / 3)
+                    return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+            };
+            var to255 = function (v) { return Math.min(255, 256 * v); };
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            return new Color(to255(hue2rgb(p, q, h + 1 / 3)), to255(hue2rgb(p, q, h)), to255(hue2rgb(p, q, h - 1 / 3)));
+        }
+    };
+    /**
+     * Returns (1, 1, 1).
+     */
+    Color.white = new Color(255, 255, 255);
+    /**
+     * Returns (0, 0, 0).
+     */
+    Color.black = new Color(0, 0, 0);
+    return Color;
+}());
+exports.Color = Color;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/gradient.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/party-js/lib/components/gradient.js ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Gradient = void 0;
+var spline_1 = __webpack_require__(/*! ./spline */ "./node_modules/party-js/lib/components/spline.js");
+/**
+ * Represents a gradient that can be used to interpolate between multiple color.
+ */
+var Gradient = /** @class */ (function (_super) {
+    __extends(Gradient, _super);
+    function Gradient() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Interpolates between two color on the gradient.
+     */
+    Gradient.prototype.interpolate = function (a, b, t) {
+        return a.mix(b, t);
+    };
+    /**
+     * Returns a solid gradient from the given color.
+     */
+    Gradient.solid = function (color) {
+        return new Gradient({ value: color, time: 0.5 });
+    };
+    /**
+     * Returns a gradient with evenly spaced keys from the given colors.
+     */
+    Gradient.simple = function () {
+        var colors = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            colors[_i] = arguments[_i];
+        }
+        var step = 1 / (colors.length - 1);
+        return new (Gradient.bind.apply(Gradient, __spreadArray([void 0], colors.map(function (color, index) { return ({
+            value: color,
+            time: index * step,
+        }); }))))();
+    };
+    return Gradient;
+}(spline_1.Spline));
+exports.Gradient = Gradient;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/party-js/lib/components/index.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./circle */ "./node_modules/party-js/lib/components/circle.js"), exports);
+__exportStar(__webpack_require__(/*! ./color */ "./node_modules/party-js/lib/components/color.js"), exports);
+__exportStar(__webpack_require__(/*! ./gradient */ "./node_modules/party-js/lib/components/gradient.js"), exports);
+__exportStar(__webpack_require__(/*! ./numericSpline */ "./node_modules/party-js/lib/components/numericSpline.js"), exports);
+__exportStar(__webpack_require__(/*! ./rect */ "./node_modules/party-js/lib/components/rect.js"), exports);
+__exportStar(__webpack_require__(/*! ./vector */ "./node_modules/party-js/lib/components/vector.js"), exports);
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/numericSpline.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/party-js/lib/components/numericSpline.js ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NumericSpline = void 0;
+var math_1 = __webpack_require__(/*! ../systems/math */ "./node_modules/party-js/lib/systems/math.js");
+var spline_1 = __webpack_require__(/*! ./spline */ "./node_modules/party-js/lib/components/spline.js");
+/**
+ * Represents a spline that can take numeric values.
+ */
+var NumericSpline = /** @class */ (function (_super) {
+    __extends(NumericSpline, _super);
+    function NumericSpline() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * Smoothly interpolates between two keys on the spline.
+     */
+    NumericSpline.prototype.interpolate = function (a, b, t) {
+        return math_1.slerp(a, b, t);
+    };
+    return NumericSpline;
+}(spline_1.Spline));
+exports.NumericSpline = NumericSpline;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/rect.js":
+/*!******************************************************!*\
+  !*** ./node_modules/party-js/lib/components/rect.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Rect = void 0;
+/**
+ * Represents a rectangle with an origin and size.
+ */
+var Rect = /** @class */ (function () {
+    function Rect(x, y, width, height) {
+        if (width === void 0) { width = 0; }
+        if (height === void 0) { height = 0; }
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    /**
+     * Returns a new document-space rectangle from the viewport's bounds.
+     */
+    Rect.fromScreen = function () {
+        return new Rect(window.scrollX, window.scrollY, window.innerWidth, window.innerHeight);
+    };
+    /**
+     * Returns a new document-space rectangle from the specified element.
+     */
+    Rect.fromElement = function (element) {
+        var r = element.getBoundingClientRect();
+        return new Rect(window.scrollX + r.x, window.scrollY + r.y, r.width, r.height);
+    };
+    Rect.zero = new Rect(0, 0);
+    return Rect;
+}());
+exports.Rect = Rect;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/spline.js":
+/*!********************************************************!*\
+  !*** ./node_modules/party-js/lib/components/spline.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Spline = void 0;
+var math_1 = __webpack_require__(/*! ../systems/math */ "./node_modules/party-js/lib/systems/math.js");
+/**
+ * Represents a spline that can be used to continueously evaluate a function
+ * between keys. The base implementation is kept generic, so the functionality
+ * can easily be implemented for similar constructs, such as gradients.
+ */
+var Spline = /** @class */ (function () {
+    /**
+     * Creates a new spline instance, using the specified keys.
+     * Note that you have to pass at least one key.
+     */
+    function Spline() {
+        var keys = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            keys[_i] = arguments[_i];
+        }
+        if (keys.length === 0) {
+            throw new Error("Splines require at least one key.");
+        }
+        if (Array.isArray(keys[0])) {
+            throw new Error("You are trying to pass an array to the spline constructor, which is not supported. " +
+                "Try to spread the array into the constructor instead.");
+        }
+        this.keys = keys;
+    }
+    /**
+     * Evaluates the spline at the given time.
+     */
+    Spline.prototype.evaluate = function (time) {
+        if (this.keys.length === 0) {
+            throw new Error("Attempt to evaluate a spline with no keys.");
+        }
+        if (this.keys.length === 1) {
+            // The spline only contains one key, therefore is constant.
+            return this.keys[0].value;
+        }
+        // Sort the keys and figure out the first key above the passed time.
+        var ascendingKeys = this.keys.sort(function (a, b) { return a.time - b.time; });
+        var upperKeyIndex = ascendingKeys.findIndex(function (g) { return g.time > time; });
+        // If the found index is either 0 or -1, the specified time falls out
+        // of the range of the supplied keys. In that case, the value of the
+        // nearest applicant key is returned.
+        if (upperKeyIndex === 0) {
+            return ascendingKeys[0].value;
+        }
+        if (upperKeyIndex === -1) {
+            return ascendingKeys[ascendingKeys.length - 1].value;
+        }
+        // Otherwise, find the bounding keys, and extrapolate the time between
+        // the two. This is then used to interpolate between the two keys,
+        // using the provided implementation.
+        var lowerKey = ascendingKeys[upperKeyIndex - 1];
+        var upperKey = ascendingKeys[upperKeyIndex];
+        var containedTime = math_1.invlerp(lowerKey.time, upperKey.time, time);
+        return this.interpolate(lowerKey.value, upperKey.value, containedTime);
+    };
+    return Spline;
+}());
+exports.Spline = Spline;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/components/vector.js":
+/*!********************************************************!*\
+  !*** ./node_modules/party-js/lib/components/vector.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Vector = void 0;
+var math_1 = __webpack_require__(/*! ../systems/math */ "./node_modules/party-js/lib/systems/math.js");
+/**
+ * Represents a structure used to process vectors.
+ *
+ * @remarks
+ * Note that the operations in this class will **not** modify the original vector,
+ * except for the property assignments. This is to ensure that vectors are not
+ * unintentionally modified.
+ *
+ * @example
+ * ```ts
+ * const vectorA = new Vector(1, 3, 5);
+ * const vectorB = new Vector(2, 3, 1);
+ * const vectorC = vectorA.add(vectorB); // (3, 6, 6)
+ * ```
+ */
+var Vector = /** @class */ (function () {
+    /**
+     * Creates a new vector with optional x-, y-, and z-components.
+     * Omitted components are defaulted to 0.
+     */
+    function Vector(x, y, z) {
+        if (x === void 0) { x = 0; }
+        if (y === void 0) { y = 0; }
+        if (z === void 0) { z = 0; }
+        this.values = new Float32Array(3);
+        this.xyz = [x, y, z];
+    }
+    Object.defineProperty(Vector.prototype, "x", {
+        /**
+         * Returns the x-component of the vector.
+         */
+        get: function () {
+            return this.values[0];
+        },
+        /**
+         * Modifies the x-component of the vector.
+         */
+        set: function (value) {
+            this.values[0] = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Vector.prototype, "y", {
+        /**
+         * Returns the y-component of the vector.
+         */
+        get: function () {
+            return this.values[1];
+        },
+        /**
+         * Modifies the y-component of the vector.
+         */
+        set: function (value) {
+            this.values[1] = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Vector.prototype, "z", {
+        /**
+         * Returns the z-component of the vector.
+         */
+        get: function () {
+            return this.values[2];
+        },
+        /**
+         * Modifies the z-component of the vector.
+         */
+        set: function (value) {
+            this.values[2] = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Vector.prototype, "xyz", {
+        /**
+         * Returns the xyz-components of the vector, bundled as a copied array.
+         */
+        get: function () {
+            return [this.x, this.y, this.z];
+        },
+        /**
+         * Simultaneously updates the xyz-components of the vector, by passing an array.
+         */
+        set: function (values) {
+            this.values[0] = values[0];
+            this.values[1] = values[1];
+            this.values[2] = values[2];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Returns the length of the vector.
+     */
+    Vector.prototype.magnitude = function () {
+        return Math.sqrt(this.sqrMagnitude());
+    };
+    /**
+     * Returns the squared length of the vector.
+     */
+    Vector.prototype.sqrMagnitude = function () {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    };
+    /**
+     * Adds the two vectors together, component-wise.
+     */
+    Vector.prototype.add = function (vector) {
+        return new Vector(this.x + vector.x, this.y + vector.y, this.z + vector.z);
+    };
+    /**
+     * Subtracts the right vector from the left one, component-wise.
+     */
+    Vector.prototype.subtract = function (vector) {
+        return new Vector(this.x - vector.x, this.y - vector.y, this.z - vector.z);
+    };
+    /**
+     * Scales the lefthand vector by another vector or by a number.
+     */
+    Vector.prototype.scale = function (scalar) {
+        if (typeof scalar === "number") {
+            return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
+        }
+        else {
+            return new Vector(this.x * scalar.x, this.y * scalar.y, this.z * scalar.z);
+        }
+    };
+    /**
+     * Normalizes the vector to a length of 1. If the length was previously zero,
+     * then a zero-length vector will be returned.
+     */
+    Vector.prototype.normalized = function () {
+        var magnitude = this.magnitude();
+        if (magnitude !== 0) {
+            return this.scale(1 / magnitude);
+        }
+        return new (Vector.bind.apply(Vector, __spreadArray([void 0], this.xyz)))();
+    };
+    /**
+     * Returns the angle between two vectors, in degrees.
+     */
+    Vector.prototype.angle = function (vector) {
+        return (math_1.rad2deg *
+            Math.acos((this.x * vector.x + this.y * vector.y + this.z * vector.z) /
+                (this.magnitude() * vector.magnitude())));
+    };
+    /**
+     * Returns the cross-product of two vectors.
+     */
+    Vector.prototype.cross = function (vector) {
+        return new Vector(this.y * vector.z - this.z * vector.y, this.z * vector.x - this.x * vector.z, this.x * vector.y - this.y * vector.x);
+    };
+    /**
+     * returns the dot-product of two vectors.
+     */
+    Vector.prototype.dot = function (vector) {
+        return (this.magnitude() *
+            vector.magnitude() *
+            Math.cos(math_1.deg2rad * this.angle(vector)));
+    };
+    /**
+     * Returns a formatted representation of the vector.
+     */
+    Vector.prototype.toString = function () {
+        return "Vector(" + this.values.join(", ") + ")";
+    };
+    /**
+     * Creates a new vector from an angle, in degrees. Note that the z-component will be zero.
+     */
+    Vector.from2dAngle = function (angle) {
+        return new Vector(Math.cos(angle * math_1.deg2rad), Math.sin(angle * math_1.deg2rad));
+    };
+    /**
+     * Returns (0, 0, 0).
+     */
+    Vector.zero = new Vector(0, 0, 0);
+    /**
+     * Returns (1, 1, 1).
+     */
+    Vector.one = new Vector(1, 1, 1);
+    /**
+     * Returns (1, 0, 0).
+     */
+    Vector.right = new Vector(1, 0, 0);
+    /**
+     * Returns (0, 1, 0).
+     */
+    Vector.up = new Vector(0, 1, 0);
+    /**
+     * Returns (0, 0, 1).
+     */
+    Vector.forward = new Vector(0, 0, 1);
+    return Vector;
+}());
+exports.Vector = Vector;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/containers.js":
+/*!*************************************************!*\
+  !*** ./node_modules/party-js/lib/containers.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.particleContainer = exports.debugContainer = exports.rootContainer = void 0;
+var settings_1 = __webpack_require__(/*! ./settings */ "./node_modules/party-js/lib/settings.js");
+var util_1 = __webpack_require__(/*! ./util */ "./node_modules/party-js/lib/util/index.js");
+/**
+ * The prefix to apply to the containers.
+ */
+var containerPrefix = "party-js-";
+/**
+ * Checks if the specified container is 'active', meaning not undefined and attached to the DOM.
+ */
+function isContainerActive(container) {
+    return container && container.isConnected;
+}
+/**
+ * A generic factory method for creating a DOM container. Prefixes the specified name with the
+ * container prefix, applies the styles and adds it under the parent.
+ */
+function makeContainer(name, styles, parent) {
+    var container = document.createElement("div");
+    container.id = containerPrefix + name;
+    Object.assign(container.style, styles);
+    return parent.appendChild(container);
+}
+/**
+ * Represents the root container for DOM elements of the library.
+ */
+exports.rootContainer = new util_1.Lazy(function () {
+    return makeContainer("container", {
+        position: "fixed",
+        left: "0",
+        top: "0",
+        height: "100vh",
+        width: "100vw",
+        pointerEvents: "none",
+        userSelect: "none",
+        zIndex: settings_1.settings.zIndex.toString(),
+    }, document.body);
+}, isContainerActive);
+/**
+ * Represents the debugging container of the library, only active if debugging is enabled.
+ */
+exports.debugContainer = new util_1.Lazy(function () {
+    return makeContainer("debug", {
+        position: "absolute",
+        top: "0",
+        left: "0",
+        margin: "0.5em",
+        padding: "0.5em 1em",
+        border: "2px solid rgb(0, 0, 0, 0.2)",
+        background: "rgb(0, 0, 0, 0.1)",
+        color: "#555",
+        fontFamily: "monospace",
+    }, exports.rootContainer.current);
+}, isContainerActive);
+/**
+ * Represents the particle container of the library.
+ * This is where the particle DOM elements get rendered into.
+ */
+exports.particleContainer = new util_1.Lazy(function () {
+    return makeContainer("particles", {
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        perspective: "1200px",
+    }, exports.rootContainer.current);
+}, isContainerActive);
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/debug.js":
+/*!********************************************!*\
+  !*** ./node_modules/party-js/lib/debug.js ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Debug = void 0;
+var containers_1 = __webpack_require__(/*! ./containers */ "./node_modules/party-js/lib/containers.js");
+var settings_1 = __webpack_require__(/*! ./settings */ "./node_modules/party-js/lib/settings.js");
+/**
+ * Represents a utility module to view debug information inside the DOM.
+ * This is disabled by default and needs to manually be enabled by setting
+ * the '.enabled' field to true.
+ *
+ * While disabled, the utility will not fetch stats and update itself.
+ */
+var Debug = /** @class */ (function () {
+    /**
+     * Registers a new debug utility that is attached to the given scene.
+     *
+     * @param scene The scene to attach to.
+     */
+    function Debug(scene) {
+        this.scene = scene;
+        /**
+         * The rate at which the debug interface should refresh itself (per second).
+         */
+        this.refreshRate = 8;
+        /**
+         * The timer counting down to refreshes.
+         */
+        this.refreshTimer = 1 / this.refreshRate;
+    }
+    /**
+     * Processes a tick event in the interface. This checks if enough has passed to
+     * trigger a refresh, and if so, fetches the debug information and updates the DOM.
+     *
+     * @param delta The time that has elapsed since the last tick.
+     */
+    Debug.prototype.tick = function (delta) {
+        var container = containers_1.debugContainer.current;
+        // If the current display style does not match the style inferred from the
+        // enabled-state, update it.
+        var displayStyle = settings_1.settings.debug ? "block" : "none";
+        if (container.style.display !== displayStyle) {
+            container.style.display = displayStyle;
+        }
+        if (!settings_1.settings.debug) {
+            // If the interface is not enabled, don't fetch or update any infos.
+            return;
+        }
+        this.refreshTimer += delta;
+        if (this.refreshTimer > 1 / this.refreshRate) {
+            this.refreshTimer = 0;
+            // Update the container with the fetched information joined on line breaks.
+            container.innerHTML = this.getDebugInformation(delta).join("<br>");
+        }
+    };
+    /**
+     * Fetches the debug information from the specified delta and the linked scene.
+     *
+     * @returns An array of debugging information, formatted as HTML.
+     */
+    Debug.prototype.getDebugInformation = function (delta) {
+        // Count emitters and particles.
+        var emitters = this.scene.emitters.length;
+        var particles = this.scene.emitters.reduce(function (acc, cur) { return acc + cur.particles.length; }, 0);
+        var infos = [
+            "<b>party.js Debug</b>",
+            "--------------",
+            "FPS: " + Math.round(1 / delta),
+            "Emitters: " + emitters,
+            "Particles: " + particles,
+        ];
+        // Emitter informations are formatted using their index, internal timer
+        // and total particle count.
+        var emitterInfos = this.scene.emitters.map(function (emitter) {
+            return [
+                // Show the current loop and the total loops.
+                "\u2B6F: " + (emitter["currentLoop"] + 1) + "/" + (emitter.options.loops >= 0 ? emitter.options.loops : "∞"),
+                // Show the amount of particle contained.
+                "\u03A3p: " + emitter.particles.length,
+                // Show the internal timer.
+                !emitter.isExpired
+                    ? "\u03A3t: " + emitter["durationTimer"].toFixed(3) + "s"
+                    : "<i>expired</i>",
+            ].join(", ");
+        });
+        infos.push.apply(infos, __spreadArray(["--------------"], emitterInfos));
+        return infos;
+    };
+    return Debug;
+}());
+exports.Debug = Debug;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/party-js/lib/index.js ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports["default"] = exports.forceInit = exports.util = exports.math = exports.random = exports.sources = exports.variation = exports.Emitter = exports.Particle = exports.settings = exports.scene = void 0;
+var scene_1 = __webpack_require__(/*! ./scene */ "./node_modules/party-js/lib/scene.js");
+var util_1 = __webpack_require__(/*! ./util */ "./node_modules/party-js/lib/util/index.js");
+__exportStar(__webpack_require__(/*! ./components */ "./node_modules/party-js/lib/components/index.js"), exports);
+__exportStar(__webpack_require__(/*! ./templates */ "./node_modules/party-js/lib/templates/index.js"), exports);
+__exportStar(__webpack_require__(/*! ./systems/shapes */ "./node_modules/party-js/lib/systems/shapes.js"), exports);
+__exportStar(__webpack_require__(/*! ./systems/modules */ "./node_modules/party-js/lib/systems/modules.js"), exports);
+// Create the lazy-initializing scene.
+exports.scene = new util_1.Lazy(function () {
+    // The library requires the use of the DOM, hence it cannot run in non-browser environments.
+    if (typeof document === "undefined" || typeof window === "undefined") {
+        throw new Error("It seems like you are trying to run party.js in a non-browser-like environment, which is not supported.");
+    }
+    return new scene_1.Scene();
+});
+var settings_1 = __webpack_require__(/*! ./settings */ "./node_modules/party-js/lib/settings.js");
+Object.defineProperty(exports, "settings", ({ enumerable: true, get: function () { return settings_1.settings; } }));
+var particle_1 = __webpack_require__(/*! ./particles/particle */ "./node_modules/party-js/lib/particles/particle.js");
+Object.defineProperty(exports, "Particle", ({ enumerable: true, get: function () { return particle_1.Particle; } }));
+var emitter_1 = __webpack_require__(/*! ./particles/emitter */ "./node_modules/party-js/lib/particles/emitter.js");
+Object.defineProperty(exports, "Emitter", ({ enumerable: true, get: function () { return emitter_1.Emitter; } }));
+exports.variation = __webpack_require__(/*! ./systems/variation */ "./node_modules/party-js/lib/systems/variation.js");
+exports.sources = __webpack_require__(/*! ./systems/sources */ "./node_modules/party-js/lib/systems/sources.js");
+exports.random = __webpack_require__(/*! ./systems/random */ "./node_modules/party-js/lib/systems/random.js");
+exports.math = __webpack_require__(/*! ./systems/math */ "./node_modules/party-js/lib/systems/math.js");
+exports.util = __webpack_require__(/*! ./util */ "./node_modules/party-js/lib/util/index.js");
+/**
+ * Forces the initialization of the otherwise lazy scene.
+ */
+function forceInit() {
+    exports.scene.current;
+}
+exports.forceInit = forceInit;
+exports["default"] = __webpack_require__(/*! ./ */ "./node_modules/party-js/lib/index.js");
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/emitter.js":
+/*!********************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/emitter.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Emitter = void 0;
+var vector_1 = __webpack_require__(/*! ../components/vector */ "./node_modules/party-js/lib/components/vector.js");
+var settings_1 = __webpack_require__(/*! ../settings */ "./node_modules/party-js/lib/settings.js");
+var variation_1 = __webpack_require__(/*! ../systems/variation */ "./node_modules/party-js/lib/systems/variation.js");
+var config_1 = __webpack_require__(/*! ../util/config */ "./node_modules/party-js/lib/util/config.js");
+var options_1 = __webpack_require__(/*! ./options */ "./node_modules/party-js/lib/particles/options/index.js");
+var particle_1 = __webpack_require__(/*! ./particle */ "./node_modules/party-js/lib/particles/particle.js");
+/**
+ * Represents an emitter that is responsible for spawning and updating particles.
+ *
+ * Particles themselves are just data-holders, with the system acting upon them and
+ * modifying them. The modifications are done mainly via modules, that use the
+ * particle's data together with some function to apply temporal transitions.
+ *
+ * @see Particle
+ * @see ParticleModifierModule
+ */
+var Emitter = /** @class */ (function () {
+    /**
+     * Creates a new emitter, using default options.
+     */
+    function Emitter(options) {
+        /**
+         * The particles currently contained within the system.
+         */
+        this.particles = [];
+        this.currentLoop = 0; // The current loop index.
+        this.durationTimer = 0; // Measures the current runtime duration, to allow loops to reset.
+        this.emissionTimer = 0; // Measures the current emission timer, to allow spawning particles in intervals.
+        this.attemptedBurstIndices = []; // The indices of the particle bursts that were attempted this loop.
+        this.options = config_1.overrideDefaults(options_1.getDefaultEmitterOptions(), options === null || options === void 0 ? void 0 : options.emitterOptions);
+        this.emission = config_1.overrideDefaults(options_1.getDefaultEmissionOptions(), options === null || options === void 0 ? void 0 : options.emissionOptions);
+        this.renderer = config_1.overrideDefaults(options_1.getDefaultRendererOptions(), options === null || options === void 0 ? void 0 : options.rendererOptions);
+    }
+    Object.defineProperty(Emitter.prototype, "isExpired", {
+        /**
+         * Checks if the emitter is already expired and can be removed.
+         * Expired emitters do not emit new particles.
+         */
+        get: function () {
+            return (this.options.loops >= 0 && this.currentLoop >= this.options.loops);
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Emitter.prototype, "canRemove", {
+        /**
+         * Checks if the emitter can safely be removed.
+         * This is true if no more particles are active.
+         */
+        get: function () {
+            return this.particles.length === 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Clears all particles inside the emitter.
+     *
+     * @returns The number of cleared particles.
+     */
+    Emitter.prototype.clearParticles = function () {
+        return this.particles.splice(0).length;
+    };
+    /**
+     * Processes a tick of the emitter, using the elapsed time.
+     *
+     * @remarks
+     * This handles a few things, namely:
+     * - Incrementing the duration timer and potentially incrementing the loop.
+     * - Handling particle bursts & emissions.
+     * - Despawning particles conditionally.
+     *
+     * @param delta The time, in seconds, passed since the last tick.
+     */
+    Emitter.prototype.tick = function (delta) {
+        if (!this.isExpired) {
+            this.durationTimer += delta;
+            if (this.durationTimer >= this.options.duration) {
+                this.currentLoop++;
+                // To start a new loop, the duration timer and attempted bursts are reset.
+                this.durationTimer = 0;
+                this.attemptedBurstIndices = [];
+            }
+            // We need to check the expiry again, in case the added loop or duration changed something.
+            if (!this.isExpired) {
+                // Iterate over the bursts, attempting to execute them if the time is ready.
+                var burstIndex = 0;
+                for (var _i = 0, _a = this.emission.bursts; _i < _a.length; _i++) {
+                    var burst = _a[_i];
+                    if (burst.time <= this.durationTimer) {
+                        // Has the burst already been attempted? If not ...
+                        if (!this.attemptedBurstIndices.includes(burstIndex)) {
+                            // Perform the burst, emitting a variable amount of particles.
+                            var count = variation_1.evaluateVariation(burst.count);
+                            for (var i = 0; i < count; i++) {
+                                this.emitParticle();
+                            }
+                            // Mark the burst as attempted.
+                            this.attemptedBurstIndices.push(burstIndex);
+                        }
+                    }
+                    burstIndex++;
+                }
+                // Handle the 'emission over time'. By using a while-loop instead of a simple
+                // if-condition, we take high deltas into account, and ensure that the correct
+                // number of particles will consistently be emitted.
+                this.emissionTimer += delta;
+                var delay = 1 / this.emission.rate;
+                while (this.emissionTimer > delay) {
+                    this.emissionTimer -= delay;
+                    this.emitParticle();
+                }
+            }
+        }
+        var _loop_1 = function (i) {
+            var particle = this_1.particles[i];
+            this_1.tickParticle(particle, delta);
+            // Particles should be despawned (i.e. removed from the collection) if any of
+            // the despawning rules apply to them.
+            if (this_1.options.despawningRules.some(function (rule) { return rule(particle); })) {
+                this_1.particles.splice(i, 1);
+            }
+        };
+        var this_1 = this;
+        for (var i = this.particles.length - 1; i >= 0; i--) {
+            _loop_1(i);
+        }
+    };
+    /**
+     * Performs an internal tick for the particle.
+     *
+     * @remarks
+     * This method controls the particle's lifetime, location and velocity, according
+     * to the elapsed delta and the configuration. Additionally, each of the emitter's
+     * modules is applied to the particle.
+     *
+     * @param particle The particle to apply the tick for.
+     * @param delta The time, in seconds, passed since the last tick.
+     */
+    Emitter.prototype.tickParticle = function (particle, delta) {
+        particle.lifetime -= delta;
+        if (this.options.useGravity) {
+            // Apply gravitational acceleration to the particle.
+            particle.velocity = particle.velocity.add(vector_1.Vector.up.scale(settings_1.settings.gravity * delta));
+        }
+        // Apply the particle's velocity to its location.
+        particle.location = particle.location.add(particle.velocity.scale(delta));
+        // Apply the modules to the particle.
+        for (var _i = 0, _a = this.options.modules; _i < _a.length; _i++) {
+            var moduleFunction = _a[_i];
+            moduleFunction(particle);
+        }
+    };
+    /**
+     * Emits a particle using the registered settings.
+     * Also may despawn a particle if the maximum number of particles is exceeded.
+     */
+    Emitter.prototype.emitParticle = function () {
+        var particle = new particle_1.Particle({
+            location: this.emission.sourceSampler(),
+            lifetime: variation_1.evaluateVariation(this.emission.initialLifetime),
+            velocity: vector_1.Vector.from2dAngle(variation_1.evaluateVariation(this.emission.angle)).scale(variation_1.evaluateVariation(this.emission.initialSpeed)),
+            size: variation_1.evaluateVariation(this.emission.initialSize),
+            rotation: variation_1.evaluateVariation(this.emission.initialRotation),
+            color: variation_1.evaluateVariation(this.emission.initialColor),
+        });
+        this.particles.push(particle);
+        // Ensure that no more particles than 'maxParticles' can exist.
+        if (this.particles.length > this.options.maxParticles) {
+            this.particles.shift();
+        }
+        return particle;
+    };
+    return Emitter;
+}());
+exports.Emitter = Emitter;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/options/emissionOptions.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/options/emissionOptions.js ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getDefaultEmissionOptions = void 0;
+var components_1 = __webpack_require__(/*! ../../components */ "./node_modules/party-js/lib/components/index.js");
+var sources_1 = __webpack_require__(/*! ../../systems/sources */ "./node_modules/party-js/lib/systems/sources.js");
+/**
+ * Returns the default set of emission options.
+ */
+function getDefaultEmissionOptions() {
+    return {
+        rate: 10,
+        angle: 0,
+        bursts: [],
+        sourceSampler: sources_1.rectSource(components_1.Rect.zero),
+        initialLifetime: 5,
+        initialSpeed: 5,
+        initialSize: 1,
+        initialRotation: components_1.Vector.zero,
+        initialColor: components_1.Color.white,
+    };
+}
+exports.getDefaultEmissionOptions = getDefaultEmissionOptions;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/options/emitterOptions.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/options/emitterOptions.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getDefaultEmitterOptions = void 0;
+var rules_1 = __webpack_require__(/*! ../../util/rules */ "./node_modules/party-js/lib/util/rules.js");
+/**
+ * Returns the default set of emitter options.
+ */
+function getDefaultEmitterOptions() {
+    return {
+        duration: 5,
+        loops: 1,
+        useGravity: true,
+        maxParticles: 300,
+        despawningRules: [rules_1.despawningRules.lifetime, rules_1.despawningRules.bounds],
+        modules: [],
+    };
+}
+exports.getDefaultEmitterOptions = getDefaultEmitterOptions;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/options/index.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/options/index.js ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./emitterOptions */ "./node_modules/party-js/lib/particles/options/emitterOptions.js"), exports);
+__exportStar(__webpack_require__(/*! ./emissionOptions */ "./node_modules/party-js/lib/particles/options/emissionOptions.js"), exports);
+__exportStar(__webpack_require__(/*! ./renderOptions */ "./node_modules/party-js/lib/particles/options/renderOptions.js"), exports);
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/options/renderOptions.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/options/renderOptions.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getDefaultRendererOptions = void 0;
+/**
+ * Returns the default set of renderer options.
+ */
+function getDefaultRendererOptions() {
+    return {
+        shapeFactory: "square",
+        applyColor: defaultApplyColor,
+        applyOpacity: defaultApplyOpacity,
+        applyLighting: defaultApplyLighting,
+        applyTransform: defaultApplyTransform,
+    };
+}
+exports.getDefaultRendererOptions = getDefaultRendererOptions;
+/**
+ * Applies the specified color to the element.
+ *
+ * @remarks
+ * This function is aware of the element's node type:
+ * - `div` elements have their `background` set.
+ * - `svg` elements have their `fill` and `color` set.
+ * - Other elements have their `color` set.
+ */
+function defaultApplyColor(color, element) {
+    var hex = color.toHex();
+    // Note that by default, HTML node names are uppercase.
+    switch (element.nodeName.toLowerCase()) {
+        case "div":
+            element.style.background = hex;
+            break;
+        case "svg":
+            element.style.fill = element.style.color = hex;
+            break;
+        default:
+            element.style.color = hex;
+            break;
+    }
+}
+/**
+ * Applies the specified opacity to the element.
+ */
+function defaultApplyOpacity(opacity, element) {
+    element.style.opacity = opacity.toString();
+}
+/**
+ * Applies the specified lighting to the element as a brightness filter.
+ *
+ * @remarks
+ * This function assumes an ambient light with intensity 0.5, and that the
+ * particle should be lit from both sides. The brightness filter can exceed 1,
+ * to give the particles a "glossy" feel.
+ */
+function defaultApplyLighting(lighting, element) {
+    element.style.filter = "brightness(" + (0.5 + Math.abs(lighting)) + ")";
+}
+/**
+ * Applies the specified transform to the element as a 3D CSS transform.
+ * Also takes into account the current window scroll, to make sure that particles are
+ * rendered inside of the fixed container.
+ */
+function defaultApplyTransform(particle, element) {
+    element.style.transform =
+        // Make sure to take window scrolling into account.
+        "translateX(" + (particle.location.x - window.scrollX).toFixed(3) + "px) " +
+            ("translateY(" + (particle.location.y - window.scrollY).toFixed(3) + "px) ") +
+            ("translateZ(" + particle.location.z.toFixed(3) + "px) ") +
+            ("rotateX(" + particle.rotation.x.toFixed(3) + "deg) ") +
+            ("rotateY(" + particle.rotation.y.toFixed(3) + "deg) ") +
+            ("rotateZ(" + particle.rotation.z.toFixed(3) + "deg) ") +
+            ("scale(" + particle.size.toFixed(3) + ")");
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/particle.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/particle.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Particle = void 0;
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var config_1 = __webpack_require__(/*! ../util/config */ "./node_modules/party-js/lib/util/config.js");
+/**
+ * Represents an emitted particle.
+ */
+var Particle = /** @class */ (function () {
+    /**
+     * Creates a new particle instance through the specified options.
+     */
+    function Particle(options) {
+        var populatedOptions = config_1.overrideDefaults({
+            lifetime: 0,
+            size: 1,
+            location: components_1.Vector.zero,
+            rotation: components_1.Vector.zero,
+            velocity: components_1.Vector.zero,
+            color: components_1.Color.white,
+            opacity: 1,
+        }, options);
+        // Generate a symbolic ID.
+        this.id = Symbol();
+        // Assign various properties, together with some initials for later reference.
+        this.size = this.initialSize = populatedOptions.size;
+        this.lifetime = this.initialLifetime = populatedOptions.lifetime;
+        this.rotation = this.initialRotation = populatedOptions.rotation;
+        this.location = populatedOptions.location;
+        this.velocity = populatedOptions.velocity;
+        this.color = populatedOptions.color;
+        this.opacity = populatedOptions.opacity;
+    }
+    return Particle;
+}());
+exports.Particle = Particle;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/particles/renderer.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/party-js/lib/particles/renderer.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Renderer = void 0;
+var __1 = __webpack_require__(/*! .. */ "./node_modules/party-js/lib/index.js");
+var vector_1 = __webpack_require__(/*! ../components/vector */ "./node_modules/party-js/lib/components/vector.js");
+var containers_1 = __webpack_require__(/*! ../containers */ "./node_modules/party-js/lib/containers.js");
+var shapes_1 = __webpack_require__(/*! ../systems/shapes */ "./node_modules/party-js/lib/systems/shapes.js");
+var util_1 = __webpack_require__(/*! ../util */ "./node_modules/party-js/lib/util/index.js");
+/**
+ * Represents a renderer used to draw particles to the DOM via HTML
+ * elements. Additionally, it is responsible for purging the elements
+ * of destroyed particles from the DOM.
+ */
+var Renderer = /** @class */ (function () {
+    function Renderer() {
+        /**
+         * The lookup of elements currently handled by the renderer, with the
+         * particle ID as key and a HTMLElement as the value.
+         */
+        this.elements = new Map();
+        /**
+         * The normalized direction the light comes from.
+         */
+        this.light = new vector_1.Vector(0, 0, 1);
+        /**
+         * Whether or not the renderer should actually draw particles.
+         */
+        this.enabled = true;
+        // Respect that users might prefer reduced motion.
+        // See: https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion
+        this.enabled =
+            !__1.settings.respectReducedMotion ||
+                !window.matchMedia("(prefers-reduced-motion)").matches;
+    }
+    /**
+     * Begins a new render block. During the rendering phase, a list of rendered particles
+     * is tracked, so that stale particles can be removed later.
+     */
+    Renderer.prototype.begin = function () {
+        this.renderedParticles = [];
+    };
+    /**
+     * Terminates an existing render block. This checks which particles were rendered
+     * during the block and purges all unused HTMLElements from the DOM.
+     *
+     * @returns The amount of particles that were rendered.
+     */
+    Renderer.prototype.end = function () {
+        var it = this.elements.keys();
+        var result = it.next();
+        while (!result.done) {
+            var id = result.value;
+            if (!this.renderedParticles.includes(id)) {
+                this.elements.get(id).remove();
+                this.elements.delete(id);
+            }
+            result = it.next();
+        }
+        return this.renderedParticles.length;
+    };
+    /**
+     * Renders an individual particle to the DOM. If the particle is rendered for the first
+     * time, a HTMLElement will be created using the emitter's render settings.
+     *
+     * @param particle The particle to be rendered.
+     * @param emitter The system containing the particle.
+     */
+    Renderer.prototype.renderParticle = function (particle, emitter) {
+        if (!this.enabled)
+            return;
+        var options = emitter.renderer;
+        // Ensure that an element for the particle exists.
+        var element = this.elements.has(particle.id)
+            ? this.elements.get(particle.id)
+            : this.createParticleElement(particle, options);
+        if (options.applyColor) {
+            // If the options offer a coloring method, apply it.
+            options.applyColor(particle.color, element);
+        }
+        if (options.applyOpacity) {
+            // If the options offer an opacity modifying method, apply it.
+            options.applyOpacity(particle.opacity, element);
+        }
+        if (options.applyLighting) {
+            // If the options offer a lighting method, apply it.
+            // Lighting is calculated as a combination of the particle's normal
+            // direction and the lighting direction.
+            var normal = util_1.rotationToNormal(particle.rotation);
+            var lightingCoefficient = normal.dot(this.light);
+            options.applyLighting(lightingCoefficient, element);
+        }
+        if (options.applyTransform) {
+            // If the options offer a transformation method, apply it.
+            // This ensures the particle is rendered at the correct position with the correct rotation.
+            options.applyTransform(particle, element);
+        }
+        // Mark the particle as rendered.
+        this.renderedParticles.push(particle.id);
+    };
+    /**
+     * Creates the HTMLElement for a particle that does not have one already.
+     */
+    Renderer.prototype.createParticleElement = function (particle, options) {
+        // Resolve the element returned from the factory.
+        var resolved = shapes_1.resolveShapeFactory(options.shapeFactory);
+        // Clone the node to ensure we do not break existing elements.
+        var element = resolved.cloneNode(true);
+        // Ensure that the elements can be "stacked" ontop of eachother.
+        element.style.position = "absolute";
+        // Register the new element in the map, while appending the new element to the DOM.
+        this.elements.set(particle.id, containers_1.particleContainer.current.appendChild(element));
+        return element;
+    };
+    return Renderer;
+}());
+exports.Renderer = Renderer;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/scene.js":
+/*!********************************************!*\
+  !*** ./node_modules/party-js/lib/scene.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Scene = void 0;
+var debug_1 = __webpack_require__(/*! ./debug */ "./node_modules/party-js/lib/debug.js");
+var emitter_1 = __webpack_require__(/*! ./particles/emitter */ "./node_modules/party-js/lib/particles/emitter.js");
+var renderer_1 = __webpack_require__(/*! ./particles/renderer */ "./node_modules/party-js/lib/particles/renderer.js");
+/**
+ * Represents a scene that contains emitters and their particles.
+ *
+ * Scenes are responsible for spawning and updating emitters, and
+ * removing them once they are done.
+ *
+ * Scenes are not explicitely present in the DOM as an element, only
+ * the contained particles are.
+ */
+var Scene = /** @class */ (function () {
+    /**
+     * Initializes a new scene and starts the ticking job.
+     */
+    function Scene() {
+        /**
+         * The emitters currently present in the scene.
+         */
+        this.emitters = [];
+        /**
+         * The debug instance associated with the scene.
+         */
+        this.debug = new debug_1.Debug(this);
+        /**
+         * The renderer associated with the scene.
+         */
+        this.renderer = new renderer_1.Renderer();
+        /**
+         * The ID of the currently scheduled tick.
+         */
+        this.scheduledTickId = undefined;
+        /**
+         * The timestamp of the last tick, used to calculate deltas.
+         *
+         * @initialValue `performance.now()` (time origin)
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
+         */
+        this.lastTickTimestamp = performance.now();
+        // Ensure the scene context is preserved on the tick.
+        this.tick = this.tick.bind(this);
+        this.scheduleTick();
+    }
+    /**
+     * Creates and returns a new, default emitter object.
+     */
+    Scene.prototype.createEmitter = function (options) {
+        var emitter = new emitter_1.Emitter(options);
+        this.emitters.push(emitter);
+        return emitter;
+    };
+    /**
+     * Clears all emitters from the scene.
+     *
+     * @returns The number of cleared emitters.
+     */
+    Scene.prototype.clearEmitters = function () {
+        return this.emitters.splice(0).length;
+    };
+    /**
+     * Clears the particles from all emitters in the scene.
+     * Note that this does not remove the actual emitter objects though.
+     *
+     * @returns The number of cleared particles.
+     */
+    Scene.prototype.clearParticles = function () {
+        return this.emitters.reduce(function (sum, emitter) { return sum + emitter.clearParticles(); }, 0);
+    };
+    /**
+     * Schedules a tick in the scene.
+     */
+    Scene.prototype.scheduleTick = function () {
+        this.scheduledTickId = window.requestAnimationFrame(this.tick);
+    };
+    /**
+     * Cancels a pending tick operation.
+     */
+    Scene.prototype.cancelTick = function () {
+        window.cancelAnimationFrame(this.scheduledTickId);
+    };
+    /**
+     * Processes a tick cycle, updating all emitters contained in the scene.
+     * This is handled as a JS animation frame event, hence the passed timestamp.
+     *
+     * @remarks
+     * The emitter ticking and particle rendering is run using try-catch blocks,
+     * to ensure that we can recover from potential errors.
+     *
+     * @param timestamp The current timestamp of the animation frame.
+     */
+    Scene.prototype.tick = function (timestamp) {
+        // Calculate the elapsed delta and convert it to seconds.
+        var delta = (timestamp - this.lastTickTimestamp) / 1000;
+        try {
+            // Perform ticks for all the emitters in the scene.
+            for (var i = 0; i < this.emitters.length; i++) {
+                var emitter = this.emitters[i];
+                emitter.tick(delta);
+                if (emitter.isExpired && emitter.canRemove) {
+                    this.emitters.splice(i--, 1);
+                }
+            }
+        }
+        catch (error) {
+            console.error("An error occurred while updating the scene's emitters:\n\"" + error + "\"");
+        }
+        try {
+            // Instruct the renderer to draw the particles of all systems.
+            this.renderer.begin();
+            for (var _i = 0, _a = this.emitters; _i < _a.length; _i++) {
+                var emitter = _a[_i];
+                for (var _b = 0, _c = emitter.particles; _b < _c.length; _b++) {
+                    var particle = _c[_b];
+                    this.renderer.renderParticle(particle, emitter);
+                }
+            }
+            this.renderer.end();
+        }
+        catch (error) {
+            console.error("An error occurred while rendering the scene's particles:\n\"" + error + "\"");
+        }
+        // Perform a tick on the debug interface
+        this.debug.tick(delta);
+        // Save the timestamp as the last tick timestamp and schedule a new tick.
+        this.lastTickTimestamp = timestamp;
+        this.scheduleTick();
+    };
+    return Scene;
+}());
+exports.Scene = Scene;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/settings.js":
+/*!***********************************************!*\
+  !*** ./node_modules/party-js/lib/settings.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.settings = void 0;
+exports.settings = {
+    debug: false,
+    gravity: 800,
+    zIndex: 99999,
+    respectReducedMotion: true,
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/math.js":
+/*!***************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/math.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.approximately = exports.clamp = exports.invlerp = exports.slerp = exports.lerp = exports.epsilon = exports.rad2deg = exports.deg2rad = void 0;
+/**
+ * Constant coefficient to convert degrees to radians.
+ */
+exports.deg2rad = Math.PI / 180;
+/**
+ * Constant coefficient to convert radians to degrees.
+ */
+exports.rad2deg = 180 / Math.PI;
+/**
+ * A small value to approximately compare values.
+ */
+exports.epsilon = 0.000001;
+/**
+ * Linearly interpolates between a and b by t.
+ */
+function lerp(a, b, t) {
+    return (1 - t) * a + t * b;
+}
+exports.lerp = lerp;
+/**
+ * Smoothly interpolates between a and b by t (using cosine interpolation).
+ */
+function slerp(a, b, t) {
+    return lerp(a, b, (1 - Math.cos(t * Math.PI)) / 2);
+}
+exports.slerp = slerp;
+/**
+ * Inversely lerps v between a and b to find t.
+ */
+function invlerp(a, b, v) {
+    return (v - a) / (b - a);
+}
+exports.invlerp = invlerp;
+/**
+ * Clamps the specified value between a minimum and a maximum.
+ */
+function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+}
+exports.clamp = clamp;
+/**
+ * Checks if a is approximately equal to b.
+ */
+function approximately(a, b) {
+    return Math.abs(a - b) < exports.epsilon;
+}
+exports.approximately = approximately;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/modules.js":
+/*!******************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/modules.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ModuleBuilder = void 0;
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+/**
+ * Represents a builder for particle modules. Returns an evaluatable module
+ * function, that can be consumed by emitters.
+ *
+ * @remarks
+ * Not all properties can be driven. TypeScript will validate this at compile time,
+ * but no internal validation is performed due to performance reasons. Also, note
+ * that the driving factor is "lifetime" by default.
+ *
+ * @example
+ * ```ts
+ * new ModuleBuilder()
+ *     .drive("size")
+ *     .by((t) => t * 2)
+ *     .through("lifetime")
+ *     .build();
+ * ```
+ */
+var ModuleBuilder = /** @class */ (function () {
+    function ModuleBuilder() {
+        /**
+         * The factor driving the built function.
+         *
+         * @defaultValue "lifetime"
+         */
+        this.factor = "lifetime";
+        this.isRelative = false;
+    }
+    /**
+     * Specifies the key in the particle that should be driven.
+     *
+     * @remarks
+     * Note that not all of a particle's properties are drivable through modules. If you
+     * need full control of a particle inside of a module, you can use a module function directly.
+     *
+     * @returns The chained builder instance.
+     */
+    ModuleBuilder.prototype.drive = function (key) {
+        this.driverKey = key;
+        return this;
+    };
+    /**
+     * Specifies the factor to drive the evaluated value by. Supports "lifetime" and "size".
+     *
+     * @returns The chained builder instance.
+     */
+    ModuleBuilder.prototype.through = function (factor) {
+        this.factor = factor;
+        return this;
+    };
+    /**
+     * Specifies the value to drive the module behaviour by. This can be a constant,
+     * a spline or an evaluable function. Note that in the last case, the driving
+     * factor is passed as a parameter.
+     *
+     * @returns The chained builder instance.
+     */
+    ModuleBuilder.prototype.by = function (driver) {
+        this.driverValue = driver;
+        return this;
+    };
+    /**
+     * Specifies that the module function is supposed to act relative to the
+     * properties initial value.
+     *
+     * @remarks
+     * Note that this is only possible if an "initial*" property exists on the
+     * particle object. The operation applied to the initial and new value
+     * is dependant on their type:
+     * - `Vector`: Both vectors are added.
+     * - `number`: Both numbers are multiplied.
+     *
+     * For more advanced relative customizations, consider using the particle
+     * object in the driver value function instead, like:
+     * ```ts
+     * .by((t, p) => p.initialSize + t * 2);
+     * ```
+     */
+    ModuleBuilder.prototype.relative = function (isRelative) {
+        if (isRelative === void 0) { isRelative = true; }
+        this.isRelative = isRelative;
+        return this;
+    };
+    /**
+     * Consumes the builder and returns an evaluatable module function.
+     *
+     * @remarks
+     * Note that you need to specify the driving key and value, otherwise an error
+     * will be thrown.
+     */
+    ModuleBuilder.prototype.build = function () {
+        var _this = this;
+        if (typeof this.driverKey === "undefined") {
+            throw new Error("No driving key was provided in the module builder. Did you forget a '.drive()' call?");
+        }
+        if (typeof this.driverValue === "undefined") {
+            throw new Error("No driving value was provided in the module builder. Did you forget a '.through()' call?");
+        }
+        return function (particle) {
+            updateDrivenProperty(particle, _this.driverKey, evaluateModuleDriver(_this.driverValue, calculateModuleFactor(_this.factor, particle), particle), _this.isRelative);
+        };
+    };
+    return ModuleBuilder;
+}());
+exports.ModuleBuilder = ModuleBuilder;
+/**
+ * Evaluates the module driver using a specified factor.
+ */
+function evaluateModuleDriver(driver, factor, particle) {
+    if (typeof driver === "object" && "evaluate" in driver) {
+        return driver.evaluate(factor);
+    }
+    if (typeof driver === "function") {
+        return driver(factor, particle);
+    }
+    return driver;
+}
+/**
+ * Calculates a module factor using a specified particle as context.
+ */
+function calculateModuleFactor(factor, particle) {
+    switch (factor) {
+        case "lifetime":
+            return particle.initialLifetime - particle.lifetime;
+        case "relativeLifetime":
+            return ((particle.initialLifetime - particle.lifetime) /
+                particle.initialLifetime);
+        case "size":
+            return particle.size;
+        default:
+            throw new Error("Invalid driving factor '" + factor + "'.");
+    }
+}
+/**
+ * Updates a driven property of a particle using the specified value.
+ *
+ * @remarks
+ * If the operation is marked as relative, the function infers the new value
+ * through the value's type. Note that relative properties must have a
+ * corresponding "initial*" value in the particle's properties.
+ */
+function updateDrivenProperty(particle, key, value, relative) {
+    if (relative === void 0) { relative = false; }
+    if (!relative) {
+        particle[key] = value;
+    }
+    else {
+        var initial = particle["initial" + key[0].toUpperCase() + key.substr(1)];
+        if (typeof initial === "undefined") {
+            throw new Error("Unable to use relative chaining with key '" + key + "'; no initial value exists.");
+        }
+        if (value instanceof components_1.Vector) {
+            updateDrivenProperty(particle, key, initial.add(value));
+        }
+        else if (typeof value === "number") {
+            updateDrivenProperty(particle, key, initial * value);
+        }
+        else {
+            throw new Error("Unable to use relative chaining with particle key '" + key + "'; no relative operation for '" + value + "' could be inferred.");
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/random.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/random.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.randomInsideCircle = exports.randomInsideRect = exports.randomUnitVector = exports.pick = exports.randomRange = void 0;
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var math_1 = __webpack_require__(/*! ./math */ "./node_modules/party-js/lib/systems/math.js");
+/**
+ * Returns a random value from min to max.
+ */
+function randomRange(min, max) {
+    if (min === void 0) { min = 0; }
+    if (max === void 0) { max = 1; }
+    return math_1.lerp(min, max, Math.random());
+}
+exports.randomRange = randomRange;
+/**
+ * Picks a random element from the specified array. Returns undefined if the array is empty.
+ */
+function pick(arr) {
+    return arr.length === 0
+        ? undefined
+        : arr[Math.floor(Math.random() * arr.length)];
+}
+exports.pick = pick;
+/**
+ * Returns a random unit vector.
+ */
+function randomUnitVector() {
+    var theta = randomRange(0, 2 * Math.PI);
+    var z = randomRange(-1, 1);
+    return new components_1.Vector(Math.sqrt(1 - z * z) * Math.cos(theta), Math.sqrt(1 - z * z) * Math.sin(theta), z);
+}
+exports.randomUnitVector = randomUnitVector;
+/**
+ * Returns a random point inside the given rect.
+ */
+function randomInsideRect(rect) {
+    return new components_1.Vector(rect.x + randomRange(0, rect.width), rect.y + randomRange(0, rect.height));
+}
+exports.randomInsideRect = randomInsideRect;
+function randomInsideCircle(circle) {
+    var theta = randomRange(0, 2 * Math.PI);
+    var radius = randomRange(0, circle.radius);
+    return new components_1.Vector(circle.x + Math.cos(theta) * radius, circle.y + Math.sin(theta) * radius);
+}
+exports.randomInsideCircle = randomInsideCircle;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/shapes.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/shapes.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.resolveShapeFactory = exports.resolvableShapes = void 0;
+var variation_1 = __webpack_require__(/*! ./variation */ "./node_modules/party-js/lib/systems/variation.js");
+/**
+ * Represents the lookup that maps resolveable element keys to their HTML strings.
+ *
+ * @remarks
+ * The default shapes are made to fit inside a dimension of 10x10 pixels, except
+ * the 'star' shape, which exceeds it slightly.
+ */
+exports.resolvableShapes = {
+    square: "<div style=\"height: 10px; width: 10px;\"></div>",
+    rectangle: "<div style=\"height: 6px; width: 10px;\"></div>",
+    circle: "<svg viewBox=\"0 0 2 2\" width=\"10\" height=\"10\"><circle cx=\"1\" cy=\"1\" r=\"1\" fill=\"currentColor\"/></svg>",
+    roundedSquare: "<div style=\"height: 10px; width: 10px; border-radius: 3px;\"></div>",
+    roundedRectangle: "<div style=\"height: 6px; width: 10px; border-radius: 3px;\"></div>",
+    star: "<svg viewBox=\"0 0 512 512\" width=\"15\" height=\"15\"><polygon fill=\"currentColor\" points=\"512,197.816 325.961,185.585 255.898,9.569 185.835,185.585 0,197.816 142.534,318.842 95.762,502.431 255.898,401.21 416.035,502.431 369.263,318.842\"/></svg>",
+};
+/**
+ * Resolves the specified element factory using the resolvable elements, if needed.
+ */
+function resolveShapeFactory(factory) {
+    // Retrieve the unresolved element from the factory.
+    var shape = variation_1.evaluateVariation(factory);
+    // If a string is returned, we need to resolve the element. This means
+    // looking up the string in the resolver lookup. If the key was not
+    // resolvable, we throw an error.
+    if (typeof shape === "string") {
+        var resolved = exports.resolvableShapes[shape];
+        if (!resolved) {
+            throw new Error("Failed to resolve shape key '" + shape + "'. Did you forget to add it to the 'resolvableShapes' lookup?");
+        }
+        // We're in luck, we can resolve the element! We create a dummy <div> element
+        // to set the innerHTML of, and return the first element child.
+        var dummy = document.createElement("div");
+        dummy.innerHTML = resolved;
+        return dummy.firstElementChild;
+    }
+    return shape;
+}
+exports.resolveShapeFactory = resolveShapeFactory;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/sources.js":
+/*!******************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/sources.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.circleSource = exports.rectSource = exports.mouseSource = exports.elementSource = exports.dynamicSource = void 0;
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var random_1 = __webpack_require__(/*! ./random */ "./node_modules/party-js/lib/systems/random.js");
+/**
+ * Dynamically infers a source sampler for the specified source type.
+ */
+function dynamicSource(source) {
+    if (source instanceof HTMLElement) {
+        return elementSource(source);
+    }
+    if (source instanceof components_1.Circle) {
+        return circleSource(source);
+    }
+    if (source instanceof components_1.Rect) {
+        return rectSource(source);
+    }
+    if (source instanceof MouseEvent) {
+        return mouseSource(source);
+    }
+    throw new Error("Cannot infer the source type of '" + source + "'.");
+}
+exports.dynamicSource = dynamicSource;
+/**
+ * Creates a sampler to retrieve random points inside a specified HTMLElement.
+ */
+function elementSource(source) {
+    return function () { return random_1.randomInsideRect(components_1.Rect.fromElement(source)); };
+}
+exports.elementSource = elementSource;
+/**
+ * Creates a sampler to retrieve the position of a mouse event.
+ */
+function mouseSource(source) {
+    return function () {
+        return new components_1.Vector(window.scrollX + source.clientX, window.scrollY + source.clientY);
+    };
+}
+exports.mouseSource = mouseSource;
+/**
+ * Creates a sampler to retrieve random points inside a specified rectangle.
+ */
+function rectSource(source) {
+    return function () { return random_1.randomInsideRect(source); };
+}
+exports.rectSource = rectSource;
+/**
+ * Creates a sampler to retrieve random points inside a specified circle.
+ */
+function circleSource(source) {
+    return function () { return random_1.randomInsideCircle(source); };
+}
+exports.circleSource = circleSource;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/systems/variation.js":
+/*!********************************************************!*\
+  !*** ./node_modules/party-js/lib/systems/variation.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.gradientSample = exports.splineSample = exports.skewRelative = exports.skew = exports.range = exports.evaluateVariation = void 0;
+var random_1 = __webpack_require__(/*! ./random */ "./node_modules/party-js/lib/systems/random.js");
+/**
+ * Returns a value instance of a variation.
+ */
+function evaluateVariation(variation) {
+    if (Array.isArray(variation))
+        return random_1.pick(variation);
+    if (typeof variation === "function")
+        return variation();
+    return variation;
+}
+exports.evaluateVariation = evaluateVariation;
+/**
+ * Creates a variation function that returns a random number from min to max.
+ */
+function range(min, max) {
+    return function () { return random_1.randomRange(min, max); };
+}
+exports.range = range;
+/**
+ * Creates a variation function that skews the specified value by a specified, absolute
+ * amount. This means that instead of the value itself, a random number that deviates
+ * at most by the specified amount is returned.
+ *
+ * @remarks
+ * If you want to skew by a percentage instead, use `skewRelative`.
+ */
+function skew(value, amount) {
+    return function () { return value + random_1.randomRange(-amount, amount); };
+}
+exports.skew = skew;
+/**
+ * Creates a variation function that skews the specified value by a specified percentage.
+ * This means that instead of the value itself, a random number that deviates by a maximum
+ * of the specified percentage is returned.
+ */
+function skewRelative(value, percentage) {
+    return function () { return value * (1 + random_1.randomRange(-percentage, percentage)); };
+}
+exports.skewRelative = skewRelative;
+/**
+ * Creates a variation function that returns a random sample from the given spline.
+ *
+ * @param spline The spline to sample from.
+ */
+function splineSample(spline) {
+    return function () { return spline.evaluate(Math.random()); };
+}
+exports.splineSample = splineSample;
+/**
+ * Creates a variation function that returns a random sample from the given gradient.
+ *
+ * @remarks
+ * This function is an alias for the spline variation, since a gradient is just
+ * a spline under the hood.
+ *
+ * @param gradient The gradient to sample from.
+ */
+function gradientSample(gradient) {
+    return splineSample(gradient);
+}
+exports.gradientSample = gradientSample;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/templates/confetti.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/party-js/lib/templates/confetti.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.confetti = void 0;
+var __1 = __webpack_require__(/*! ../ */ "./node_modules/party-js/lib/index.js");
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var modules_1 = __webpack_require__(/*! ../systems/modules */ "./node_modules/party-js/lib/systems/modules.js");
+var random = __webpack_require__(/*! ../systems/random */ "./node_modules/party-js/lib/systems/random.js");
+var sources = __webpack_require__(/*! ../systems/sources */ "./node_modules/party-js/lib/systems/sources.js");
+var variation = __webpack_require__(/*! ../systems/variation */ "./node_modules/party-js/lib/systems/variation.js");
+var util = __webpack_require__(/*! ../util */ "./node_modules/party-js/lib/util/index.js");
+/**
+ * The standard confetti template.
+ *
+ * @param source The source to emit the confetti from.
+ * @param options The (optional) configuration overrides.
+ */
+function confetti(source, options) {
+    var populated = util.overrideDefaults({
+        count: variation.range(20, 40),
+        spread: variation.range(35, 45),
+        speed: variation.range(300, 600),
+        size: variation.skew(1, 0.2),
+        rotation: function () { return random.randomUnitVector().scale(180); },
+        color: function () { return components_1.Color.fromHsl(random.randomRange(0, 360), 100, 70); },
+        modules: [
+            new modules_1.ModuleBuilder()
+                .drive("size")
+                .by(function (t) { return Math.min(1, t * 3); })
+                .relative()
+                .build(),
+            new modules_1.ModuleBuilder()
+                .drive("rotation")
+                .by(function (t) { return new components_1.Vector(140, 200, 260).scale(t); })
+                .relative()
+                .build(),
+        ],
+        shapes: ["square", "circle"],
+    }, options);
+    var emitter = __1.scene.current.createEmitter({
+        emitterOptions: {
+            loops: 1,
+            duration: 8,
+            modules: populated.modules,
+        },
+        emissionOptions: {
+            rate: 0,
+            bursts: [{ time: 0, count: populated.count }],
+            sourceSampler: sources.dynamicSource(source),
+            angle: variation.skew(-90, variation.evaluateVariation(populated.spread)),
+            initialLifetime: 8,
+            initialSpeed: populated.speed,
+            initialSize: populated.size,
+            initialRotation: populated.rotation,
+            initialColor: populated.color,
+        },
+        rendererOptions: {
+            shapeFactory: populated.shapes,
+        },
+    });
+    return emitter;
+}
+exports.confetti = confetti;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/templates/index.js":
+/*!******************************************************!*\
+  !*** ./node_modules/party-js/lib/templates/index.js ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./confetti */ "./node_modules/party-js/lib/templates/confetti.js"), exports);
+__exportStar(__webpack_require__(/*! ./sparkles */ "./node_modules/party-js/lib/templates/sparkles.js"), exports);
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/templates/sparkles.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/party-js/lib/templates/sparkles.js ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.sparkles = void 0;
+var __1 = __webpack_require__(/*! .. */ "./node_modules/party-js/lib/index.js");
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var modules_1 = __webpack_require__(/*! ../systems/modules */ "./node_modules/party-js/lib/systems/modules.js");
+var random = __webpack_require__(/*! ../systems/random */ "./node_modules/party-js/lib/systems/random.js");
+var sources = __webpack_require__(/*! ../systems/sources */ "./node_modules/party-js/lib/systems/sources.js");
+var variation = __webpack_require__(/*! ../systems/variation */ "./node_modules/party-js/lib/systems/variation.js");
+var util = __webpack_require__(/*! ../util */ "./node_modules/party-js/lib/util/index.js");
+/**
+ * The standard sparkles template.
+ *
+ * @param source The source to emit the sparkles from.
+ * @param options The (optional) configuration overrides.
+ */
+function sparkles(source, options) {
+    var populated = util.overrideDefaults({
+        lifetime: variation.range(1, 2),
+        count: variation.range(10, 20),
+        speed: variation.range(100, 200),
+        size: variation.range(0.8, 1.8),
+        rotation: function () { return new components_1.Vector(0, 0, random.randomRange(0, 360)); },
+        color: function () { return components_1.Color.fromHsl(50, 100, random.randomRange(55, 85)); },
+        modules: [
+            new modules_1.ModuleBuilder()
+                .drive("rotation")
+                .by(function (t) { return new components_1.Vector(0, 0, 200).scale(t); })
+                .relative()
+                .build(),
+            new modules_1.ModuleBuilder()
+                .drive("size")
+                .by(new components_1.NumericSpline({ time: 0, value: 0 }, { time: 0.3, value: 1 }, { time: 0.7, value: 1 }, { time: 1, value: 0 }))
+                .through("relativeLifetime")
+                .relative()
+                .build(),
+            new modules_1.ModuleBuilder()
+                .drive("opacity")
+                .by(new components_1.NumericSpline({ time: 0, value: 1 }, { time: 0.5, value: 1 }, { time: 1, value: 0 }))
+                .through("relativeLifetime")
+                .build(),
+        ],
+        shapes: "star",
+    }, options);
+    var emitter = __1.scene.current.createEmitter({
+        emitterOptions: {
+            loops: 1,
+            duration: 3,
+            useGravity: false,
+            modules: populated.modules,
+        },
+        emissionOptions: {
+            rate: 0,
+            bursts: [{ time: 0, count: populated.count }],
+            sourceSampler: sources.dynamicSource(source),
+            angle: variation.range(0, 360),
+            initialLifetime: populated.lifetime,
+            initialSpeed: populated.speed,
+            initialSize: populated.size,
+            initialRotation: populated.rotation,
+            initialColor: populated.color,
+        },
+        rendererOptions: {
+            applyLighting: undefined,
+            shapeFactory: populated.shapes,
+        },
+    });
+    return emitter;
+}
+exports.sparkles = sparkles;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/util/config.js":
+/*!**************************************************!*\
+  !*** ./node_modules/party-js/lib/util/config.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.overrideDefaults = void 0;
+/**
+ * Replaces the supplied defaults with the properties specified in the overrides.
+ * This returns a new object.
+ */
+function overrideDefaults(defaults, overrides) {
+    return Object.assign({}, defaults, overrides);
+}
+exports.overrideDefaults = overrideDefaults;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/util/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/party-js/lib/util/index.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./config */ "./node_modules/party-js/lib/util/config.js"), exports);
+__exportStar(__webpack_require__(/*! ./rotation */ "./node_modules/party-js/lib/util/rotation.js"), exports);
+__exportStar(__webpack_require__(/*! ./rules */ "./node_modules/party-js/lib/util/rules.js"), exports);
+__exportStar(__webpack_require__(/*! ./lazy */ "./node_modules/party-js/lib/util/lazy.js"), exports);
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/util/lazy.js":
+/*!************************************************!*\
+  !*** ./node_modules/party-js/lib/util/lazy.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Lazy = void 0;
+/**
+ * A wrapper class to lazily initialize a value.
+ * Supports custom factory and predicate methods.
+ */
+var Lazy = /** @class */ (function () {
+    function Lazy(factory, exists) {
+        if (exists === void 0) { exists = Lazy.defaultExists; }
+        this.factory = factory;
+        this.exists = exists;
+    }
+    Object.defineProperty(Lazy.prototype, "current", {
+        /**
+         * The current value of the lazy object. Will be initialized, if the 'exists'
+         * predicate doesn't match.
+         */
+        get: function () {
+            if (!this.exists(this.value)) {
+                this.value = this.factory();
+            }
+            return this.value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Lazy.defaultExists = function (value) {
+        return typeof value !== "undefined";
+    };
+    return Lazy;
+}());
+exports.Lazy = Lazy;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/util/rotation.js":
+/*!****************************************************!*\
+  !*** ./node_modules/party-js/lib/util/rotation.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.rotationToNormal = void 0;
+var components_1 = __webpack_require__(/*! ../components */ "./node_modules/party-js/lib/components/index.js");
+var math_1 = __webpack_require__(/*! ../systems/math */ "./node_modules/party-js/lib/systems/math.js");
+/**
+ * Converts the specified euler rotation (in degrees) into the corresponding normal vector.
+ *
+ * @remarks
+ * The normal is calculated by placing a (figurative) plane in a coordinate-system's
+ * origin, and rotating it by the specified angles. Note that the z-component of the
+ * rotation is irrelevant for the normal and can be ignored. Then, two vectors
+ * describing the orientation of the plane are calculated. Their cross product
+ * denotes the normal vector.
+ *
+ * @param rotation The euler rotation angles (in degrees) to calculate the normal for.
+ */
+function rotationToNormal(rotation) {
+    var alpha = rotation.x * math_1.deg2rad;
+    var beta = rotation.y * math_1.deg2rad;
+    var a = new components_1.Vector(Math.cos(beta), 0, Math.sin(beta));
+    var b = new components_1.Vector(0, Math.cos(alpha), Math.sin(alpha));
+    return a.cross(b);
+}
+exports.rotationToNormal = rotationToNormal;
+
+
+/***/ }),
+
+/***/ "./node_modules/party-js/lib/util/rules.js":
+/*!*************************************************!*\
+  !*** ./node_modules/party-js/lib/util/rules.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.despawningRules = void 0;
+/**
+ * Contains a set of pre-defined particle despawning rules.
+ */
+exports.despawningRules = {
+    /**
+     * A rule that despawns a particle once its lifetime is over.
+     */
+    lifetime: function (particle) {
+        return particle.lifetime <= 0;
+    },
+    /**
+     * A rule that despawns a particle once its y-coordinate is outside of the document.
+     */
+    bounds: function (particle) {
+        // Get document height: https://stackoverflow.com/a/44077777/5507624
+        var height = document.documentElement.scrollHeight;
+        return particle.location.y > height;
+    },
+};
+
 
 /***/ }),
 
@@ -4229,7 +6662,7 @@ module.exports = axios;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;

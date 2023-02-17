@@ -1,9 +1,11 @@
 import renderMode from "../../renderMode"
 
-let md_q = require("../../../../common/js/markdown")()
+import mdFactory from "../../../../common/js/markdown"
+
+let md_q = mdFactory()
 md_q.use(require('./question_plugin'))
 
-let md_s  = require("../../../../common/js/markdown")()
+let md_s  = mdFactory()
 md_s.use(require('./solution_plugin'))
 
 import MarkdownEditor from '../markdown/editor'

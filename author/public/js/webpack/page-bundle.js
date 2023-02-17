@@ -29352,11 +29352,12 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 var _renderMode = _interopRequireDefault(__webpack_require__(/*! ../../renderMode */ "./public/js/renderMode.js"));
+var _markdown = _interopRequireDefault(__webpack_require__(/*! ../../../../common/js/markdown */ "../common/public/js/markdown.js"));
 var _editor = _interopRequireDefault(__webpack_require__(/*! ../markdown/editor */ "./public/js/editor/markdown/editor.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-let md_q = __webpack_require__(/*! ../../../../common/js/markdown */ "../common/public/js/markdown.js")();
+let md_q = (0, _markdown.default)();
 md_q.use(__webpack_require__(/*! ./question_plugin */ "./public/js/editor/cloze/question_plugin.js"));
-let md_s = __webpack_require__(/*! ../../../../common/js/markdown */ "../common/public/js/markdown.js")();
+let md_s = (0, _markdown.default)();
 md_s.use(__webpack_require__(/*! ./solution_plugin */ "./public/js/editor/cloze/solution_plugin.js"));
 class Editor extends _editor.default {
   constructor(type = "cloze") {

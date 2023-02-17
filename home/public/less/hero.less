@@ -11,7 +11,7 @@
     height: 100vh;
     background-color: #fff;
     color: #333;
-    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
     border-bottom: 2px solid #C71D3D;
     scroll-snap-align: start;
 
@@ -69,24 +69,22 @@
       
     .teaserContainer {
         flex-grow: 4;
-
         display: flex; 
         flex-direction: column;
         flex-wrap: nowrap;
-        justify-content:center;
+        justify-content:start;
         align-items: center;
         align-content: center;
         gap: 50px;
         .teaser {
             display: flex; 
             flex-direction: row;
-            flex-wrap: nowrap;
             justify-content:space-between;
-            align-items: center;
+            align-items: start;
             align-content: center;
 
             .slogan {
-
+                max-width: 80%;
                 h1{
                     font-weight: 500;
                     font-size: calc(20px + 1vw);
@@ -99,6 +97,12 @@
                 color: black;
                 padding-left:60px;
             }
+        }
+        .launchArea{
+            display: flex; 
+            flex-direction: row;
+            max-height:20vh;
+            justify-content: space-evenly;
             .imageContainer {
                 display: flex; 
                 flex-direction: column;
@@ -107,15 +111,11 @@
                 align-items: center;
                 align-content: center;
                 img{
-                    width:33vw;
+                    max-height:100%;
                 }
             }
         }
-        .launch_button {
-            &:hover {
-                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-            }
-        }    
+          
     }
 
     .avatarContainer {
@@ -136,8 +136,10 @@
             align-content: flex-end;
             justify-content: flex-end;
             align-items: center;
+            height:15vh;
+            max-height:160px;
             img {
-                height: 120px;
+                height: 100%;
             }
         }
 
