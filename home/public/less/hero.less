@@ -91,6 +91,12 @@
                     line-height: 1.2;        
                     color: #C71D3D;
                 }
+                .textblock{
+                    background-color: #ffffffe0;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: -3px 3px 5px 0 rgb(3 166 150 / 80%), 3px -3px 5px 0 rgb(242 75 89 / 80%);
+                }
                 font-weight: 300;
                 line-height: 1.2;
                 font-size: calc(8px + 1vw);
@@ -99,17 +105,23 @@
             }
         }
         .launchArea{
-            display: flex; 
+            display: flex;
+            text-align: center;
+            justify-content: center;
             flex-direction: row;
             max-height:20vh;
-            justify-content: space-evenly;
+            max-width:100%;
+            
             .imageContainer {
+                flex: 1;
+                flex-flow: column wrap;
+                align-items: center;
+            
                 display: flex; 
                 flex-direction: column;
                 flex-wrap: nowrap;
-                justify-content:space-between;
                 align-items: center;
-                align-content: center;
+             
                 img{
                     max-height:100%;
                 }
