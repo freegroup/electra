@@ -65,12 +65,25 @@
                 font-weight: 400;
                 letter-spacing: 5px;
             }
-            .editIcon{
-                cursor: pointer;
-                &:hover{
-                    color: rgb(var(--tint-color));
+            .icons {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                gap: 10px;  
+                div{
+                    padding: 4px;
+                    cursor: pointer;
+                    font-size:1.1em;
+                    &:hover{
+                        color: rgb(var(--tint-color));
+                    }
+                    img{
+                        max-height: 20px;
+                    }
                 }
             }
+
         }
         .tags{
             margin-top: 4px;

@@ -1,32 +1,33 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var analog_math_Mean = CircuitFigure.extend({
 
    NAME: "analog_math_Mean",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:40,height:40.390625 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:40,height:40.390625},attr), setter, getter);
-     var port;
+     let port;
      // input_port1
      port = this.addPort(new DecoratedInputPort(), new draw2d.layout.locator.XYRelPortLocator({x: -2.5, y: 52.44197292069633 }));
      port.setConnectionDirection(3);
      port.setBackgroundColor("#37B1DE");
      port.setName("input_port1");
      port.setMaxFanOut(20);
+     this.read["input_port1"] = port.getValue.bind(port)
+     this.write["input_port1"]= port.setValue.bind(port)
+
      // output_port1
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 105, y: 51.992263056092845 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("output_port1");
      port.setMaxFanOut(20);
+     this.read["output_port1"] = port.getValue.bind(port)
+     this.write["output_port1"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -57,7 +58,7 @@ var analog_math_Mean = CircuitFigure.extend({
        shape.data("name","Label");
        
        // Line
-       shape = this.canvas.paper.path('M28.405000000001564 9.709000000001652L20.725000000002183,9.709000000001652L13.045000000001892,9.709000000001652L12.02100000000155,9.709000000001652');
+       shape = this.canvas.paper.path('M28.41 9.71L20.73,9.71L13.05,9.71L12.02,9.71');
        shape.attr({"stroke-linecap":"round","stroke-linejoin":"round","stroke":"rgba(0,0,0,1)","stroke-width":2,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Line");
        
@@ -160,7 +161,7 @@ analog_math_Mean = analog_math_Mean.extend({
 var analog_math_Product = CircuitFigure.extend({
 
    NAME: "analog_math_Product",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -1729,7 +1730,7 @@ digital_buttons_4x4Keypad = digital_buttons_4x4Keypad.extend({
 var digital_buttons_HighLow = CircuitFigure.extend({
 
    NAME: "digital_buttons_HighLow",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {

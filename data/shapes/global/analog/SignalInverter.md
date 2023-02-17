@@ -4,7 +4,7 @@ A signal of 0 normally means 0° for a servo and a signal of 5 is converted to 1
 
 Internally the module does nothing else but:
 
-```math
+```
 output = 5-input
 ```
 

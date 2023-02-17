@@ -29,7 +29,12 @@ class View {
         </div>
 
         <div class="details">
-          <div class="headline"><div class="displayName">${shape.displayName}</div>${writeIcon}</div>
+          <div class="headline"><div class="displayName">${shape.displayName}</div>
+            <div class="icons">
+              <div class="expandIcon"><img src="../common/images/toolbar_fullscreen.svg"/></div>
+              ${writeIcon}
+            </div>
+          </div>
           <div class="tags">${tags}</div>
           <div class="description"> </div>
         </div>
@@ -37,6 +42,7 @@ class View {
     });
 
     $(".tile .editIcon").on("click", this.onEdit.bind(this))
+    $(".tile .expandIcon").on("click", this.onExpand.bind(this))
 
     const descriptions = document.querySelectorAll(".tile .description");
     let observer = new IntersectionObserver((entries, observer) => {
@@ -65,6 +71,23 @@ class View {
     })
   }
 
+
+  onExpand(event){
+    let icon = $(event.currentTarget)
+    let tile = icon.closest(".tile")
+    let mdUrl = tile.data("markdown")
+    let editor = tile.clone()
+   
+    editor.css("position","absolute")
+    editor.addClass("editMode")
+    let saveButton = editor.find(".icons")
+    saveButton.html("<button>Close</button>")
+    saveButton.on("click", (event) =>{
+      editor.remove()
+    })
+    $(".content").append(editor)
+  }
+
   onEdit(event){
     let icon = $(event.currentTarget)
     let tile = icon.closest(".tile")
@@ -74,13 +97,13 @@ class View {
     editor.css("position","absolute")
     editor.addClass("editMode")
     editor.find(".description").html("")
-    let saveButton = editor.find(".editIcon")
+    let saveButton = editor.find(".icons")
     saveButton.html("<button>Save</button>")
     saveButton.on("click", this.onSave.bind(this))
 
     axios.get(mdUrl)
     .then( response =>{
-      $(".searchResult").append(editor)
+      $(".content").prepend(editor)
       this.editor = new ToastEditor({
         el: document.querySelector(".tile.editMode .description"),
         usageStatistics: false,
