@@ -131,7 +131,7 @@ class View {
     editor.hide()
     editor.find(".description").html("")
     let saveButton = editor.find(".icons")
-    saveButton.html("<button>Save</button>")
+    saveButton.html('<button class="electra-button">Save</button>')
     saveButton.on("click", this.onSave.bind(this))
 
     // for some reasons the insert of the editor changes the scroll position of a DIV.

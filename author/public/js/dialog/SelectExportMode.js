@@ -17,13 +17,13 @@ class Dialog {
                   <br>
                   <br>
                   <div class="button-container">
-                    <button data-mode="worksheet" class="btn  exportPdfMode">As Worksheet<img src="../common/images/export_mode_worksheet.svg"></button>
-                    <button data-mode="solution" class="btn  exportPdfMode">As Solution<img src="../common/images/export_mode_solution.svg"></button>
-                    <button data-mode="all" class="btn  exportPdfMode">Worksheet + Solution<img src="../common/images/export_mode_all.svg"></button>
+                    <button data-mode="worksheet" class="electra-button  exportPdfMode">As Worksheet<img src="../common/images/export_mode_worksheet.svg"></button>
+                    <button data-mode="solution"  class="electra-button  exportPdfMode">As Solution<img src="../common/images/export_mode_solution.svg"></button>
+                    <button data-mode="all"       class="electra-button  exportPdfMode">Worksheet + Solution<img src="../common/images/export_mode_all.svg"></button>
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn" data-dismiss="modal">Cancel</button>
+                  <button class="electra-button" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>

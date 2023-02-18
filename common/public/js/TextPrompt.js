@@ -21,7 +21,7 @@ class Dialog {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn" data-dismiss="modal">Close</button>
+                  <button class="electra-button" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>

@@ -48,8 +48,8 @@ class Dialog {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal">Abort</button>
-                        <button class="btn btn-primary okButton"><span>Save</span></button>
+                        <button class="electra-button" data-dismiss="modal">Abort</button>
+                        <button class="electra-button electra-primary okButton"><span>Save</span></button>
                     </div>
                 </div>
             </div>
