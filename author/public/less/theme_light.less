@@ -1,11 +1,6 @@
 
 body.light {
     --toolbar-bg-color: 254, 233, 233 ;
-    --tint-color:       199, 29, 61 ;
-    --tint-color-dark:  158, 27, 52 ;
-
-    --lefttab-font-color: 254, 233, 233;
-    --lefttab-bg-color:  199, 29, 61;
 
     .tooltip-inner {
         color: #b0b0b0 !important;
@@ -20,66 +15,8 @@ body.light {
     }
 
     #editor-container {
-
         .left {
             border-right-color: black;
-        }
-    }
-
-    #leftTabStrip {
-        background-color: rgb(var(--lefttab-bg-color)) ;
-
-        &:after {
-            color: rgb(var(--lefttab-font-color));
-        }
-
-        li {
-            &.active {
-                a{
-                    &:hover {
-                        background-color: white;
-                    }
-
-                    svg {
-                        path[stroke],
-                        rect[stroke],
-                        g[stroke],
-                        line[stroke],
-                        circle[stroke],
-                        polyline[stroke] {
-                            stroke: rgb(var(--lefttab-bg-color))  !important;
-                        }
-
-                        circle[fill],
-                        rect[fill] {
-                            fill: rgb(var(--lefttab-bg-color))  !important;
-                        }
-                    }
-                }
-            }
-
-            a {
-                &:hover {
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-
-                svg {
-
-                    path[stroke],
-                    rect[stroke],
-                    g[stroke],
-                    line[stroke],
-                    circle[stroke],
-                    polyline[stroke] {
-                        stroke:rgb(var(--lefttab-font-color)) !important;
-                    }
-
-                    circle[fill],
-                    rect[fill] {
-                        fill: rgb(var(--lefttab-font-color))!important;
-                    }
-                }
-            }
         }
     }
 
@@ -213,7 +150,7 @@ body.light {
         }
 
         &:hover {
-            border-radius: 3px;
+            border-radius: @borderRadiusSmall;
             border-style: dashed;
             border-color: rgba(0, 0, 0, 0.1);
         }
@@ -247,7 +184,7 @@ body.light {
                     background-color: lightgray;
                     padding-left: 15px;
                     padding-right: 15px;
-                    border-radius: 3px;
+                    border-radius: @borderRadiusSmall;
                     border-bottom: 1px dotted gray;
                 }
                 a {
@@ -273,12 +210,6 @@ body.light {
                   a:hover {
                     background-size: 0 1px, 100% 1px;
                   }
-            }
-
-            &[data-type='spacer'] {
-                .material-button {
-                    color: white;
-                }
             }
 
             /** learning content gets a special annotation on the left **/

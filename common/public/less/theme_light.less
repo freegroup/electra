@@ -1,28 +1,19 @@
-:root {
-    --shadow-color: #C71D3D;
-    --shadow-color-light: white;
-}
-
-
-@keyframes neon {
-    0% {
-      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
-      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),
-      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);
-    }
-    50% {
-      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
-      0 0 5px var(--shadow-color-light), 0 0 15px var(--shadow-color-light), 0 0 25px var(--shadow-color-light),
-      0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 60px var(--shadow-color), 0 0 80px var(--shadow-color), 0 0 110px var(--shadow-color), 0 0 210px var(--shadow-color);
-    }
-    100% {
-      text-shadow: -1px -1px 1px var(--shadow-color-light), -1px 1px 1px var(--shadow-color-light), 1px -1px 1px var(--shadow-color-light), 1px 1px 1px var(--shadow-color-light),
-      0 0 3px var(--shadow-color-light), 0 0 10px var(--shadow-color-light), 0 0 20px var(--shadow-color-light),
-      0 0 30px var(--shadow-color), 0 0 40px var(--shadow-color), 0 0 50px var(--shadow-color), 0 0 70px var(--shadow-color), 0 0 100px var(--shadow-color), 0 0 200px var(--shadow-color);
-    }
-  }
-
 body.light {
+    //--tint-color:       218, 26, 95;
+    --tint-color:       218, 255, 95;
+    --tint-color-dark:  158, 27, 52;
+
+    --lefttab-font-color: 161, 224, 224;
+    --lefttab-bg-color:  95, 26, 218;
+
+    .electra-button{
+        background-color: rgb(var(--tint-color));
+        color: white;
+        &:hover{
+            filter: brightness(110%);
+        }
+    }
+
     .notifyjs-bootstrap-base {
         box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
     }
@@ -40,7 +31,6 @@ body.light {
             }
             h2 {
                 color: white;
-                animation: neon 3s infinite;
             }
         }
         .slogan{
@@ -94,79 +84,18 @@ body.light {
 
     .spinner:before {
         border-color: #ccc;
-        border-top-color: #C71D3D;
+        border-top-color: rgb(var(--tint-color));
         background-color: #fef9f9;
     }
 
-    .material-button {
-        color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
-        background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
-        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    }
-
-    /* Overlay */
-    .material-button::before {
-        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
-        opacity: 0;
-    }
-
-    /* Ripple */
-    .material-button::after {
-        background-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
-        opacity: 0;
-    }
-
-    /* Hover, Focus */
-    .material-button:hover,
-    .material-button:focus {
-        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-    }
-
-    .material-button:hover::before {
-        opacity: 0.08;
-    }
-
-    .material-button:focus::before {
-        opacity: 0.24;
-    }
-
-    .material-button:hover:focus::before {
-        opacity: 0.3;
-    }
-
-    /* Active */
-    .material-button:active {
-        box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
-    }
-
-    .material-button:active::after {
-        opacity: 0.32;
-    }
-
-    /* Disabled */
-    .material-button:disabled {
-        color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);
-        background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.12);
-        box-shadow: none;
-    }
-
-    .material-button:disabled::before {
-        opacity: 0;
-    }
-
-    .material-button:disabled::after {
-        opacity: 0;
-    }
-
-
     .confirm-dialog-btn-confirm {
-        background-color: #C71D3D;
+        background-color: rgb(var(--tint-color));
     }
 
     .context-menu-list {
         border-color: #DDD;
         background: white;
-        border-left-color: #C71D3D;
+        border-left-color: rgb(var(--tint-color));
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
         .context-menu-separator {
@@ -175,7 +104,7 @@ body.light {
 
         .context-menu-item {
             &.hover {
-                background-color: #C71D3D;
+                background-color: rgb(var(--tint-color));
                 color: white;
             }
 
@@ -220,22 +149,80 @@ body.light {
         }
     }
 
+
+    #leftTabStrip {
+        background-color: rgb(var(--lefttab-bg-color)) ;
+
+        &:after {
+            color: rgb(var(--lefttab-font-color));
+        }
+
+        li {
+            &.active {
+                a{
+                    &:hover {
+                        background-color: white;
+                    }
+
+                    svg {
+                        path[stroke],
+                        rect[stroke],
+                        g[stroke],
+                        line[stroke],
+                        circle[stroke],
+                        polyline[stroke] {
+                            stroke: rgb(var(--lefttab-bg-color))  !important;
+                        }
+
+                        circle[fill],
+                        rect[fill] {
+                            fill: rgb(var(--lefttab-bg-color))  !important;
+                        }
+                    }
+                }
+            }
+
+            a {
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                svg {
+
+                    path[stroke],
+                    rect[stroke],
+                    g[stroke],
+                    line[stroke],
+                    circle[stroke],
+                    polyline[stroke] {
+                        stroke:rgb(var(--lefttab-font-color)) !important;
+                    }
+
+                    circle[fill],
+                    rect[fill] {
+                        fill: rgb(var(--lefttab-font-color))!important;
+                    }
+                }
+            }
+        }
+    }
+
     #home {
         .authorPage {
             h1 {
-                color: #C71D3D;
+                color:rgb(var(--tint-color));
             }
 
             h2 {
-                color: #C71D3D;
+                color: rgb(var(--tint-color));
             }
         }
 
         footer {
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
 
             a {
-                color: #C71D3D;
+                color: rgb(var(--tint-color));
             }
         }
     }
@@ -249,7 +236,7 @@ body.light {
             transition: all 0.5s;
 
             &:hover {
-                border-color: #C71D3D;
+                border-color:rgb(var(--tint-color));
             }
         }
     }
@@ -257,7 +244,7 @@ body.light {
     #configMenuIcon {
         &:hover {
             opacity: 1;
-            color: #C71D3D;
+            color: rgb(var(--tint-color));
         }
     }
 
@@ -289,7 +276,7 @@ body.light {
                 .list-group {
 
                     *[data-draw2d="true"] {
-                        color: #C71D3D;
+                        color: rgb(var(--tint-color));
                     }
 
                     .list-group-item {
@@ -308,10 +295,10 @@ body.light {
                 .btn,
                 .btn-group {
                     background-color: transparent;
-                    color: #C71D3D;
+                    color:rgb(var(--tint-color));
 
                     &:hover {
-                        background-color: fadeout(#C71D3D, 96);
+                        filter: brightness(110%);
                     }
                 }
 
@@ -323,10 +310,10 @@ body.light {
                     }
 
                     background-color:transparent;
-                    color:#C71D3D;
+                    color:rgb(var(--tint-color));
 
                     &:hover {
-                        background-color: fadeout(#C71D3D, 96);
+                        filter: brightness(110%);
                     }
                 }
             }
@@ -345,7 +332,7 @@ body.light {
                 linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);
 
             .title {
-                color: #C71D3D;
+                color: rgb(var(--tint-color));
             }
 
             .slogan {
@@ -365,26 +352,16 @@ body.light {
             .thumb {
 
                 .filenameInplaceEdit {
-                    color: #C71D3D;
+                    color:rgb(var(--tint-color));
                 }
 
                 h4 {
-                    color: #C71D3D;
+                    color:rgb(var(--tint-color));
                 }
 
             }
 
         }
-
-        .thumbAdd {
-            color: #0078f2;
-            border-color: rgba(0, 120, 242, 0.33);
-
-            &:hover {
-                border-color: rgba(0, 120, 242, 1);
-            }
-        }
-
 
         #material-tabs {
             border-bottom-color: #e0e0e0;
@@ -402,7 +379,7 @@ body.light {
 
         #material-tabs>a:not(.active):hover {
             background-color: inherit;
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
         }
 
         .yellow-bar {
@@ -414,7 +391,7 @@ body.light {
 
     #githubNewFileDialog {
         .filePreview {
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
         }
     }
 
@@ -434,11 +411,12 @@ body.light {
     }
   
     #notificationToast {
-        background-color: #C71D3D;
+        background-color:rgb(var(--tint-color));
         color: white;
     }
 
     .markdownRendering {
+        background-color: white;
         table {
             color: #666;
             text-shadow: 1px 1px 0px #fff;
@@ -523,7 +501,7 @@ body.light {
     }
     @keyframes highlight {
         0% {
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
         }
 
         50% {
@@ -531,7 +509,7 @@ body.light {
         }
 
         100% {
-            color: #C71D3D;
+            color:rgb(var(--tint-color));
         }
     }
 

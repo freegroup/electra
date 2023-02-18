@@ -282,11 +282,11 @@ export default class View {
     whereToAppend.append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
-            <div data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection material-button' >&#8853; Text</div>
-            <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
-            <div data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection material-button' >&#8853; FlashCard</div>
-            <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>
-            <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection material-button' >&#8853; Picture</div>
+            <div data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection electra-button' >&#8853; Text</div>
+            <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection electra-button' >&#8853; Cloze</div>
+            <div data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</div>
+            <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection electra-button' >&#8853; Diagram</div>
+            <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection electra-button' >&#8853; Picture</div>
           </div>
         </div>
       `)
@@ -333,8 +333,8 @@ export default class View {
     this.onCommitEdit().then( () => {
       this.onSelect(section)
       $(".activeSection .tinyFlyoverMenu").html(`
-        <div data-id="${section.id}" class="sectionMenuCommitEdit material-button">Save</div>
-        <div data-id="${section.id}" class="sectionMenuCancelEdit material-button">Cancel</div>
+        <div data-id="${section.id}" class="sectionMenuCommitEdit electra-button">Save</div>
+        <div data-id="${section.id}" class="sectionMenuCancelEdit electra-button">Cancel</div>
       `)
       this.currentEditor = editorByType(section.type)
       this.currentEditor.inject(section)

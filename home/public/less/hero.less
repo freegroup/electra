@@ -12,7 +12,7 @@
     background-color: #fff;
     color: #333;
     background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
-    border-bottom: 2px solid #C71D3D;
+    border-bottom: 2px solid rgb(var(--tint-color));
     scroll-snap-align: start;
 
     .toolbar {
@@ -39,7 +39,7 @@
             top: 6px;
             position: relative;
             left: 20px;
-            color:#C71D3D;
+            color: rgb(var(--tint-color));
           }
       
           .app_slogan {
@@ -48,7 +48,7 @@
             top: 6px;
             position: relative;
             left: 20px;
-            color:#C71D3D;
+            color:rgb(var(--tint-color));
             font-size:70%;
             transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
           }
@@ -89,12 +89,12 @@
                     font-weight: 500;
                     font-size: calc(20px + 1vw);
                     line-height: 1.2;        
-                    color: #C71D3D;
+                    color:rgb(var(--tint-color));
                 }
                 .textblock{
                     background-color: #ffffffe0;
                     padding: 20px;
-                    border-radius: 5px;
+                    border-radius: @borderRadiusBig;
                     box-shadow: -3px 3px 5px 0 rgb(3 166 150 / 80%), 3px -3px 5px 0 rgb(242 75 89 / 80%);
                 }
                 font-weight: 300;
@@ -162,7 +162,7 @@
                 height: 20px;
                 display: inline-block;
                 border-left: 4px solid #000;
-                border-radius:4px;
+                border-radius: @borderRadiusSmall;
                 &.left {
                     transform: rotate(-45deg);
                 }

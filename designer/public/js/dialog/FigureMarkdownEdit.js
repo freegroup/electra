@@ -26,8 +26,8 @@ export default class FigureMarkdownEdit {
              <span class="right">HTML Preview</span>
           </div>
           <div class="tinyFlyoverMenu">
-            <div id="test_commit" class="material-button">Save</div>
-            <div id="test_cancel" class='material-button'>Close</div>
+            <div id="test_commit" class="electra-button">Save</div>
+            <div id="test_cancel" class='electra-button'>Close</div>
           </div>
       <div>
       `)

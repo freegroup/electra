@@ -31,10 +31,10 @@ export default class Editor extends GenericEditor{
         <h2>Add your flashcard <b>${section.content}</b> content here</h2>
       </div>
       <div class="placeholderButtons">
-        <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection material-button' >&#8853; Text</div>
-        <div data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection material-button' >&#8853; Diagram</div>
-        <div data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection material-button' >&#8853; Image</div>
-        <div data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection material-button' >&#8853; Cloze</div>
+        <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection electra-button' >&#8853; Text</div>
+        <div data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</div>
+        <div data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection electra-button' >&#8853; Image</div>
+        <div data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</div>
       </div>
     </div>
     `

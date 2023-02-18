@@ -1,71 +1,9 @@
 
 body.light {
   --toolbar-bg-color: 178, 226, 242;
-  --tint-color:       199, 29, 61;
-  --tint-color-dark:  158, 27, 52;
-
-  --lefttab-font-color: 178, 226, 242;
-  --lefttab-bg-color:  199, 29, 61;
 
   .toolbar {
     background-color:rgb(var(--toolbar-bg-color));
-  }
-
-  #leftTabStrip {
-    background-color: rgb(var(--lefttab-bg-color));
-
-    &:after {
-      color: rgb(var(--toolbar-bg-color));
-    }
-
-    li {
-      &.active {
-        a{
-            &:hover {
-                background-color: white;
-            }
-
-            svg {
-                path[stroke],
-                rect[stroke],
-                g[stroke],
-                line[stroke],
-                circle[stroke],
-                polyline[stroke] {
-                    stroke: rgb(var(--lefttab-bg-color))  !important;
-                }
-
-                circle[fill],
-                rect[fill] {
-                    fill: rgb(var(--lefttab-bg-color))  !important;
-                }
-            }
-        }
-      }
-
-      a {
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        svg {
-
-          path[stroke],
-          rect[stroke],
-          g[stroke],
-          line[stroke],
-          circle[stroke],
-          polyline[stroke] {
-            stroke:rgb(var(--lefttab-font-color)) !important;
-          }
-
-          circle[fill],
-          rect[fill] {
-            fill:rgb(var(--lefttab-font-color)) !important;
-          }
-        }
-      }
-    }
   }
 
   .ui-anglepicker {
@@ -145,9 +83,7 @@ body.light {
       }
     }
 
-    .markdownRendering {
-      background-color: white;
-    }
+
   }
 
   #testDialog {
@@ -161,13 +97,6 @@ body.light {
       background-color: white;
     }
 
-    .tinyFlyoverMenu {
-      svg {
-        :hover {
-          color: rgb(var(--tint-color)) !important;
-        }
-      }
-    }
   }
 
   .portDirectionOption {

@@ -17,11 +17,11 @@ export default class Editor extends GenericEditor{
         <h2>Start by adding your first content to make it feel more alive in here!</h2>
       </div>
       <div class="placeholderButtons">
-        <div data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection material-button' >&#8853; Text</div>
-        <div data-index="0" data-type="cloze"     class='sectionMenuInsertSection material-button' >&#8853; Cloze</div>
-        <div data-index="0" data-type="flashcard" class='sectionMenuInsertSection material-button' >&#8853; FlashCard</div>
-        <div data-index="0" data-type="brain"     class='sectionMenuInsertSection material-button' >&#8853; Diagram</div>
-        <div data-index="0" data-type="image"     class='sectionMenuInsertSection material-button' >&#8853; Picture</div>
+        <div data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</div>
+        <div data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</div>
+        <div data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</div>
+        <div data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</div>
+        <div data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</div>
       </div>
     </div>
     </div>

@@ -33,7 +33,7 @@
     cursor: pointer;
     font-size: 25px;
     padding: 4px;
-    border-radius: 2px;
+    border-radius: @borderRadiusSmall;
   }
 
   .list-group-item {
@@ -76,29 +76,6 @@
       }
     }
 
-  }
-
-  .thumbAdd {
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 1s;
-
-    div {
-      font-size: 160px;
-      text-align: center;
-    }
-
-    h4 {
-      text-align: center;
-    }
-
-    &:hover {
-      border-width: 1px;
-      border-style: solid;
-      transition: all 1s;
-    }
   }
 
   .fileOperations {
@@ -157,7 +134,7 @@
     display: block;
     left: 0;
     transition: all 0.3s ease;
-    border-radius: 10px 10px 0 0;
+    border-radius: @borderRadiusSmall @borderRadiusSmall 0 0;
     border-width: 1px 1px 0 1px;
     border-style: solid;
   }

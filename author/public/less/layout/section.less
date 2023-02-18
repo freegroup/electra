@@ -32,7 +32,7 @@
     .sectionContent[data-type='spacer'] {
       gap: 10px;
       transition: all 0.2s ease;
-      .material-button{
+      .electra-button{
         opacity: 1; 
         transform: scale(1); 
         transition: all 0.2s ease;
@@ -70,7 +70,7 @@
       display: flex;
       width: fit-content;
       padding:15px;
-      border-radius:15px;
+      border-radius:@borderRadiusBig;
       margin: 50px;
       margin-left: auto;
       margin-right: auto;
@@ -194,7 +194,7 @@
         transform-style: preserve-3d;
         display: inline-grid;
         width:100%;
-        border-radius:3px;
+        border-radius:@borderRadiusSmall;
       }
 
       .front,
@@ -240,7 +240,7 @@
 
       transition: all 0.2s ease;
       gap: 1px;
-      .material-button{
+      .electra-button{
         opacity: 0; 
         transform: scale(0.3,0.5);
         transition: all 0.2s ease;

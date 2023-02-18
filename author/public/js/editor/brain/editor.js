@@ -22,7 +22,7 @@ export default class Editor extends GenericEditor{
           </div>
        `)
     menu.prepend(`
-          <div class="playButton play material-button" id="simulationStartStop">
+          <div class="playButton play electra-button" id="simulationStartStop">
             <span>
               <span class="s1"></span>
               <span class="s2"></span>

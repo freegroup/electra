@@ -16,7 +16,7 @@ body {
 
 
 .launch_button {
-    border-radius: 5px;
+    border-radius: @borderRadiusSmall;
     display: inline-block;
     padding: 5px;
     padding-left: 10px;
@@ -26,7 +26,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
     text-decoration: none;
-    background-color: #C71D3D;
+    background-color: rgb(var(--tint-color));
     color: white;
     font-weight: 300;
 }
@@ -37,47 +37,3 @@ body {
         color:white;
     }
 }  
-
-.image-button {
-
-    img,
-    svg {
-        color: #777;
-
-        circle[stroke],
-        polyline[stroke],
-        path[stroke],
-        g[stroke] {
-            stroke: #777 !important;
-        }
-
-        rect[fill],
-        circle[fill] {
-            fill: #777 !important;
-        }
-    }
-
-    div {
-        color: #777;
-
-        &.highlight {
-            animation: highlight 3s infinite;
-        }
-    }
-
-    &.disabled {
-        opacity: 0.2;
-    }
-
-    &:not(.disabled) {
-
-        img,
-        svg {
-            cursor: pointer;
-
-            &:hover {
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            }
-        }
-    }
-}

@@ -11,7 +11,7 @@ class Dialog {
     Mousetrap.pause()
     currentFigure = figure
 
-    let figureName = fs.basename(figure.attr("userData.file", ".shape"))
+    let figureName = fs.basename(figure.attr("userData.file"), ".shape")
     $("#figureConfigDialog .media-heading").html(figureName +" Settings")
 
     let settings = figure.getParameterSettings().slice(0)

@@ -18,8 +18,8 @@ export default class Files {
     $("body").append(` 
         <script id="filesTemplate" type="text/x-jsrender">
         <div class="fileOperations">
-            <div data-folder="{{folder}}" class='fileOperationsFolderAdd material-button' >&#43; ${conf.fileScreen.addFolderButton}</div>
-            <div data-folder="{{folder}}" class='fileOperationsDocumentAdd material-button' >&#43; ${conf.fileScreen.addFileButton}</div>
+            <div data-folder="{{folder}}" class='fileOperationsFolderAdd electra-button' >&#43; ${conf.fileScreen.addFolderButton}</div>
+            <div data-folder="{{folder}}" class='fileOperationsDocumentAdd electra-button' >&#43; ${conf.fileScreen.addFileButton}</div>
         </div>
         <div>Folder: {{folder}}</div>
         <ul class="list-group col-lg-10 col-md-10 col-xs-10 ">

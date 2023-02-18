@@ -4,6 +4,7 @@ import "../../common/js/polyfill"
 import "../less/index.less"
 import inlineSVG from "../../common/js/inlineSVG"
 
+
 // simple text fade out for the card headers
 //
 function get() {

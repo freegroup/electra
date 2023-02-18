@@ -299,7 +299,7 @@ export default draw2d.Canvas.extend({
               "label": {name: "Attach Label"},
               "delete": {name: "Delete"},
               "sep1": "---------",
-              "design": {name: "Open in Component Editor (readonly)"},
+              "design": {name: "Open in Component Editor"},
               "help": {name: "Description"}
             }
           }
