@@ -1,5 +1,4 @@
 const express = require('express');
-const morgan = require("morgan");
 const path = require('path')
 const fs = require('fs');
 const dotenv = require('dotenv')
@@ -78,8 +77,6 @@ function onProxyReq(proxyReq, req, res){
     }
 }
 
-
-app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cookieParser());

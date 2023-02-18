@@ -1,4 +1,3 @@
-import { thresholdSturges } from "d3"
 import MarkerFigure from "./MarkerFigure"
 import Values from "./Values"
 
