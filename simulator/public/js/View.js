@@ -8,7 +8,6 @@ import Connection from "./figures/Connection"
 import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
 import colors from "../../common/js/Colors"
-import CodeDialog from "./dialog/CodeDialog"
 import WebUSBHelpDialog from "./dialog/WebUSBHelpDialog"
 import figureConfigDialog from "./dialog/FigureConfigDialog"
 
@@ -292,7 +291,6 @@ export default draw2d.Canvas.extend({
               "delete": {name: "Delete"},
               "sep1": "---------",
               "design": {name: "Open in Component Editor"},
-              "code": {name: "Show JS Code"},
               "help": {name: "Description"}
             }
           }
@@ -302,7 +300,6 @@ export default draw2d.Canvas.extend({
               "delete": {name: "Delete"},
               "sep1": "---------",
               "design": {name: "Open in Component Editor (readonly)"},
-              "code": {name: "Show JS Code"},
               "help": {name: "Description"}
             }
           }
@@ -335,9 +332,6 @@ export default draw2d.Canvas.extend({
           },
           callback: (key, options) => {
             switch (key) {
-              case "code":
-                new CodeDialog().show(figure)
-                break
               case "label":
                 let text = prompt("Label")
                 if (text) {
