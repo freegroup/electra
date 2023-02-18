@@ -21,6 +21,7 @@ class Dialog {
 
   show(figure) {
     let scope = figure.attr("userData.scope")
+
     let shapeName = figure.attr("userData.file")
     let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName,".shape")
     let markdownName = shapeName.replace(/\.shape$/, ".md")

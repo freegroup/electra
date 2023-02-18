@@ -475,6 +475,7 @@ export default draw2d.Canvas.extend({
     let name = $(droppedDomNode).data("name")
     let file = $(droppedDomNode).data("file")
     let scope = $(droppedDomNode).data("scope")
+
     let figure = null
     try {
       figure = eval(`new ${name}();`) // jshint ignore:line

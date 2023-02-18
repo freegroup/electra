@@ -253,7 +253,7 @@
 <script id="shapeTemplate" type="text/x-jsrender">
 {{#shapes}}
     <div  data-name='{{name}}'  data-scope='{{scope}}'  data-file='{{shapePath}}'  data-dir="{{basedir}}"  class="palette_item">
-      <img loading="lazy" data-name="{{name}}"  data-displayname="{{displayName}}" data-scope='{{scope}}' data-file='{{shapePath}}' class="draw2d_droppable" src="{{imageUrl}}"/>
+      <img loading="lazy" data-name="{{name}}"  data-displayname="{{displayName}}" data-scope='{{scope}}' data-file='{{fullName}}.shape' class="draw2d_droppable" src="{{imageUrl}}"/>
       <div>{{displayName}}</div>
     </div>
 {{/shapes}}
