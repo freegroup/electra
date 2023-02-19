@@ -12,6 +12,7 @@ export default class Editor {
 
     /* public interface */
     inject(section) {
+      $(".sections").addClass("editMode")
       $(".sections .activeSection").addClass("editMode")
       this.section = section
       return this
@@ -19,6 +20,7 @@ export default class Editor {
   
     /* public interface */
     commit() {
+      $(".sections").removeClass("editMode")
       $(".sections .activeSection").removeClass("editMode")
       return new Promise((resolve, reject) => {
         resolve(this.section)
@@ -27,6 +29,7 @@ export default class Editor {
   
     /* public interface */
     cancel() {
+      $(".sections").removeClass("editMode")
       $(".sections .activeSection").removeClass("editMode")
       return new Promise((resolve, reject) => {
         resolve(this.section)

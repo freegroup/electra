@@ -42,7 +42,6 @@ export default class Editor extends GenericEditor{
   commit(){
     return super.commit()
     .then(() => {
-      $(".sections .activeSection").removeClass("editMode")
       this.section.content = this.editor.getMarkdown().tuiMarkdownFix()
       return this.section
     })

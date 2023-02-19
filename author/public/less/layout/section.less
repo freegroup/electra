@@ -8,8 +8,34 @@
   border-radius: @borderRadiusBig;
 }
 
+.sections:not(.editMode) {
+  .section{
+    &.footerSection,
+    &:hover{
+      border-width:1px;
+      border-style:solid;
+      .sectionContent[data-type='spacer'] {
+        gap: @buttonSpacing;
+        transition: all 0.2s ease;
+        .electra-button{
+          opacity: 1; 
+          transform: scale(1); 
+          transition: all 0.2s ease;
+        }
+      }
+      .fc{
+        .tinyFlyoverMenu {
+          opacity: 0.3;
+        }
+      }
+    }
+  }
+}
+
+
 /** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
-    used in other page elements like pdf, dialog, single page, ...
+    used in other page elements like pdf, dialog, single page, ... as well without the
+    outer "sections" content
  **/ 
 .section {
   margin-left:20px;
@@ -24,27 +50,6 @@
   &.error {
     border-width:1px;
     border-style:solid;
-  }
-
-  &.footerSection,
-  &:hover{
-    border-width:1px;
-    border-style:solid;
-    .sectionContent[data-type='spacer'] {
-      gap: @buttonSpacing;
-      transition: all 0.2s ease;
-      .electra-button{
-        opacity: 1; 
-        transform: scale(1); 
-        transition: all 0.2s ease;
-      }
-    }
-    .fc{
-      .tinyFlyoverMenu {
-        opacity: 0.3;
-      }
-    }
-  
   }
 
   .fc{

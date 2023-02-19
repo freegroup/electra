@@ -29606,6 +29606,7 @@ class Editor {
 
   /* public interface */
   inject(section) {
+    $(".sections").addClass("editMode");
     $(".sections .activeSection").addClass("editMode");
     this.section = section;
     return this;
@@ -29613,6 +29614,7 @@ class Editor {
 
   /* public interface */
   commit() {
+    $(".sections").removeClass("editMode");
     $(".sections .activeSection").removeClass("editMode");
     return new Promise((resolve, reject) => {
       resolve(this.section);
@@ -29621,6 +29623,7 @@ class Editor {
 
   /* public interface */
   cancel() {
+    $(".sections").removeClass("editMode");
     $(".sections .activeSection").removeClass("editMode");
     return new Promise((resolve, reject) => {
       resolve(this.section);
@@ -30287,7 +30290,6 @@ class Editor extends _editor2.default {
   /* public interface */
   commit() {
     return super.commit().then(() => {
-      $(".sections .activeSection").removeClass("editMode");
       this.section.content = this.editor.getMarkdown().tuiMarkdownFix();
       return this.section;
     });
