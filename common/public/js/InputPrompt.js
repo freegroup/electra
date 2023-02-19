@@ -10,16 +10,10 @@ class Dialog {
                   <h4 class="media-heading">Input Prompt</h4>
                 </div>
                 <div class="modal-body">
-                  <div class="media">
-                    <fieldset>
-                      <div class="form-group">
-                        <div class="col-lg-12">
-                          <label class="promptValueLabel">Value</label>
-                          <input type="text" class="inputPromptValue" value="" >
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
+                    <div class="controlWithHeader">
+                      <label class="promptValueLabel">Value</label>
+                      <input type="text" class="inputPromptValue" value="" >
+                    </div>
                 </div>
                 <div class="modal-footer">
                   <button class="electra-button" data-dismiss="modal">Cancel</button>

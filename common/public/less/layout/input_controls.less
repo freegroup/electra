@@ -27,4 +27,22 @@ input[type=text]{
     &:focus{
         box-shadow: none;
     }
-  }
+}
+
+.controlWithHeader{
+    display: flex;
+    flex-direction: column;
+    gap: @controlHeadingSpacing;
+    label{
+        margin:0px;
+    }
+
+}
+
+.inputWithButton{
+    display: flex;
+    flex-direction: row;
+    input{
+        flex:1 1px;
+    }
+}

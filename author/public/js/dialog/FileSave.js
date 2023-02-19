@@ -16,29 +16,21 @@ class Dialog {
                         <h4 class="media-heading">Save Document</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="description"></div>
-                        <div class="media">
-                            <div class="media-left media-middle">
-                              <img class="media-object filePreview" src="">
-                            </div>
-                            <div class="media-body">
-        
-                                <div class="form-horizontal">
-                                    <br>
-                                    <fieldset>
-                                        <div class="form-group">
-                                            <div class="col-lg-12">
-                                            <label>Filename</label>
-                                            <input type="text"  class="fileName" value="" >
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </div>
-                            </div>
+                      <div class="media">
+                        <div class="media-left">
+                          <img class="filePreview" src="../common/images/files_author.svg">
                         </div>
+                        <div class="media-body">
+                          <div class="controlWithHeader">
+                            <label>Name</label>
+                            <input type="text"  class="fileName" autofocus value="">
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                     <div class="modal-footer">
-                        <button class="electra-button" data-dismiss="modal">Abort</button>
+                        <button class="electra-button" data-dismiss="modal">Cancel</button>
                         <button class="electra-button electra-primary okButton"><span>Save</span></button>
                     </div>
                 </div>

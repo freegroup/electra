@@ -18,31 +18,25 @@ class Dialog {
           <div class="modal-dialog ">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="media-heading">Save your circuit</h4>
+                <h4 class="media-heading">Save the circuit</h4>
               </div>
               <div class="modal-body">
+
                 <div class="media">
-                  <div class="media-left media-middle">
-                    <a href="#">
-                      <div class="media-object filePreview ion-ios-upload-outline"></div>
-                    </a>
+                  <div class="media-left">
+                    <img class="filePreview" src="../common/images/files_simulator.svg">
                   </div>
                   <div class="media-body">
-                    <br>
-                    <br>
-                    <fieldset>
-                      <div class="form-group">
-                        <div class="col-lg-12">
-                          <input type="text"  class="githubFileName"  value="" >
-                        </div>
-                      </div>
-                    </fieldset>
-                    <div class="row"></div>
+                    <div class="controlWithHeader">
+                      <label>Name</label>
+                      <input type="text"  class="fileName" autofocus value="">
+                    </div>
                   </div>
                 </div>
+
               </div>
               <div class="modal-footer">
-                <button class="electra-button" data-dismiss="modal">Abort</button>
+                <button class="electra-button" data-dismiss="modal">Cancel</button>
                 <button class="electra-button electra-primary okButton"><span>Save</span></button>
               </div>
             </div>
@@ -55,18 +49,17 @@ class Dialog {
    */
   show(currentFile, canvas, callback) {
     Mousetrap.pause()
-    $("#fileSaveDialog .githubFileName").val(fs.basename(currentFile.name,conf.fileSuffix))
+    $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name,conf.fileSuffix))
 
     $('#fileSaveDialog').off('shown.bs.modal').on('shown.bs.modal', (event) => {
       $(event.currentTarget).find('input:first').focus()
     })
     $("#fileSaveDialog").modal("show")
 
-    // Button: Commit to GitHub
     //
     $("#fileSaveDialog .okButton").off("click").on("click", () => {
       Mousetrap.unpause()
-      let name = $("#fileSaveDialog .githubFileName").val()
+      let name = $("#fileSaveDialog .fileName").val()
       name = name.replace(conf.fileSuffix, "")
       name = fs.basename(name) // remove any directories
       currentFile.name = fs.join(fs.dirname(currentFile.name), name + conf.fileSuffix)
@@ -78,7 +71,7 @@ class Dialog {
       })
     })
 
-    $('#fileSaveDialog .githubFileName').off("keypress").on('keypress', function (e) {
+    $('#fileSaveDialog .fileName').off("keypress").on('keypress', function (e) {
       let key = e.charCode || e.keyCode || 0;
       if (key === 13) {
         $("#fileSaveDialog .okButton").click()

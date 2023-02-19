@@ -111,7 +111,7 @@ class View {
     editor.css("position","absolute")
     editor.addClass("displayMode")
     let saveButton = editor.find(".icons")
-    saveButton.html("<button>Close</button>")
+    saveButton.html('<button class="electra-button">Close</button>')
     saveButton.on("click", (event) =>{
       editor.remove()
     })

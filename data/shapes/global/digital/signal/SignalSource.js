@@ -1,26 +1,24 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var digital_signal_SignalSource = CircuitFigure.extend({
 
    NAME: "digital_signal_SignalSource",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:65.72720000000481,height:21.525390625 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:65.72720000000481,height:21.525390625},attr), setter, getter);
-     var port;
+     let port;
      // Port
      port = this.addPort(new DecoratedOutputPort(), new draw2d.layout.locator.XYRelPortLocator({x: 98.47855986562651, y: 47.58938027402321 }));
      port.setConnectionDirection(1);
      port.setBackgroundColor("#37B1DE");
      port.setName("Port");
      port.setMaxFanOut(20);
+     this.read["Port"] = port.getValue.bind(port)
+     this.write["Port"]= port.setValue.bind(port)
+
    },
 
    createShapeElement : function()
@@ -47,7 +45,7 @@ var digital_signal_SignalSource = CircuitFigure.extend({
        
        // label
        shape = this.canvas.paper.text(0,0,'Signal_ID');
-       shape.attr({"x":4.773050000005242,"y":10.7626953125,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
+       shape.attr({"x":4.773050000005242,"y":10.76,"text-anchor":"start","text":"Signal_ID","font-family":"\"Arial\"","font-size":12,"stroke":"#000000","fill":"#0078F2","stroke-scale":true,"font-weight":"normal","stroke-width":0,"opacity":1});
        shape.data("name","label");
        
 

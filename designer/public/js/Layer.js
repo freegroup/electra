@@ -72,7 +72,7 @@ export default class Layer {
       let figure = this.view.getExtFigure($(event.currentTarget).data("figure"))
       Mousetrap.pause()
 
-      inputPrompt.show("Layer Name", "Name", figure.attr("userData.name"))
+      inputPrompt.show("Rename Layer", "Name", figure.attr("userData.name"))
       .then( value => {
           let cmd = new draw2d.command.CommandAttr(figure, {"userData.name": value})
           this.view.getCommandStack().execute(cmd)

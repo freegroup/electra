@@ -15,15 +15,12 @@ class Dialog {
                   <h4 class="media-heading">Share with Others</h4>
                 </div>
                 <div class="modal-body">
-                  <div class="media">
-                    <fieldset>
-                      <div class="form-group">
-                        <div class="col-lg-12">
+                  <div class="controlWithHeader">
                         <label class="promptValueLabel">Public Link</label>
-                        <input id="sharedLinkInput" type="text" class="" value="" > <button class="clipboardButton" style="float:right">copy</button>
+                        <div class="inputWithButton">
+                          <input id="sharedLinkInput" type="text" class="" value="" > 
+                          <button class="clipboardButton" style="float:right"><img src="../common/images/clipboard.svg"></button>
                         </div>
-                      </div>
-                    </fieldset>
                   </div>
                 </div>
                 <div class="modal-footer">

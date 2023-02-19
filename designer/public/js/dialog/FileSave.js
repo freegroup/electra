@@ -17,35 +17,23 @@ class Dialog {
                     </div>
                     <div class="modal-body">
                         <div class="media">
-                            <div class="media-left media-middle">
-                                <img class="media-object filePreview" src="">
+                            <div class="media-left">
+                                <img class="filePreview" src="">
                             </div>
                             <div class="media-body">
-        
-                                <div class="form-horizontal">
-                                    <fieldset>
-                                        Library:
-                                        <div class="form-group">
-                                            <div class="col-lg-12">
-                                                <input type="text" class="directoryName" value="">
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                    <fieldset>
-                                       
-                                        <div class="form-group">
-                                            <div class="col-lg-12">
-                                              <label>Name</label>
-                                              <input type="text"  class="fileName" autofocus value="">
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </div>
+                              <div class="controlWithHeader">
+                                  <label>Library</label>
+                                  <input type="text" class="directoryName" value="">
+                              </div>
+                              <div class="controlWithHeader">
+                                <label>Name</label>
+                                <input type="text"  class="fileName" autofocus value="">
+                              </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="electra-button" data-dismiss="modal">Abort</button>
+                        <button class="electra-button" data-dismiss="modal">Cancel</button>
                         <button class="electra-button electra-primary okButton"><span>Save</span></button>
                     </div>
                 </div>

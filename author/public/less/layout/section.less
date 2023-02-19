@@ -5,6 +5,7 @@
   margin-left: 30px;
   margin-right:30px;
   min-height: 800px;
+  border-radius: @borderRadiusBig;
 }
 
 /** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
@@ -30,7 +31,7 @@
     border-width:1px;
     border-style:solid;
     .sectionContent[data-type='spacer'] {
-      gap: 10px;
+      gap: @buttonSpacing;
       transition: all 0.2s ease;
       .electra-button{
         opacity: 1; 
@@ -250,6 +251,7 @@
 }
 .activeSection {
   position:relative;
+  border-radius: @borderRadiusSmall;
 
   .fc{
     .tinyFlyoverMenu {
@@ -289,8 +291,8 @@
     border-bottom: 0px;
     padding-left: 5px;
     padding-right: 5px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: @borderRadiusSmall;
+    border-top-right-radius: @borderRadiusSmall;
     transition: all 0.3s ease-out;
     cursor: default;
     min-width: 50px;
