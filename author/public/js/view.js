@@ -164,7 +164,7 @@ export default class View {
   addPage() {
     // commit the current changes if an editor is active
     this.onCommitEdit().then(()=>{
-      inputPrompt.show("Add new Chapter", "Chapter name").then( value => {
+      inputPrompt.show("Add new Chapter", "Name").then( value => {
         commandStack.push(new State(this.app)).then( doneCallback => {
           let page = new Page()
           page.name = value
@@ -282,11 +282,11 @@ export default class View {
     whereToAppend.append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
-            <div data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection electra-button' >&#8853; Text</div>
-            <div data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection electra-button' >&#8853; Cloze</div>
-            <div data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</div>
-            <div data-index="${index}" data-type="brain"    class='sectionMenuInsertSection electra-button' >&#8853; Diagram</div>
-            <div data-index="${index}" data-type="image"    class='sectionMenuInsertSection electra-button' >&#8853; Picture</div>
+            <button data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
+            <button data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
+            <button data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
+            <button data-index="${index}" data-type="brain"    class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
+            <button data-index="${index}" data-type="image"    class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
           </div>
         </div>
       `)

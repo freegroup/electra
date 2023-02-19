@@ -22,7 +22,7 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
       '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
       '      <div class="input-group">' +
       '          <span class="input-group-addon">#</span>' +
-      '          <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause form-control color"/>' +
+      '          <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause color"/>' +
       '       </div>' +
       '    </div>' +
       ' </div>' +

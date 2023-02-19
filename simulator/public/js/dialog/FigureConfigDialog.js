@@ -28,18 +28,18 @@ class Dialog {
                  <label for="figure_property_{{name}}">{{label}}</label>
                   {{#textarea}}
                   <p>
-                    <textarea class="form-control lineNumbering"   id="linenumber_{{name}}"  wrap='off' readonly>1.</textarea>
-                    <textarea class="form-control figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}"  wrap='off'>{{value}}</textarea>
+                    <textarea class="lineNumbering"   id="linenumber_{{name}}"  wrap='off' readonly>1.</textarea>
+                    <textarea class="figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}"  wrap='off'>{{value}}</textarea>
                   </p>
                   {{/textarea}}
                  {{#input}}
-                   <input type="text" class="form-control figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">
+                   <input type="text" class="figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">
                  {{/input}}
                  {{#number}}
-                   <input type="number" class="form-control figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">
+                   <input type="number" class="figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">
                  {{/number}}
                  {{#select}}
-                   <select class="form-control figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}">
+                   <select class="figureAttribute" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}">
                         {{#property.values}}
                         <option value="{{.}}">{{.}}</option>
                         {{/property.values}}             

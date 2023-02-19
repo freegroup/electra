@@ -18,7 +18,7 @@ export default shape_designer.filter.OpacityFilter = class OpacityFilter extends
       '   <div class="form-group">' +
       '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
       '      <div class="input-group">' +
-      '         <input class="mousetrap-pause form-control" id="filter_opacity" type="text" value="' + parseInt(figure.getAlpha() * 100) + '" />' +
+      '         <input class="mousetrap-pause" id="filter_opacity" type="text" value="' + parseInt(figure.getAlpha() * 100) + '" />' +
       '      </div>' +
       '   </div>' +
       ' </div>' +

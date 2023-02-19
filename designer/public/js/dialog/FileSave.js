@@ -18,9 +18,7 @@ class Dialog {
                     <div class="modal-body">
                         <div class="media">
                             <div class="media-left media-middle">
-                                <a href="#">
-                                    <img class="media-object filePreview" src="">
-                                </a>
+                                <img class="media-object filePreview" src="">
                             </div>
                             <div class="media-body">
         
@@ -29,20 +27,19 @@ class Dialog {
                                         Library:
                                         <div class="form-group">
                                             <div class="col-lg-12">
-                                                <input type="text"  class="form-control floating-label directoryName" value="">
+                                                <input type="text" class="directoryName" value="">
                                             </div>
                                         </div>
                                     </fieldset>
                                     <fieldset>
-                                        Name:
+                                       
                                         <div class="form-group">
                                             <div class="col-lg-12">
-                                                <input type="text"  class="form-control floating-label fileName" autofocus value="">
+                                              <label>Name</label>
+                                              <input type="text"  class="fileName" autofocus value="">
                                             </div>
                                         </div>
                                     </fieldset>
-
-                                    <div class="row"></div>
                                 </div>
                             </div>
                         </div>

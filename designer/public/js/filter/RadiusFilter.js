@@ -18,7 +18,7 @@ export default shape_designer.filter.RadiusFilter = class RadiusFilter extends F
       '   <div class="form-group">' +
       '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
       '      <div class="input-group">' +
-      '         <input class="mousetrap-pause form-control" id="filter_radius" type="text" value="' + figure.getRadius() + '" />' +
+      '         <input class="mousetrap-pause" id="filter_radius" type="text" value="' + figure.getRadius() + '" />' +
       '      </div>' +
       '   </div>' +
       ' </div>' +

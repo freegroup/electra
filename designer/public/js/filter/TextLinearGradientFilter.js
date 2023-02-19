@@ -31,11 +31,11 @@ export default shape_designer.filter.TextLinearGradientFilter = class TextLinear
       '      </div> ' +
       '       <div class="input-group">' +
       '          <span class="input-group-addon">#</span>' +
-      '          <input id="' + this.cssScope + '_color1" type="text" value="' + this.startColor + '" class="mousetrap-pause form-control color"/>' +
+      '          <input id="' + this.cssScope + '_color1" type="text" value="' + this.startColor + '" class="mousetrap-pause color"/>' +
       '       </div>' +
       '       <div class="input-group">' +
       '          <span class="input-group-addon">#</span>' +
-      '          <input id="' + this.cssScope + '_color2" type="text" value="' + this.endColor + '" class="mousetrap-pause form-control color"/>' +
+      '          <input id="' + this.cssScope + '_color2" type="text" value="' + this.endColor + '" class="mousetrap-pause color"/>' +
       '       </div>' +
       '   </div>' +
       ' </div>' +

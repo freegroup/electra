@@ -33,7 +33,7 @@ export default class Palette {
       .off("click", ".pageElement .chapter_edit_name")
       .on("click", ".pageElement .chapter_edit_name", (event) => {
         let page = this.app.getDocument().find($(event.currentTarget).data("page"))
-        inputPrompt.show("Rename Pager", "Page name", page.name, value => {
+        inputPrompt.show("Rename Chapter", "Name", page.name, value => {
           commandStack.push(new State(this.app)).then( doneCallback => {
             page.name = value
             doneCallback()

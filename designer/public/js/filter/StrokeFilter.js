@@ -21,10 +21,10 @@ export default shape_designer.filter.StrokeFilter = class StrokeFilter extends F
       ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
       '   <div class="form-group">' +
       '      <div class="input-group" ></div>' + // required to ensure the correct width of the siblings
-      '       <input id="filter_' + this.cssScope + '_width" type="text" value="' + figure.getStroke() + '" class="mousetrap-pause form-control" />' +
+      '       <input id="filter_' + this.cssScope + '_width" type="text" value="' + figure.getStroke() + '" class="mousetrap-pause" />' +
       '       <div class="input-group">' +
       '          <span class="input-group-addon">#</span>' +
-      '          <input id="filter_' + this.cssScope + '_color" type="text" value="" class="mousetrap-pause form-control color"/>' +
+      '          <input id="filter_' + this.cssScope + '_color" type="text" value="" class="mousetrap-pause color"/>' +
       '       </div>' +
       '   </div>' +
       ' </div>' +

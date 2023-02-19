@@ -32,10 +32,10 @@ class Dialog {
       '         <div class="form-group">' +
       '           <label for="figure_property_{{name}}">{{label}}</label>' +
       '           {{#textarea}}' +
-      '             <textarea type="text" class="form-control" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}">{{value}}</textarea>' +
+      '             <textarea type="text" class="" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}">{{value}}</textarea>' +
       '           {{/textarea}}          ' +
       '           {{^textarea}}' +
-      '             <input type="text" class="form-control" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">' +
+      '             <input type="text" class="" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">' +
       '          {{/textarea}}           ' +
       '         </div>                   ' +
       '  {{/settings}}                   ' +

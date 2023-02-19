@@ -1,7 +1,7 @@
 var analog_SignalSwitch = CircuitFigure.extend({
 
    NAME: "analog_SignalSwitch",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {

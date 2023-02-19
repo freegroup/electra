@@ -16,8 +16,8 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
       ' <div class="panel-body  collapse in" id="size_width_panel">' +
       '   <div class="form-group">' +
       '       <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '       <input id="filter_width"  type="text" value="' + figure.getWidth() + '"  name="filter_width"  class="mousetrap-pause form-control" />' +
-      '       <input id="filter_height" type="text" value="' + figure.getHeight() + '" name="filter_height" class="mousetrap-pause form-control" />' +
+      '       <input id="filter_width"  type="text" value="' + figure.getWidth() + '"  name="filter_width"  class="mousetrap-pause" />' +
+      '       <input id="filter_height" type="text" value="' + figure.getHeight() + '" name="filter_height" class="mousetrap-pause" />' +
       '   </div>' +
       ' </div>' +
       '</div>')

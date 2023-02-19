@@ -1,6 +1,6 @@
 /* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
 
-.hero {
+.layout {
     position: relative;
     display: flex; 
     flex-direction: column;
@@ -15,58 +15,7 @@
     border-bottom: 2px solid rgb(var(--tint-color));
     scroll-snap-align: start;
 
-    .toolbar {
-        display: flex; 
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content:space-between;
 
-        font-size: 30px;
-        color:white;
-        background-color:white;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-      
-        .title {
-          img{
-            height:30px;
-            margin-left:30px;
-            margin-top:5px;
-          }
-      
-          .app_name {
-            font-weight: 200;
-            display: inline-block;
-            top: 6px;
-            position: relative;
-            left: 20px;
-            color: rgb(var(--tint-color));
-          }
-      
-          .app_slogan {
-            font-weight: 200;
-            display: inline-block;
-            top: 6px;
-            position: relative;
-            left: 20px;
-            color:rgb(var(--tint-color));
-            font-size:70%;
-            transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-          }
-          @media (max-width: 990px) {
-            .app_slogan {
-              font-size:50%;
-              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-            }
-          }
-          @media (max-width: 890px) {
-            .app_slogan {
-              display: none;
-              transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-            }
-          }
-        }
-    }
-      
     .teaserContainer {
         flex-grow: 4;
         display: flex; 

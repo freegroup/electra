@@ -1,16 +1,26 @@
 body.light {
-    //--tint-color:       218, 26, 95;
-    --tint-color:       21, 115, 15;
+    --tint-color:       218, 26, 95;
     --tint-color-dark:  158, 27, 52;
 
-    --lefttab-font-color: 161, 224, 224;
-    --lefttab-bg-color:  95, 26, 218;
+    --lefttab-font-color: 255, 255, 255;
+    --lefttab-bg-color:  218, 26, 95;
 
     .electra-button{
         background-color: rgb(var(--tint-color));
         color: white;
         &:hover{
             filter: brightness(110%);
+        }
+    }
+
+
+    input[type=text]{
+        color: black;        
+        border: 1px solid rgb(161, 159, 157);;
+        &:focus {
+            background-color: white;
+            border: 1px solid rgb(221, 218, 214);;
+            border-bottom: 2px solid rgb(var(--tint-color));
         }
     }
 
@@ -267,20 +277,13 @@ body.light {
             background-color: rgb(255, 255, 255);
 
             .modal-header {
-                box-shadow: 0 3px 5px rgba(57, 63, 72, 0.3);
+                h4{
+                    border-bottom: 1px solid rgb(var(--tint-color));
+                    color: rgb(var(--tint-color));
+                }
             }
 
             .modal-body {
-                .form-control {
-                    color: #4D4D4D;
-                    border-color: #DFDFDF;
-                    box-shadow: none;
-
-                    &:focus {
-                        background-color: rgb(245, 245, 245);
-                    }
-                }
-
                 .list-group {
 
                     *[data-draw2d="true"] {
@@ -299,31 +302,6 @@ body.light {
 
             .modal-footer {
                 background-color: transparent;
-
-                .btn,
-                .btn-group {
-                    background-color: transparent;
-                    color:rgb(var(--tint-color));
-
-                    &:hover {
-                        filter: brightness(110%);
-                    }
-                }
-
-                .btn-group {
-                    .btn {
-                        &:hover {
-                            background-color: transparent;
-                        }
-                    }
-
-                    background-color:transparent;
-                    color:rgb(var(--tint-color));
-
-                    &:hover {
-                        filter: brightness(110%);
-                    }
-                }
             }
         }
     }
@@ -358,10 +336,6 @@ body.light {
             cursor: pointer;
 
             .thumb {
-
-                .filenameInplaceEdit {
-                    color:rgb(var(--tint-color));
-                }
 
                 h4 {
                     color:rgb(var(--tint-color));

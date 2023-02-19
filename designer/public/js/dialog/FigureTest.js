@@ -30,7 +30,7 @@ export default class FigureTest {
           </div>
           <div  class="testInfo" >Test page for your designed and coded draw2d shape.</div>
           <div class="tinyFlyoverMenu">
-            <div id="test_close" class="electra-button">Close</div>
+            <button id="test_close" class="electra-button">Close</button>
           </div>
         <div>
         `)

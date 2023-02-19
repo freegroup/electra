@@ -1,3 +1,5 @@
+import inputPrompt from "../../common/js/InputPrompt"
+
 export default class Layer {
 
 
@@ -69,23 +71,16 @@ export default class Layer {
     $(".layerElement .layer_edit").on("click", (event) =>{
       let figure = this.view.getExtFigure($(event.currentTarget).data("figure"))
       Mousetrap.pause()
-      bootbox.prompt({
-        title: "Layer Name",
-        className: "layer-name-prompt",
-        value: figure.attr("userData.name"),
-        callback: (result) => {
-          Mousetrap.unpause()
-          if (result !== null) {
-            let cmd = new draw2d.command.CommandAttr(figure, {"userData.name": result})
-            this.view.getCommandStack().execute(cmd)
-          }
-        }
+
+      inputPrompt.show("Layer Name", "Name", figure.attr("userData.name"))
+      .then( value => {
+          let cmd = new draw2d.command.CommandAttr(figure, {"userData.name": value})
+          this.view.getCommandStack().execute(cmd)
+      })
+      .finally(()=>{
+        Mousetrap.unpause()
       })
 
-      // autoselect text for fast edit
-      setTimeout(function () {
-        $(".bootbox-input").focus().select()
-      }, 200)
     })
 
 

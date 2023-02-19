@@ -9,6 +9,14 @@
     .modal-header{
       border-bottom:0;
       font-weight:400;
+      box-shadow:none;
+      h4{
+        padding-bottom:4px;
+      }
+    }
+
+    .modal-footer {
+      border: none;
     }
 
     .modal-body {
@@ -19,21 +27,6 @@
       .section {
         border: 0px solid transparent !important;  
         cursor: default !important;
-      }
-
-      .form-control{
-        appearance: none;
-        box-sizing: border-box;
-        border-radius: @borderRadiusSmall;
-        margin: 0;
-        padding: 0;
-        display: inline-block;
-        font: inherit;
-        border-width:1px;
-        border-style: solid;
-        box-shadow: none;
-        height: 24px;
-        padding: 0 3px;
       }
 
       .list-group {
@@ -58,39 +51,6 @@
           text-decoration: none !important;
 
         }
-      }
-    }
-
-    .modal-footer {
-      border-top:0;
-
-      .btn, .btn-group{
-        border:0;
-        text-transform: uppercase;
-        background-color:transparent;
-        transition: all 0.5s;
-
-        &:hover{
-          transition: all 0.5s;
-        }
-      }
-      .btn-group{
-        .dropdown-toggle{
-          .caret{
-            margin-top:7px;
-          }
-        }
-        border:0;
-        text-transform: uppercase;
-        transition: all 0.5s;
-
-        &:hover{
-          transition: all 0.5s;
-        }
-      }
-
-      .btn-primary{
-        font-weight: bold;
       }
     }
   }

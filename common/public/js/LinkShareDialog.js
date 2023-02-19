@@ -16,11 +16,11 @@ class Dialog {
                 </div>
                 <div class="modal-body">
                   <div class="media">
-                    <div class="promptValueLabel">Public Link:</div>
                     <fieldset>
                       <div class="form-group">
                         <div class="col-lg-12">
-                          <input id="sharedLinkInput" type="text" class="form-control floating-label" value="" > <button class="clipboardButton" style="float:right">copy</button>
+                        <label class="promptValueLabel">Public Link</label>
+                        <input id="sharedLinkInput" type="text" class="" value="" > <button class="clipboardButton" style="float:right">copy</button>
                         </div>
                       </div>
                     </fieldset>

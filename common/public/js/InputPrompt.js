@@ -14,8 +14,8 @@ class Dialog {
                     <fieldset>
                       <div class="form-group">
                         <div class="col-lg-12">
-                          <div class="promptValueLabel">Value:</div>
-                          <input type="text" class="form-control floating-label inputPromptValue" value="" >
+                          <label class="promptValueLabel">Value</label>
+                          <input type="text" class="inputPromptValue" value="" >
                         </div>
                       </div>
                     </fieldset>
@@ -23,7 +23,7 @@ class Dialog {
                 </div>
                 <div class="modal-footer">
                   <button class="electra-button" data-dismiss="modal">Cancel</button>
-                  <button class="electra-button electra-primary okButton">Create</button>
+                  <button class="electra-button electra-primary okButton">Ok</button>
                 </div>
               </div>
             </div>

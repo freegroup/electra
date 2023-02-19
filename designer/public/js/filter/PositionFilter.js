@@ -16,8 +16,8 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       ' <div class="panel-body  collapse in" id="position_width_panel">' +
       '   <div class="form-group">' +
       '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '       <input id="filter_position_x" type="text" value="' + parseFloat(figure.getPosition().x) + '" name="filter_position_x" class="mousetrap-pause form-control" />' +
-      '       <input id="filter_position_y" type="text" value="' + parseFloat(figure.getPosition().y) + '" name="filter_position_y" class="mousetrap-pause form-control" />' +
+      '       <input id="filter_position_x" type="text" value="' + parseFloat(figure.getPosition().x) + '" name="filter_position_x" class="mousetrap-pause" />' +
+      '       <input id="filter_position_y" type="text" value="' + parseFloat(figure.getPosition().y) + '" name="filter_position_y" class="mousetrap-pause" />' +
       '   </div>' +
       ' </div>' +
       '</div>')

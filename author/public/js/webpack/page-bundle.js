@@ -28309,7 +28309,7 @@ class Dialog {
       el.value = currentFigure.attr("userData." + el.name);
       el.textarea = el.property.type === "longtext";
     });
-    let compiled = _hogan.default.compile('  <div class="header">Object Configuration</div>   ' + '  {{#settings}}               ' + '         <div class="form-group">' + '           <label for="figure_property_{{name}}">{{label}}</label>' + '           {{#textarea}}' + '             <textarea type="text" class="form-control" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}">{{value}}</textarea>' + '           {{/textarea}}          ' + '           {{^textarea}}' + '             <input type="text" class="form-control" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">' + '          {{/textarea}}           ' + '         </div>                   ' + '  {{/settings}}                   ' + '<button class="submit">Ok</button> ');
+    let compiled = _hogan.default.compile('  <div class="header">Object Configuration</div>   ' + '  {{#settings}}               ' + '         <div class="form-group">' + '           <label for="figure_property_{{name}}">{{label}}</label>' + '           {{#textarea}}' + '             <textarea type="text" class="" id="figure_property_{{name}}" data-name="{{name}}" placeholder="{{label}}">{{value}}</textarea>' + '           {{/textarea}}          ' + '           {{^textarea}}' + '             <input type="text" class="" id="figure_property_{{name}}" data-name="{{name}}" value="{{value}}" placeholder="{{label}}">' + '          {{/textarea}}           ' + '         </div>                   ' + '  {{/settings}}                   ' + '<button class="submit">Ok</button> ');
     let output = compiled.render({
       settings: settings
     });
@@ -29723,11 +29723,11 @@ class Editor extends _editor.default {
         <h2>Start by adding your first content to make it feel more alive in here!</h2>
       </div>
       <div class="placeholderButtons">
-        <div data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</div>
-        <div data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</div>
-        <div data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</div>
-        <div data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</div>
-        <div data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</div>
+        <button data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
+        <button data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
+        <button data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
+        <button data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
+        <button data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
       </div>
     </div>
     </div>
@@ -30225,10 +30225,10 @@ class Editor extends _editor.default {
         <h2>Add your flashcard <b>${section.content}</b> content here</h2>
       </div>
       <div class="placeholderButtons">
-        <div data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection electra-button' >&#8853; Text</div>
-        <div data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</div>
-        <div data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection electra-button' >&#8853; Image</div>
-        <div data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</div>
+        <button data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection electra-button' >&#8853; Text</button>
+        <button data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</button>
+        <button data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection electra-button' >&#8853; Image</button>
+        <button data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</button>
       </div>
     </div>
     `;

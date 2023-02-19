@@ -13,9 +13,9 @@ export default class FigureCodeEdit {
             <pre class="codeContainer">
             </pre>
               <div class="tinyFlyoverMenu codeOverlay">
-                <div id="test_run"    class="electra-button">&#9654;</div>
-                <div id="test_commit" class="electra-button">Save</div>
-                <div id="test_cancel" class='electra-button'>Close</div>
+                <button id="test_run"    class="electra-button">&#9654;</button>
+                <button id="test_commit" class="electra-button">Save</button>
+                <button id="test_cancel" class='electra-button'>Close</button>
               </div>
           </div>
             `

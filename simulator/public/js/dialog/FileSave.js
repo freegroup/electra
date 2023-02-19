@@ -28,23 +28,16 @@ class Dialog {
                     </a>
                   </div>
                   <div class="media-body">
-        
-        
                     <br>
                     <br>
                     <fieldset>
                       <div class="form-group">
                         <div class="col-lg-12">
-                          <input type="text"
-                                 class="form-control floating-label githubFileName"
-                                 value=""
-                          >
+                          <input type="text"  class="githubFileName"  value="" >
                         </div>
                       </div>
                     </fieldset>
                     <div class="row"></div>
-        
-        
                   </div>
                 </div>
               </div>

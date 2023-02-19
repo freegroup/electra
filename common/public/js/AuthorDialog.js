@@ -1,5 +1,6 @@
 const axios = require("axios")
-const md = require('./markdown')
+import mdFactory  from "./markdown"
+let md = mdFactory()
 
 
 class Dialog {
