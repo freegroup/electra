@@ -26,10 +26,10 @@ body.light {
 
     input[type=text]{
         color: black;        
-        border: 1px solid rgb(161, 159, 157);;
+        border: 1px solid rgb(161, 159, 157);
         &:focus {
             background-color: white;
-            border: 1px solid rgb(221, 218, 214);;
+            border: 1px solid rgb(221, 218, 214);
             border-bottom: 2px solid rgb(var(--tint-color));
         }
     }
@@ -284,7 +284,7 @@ body.light {
     .genericDialog {
         .modal-content {
             box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-            background-color:rgb(var(--pane-background-color));;
+            background-color:rgb(var(--pane-background-color));
 
             .modal-header {
                 h4{
@@ -326,10 +326,6 @@ body.light {
             .title {
                 color: rgb(var(--tint-color));
             }
-
-            .slogan {
-                color: #34495e;
-            }
         }
 
         .deleteIcon {
@@ -340,15 +336,11 @@ body.light {
 
         .list-group-item {
             cursor: pointer;
-
             .thumb {
-
                 h4 {
                     color:rgb(var(--tint-color));
                 }
-
             }
-
         }
         .filesFinder {
             background-color: rgb(var(--pane-background-color));
@@ -359,6 +351,12 @@ body.light {
                     border: none;
                     a {
                         color: #424f5a;
+                        &.active{
+                            color:rgb(var(--tint-color));
+                        }
+                        &:hover {
+                            color:rgb(var(--tint-color));
+                        }
                     }
                 }
             }
@@ -369,22 +367,11 @@ body.light {
                 }
             }
 
-            #material-tabs>a:not(.active):hover {
-                background-color: inherit;
-                color:rgb(var(--tint-color));
-            }
-
             .sliding-bar {
-                background:rgb(var(--pane-background-color));;
+                background:transparent;
                 transition: all 0.3s ease;
-                border-color:rgb(var(--border-color));;
+                border-color:rgb(var(--tint-color));
             }
-        }
-    }
-
-    #githubNewFileDialog {
-        .filePreview {
-            color:rgb(var(--tint-color));
         }
     }
 
