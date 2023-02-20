@@ -21,8 +21,8 @@ export default class Files {
             <button data-folder="{{folder}}" class='fileOperationsFolderAdd electra-button' >&#43; ${conf.fileScreen.addFolderButton}</button>
             <button data-folder="{{folder}}" class='fileOperationsDocumentAdd electra-button' >&#43; ${conf.fileScreen.addFileButton}</button>
         </div>
-        <div>Folder: {{folder}}</div>
-        <ul class="list-group col-lg-10 col-md-10 col-xs-10 ">
+        <div class="filePath">Folder: {{folder}}</div>
+        <ul class="fileList">
         {{#files}}
           <li class="list-group-item"  
                   data-scope="{{scope}}"  
@@ -78,13 +78,13 @@ export default class Files {
       let w1= $("#userFilesTab").outerWidth()
       let w2= $("#globalFilesTab").outerWidth()
       if($("#userFilesTab.active").length===1){
-        $("span.yellow-bar").css({
+        $("span.sliding-bar").css({
           "left": `0`,
           "width": `${w1}px`
         })
       }
       else{
-        $("span.yellow-bar").css({
+        $("span.sliding-bar").css({
           "left": `${w1}px`,
           "width": `${w2}px`
         })

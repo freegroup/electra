@@ -1,12 +1,19 @@
 body.light {
+    --border-color: 208 215 222;
+    
     --tint-color:       218, 26, 95;
     --tint-color-dark:  158, 27, 52;
 
+    /* colors of the left hand side navigation tabbar */
     --lefttab-font-color: 255, 255, 255;
     --lefttab-bg-color:  218, 26, 95;
 
-    --document-background-color: 255 255 0;
+    /* the backgrond-color for a workplace. A workplace is where a docment, content area,... is place.
+    */
+    --workplace-background-color: 245, 248, 255;
 
+    /* background color of a pane, dialog, document or everything which is place inside a workplaces lke a file-selector */
+    --pane-background-color: 255, 255, 255;
 
     .electra-button{
         background-color: rgb(var(--tint-color));
@@ -104,7 +111,7 @@ body.light {
     }
 
     .spinner:before {
-        border-color: #ccc;
+        border-color:  rgb(var(--border-color));
         border-top-color: rgb(var(--tint-color));
         background-color: #fef9f9;
     }
@@ -114,13 +121,13 @@ body.light {
     }
 
     .context-menu-list {
-        border-color: #DDD;
+        border-color: rgb(var(--border-color));
         background: white;
         border-left-color: rgb(var(--tint-color));
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
         .context-menu-separator {
-            border-bottom: 1px solid #DDD;
+            border-bottom: 1px solid rgb(var(--border-color));
         }
 
         .context-menu-item {
@@ -159,13 +166,13 @@ body.light {
 
     .tinyFlyoverMenu {
         box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-        border-color: lightgray;
+        border-color: rgb(var(--border-color));
         background-color: rgb(253 233 233);
 
         div {
             border-color: transparent;
             &:hover {
-                border-color: lightgray;
+                border-color: rgb(var(--border-color));
             }
         }
     }
@@ -277,7 +284,7 @@ body.light {
     .genericDialog {
         .modal-content {
             box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-            background-color: rgb(255, 255, 255);
+            background-color:rgb(var(--pane-background-color));;
 
             .modal-header {
                 h4{
@@ -314,12 +321,8 @@ body.light {
     }
 
     #files {
+        background-color: rgb(var(--workplace-background-color));
         .teaser {
-            background-image:
-                linear-gradient(to bottom, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, .4) 70%, #fff 100%),
-                radial-gradient(ellipse at center, rgba(247, 249, 250, .7) 0%, rgba(247, 249, 250, 0) 60%),
-                linear-gradient(to bottom, rgba(247, 249, 250, 0) 0%, #f7f9fa 100%);
-
             .title {
                 color: rgb(var(--tint-color));
             }
@@ -347,30 +350,35 @@ body.light {
             }
 
         }
-
-        #material-tabs {
-            border-bottom-color: #e0e0e0;
-
-            a {
-                color: #424f5a;
+        .filesFinder {
+            background-color: rgb(var(--pane-background-color));
+            border: 1px solid rgb(var(--border-color));
+            border-radius: @borderRadiusBig;
+            header{
+                #material-tabs {
+                    border: none;
+                    a {
+                        color: #424f5a;
+                    }
+                }
             }
-        }
 
-        .material-tab-content {
-            &>div {
-                background-color: rgb(254 249 249);
+            .material-tab-content {
+                .fileOperations{
+                    border-color: rgb(var(--border-color));
+                }
             }
-        }
 
-        #material-tabs>a:not(.active):hover {
-            background-color: inherit;
-            color:rgb(var(--tint-color));
-        }
+            #material-tabs>a:not(.active):hover {
+                background-color: inherit;
+                color:rgb(var(--tint-color));
+            }
 
-        .yellow-bar {
-            background: rgb(254 249 249);
-            transition: all 0.3s ease;
-            border-color: #e0e0e0;
+            .sliding-bar {
+                background:rgb(var(--pane-background-color));;
+                transition: all 0.3s ease;
+                border-color:rgb(var(--border-color));;
+            }
         }
     }
 
@@ -406,19 +414,19 @@ body.light {
             color: #666;
             text-shadow: 1px 1px 0px #fff;
             background: #eaebec;
-            border-color: #ccc;
+            border-color: rgb(var(--border-color));
             box-shadow: 0 1px 2px #d1d1d1;
         }
 
         table th {
-            border-top-color: #fafafa;
-            border-bottom-color: #e0e0e0;
+            border-top-color: rgb(var(--border-color));
+            border-bottom-color: rgb(var(--border-color));
         }
 
         table tr td {
             border-top-color: #ffffff;
-            border-bottom-color: #e0e0e0;
-            border-left-color: #e0e0e0;
+            border-bottom-color: rgb(var(--border-color));
+            border-left-color: rgb(var(--border-color));
         }
 
         tbody tr:nth-child(odd) {
@@ -430,7 +438,7 @@ body.light {
         }
 
         .info {
-            border-color: #B4E1E4;
+            border-color: rgb(var(--border-color));
             background-color: #81c7e1;
             color: white;
 
@@ -479,7 +487,7 @@ body.light {
             svg {
                 &:hover {
                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-                    border-color:rgba(0,0,0,0.15);
+                    border-color:rgb(var(--border-color));
                 }
             }
         }
