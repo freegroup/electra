@@ -1,8 +1,9 @@
 body.light {
     --toolbar-bg-color: 161, 224, 224;
-   
+
+
     .toolbar {
-        background-color:rgb(var(--toolbar-bg-color));
+        background-color: rgb(var(--toolbar-bg-color));
 
         .slider-handle {
             background-color: rgb(var(--tint-color));
@@ -42,10 +43,11 @@ body.light {
 
 
     #progressDialog {
-        .progress-bar{
-            background-color:  rgb(var(--tint-color));
+        .progress-bar {
+            background-color: rgb(var(--tint-color));
         }
     }
+
     .shadow {
         border-color: rgb(var(--tint-color));
         box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
@@ -54,8 +56,8 @@ body.light {
 
     .workspace {
         .paletteContainer {
-            border-right-color: rgba(74, 74, 74, 0.5);
-            border-left-color: rgba(74, 74, 74, 0.5);
+            border-right-color: rgb(var(--border-color));
+            border-left-color: rgb(var(--border-color));
 
             .paletteTitle {
                 div {
@@ -65,22 +67,96 @@ body.light {
                 }
             }
 
-            .palette_item {
-                border-color: #f0f0f0;
+            #paletteHeader {
+                position: relative;
+                margin: 0;
+                padding: 0;
+                top: 0;
+                bottom: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
 
-                >div {
-                    border-color: transparent;
-                    div {
-                        background-color: rgba(0, 0, 0, 0.05);
+                .paletteFilterTitle {
+                    .btn-group {
+                        width: 100%;
+
+                        button {
+                            width: 100%;
+                            border-radius: 0;
+                            border-color: transparent;
+                        }
                     }
                 }
 
-                .glowBorder {
-                    border-color: rgb(var(--tint-color));
+                #paletteFilter {
+                    box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
+
+                    &::-webkit-scrollbar {
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background: #666;
+                    }
+
+                    .tree-leaf {
+                        .tree-expando {
+                            &.hidden {
+                            }
+                        }
+
+                        .tree-leaf-content {
+                            &.tree-child-leaves {
+                            }
+
+                            .tree-leaf-text {
+                            }
+
+                            &:hover {
+                                background-color: rgba(var(--list-item-selected-bg-color), 0.69);
+
+                            }
+
+                            &.selected {
+                                 background-color: rgb(var(--list-item-selected-bg-color));
+                                 .tree-leaf-text {
+                                    color: rgb(var(--tint-color));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            #paletteElementsScroll {
+                box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.26);
+
+                &::-webkit-scrollbar {
                 }
 
-                &[data-scope="user"] {
-                    background-color:#e8f7fc;
+                &::-webkit-scrollbar-thumb {
+                    background: #666;
+                }
+
+                #paletteElements { 
+                    .palette_item {
+                        border-color: rgb(var(--border-color));
+
+                        >div {
+                            border-color: transparent;
+
+                            div {
+                                background-color: rgba(0, 0, 0, 0.05);
+                            }
+                        }
+
+                        .glowBorder {
+                            border-color: rgb(var(--tint-color));
+                        }
+
+                        &[data-scope="user"] {
+                            background-color: #e8f7fc;
+                        }
+                    }
                 }
             }
 
@@ -101,7 +177,6 @@ body.light {
     }
 
     #probe_window_stick {
-        color: black;
         border-bottom-color: rgb(var(--border-color));
     }
 
@@ -129,10 +204,8 @@ body.light {
         }
     }
 
-
     .playButton {
         background-color: #FFF;
-        color: #9e9e9e;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
         &:hover {
@@ -159,3 +232,5 @@ body.light {
         }
     }
 }
+
+

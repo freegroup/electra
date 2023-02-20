@@ -28,10 +28,6 @@ module.exports = {
         ],
       },
       {
-        test: /\.svg$/,
-        loader: 'svg-inline-loader'
-      },
-      {
         test: /\.(eot|woff|ttf|woff2|png|gif)$/,
         loader: "file-loader" ,
         options: {

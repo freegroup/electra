@@ -69,6 +69,7 @@ $(window).load(function () {
     app = require("./Application").default
     app.init(permissions)
     shape_designer.app = app
+    inlineSVG.init()
     $(".loader").fadeOut(500, function() { $(this).remove(); })
   })
 })

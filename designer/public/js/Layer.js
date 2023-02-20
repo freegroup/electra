@@ -1,3 +1,4 @@
+import inlineSVG from "../../common/js/inlineSVG"
 import inputPrompt from "../../common/js/InputPrompt"
 
 export default class Layer {
@@ -44,20 +45,20 @@ export default class Layer {
     let figures = this.view.getExtFigures()
     figures.each((i, figure) => {
       this.html.append(
-        '<div class="layerElement '+this.figureToCSS(figure)+'" data-figure="' + figure.id + '"  data-visibility="' + figure.isVisible() + '" id="layerElement_' + figure.id + '" >' +
-        figure.getUserData().name +
-        '<span data-figure="' + figure.id + '"  data-toggle="tooltip" title="Toggle Visibility of the Layer"  class="layer_visibility pull-right"><img class="icon svg" src="' + (figure.isVisible() ? './images/layer_visible.svg' : './images/layer_hidden.svg') + '"/></span>' +
-        '<span data-figure="' + figure.id + '"  data-toggle="tooltip" title="Edit Name of Layer" class="layer_edit pull-right" ><img class="icon svg" src="./images/layer_edit.svg"/></span>' +
-        '</div>')
+        `<div class="layerElement ${this.figureToCSS(figure)}" data-figure="${figure.id}" data-visibility="${figure.isVisible()}" id="layerElement_${figure.id}" >
+          <img class="layer_decoration" src="${this.figureToImage(figure)}"/>
+          <span class="layer_label" >
+            ${figure.getUserData().name}
+          </span>
+          <span data-figure="${figure.id}" class="layer_visibility pull-right">
+            <img class="icon svg" src="${(figure.isVisible() ? './images/layer_visible.svg' : './images/layer_hidden.svg')}"/>
+          </span>
+          <span data-figure="${figure.id}" class="layer_edit pull-right" >
+            <img class="icon svg" src="./images/layer_edit.svg"/>
+          </span>
+        </div>`)
     }, true)
-
-
-    $('*[data-toggle="tooltip"]').tooltip({
-      placement: "bottom",
-      container: "body",
-      delay: {show: 1000, hide: 100},
-      html: true
-    })
+    inlineSVG.init()
 
     this.html.sortable({
       axis: "y",
@@ -138,6 +139,18 @@ export default class Layer {
       }
     )
     circle.animate(anim)
+  }
+
+
+  figureToImage(figure){
+    switch(this.figureToCSS(figure)){
+      case "ExtLine": return "./images/layer_line.svg"
+      case "PolyRect": return "./images/layer_rect.svg"
+      case "PolyCircle": return "./images/layer_circle.svg"
+      case "ExtLabel": return "./images/layer_text.svg"
+      case "ExtPort": return "./images/layer_port.svg"
+      default: return "./images/layer_rect.svg"
+    }
   }
 
   figureToCSS(figure){

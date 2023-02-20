@@ -37,8 +37,8 @@ body.light {
   }
 
   input {
-    background: none repeat scroll 0 0 #f8f8f8;
-    border-color: #C6C6C6 #DADADA #EAEAEA;
+    background: none repeat scroll 0 0 rgb(var(--input-bg-color));
+    border-color: rgb(var(--border-color));
   }
 
 
@@ -223,46 +223,13 @@ body.light {
 
     #layer_elements {
       .layerElement {
-        background-color: darken(#ffffff, 2%);
-        color: #000000;
-        border-color: transparent;
-        border-bottom-color: rgb(var(--border-color));
-
-
-        &.ExtLine::before {
-          background: url("../images/layer_line.svg") no-repeat;
-          background-size: cover;
-        }
-
-        &.PolyRect::before {
-          background: url("../images/layer_rect.svg") no-repeat;
-          background-size: cover;
-        }
-
-        &.PolyCircle::before {
-          background: url("../images/layer_circle.svg") no-repeat;
-          background-size: cover;
-        }
-
-        &.ExtLabel::before {
-          background: url("../images/layer_text.svg") no-repeat;
-          background-size: cover;
-        }
-
-        &.ExtPort::before {
-          background: url("../images/layer_port.svg") no-repeat;
-          background-size: cover;
-        }
+        border-bottom: 1px solid rgb(var(--border-color));
 
         &[data-visibility="false"] {
           opacity: 0.5;
         }
 
         .icon {
-          * {
-            stroke: #000000 !important;
-          }
-
           &:hover {
             * {
               stroke:rgb(var(--tint-color))!important;
@@ -272,9 +239,7 @@ body.light {
       }
 
       .layerSelectedElement {
-        background-color: darken(#ffffff, 4%);
-        color: #000000;
-        border-color:rgb(var(--tint-color));
+        background-color: rgb(var(--list-item-selected-bg-color));
       }
     }
   }

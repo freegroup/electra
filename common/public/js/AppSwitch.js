@@ -4,7 +4,7 @@ export default class AppSwitch {
     let appSwitchButtons = $(` 
             <label class="dropdown" >
                 <span class="image-button application-waffel"  data-toggle="dropdown">
-                  <img  src="../common/images/toolbar_app_switch.svg" class="svg"/>
+                  <img  src="../common/images/app_switch.svg" />
                 </span>
 
                 <div class="dropdown-menu" role="menu" >

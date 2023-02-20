@@ -8,12 +8,25 @@ body.light {
     --lefttab-font-color: 255, 255, 255;
     --lefttab-bg-color:  218, 26, 95;
 
+    /* colors for listitems */
+    --list-item-selected-bg-color: 240 240 240;
+
+    /* form elements */
+    --input-bg-color: 255 255 255;
+    --input-color: 0 0 0;
+    --input-label-color: 0 0 0;
+    --text-color: 0 0 0;
+
+
     /* the backgrond-color for a workplace. A workplace is where a docment, content area,... is place.
     */
-    --workplace-background-color: 245, 248, 255;
+    --workplace-bg-color: 245, 248, 255;
 
     /* background color of a pane, dialog, document or everything which is place inside a workplaces lke a file-selector */
-    --pane-background-color: 255, 255, 255;
+    --pane-bg-color: 255, 255, 255;
+
+
+    color: rgb(var(--text-color));
 
     .electra-button{
         background-color: rgb(var(--tint-color));
@@ -23,13 +36,19 @@ body.light {
         }
     }
 
+    a {
+        color: rgb(var(--tint-color));
+    }
+
+    .dropdown-menu>li>a {
+        color: rgb(var(--input-color));        
+    }
 
     input[type=text]{
-        color: black;        
-        border: 1px solid rgb(161, 159, 157);
+        color: rgb(var(--input-color));        
+        border: 1px solid rgb(var(--border-color));
         &:focus {
             background-color: white;
-            border: 1px solid rgb(221, 218, 214);
             border-bottom: 2px solid rgb(var(--tint-color));
         }
     }
@@ -40,7 +59,6 @@ body.light {
     
     .notifyjs-bootstrap-info {
         background-color: #f7f7f7;
-        color:rgb(41, 41, 41);
     }
 
     .appbar {
@@ -63,7 +81,6 @@ body.light {
                 fill:  rgb(var(--tint-color));
                 stroke:  rgb(var(--tint-color));
             }
-    
         }
 
         .application-waffel {
@@ -122,7 +139,7 @@ body.light {
 
     .context-menu-list {
         border-color: rgb(var(--border-color));
-        background: white;
+        background: rgb(var(--pane-bg-color));
         border-left-color: rgb(var(--tint-color));
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
@@ -137,7 +154,7 @@ body.light {
             }
 
             &.disabled {
-                color: #666;
+                color: rgba(var(--text-color), 0.5);
 
                 &.hover {
                     background-color: #EEE;
@@ -167,7 +184,7 @@ body.light {
     .tinyFlyoverMenu {
         box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
         border-color: rgb(var(--border-color));
-        background-color: rgb(253 233 233);
+        background-color: rgb(var(--pane-bg-color));
 
         div {
             border-color: transparent;
@@ -256,8 +273,8 @@ body.light {
     }
 
     #canvas_zoom {
-        background-color: fadeout(#B2E2F2, 70%);
-
+        background-color: rgb(var(--pane-bg-color));
+        border: 1px solid rgb(var(--border-color));
         button {
             background-color: transparent;
             border-color: transparent;
@@ -284,7 +301,7 @@ body.light {
     .genericDialog {
         .modal-content {
             box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-            background-color:rgb(var(--pane-background-color));
+            background-color:rgb(var(--pane-bg-color));
 
             .modal-header {
                 h4{
@@ -321,16 +338,10 @@ body.light {
     }
 
     #files {
-        background-color: rgb(var(--workplace-background-color));
+        background-color: rgb(var(--workplace-bg-color));
         .teaser {
             .title {
                 color: rgb(var(--tint-color));
-            }
-        }
-
-        .deleteIcon {
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.03);
             }
         }
 
@@ -343,14 +354,14 @@ body.light {
             }
         }
         .filesFinder {
-            background-color: rgb(var(--pane-background-color));
+            background-color: rgb(var(--pane-bg-color));
             border: 1px solid rgb(var(--border-color));
             border-radius: @borderRadiusBig;
             header{
                 #material-tabs {
                     border: none;
                     a {
-                        color: #424f5a;
+                        color: rgb(var(--input-label-color));
                         &.active{
                             color:rgb(var(--tint-color));
                         }
@@ -437,28 +448,33 @@ body.light {
         background-color: #B2E2F2;
     }
 
-    .image-button {
+    svg.inlined-svg {
+        color: rgb(var(--text-color));
+        border-color:transparent;
 
-        img,
-        svg {
-            color: #777;
-            border-color:transparent;
-
-            circle[stroke],
-            polyline[stroke],
-            path[stroke],
-            g[stroke] {
-                stroke: #777 !important;
-            }
-
-            rect[fill],
-            circle[fill] {
-                fill: #777 !important;
-            }
+        circle[stroke],
+        rect[stroke],
+        line[stroke],
+        polygon[stroke],
+        ellipse[stroke],
+        polyline[stroke],
+        path[stroke],
+        g[stroke] {
+            stroke: rgb(var(--text-color))!important;
         }
 
+        polygon[fill],
+        text[fill],
+        rect[fill],
+        circle[fill] {
+            fill: rgb(var(--text-color)) !important;
+        }
+    }
+
+    .image-button {
+
         div {
-            color: #777;
+            color: rgb(var(--text-color));
 
             &.highlight {
                 animation: highlight 3s infinite;
@@ -485,7 +501,7 @@ body.light {
         }
 
         50% {
-            color: rgba(0, 0, 0, 0.4);
+            color:rgba(var(--text-color), 0.4);
         }
 
         100% {
