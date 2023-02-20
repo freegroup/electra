@@ -17,6 +17,10 @@ body.light {
     --input-label-color: 0 0 0;
     --text-color: 0 0 0;
 
+    --box-shadow-0: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --box-shadow-1: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --box-shadow-2: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    --box-shadow-3: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 
     /* the backgrond-color for a workplace. A workplace is where a docment, content area,... is place.
     */
@@ -40,8 +44,13 @@ body.light {
         color: rgb(var(--tint-color));
     }
 
-    .dropdown-menu>li>a {
-        color: rgb(var(--input-color));        
+    .dropdown-menu {
+        border: 1px solid rgb(var(--border-color));
+        border-radius: @borderRadiusSmall;
+        background-color: rgb(var(--pane-bg-color));
+        li>a {
+            color: rgb(var(--input-color));        
+        }
     }
 
     input[type=text]{
@@ -54,7 +63,7 @@ body.light {
     }
 
     .notifyjs-bootstrap-base {
-        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+        box-shadow: var(--box-shadow-1);
     }
     
     .notifyjs-bootstrap-info {
@@ -119,8 +128,8 @@ body.light {
                 img,
                 svg {
                     &:hover {
-                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-                        border-color:white;
+                        box-shadow:  var(--box-shadow-1);
+                        border-color: rgb(var(--border-color));
                     }
                 }
             }
@@ -141,7 +150,7 @@ body.light {
         border-color: rgb(var(--border-color));
         background: rgb(var(--pane-bg-color));
         border-left-color: rgb(var(--tint-color));
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        box-shadow:  var(--box-shadow-1);
 
         .context-menu-separator {
             border-bottom: 1px solid rgb(var(--border-color));
@@ -182,7 +191,7 @@ body.light {
     }
 
     .tinyFlyoverMenu {
-        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+        box-shadow:  var(--box-shadow-1);
         border-color: rgb(var(--border-color));
         background-color: rgb(var(--pane-bg-color));
 
@@ -275,6 +284,7 @@ body.light {
     #canvas_zoom {
         background-color: rgb(var(--pane-bg-color));
         border: 1px solid rgb(var(--border-color));
+        box-shadow: var(--box-shadow-0);
         button {
             background-color: transparent;
             border-color: transparent;
@@ -300,7 +310,7 @@ body.light {
 
     .genericDialog {
         .modal-content {
-            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+            box-shadow:  var(--box-shadow-3);
             background-color:rgb(var(--pane-bg-color));
 
             .modal-header {
@@ -357,6 +367,7 @@ body.light {
             background-color: rgb(var(--pane-bg-color));
             border: 1px solid rgb(var(--border-color));
             border-radius: @borderRadiusBig;
+            box-shadow: var(--box-shadow-1);
             header{
                 #material-tabs {
                     border: none;
@@ -413,7 +424,7 @@ body.light {
             text-shadow: 1px 1px 0px #fff;
             background: #eaebec;
             border-color: rgb(var(--border-color));
-            box-shadow: 0 1px 2px #d1d1d1;
+            box-shadow: var(--box-shadow-1);
         }
 
         table th {
@@ -489,7 +500,7 @@ body.light {
             img,
             svg {
                 &:hover {
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+                    box-shadow: var(--box-shadow-1);
                     border-color:rgb(var(--border-color));
                 }
             }
