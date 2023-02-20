@@ -367,10 +367,13 @@ export default class View {
   }
 
   onDelete(section) {
-    commandStack.push(new State(this.app)).then( doneCallback => {
-      this.page.remove(section.id)
-      this.render(this.page)
-      doneCallback()
+    commandStack.push(new State(this.app))
+    .then( doneCallback => {
+      $(`.section[data-id="${section.id}"]`).slideToggle(400, ()=>{
+        this.page.remove(section.id)
+        this.render(this.page)
+        doneCallback()
+      })
     })
   }
 
