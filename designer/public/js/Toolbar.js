@@ -113,17 +113,20 @@ export default class Toolbar {
       return false
     })
 
-    this.shapeButton = $(
-      '<label id="tool_shape" class="dropdown" >' +
-      '    <div class="image-button" data-toggle="dropdown"  id="tool_shape_image" ><img class="svg" src="./images/toolbar_insert.svg"><div>Add</div></div>' +
-      '    <ul class="dropdown-menu" role="menu" >' +
-      '       <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="./images/toolbar_rectangle.svg"><span class="tool_label">Rectangle</span><span class="tool_shortcut">R</span></li>' +
-      '       <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="./images/toolbar_circle.svg"><span class="tool_label">Circle</span><span class="tool_shortcut">C</span></li>' +
-      '       <li class="tool_shape_entry policyLineToolPolicy"      ><img src="./images/toolbar_line.svg"><span class="tool_label">Line</span><span class="tool_shortcut">L</span></li>' +
-      '       <li class="tool_shape_entry policyTextToolPolicy"      ><img src="./images/toolbar_text.svg"><span class="tool_label">Text</span><span class="tool_shortcut">T</span></li>' +
-      '       <li class="tool_shape_entry policyPortToolPolicy"      ><img src="./images/toolbar_port.svg"><span class="tool_label">Port</span><span class="tool_shortcut">P</span></li>' +
-      '    </ul>' +
-      '</label>'
+    this.shapeButton = $(`
+      <div id="tool_shape" class="dropdown" >
+          <div class="image-button" data-toggle="dropdown"  id="tool_shape_image" >
+            <img class="svg" src="./images/toolbar_insert.svg">
+            <div>Add</div>
+          </div>
+          <ul class="dropdown-menu" role="menu" >
+             <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="./images/toolbar_rectangle.svg"><span class="tool_label">Rectangle</span><span class="tool_shortcut">R</span></li>
+             <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="./images/toolbar_circle.svg"><span class="tool_label">Circle</span><span class="tool_shortcut">C</span></li>
+             <li class="tool_shape_entry policyLineToolPolicy"      ><img src="./images/toolbar_line.svg"><span class="tool_label">Line</span><span class="tool_shortcut">L</span></li>
+             <li class="tool_shape_entry policyTextToolPolicy"      ><img src="./images/toolbar_text.svg"><span class="tool_label">Text</span><span class="tool_shortcut">T</span></li>
+             <li class="tool_shape_entry policyPortToolPolicy"      ><img src="./images/toolbar_port.svg"><span class="tool_label">Port</span><span class="tool_shortcut">P</span></li>
+          </ul>
+      </div>`
     )
     buttonGroup.append(this.shapeButton)
 

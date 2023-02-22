@@ -223,12 +223,10 @@ body.light {
 
     #layer_elements {
       .layerElement {
-        border-bottom: 1px solid rgb(var(--border-color));
 
         &[data-visibility="false"] {
           opacity: 0.5;
         }
-
         .icon {
           &:hover {
             * {
@@ -238,17 +236,8 @@ body.light {
         }
       }
 
-      .layerSelectedElement {
-        background-color: rgb(var(--list-item-selected-bg-color));
-      }
+
     }
-  }
-
-
-  .shadow {
-    border: 1px solid rgb(var(--tint-color));
-    box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
-    background-color: white;
   }
 
   rect.Raft {
@@ -322,9 +311,19 @@ body.light {
 
 
   #tool_shape {
-    .tool_shape_entry {
-      .tool_shortcut {
-        color: rgba(0, 0, 0, 0.5);
+    .dropdown-menu{
+      padding: 4px;
+      font-size: var(--label-font-size);
+      font-weight: var(--label-font-weight);
+      
+      .tool_shape_entry {
+        &:hover{
+          background-color: rgb(var(--list-item-hover-bg-color));
+        }
+
+        .tool_shortcut {
+          color: rgba(0, 0, 0, 0.5);
+        }
       }
     }
   }

@@ -37,12 +37,6 @@ body.light {
         }
     }
 
-    .shadow {
-        border: 1px solid rgb(var(--tint-color)) ;
-        box-shadow: var(--box-shadow-2);
-        background-color: white;
-    }
-
     .paletteContainer {
         background-color: white;
         border-right-color: rgba(74, 74, 74, 0.5);
@@ -61,29 +55,6 @@ body.light {
 
             .glowBorder {
                 border-color: rgb(var(--tint-color)) ;
-            }
-        }
-
-        #paletteElementsScroll {
-            .pageElement {
-                border-left-color: transparent;
-                border-bottom-color: rgb(var(--border-color));
-
-                &.selected {
-                    background-color: #EFEFEF !important;
-                    border-left-color: rgb(var(--tint-color)) ;
-                }
-
-                &:hover {
-                    background-color: rgba(248, 248, 248, 0.6);
-                }
-
-                .page_action {
-                    &:hover {
-                        border-color: rgba(0, 0, 0, 0.4);
-                        color: rgb(var(--tint-color)) ;
-                    }
-                }
             }
         }
     }
@@ -110,11 +81,11 @@ body.light {
             }
             .nav {
                 background: white;
-                box-shadow: 2px 3px 10px 0 rgba(81, 81, 81, 0.1);
-                border: 1px solid  lightgray;
+                box-shadow: --box-shadow-1;
+                border: 1px solid  rgb(var(--border-color));
         
                 a {
-                    color:  #6e6e6e;       
+                    color:  rgb(var(--input-label-color));       
                     &:hover {
                         color:rgb(var(--tint-color));
                     }

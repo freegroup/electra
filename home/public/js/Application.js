@@ -10,9 +10,7 @@ class Application {
     this.userinfo = new Userinfo(permissions)
     this.appSwitch = new AppSwitch(permissions)
 
-    $(".launchArea .launch_button").one("mouseover", function(event){
-      console.log("ddfd")
-      let button = $(this)
+    $(".launchArea .electra-button").one("mouseover", function(){
       party.confetti(this)
     })
   }

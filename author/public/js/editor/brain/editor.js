@@ -34,7 +34,10 @@ export default class Editor extends GenericEditor{
     $("#draw2dCanvasWrapper").append(menu)
 
     this.view = new View("draw2dCanvas")
+    $("#paletteElements")[0].className = '';
+
     this.palette = new Palette(this.view, "#paletteElements")
+    //this.palette.removeClass()
 
     reader.unmarshal(this.view, section.content)
 

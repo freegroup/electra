@@ -1,5 +1,10 @@
 body.light {
-    --border-color: 208 215 222;
+    --label-bold-font-weight: 600;
+    --label-font-weight: 400;
+    --label-font-size: 14px;
+
+    
+    --border-color: 208, 215, 222;
     
     --tint-color:       218, 26, 95;
     --tint-color-dark:  158, 27, 52;
@@ -9,13 +14,15 @@ body.light {
     --lefttab-bg-color:  218, 26, 95;
 
     /* colors for listitems */
-    --list-item-selected-bg-color: 240 240 240;
+    --menu-container-padding: 4px;
+    --list-item-selected-bg-color: 240, 240, 240;
+    --list-item-hover-bg-color: 248, 248, 248;
 
     /* form elements */
-    --input-bg-color: 255 255 255;
-    --input-color: 0 0 0;
-    --input-label-color: 0 0 0;
-    --text-color: 0 0 0;
+    --input-bg-color: 255, 255, 255;
+    --input-color: 0, 0, 0;
+    --input-label-color: 0, 0, 0;
+    --text-color: 0, 0, 0;
 
     --box-shadow-0: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     --box-shadow-1: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -42,6 +49,11 @@ body.light {
 
     a {
         color: rgb(var(--tint-color));
+    }
+
+    /* class used by draw2d if a element is drag&drop from a platette into a workspace */
+    .shadow {
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.16));
     }
 
     .dropdown-menu {
@@ -420,29 +432,27 @@ body.light {
     .tree {
         .tree-leaf {
             
-            .tree-expando {
-                background-color: transparent;
-                border: 1px solid rgb(var(--input-label-color));
-                color: rgb(var(--input-label-color));
-                &.hidden {
-                }
-            }
 
             .tree-leaf-content {
-                &.tree-child-leaves {
-                }
 
-                .tree-leaf-text {
-                }
+                .tree-expando {
+                    background-color: transparent;
+                    border: 1px solid rgb(var(--input-label-color));
+                    color: rgb(var(--input-label-color));
 
+                }
                 &:hover {
-                    background-color: rgba(var(--list-item-selected-bg-color), 0.69);
+                    background-color: rgb(var(--list-item-hover-bg-color));
                 }
 
                 &.selected {
                     background-color: rgb(var(--list-item-selected-bg-color));
                     .tree-leaf-text {
                         color: rgb(var(--tint-color));
+                    }
+                    .tree-expando {
+                        color: rgb(var(--tint-color));
+                        border-color: rgb(var(--tint-color));
                     }
                 }
             }
@@ -517,8 +527,6 @@ body.light {
     .image-button {
 
         div {
-            color: rgb(var(--text-color));
-
             &.highlight {
                 animation: highlight 3s infinite;
             }
@@ -529,26 +537,25 @@ body.light {
         }
 
         &:not(.disabled) {
-            img,
-            svg {
-                &:hover {
-                    box-shadow: var(--box-shadow-1);
-                    border-color:rgb(var(--border-color));
-                }
+            &:hover{
+                    box-shadow: var(--box-shadow-0);
             }
         }
     }
     @keyframes highlight {
         0% {
             color:rgb(var(--tint-color));
+            font-weight: var(--label-bold-font-weight);
         }
 
         50% {
             color:rgba(var(--text-color), 0.4);
+            font-weight: var(--label-font-weight);
         }
 
         100% {
             color:rgb(var(--tint-color));
+            font-weight: var(--label-bold-font-weight);
         }
     }
 

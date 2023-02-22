@@ -45,15 +45,15 @@ export default class Layer {
     let figures = this.view.getExtFigures()
     figures.each((i, figure) => {
       this.html.append(
-        `<div class="layerElement ${this.figureToCSS(figure)}" data-figure="${figure.id}" data-visibility="${figure.isVisible()}" id="layerElement_${figure.id}" >
+        `<div class="layerElement list-item ${this.figureToCSS(figure)}" data-figure="${figure.id}" data-visibility="${figure.isVisible()}" id="layerElement_${figure.id}" >
           <img class="layer_decoration" src="${this.figureToImage(figure)}"/>
           <span class="layer_label" >
             ${figure.getUserData().name}
           </span>
-          <span data-figure="${figure.id}" class="layer_visibility pull-right">
+          <span data-figure="${figure.id}" class="layer_visibility list-item-action">
             <img class="icon svg" src="${(figure.isVisible() ? './images/layer_visible.svg' : './images/layer_hidden.svg')}"/>
           </span>
-          <span data-figure="${figure.id}" class="layer_edit pull-right" >
+          <span data-figure="${figure.id}" class="layer_edit list-item-action" >
             <img class="icon svg" src="./images/layer_edit.svg"/>
           </span>
         </div>`)
@@ -112,10 +112,10 @@ export default class Layer {
   }
 
   _updateSelection() {
-    $(".layerElement").removeClass("layerSelectedElement")
+    $(".layerElement").removeClass("selected")
     let selection = this.view.getSelection()
     selection.each(function (i, e) {
-      $("#layerElement_" + e.id).addClass("layerSelectedElement")
+      $("#layerElement_" + e.id).addClass("selected")
     })
   }
 

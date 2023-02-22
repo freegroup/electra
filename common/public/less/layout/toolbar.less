@@ -2,9 +2,10 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: @buttonSpacing;
   padding-right: 10px;
   height: @toolbarHeight;
+  padding: var(--menu-container-padding);
 
   * {
     outline: none;
@@ -18,6 +19,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    height:100%;
 
     .statusIndicator {
       margin: 20px;

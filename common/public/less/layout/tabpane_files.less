@@ -9,7 +9,7 @@
     height:70px;
 
     .title {
-      font-weight: 300;
+      font-weight: var(--label-font-weight);
       font-size: 3vw;
       white-space: nowrap;
     }
@@ -45,17 +45,11 @@
       padding-right: 20px;
       padding-top: 5px;
       text-transform: uppercase;
-      font-size: 14px;
-      font-weight: 300;
+      font-size: va(--label-font-size);
+      font-weight: var(--label-font-weight);
       text-align: center;
       transition: all 0.3s ease;
       outline: none;
-      z-index: 1001;
-
-      &.active {
-        font-weight: 400;
-        transition: all 0.2s ease;
-      }
     }
   }
 

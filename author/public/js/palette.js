@@ -73,6 +73,8 @@ export default class Palette {
 
     // restore all classes from the other editors
     $("#paletteElementsScroll, #paletteFilter").addClass("pages")
+    $("#paletteElements").addClass("list")
+
     $("#paletteFilter").html(`
       <div class='toc'>
         Chapters 
@@ -127,19 +129,19 @@ export default class Palette {
           let tooltip = page.hasLearningContent()?"This page contains learning material which ends later in two documents: a worksheet and a solution paper.":""
           let icon    = page.hasLearningContent()?" &#127891;":""
           this.html.append(`
-          <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
+          <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
             <span>${page.name}${icon}</span>
             <span class="spacer"></span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="page_action chapter_edit_name" >&#9998; </span>
-            <span                         data-toggle="tooltip" title="Help"                 class="page_action chapter_help" > ? </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="page_action chapter_delete" >&#8855;</span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="list-item-action chapter_edit_name" >&#9998; </span>
+            <span                         data-toggle="tooltip" title="Help"                 class="list-item-action chapter_help" > ? </span>
+            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="list-item-action chapter_delete" >&#8855;</span>
           </div>`)
         }, true)
       } else {
         $("#documentContentAdd").hide()
         pages.forEach((page) => {
           this.html.append(`
-          <div class="pageElement"  data-page="${page.id}"  id="layerElement_${page.id}" >
+          <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" >
             <span>${page.name}</span>
           </div>`)
         }, true)

@@ -3,36 +3,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-weight: 400;
+    font-weight: var(--label-font-weight);
+    font-size: var(--label-font-size);
+    height:100%;
+    border-radius: @borderRadiusSmall;
+
     img,
     svg {
       margin: 5px;
-      margin-bottom: 0;
-      padding: 0;
       width: @toolbarHeight - 20;
       height: @toolbarHeight - 20;
-      text-align: center;
-      font-size: 45px;
-      transition: all 0.5s;
-      border-radius: @borderRadiusSmall;
-      border-width: 1px;
-      border-style: solid;
-      border-color: transparent;
     }
 
     div {
       text-align: center;
-      font-size: 10px;
-      cursor: default;
-    }
-
-    &:not(.disabled) {
-
-      img,
-      svg {
-        cursor: pointer;
-        &:hover {
-        }
-      }
+      cursor: pointer;
+      font-size:0.8em;
     }
   }

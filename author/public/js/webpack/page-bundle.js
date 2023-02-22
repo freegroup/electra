@@ -28397,7 +28397,10 @@ class Editor extends _editor.default {
     `);
     $("#draw2dCanvasWrapper").append(menu);
     this.view = new _view.default("draw2dCanvas");
+    $("#paletteElements")[0].className = '';
     this.palette = new _palette.default(this.view, "#paletteElements");
+    //this.palette.removeClass()
+
     _reader.default.unmarshal(this.view, section.content);
     this.splitter = (0, _split.default)(['#paletteHeader', '#paletteElementsScroll'], {
       gutterSize: 10,
