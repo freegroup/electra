@@ -97,11 +97,11 @@
         h1{
           font-size:14px !important;
           font-weight: bold !important;
-          border:none !important
+          border:none !important;
         }
         h2{
-          font-size:12px !important;
-          font-weight: 300 !important;
+          font-size: var(--label-font-size);
+          font-weight:var(--label-font-weight);
         }
       }
     }
@@ -118,15 +118,21 @@
         width:100%;
         .drop-message{
           height: 100px;
-          border: 1px dotted lightgray;
+          border: 1px solid rgb(var(--border-color));
           display: flex;
           width: 300px;
           align-items: center;
           justify-content: center;
-          background-color: rgba(255,255,255,0.1);
+          background-color: rgba(var(--pane-bg-color),0.4);
+          border-radius: @borderRadiusBig;
+          box-shadow: var(--box-shadow-1);
           grid-area: 1 / 1 / 2 / 2;
           position: absolute;
           margin-top: 2vh;
+          backdrop-filter: blur(4px);
+          font-size: var( --label-font-size);
+          font-weight: var( --label-font-weight);
+      
         }
         .scaleSlider {
           position: absolute;

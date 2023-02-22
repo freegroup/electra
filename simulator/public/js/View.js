@@ -88,6 +88,10 @@ export default draw2d.Canvas.extend({
     // nice grid decoration for the canvas paint area
     //
     this.grid = new draw2d.policy.canvas.ShowGridEditPolicy(20)
+
+    this.grid = new draw2d.policy.canvas.ShowDotEditPolicy(15)
+    // HACK
+    this.grid.dotColor.rgba = ()=> {console.log("called"); return "rgba(var(--border-color))"}
     this.installEditPolicy(this.grid)
 
     // add some SnapTo policy for better shape/figure alignment

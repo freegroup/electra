@@ -2,7 +2,6 @@ body.light {
     --label-bold-font-weight: 600;
     --label-font-weight: 400;
     --label-font-size: 14px;
-
     
     --border-color: 208, 215, 222;
     
@@ -105,7 +104,11 @@ body.light {
         }
 
         .application-waffel {
+            border: 1px solid transparent;
 
+            &:hover{
+                border: 1px solid white;
+            }
             img,
             svg {
                 color: white;
@@ -124,26 +127,8 @@ body.light {
                 }
             }
     
-            div {
-                color: white;
-    
-                &.highlight {
-                    animation: highlight 3s infinite;
-                }
-            }
-    
             &.disabled {
                 opacity: 0.2;
-            }
-    
-            &:not(.disabled) {
-                img,
-                svg {
-                    &:hover {
-                        box-shadow:  var(--box-shadow-1);
-                        border-color: rgb(var(--border-color));
-                    }
-                }
             }
         }
     }
@@ -498,7 +483,6 @@ body.light {
 
     .toolbar {
         background-color: #B2E2F2;
-        border-bottom:1px solid rgb(var(--border-color));
     }
 
     svg.inlined-svg {

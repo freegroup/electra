@@ -1,9 +1,15 @@
 .tinyScrollbar{
     &::-webkit-scrollbar {
-        width: 5px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: #666;
-      }
+      width: 5px;
+    }
+    &::-webkit-scrollbar-track
+    {
+      background-color: rgb(var(--border-color));
+      border-radius: 99999px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #666;
+      border-radius: 99999px;
+    }
 }

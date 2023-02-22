@@ -55,9 +55,10 @@
         border-radius: @borderRadiusSmall;
         border-bottom-left-radius: 15px;
         border-top-left-radius: 15px;
-        border-left: 1px solid #e9e9e9;
+        border-left: 1px solid rgb(var(--border-color));
         display: flex;
         flex-direction: column;
+        gap: @controlSpacing;
         .headline{
             display: flex;
             flex-direction: row;
@@ -68,8 +69,9 @@
             .displayName{
                 padding-right: 56px;
                 min-width: 133px;
-                font-weight: 400;
-                letter-spacing: 5px;
+                font-weight: var(--label-font-weight);
+                font-size: var(--label-font-size);
+                letter-spacing: 2px;
             }
             .icons {
                 display: flex;
@@ -107,7 +109,6 @@
             }
         }
         .description{
-            margin-top:10px;
             max-height:200px;
             overflow: auto;
             font-size:0.9em;

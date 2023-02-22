@@ -80,7 +80,7 @@ body.light {
                 }
             }
             .nav {
-                background: white;
+                background: rgb(var(--pane-bg-color));
                 box-shadow: --box-shadow-1;
                 border: 1px solid  rgb(var(--border-color));
         
@@ -107,10 +107,12 @@ body.light {
             &:hover {
                 border-radius: @borderRadiusSmall;
                 border-style: dashed;
-                border-color: rgba(0, 0, 0, 0.1);
+                border-color: rgb(--border-color);
             }
         }
     }
+
+
     /** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
         used in other page elements like pdf, dialog, single page, ...
     **/ 
@@ -120,16 +122,6 @@ body.light {
             border-color:rgb(var(--tint-color)) ;
         }
         .sectionContent {
-            &[data-type='image'] {
-                #editor-container {
-                    #image-preview {
-                        .overlay {
-                            background: rgba(255, 255, 255, 0.5);
-                        }
-                    }
-                }
-            }
-
             &[data-type='flashcard'],
             &[data-type='wysiwyg'],
             &[data-type='markdown'],
@@ -181,6 +173,18 @@ body.light {
                     border: 1px solid white;
                 }
             }
+
+            .placeholderContainer{
+                border-color:rgb(var(--border-color));
+                .placeholderText{
+                  h1{
+                    color: rgb(var(--text-color));
+                  }
+                  h2{
+                    color: rgb(var(--text-color));
+                  }
+                }
+            }
         }
     }
 
@@ -192,13 +196,11 @@ body.light {
 
         /** Tab for the selected/active card **/
         &::before {
-            color: #d9d9d9;
-            border-color: #eaeaea;
-            background-color: white;
+            color: rgb(var(--border-color));
+            border-color: rgb(var(--border-color));
+            background-color: rgb(var(--pane-bg-color));
             opacity: 1;
         }
-
-          
     }
 
     #draw2dCanvasWrapper {

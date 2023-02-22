@@ -1,6 +1,6 @@
 
 body.light {
-    --toolbar-bg-color: 242, 231, 255 ;
+    --toolbar-bg-color: 223, 61, 138 ;
 
     .toolbar {
         background-color: rgba(var(--toolbar-bg-color), 0.4);
@@ -21,24 +21,71 @@ body.light {
         
     }
 
+    .content {
+        background-color: rgb(var(--workplace-bg-color));
+        .welcomeMessage {
+            .teaser {
+                background-color: rgb(var(--pane-bg-color));
 
-    .welcomeMessage {
-        background-position: center top;
-        background-size: 100% 50%;
-
-        img {
-            background-color: white;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-        }
-
-        .teaser {
-            background-color: white;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-            h2 {
-                color: rgb(var(--tint-color)) ;
+                h2 {
+                    color: rgb(var(--tint-color)) ;
+                }
             }
+            .description{
+                background-color: rgb(var(--pane-bg-color));
+            
+            }
+        }
+        .searchResult {
+            background-color: rgb(var(--pane-bg-color));
         }
     }
 
+    .tile {
+        box-shadow: var(--box-shadow-0);
+
+        &.displayMode,
+        &.editMode {
+            background-color: rgb(var(--pane-bg-color));
+        }
+
+        .details {
+            background-color: white;
+            border-left: 1px solid #e9e9e9;
+
+            .headline{
+
+                border-bottom: 1px solid rgb(var(--tint-color));
+                .displayName{
+                    color: rgb(var(--tint-color));
+                }
+                .icons {
+                    div{
+                        &:hover{
+                            color: rgb(var(--tint-color));
+                        }
+                    }
+                }
+    
+            }
+            .tags{
+                .tag{
+                    background-color: lightgray;
+                }
+            }
+            .description{
+   
+                table {
+                    border: 1px solid #AAA;
+                    th{
+                        background-color: rgba(0,0,0,0.05);
+                    }
+                    td, th {
+                        border: 1px solid #DDD;
+                    }
+                }
+                
+            }
+        }
+    }
 }

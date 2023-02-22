@@ -22,7 +22,7 @@ export default class Editor extends GenericEditor{
                     </div>
                   </div>
                   <div class="drop-message">
-                    Drag & Drop images or click to upload
+                    Drag & Drop image or click to upload
                   </div>
               </div>
                 `)

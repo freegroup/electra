@@ -28979,7 +28979,14 @@ var _default = draw2d.Canvas.extend({
     this.installEditPolicy(new draw2d.policy.canvas.SnapToGeometryEditPolicy());
     this.installEditPolicy(new draw2d.policy.canvas.SnapToCenterEditPolicy());
     this.installEditPolicy(new draw2d.policy.canvas.SnapToInBetweenEditPolicy());
-    this.installEditPolicy(new draw2d.policy.canvas.ShowGridEditPolicy());
+    //    this.installEditPolicy(new draw2d.policy.canvas.ShowGridEditPolicy())
+    this.grid = new draw2d.policy.canvas.ShowDotEditPolicy(15);
+    // HACK
+    this.grid.dotColor.rgba = () => {
+      console.log("called");
+      return "rgba(var(--border-color))";
+    };
+    this.installEditPolicy(this.grid);
     this.installEditPolicy(new _EditEditPolicy.default());
 
     // Enable Copy&Paste for figures
@@ -29881,7 +29888,7 @@ class Editor extends _editor.default {
                     </div>
                   </div>
                   <div class="drop-message">
-                    Drag & Drop images or click to upload
+                    Drag & Drop image or click to upload
                   </div>
               </div>
                 `);

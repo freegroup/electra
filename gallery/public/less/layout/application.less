@@ -26,17 +26,14 @@ body{
             }
 
             .content{
-                background-image: linear-gradient(135deg, #f8fbff 0%, #fdf6f6 100%);
                 margin-top:5px;
+                padding: @contentToEdgePadding;
                 flex-grow: 1;
                 overflow: auto;
                 display: flex;
                 flex-direction: column;
                 flex: 1 1px;
-
-                .welcomeMessage{
-
-                }
+                gap:  @contentAreaSpacing;
 
                 .searchResult {
                     display: flex;
@@ -44,7 +41,9 @@ body{
                     flex-wrap: wrap;
                     justify-content: flex-start;
                     gap: 30px;  
-                    padding: 40px;              
+                    box-shadow: var(--box-shadow-1);
+                    padding: @contentAreaSpacing;
+                    border-radius: @borderRadiusSmall;     
                 }
             }
         }

@@ -2449,7 +2449,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
 var digital_counter_8_Bit_Binary = CircuitFigure.extend({
 
    NAME: "digital_counter_8_Bit_Binary",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
