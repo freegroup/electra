@@ -417,8 +417,39 @@ body.light {
         color: white;
     }
 
-    .markdownRendering {
+    .tree {
+        .tree-leaf {
+            
+            .tree-expando {
+                background-color: transparent;
+                border: 1px solid rgb(var(--input-label-color));
+                color: rgb(var(--input-label-color));
+                &.hidden {
+                }
+            }
 
+            .tree-leaf-content {
+                &.tree-child-leaves {
+                }
+
+                .tree-leaf-text {
+                }
+
+                &:hover {
+                    background-color: rgba(var(--list-item-selected-bg-color), 0.69);
+                }
+
+                &.selected {
+                    background-color: rgb(var(--list-item-selected-bg-color));
+                    .tree-leaf-text {
+                        color: rgb(var(--tint-color));
+                    }
+                }
+            }
+        }
+    }
+
+    .markdownRendering {
         table {
             color: #666;
             text-shadow: 1px 1px 0px #fff;

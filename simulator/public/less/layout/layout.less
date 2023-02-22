@@ -47,7 +47,6 @@ body {
             user-select: none;
 
             #paletteHeader {
-              position: relative;
               margin: 0;
               padding: 0;
               top: 0;
@@ -73,45 +72,6 @@ body {
                 flex-grow: 1;
                 &::-webkit-scrollbar {
                   width: 5px;
-                }
-
-                .tree-leaf {
-                  font-weight: 300;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: stretch;
-                  float: unset;
-
-                  .tree-leaf-content{
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    cursor: pointer;
-                    transition: all 0.7s;
-                    padding-left:3px;
-                    &.tree-child-leaves{
-                      transition: all 0.7s;
-                    }
-                    &:hover{
-                      transition: all 0.7s;
-                    }
-                    &.selected{
-                      transition: all 0.4s;
-                      border-radius: @borderRadiusSmall;
-                    }
-                    .tree-expando {
-                      width: 14px;
-                      height: 14px;
-                      line-height: 14px;
-                      top: 0;
-                      border-radius: @borderRadiusSmall;
-                      border-width: 1px;
-                      &.hidden{
-                        display: block !important;
-                        visibility: hidden !important;
-                      }
-                    }
-                  }
                 }
               }
             }
