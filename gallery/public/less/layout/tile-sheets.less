@@ -22,12 +22,14 @@
             max-height:350px;
             box-shadow: var(--box-shadow-0);
             overflow:hidden;
+            border-radius: @borderRadiusSmall;
+            border:1px solid rgb(var(--border-color));
+            
             img{
                 width: 100%;
                 margin-bottom: auto;
-                border:1px solid rgb(var(--border-color));
-                border-radius: @borderRadiusSmall;
             }
+
             &:after {
                 content: "";
                 position: absolute;
