@@ -37,6 +37,7 @@
 
     .image{
         display:flex;
+        flex-direction: column;
         padding:30px;
         background-color:transparent;
         max-width:120px;
@@ -44,6 +45,17 @@
             max-width: 100%;
             margin-bottom: auto;
             filter:drop-shadow(2px 0px 15px #ffffff);
+        }
+        .rating {
+            display:flex;
+            flex-direction: row;
+            cursor:default;
+            &.notRated{
+                cursor:pointer;
+                &:hover{
+                    color:rgb(var(--tint-color));
+                }
+            }
         }
     }
 

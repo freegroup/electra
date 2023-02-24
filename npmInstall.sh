@@ -41,3 +41,7 @@ set -x
 (cd ./userinfo && rm -rf node-modules )  
 (cd ./userinfo && npm install )
 
+(cd ./gamefication && rm -rf node-modules )  
+(cd ./gamefication && npm install )
+
+

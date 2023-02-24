@@ -43,6 +43,7 @@ const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AU
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
 const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
+const PORT_GAMIFICATION = process.env.PORT_GAMIFICATION || die("missing env variable PORT_GAMIFICATION");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
@@ -116,6 +117,13 @@ app.use('/home', createProxyMiddleware({
 
 app.use('/gallery', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_GALLERY,
+    changeOrigin: true,
+    pathRewrite: {},
+    onProxyReq: onProxyReq
+}));
+
+app.use('/gamification', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_GAMIFICATION,
     changeOrigin: true,
     pathRewrite: {},
     onProxyReq: onProxyReq

@@ -77,6 +77,12 @@
     community.general.npm:
       path: /home/electra/server/gallery
 
+  - name: Install packages in /gamification
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/gamification
+
   - name: Install packages in /ingress
     become: true
     become_user: electra
@@ -159,6 +165,14 @@
       path: /home/electra/server/settings.ini
       regexp: '^DATADIR_BRAINS='
       line: DATADIR_BRAINS={{ DATADIR_BRAINS }}
+
+  - name: Copy secret file 
+    ansible.builtin.copy:
+      src: /secrets.ini
+      dest: /home/electra/server/secrets.ini
+      owner: electra
+      group: ssl_group
+      mode: '0600'
 
   - name: Run the application via PM2 edosystem configuration
     become: true
