@@ -18,10 +18,12 @@ dotenv.config({  debug: false, path: envFile })
 
 const pdfApi = require("./handler/pdf")
 const sharedApi = require("./handler/shared")
+const indexApi = require("./handler/index")
 const globalApi = require("./handler/global")
 const userApi = require("./handler/user")
 const conf = require("./configuration")
 const die = require("./utils/die")
+const generator = require("./indexer")
 
 console.log("serving global data from :", conf.absoluteGlobalDataDirectory())
 
@@ -35,6 +37,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 
 pdfApi.init(app)
+indexApi.init(app)
 sharedApi.init(app)
 globalApi.init(app)
 userApi.init(app)
@@ -60,5 +63,6 @@ async function  runServer() {
   });
 }
 
+generator.generateIndex(conf.absoluteGlobalDataDirectory(),"global")
 
 runServer()

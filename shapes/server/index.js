@@ -10,7 +10,6 @@ const dotenv = require('dotenv')
 const PROJECT_PATH = path.resolve(__dirname+ "/../..")
 const componentPath = path.resolve(__dirname+ "/..")
 const componentName = path.basename(componentPath)
-const scriptPath = path.dirname(__filename);
 const envFile = PROJECT_PATH+'/settings.ini' 
 
 console.log(`Component '${componentName} is loading envFile '${envFile}'`)

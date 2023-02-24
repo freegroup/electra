@@ -100,12 +100,11 @@ module.exports = {
         app.post('/sheets/global/save', ensureAdminLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            let reason = req.body.commitMessage || "-empty-"
             filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
                 .then((sanitizedRelativePath) => {
                     let {render} = require("../converter/screenshot")
-                    let jpg = path.join(conf.absoluteGlobalDataDirectory(), sanitizedRelativePath ).replace(".sheet",".jpg")
-                    render(`${AUTHOR_URL}/page.html?global=${shapeRelativePath}&mode=worksheet`, jpg)
+                    let png = path.join(conf.absoluteGlobalDataDirectory(), sanitizedRelativePath ).replace(".sheet",".png")
+                    render(`${AUTHOR_URL}/page.html?global=${shapeRelativePath}&mode=worksheet`, png)
                     return sanitizedRelativePath
                 })
                .catch(reason => {

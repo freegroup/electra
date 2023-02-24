@@ -168,7 +168,7 @@
 
   - name: Copy secret file 
     ansible.builtin.copy:
-      src: /secrets.ini
+      src: ../secrets.ini
       dest: /home/electra/server/secrets.ini
       owner: electra
       group: ssl_group

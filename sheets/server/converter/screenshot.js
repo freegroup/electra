@@ -17,7 +17,6 @@ module.exports = {
         path: location,
       });
       await browser.close()
-      return pdf
     }
     catch(e){
       console.log(e)

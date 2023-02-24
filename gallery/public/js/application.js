@@ -4,7 +4,8 @@ import Userinfo from "../../common/js/Userinfo"
 import AppSwitch from "../../common/js/AppSwitch";
 
 import conf from "./configuration"
-import ShapeView from "./views/shapes"
+import ShapesView from "./views/shapes"
+import SheetsView from "./views/sheets"
 
 class Application {
   constructor() {
@@ -15,27 +16,25 @@ class Application {
 
     this.userinfo = new Userinfo(permissions)
     this.appSwitch = new AppSwitch(permissions)
-    this.shapeView = new ShapeView(permissions)
+    this.shapesView = new ShapesView(permissions)
+    this.sheetsView = new SheetsView(permissions)
 
-    this.currentView = this.shapeView
+    this.currentView = this.sheetsView
 
-    $(".search-button").on("click", ()=>{
-      this.currentView.filter($('.search-input').val())
-    })
+    this.currentView.init()
+
     $('.search-input').on("keyup", (event) => {
        this.currentView.filter($('.search-input').val())
     });
 
-    // load the worksheets first
-    axios.get(conf.shapes.jsonUrl)
-    .then((response) => {
-      let files = response.data
-      this.shapeView.render(files)
-      return files
+    $("#search-worksheet").on("click", ()=>{
+      this.currentView = this.sheetsView
+      this.currentView.init()
     })
-    .catch( exc => {
-      console.log(exc)
-      return []
+
+    $("#search-components").on("click", ()=>{
+      this.currentView = this.shapesView
+      this.currentView.init()
     })
   }
 }

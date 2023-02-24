@@ -1,0 +1,105 @@
+.sheets {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 30px;  
+
+    .tile {
+        box-shadow: var(--box-shadow-1);
+        background-color:transparent;
+    
+        max-width: 380px; 
+        min-height: 300px; 
+        display: flex;
+        flex-direction: column;
+        border-radius: @borderRadiusSmall;
+        padding: @contentToEdgePadding;
+        gap: @contentToEdgePadding;
+
+        .imgContainer {
+            position: relative;
+            max-height:350px;
+            box-shadow: var(--box-shadow-0);
+            overflow:hidden;
+            img{
+                width: 100%;
+                margin-bottom: auto;
+                border:1px solid rgb(var(--border-color));
+                border-radius: @borderRadiusSmall;
+            }
+            &:after {
+                content: "";
+                position: absolute;
+                z-index: 1;
+                bottom: 0;
+                left: 0;
+                pointer-events: none;
+                background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255, 1) 60%);
+                width: 100%;
+                height: 60%;
+            }
+        }
+        .rating {
+            display:flex;
+            flex-direction: row;
+            cursor:default;
+            &.notRated{
+                cursor:pointer;
+                &:hover{
+                    color:rgb(var(--tint-color));
+                }
+            }
+        }
+ 
+        .headline{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            gap: 3px;  
+            border-bottom: 1px solid lightgray;
+            .displayName{
+                padding-right: 56px;
+                min-width: 133px;
+                font-weight: var(--label-font-weight);
+                font-size: var(--label-font-size);
+                letter-spacing: 2px;
+                white-space: nowrap;
+            }
+            .icons {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                gap: 10px;  
+                div{
+                    padding: 4px;
+                    cursor: pointer;
+                    font-size:1.1em;
+                    &:hover{
+                        color: rgb(var(--tint-color));
+                    }
+                    img{
+                        max-height: 20px;
+                    }
+                }
+            }
+        }
+        .tags{
+            margin-top: 4px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 3px;
+            .tag{
+                border-radius:99999px;
+                background-color: lightgray;
+                padding-left: 8px;
+                padding-right: 8px;
+                font-size: 0.8em;
+                cursor:pointer;
+            }
+        }        
+    }
+}

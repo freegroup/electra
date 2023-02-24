@@ -15,16 +15,29 @@ class View {
     this.permissions = permissions
   }
 
+  init(){
+    //load the worksheets first
+    axios.get(conf.shapes.jsonUrl)
+    .then((response) => {
+      this.render(response.data)
+    })
+    .catch( exc => {
+      console.log(exc)
+    })
+  }
+
   render( shapes){
     let searchResult = $(".searchResult")
     searchResult.html("")
+    let shapesContainer = $("<div class='shapes'></div>")
+    searchResult.append(shapesContainer)
     let writePermission = this.permissions.shapes.global.update || this.permissions.shapes.update
     let writeIcon = writePermission?`<div class="editIcon">&#9998;</div>`:""
    
     shapes.forEach(shape => {
       let tags = shape.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
       let mkFile = shape.fullName+".md"
-      searchResult.append(`
+      shapesContainer.append(`
     
       <div class="tile" data-type="${shape.type}" data-fullname="${shape.fullName}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
         <div class="image">
@@ -142,7 +155,7 @@ class View {
       editor.remove()
     })
     editor.hide()
-    $("body").append(editor)
+    $(".shapes").append(editor)
     editor.fadeIn(300)
   }
 
@@ -163,10 +176,9 @@ class View {
     // for some reasons the insert of the editor changes the scroll position of a DIV.
     // Read the position and restore them after the editor is inserted
     let scrollTop = $(".content").scrollTop()
-    console.log(scrollTop)
     axios.get(mdUrl)
     .then( response =>{
-      $("body").append(editor)
+      $(".shapes").append(editor)
       this.editor = new ToastEditor({
         el: document.querySelector(".tile.editMode .description"),
         usageStatistics: false,

@@ -79,11 +79,10 @@ module.exports = {
         app.post('/sheets/user/save', ensureLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            let reason = req.body.commitMessage || "-empty-"
             filesystem.writeFile(conf.absoluteUserDataDirectory(req), shapeRelativePath, content, res)
-                .catch(reason => {
-                    console.log(reason)
-                })
+            .catch(reason => {
+                console.log(reason)
+            })
         })
     }
 }
