@@ -28,17 +28,23 @@ function concatFiles(dataDirectory, scope) {
         if(relativePath.startsWith("readme/")){
           return
         }
-       
+        let document = JSON.parse(fs.readFileSync(filename, 'utf8'))
+        let exercise = document.exercise ?? false
         let name = fullName.replace(/\//g , "_").replace(/-/g , "_")
         let baseDir = path.dirname(relativePath)
         let baseName = path.basename(relativePath)
         let displayName = path.basename(relativePath, ".sheet")
 
         let tags = name.split("_")
+        if(exercise){
+          tags.unshift("exercise")
+        }
+        
         list.push({
           name: name,
           tags: tags,
           scope: scope,
+          exercise: exercise,
           baseName: baseName,
           displayName: displayName,
           basedir: baseDir,

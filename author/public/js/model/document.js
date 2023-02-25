@@ -42,7 +42,10 @@ export default class Document {
   }
 
   toJSON() {
-    return {pages: this.pages.map(page => page.clone().toJSON())}
+    return {
+      exercise: this.hasLearningContent(),
+      pages: this.pages.map(page => page.clone().toJSON())
+    }
   }
 
   clone() {

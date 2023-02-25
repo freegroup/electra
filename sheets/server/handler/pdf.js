@@ -14,7 +14,8 @@ module.exports = {
     init: function (app) {
 
         app.get('/sheets/pdf', nocache, (req, res) => {
-            let sha = req.query.sha      
+            let file = req.query.sha ?? req.query.global 
+            let scope = req.query.sha ? "sha":"global"     
             let mode = req.query.mode ?? "worksheet"     
             let all = false
             let header = mode==="solution"?"Solution Pages":""
@@ -28,9 +29,10 @@ module.exports = {
                 header = mode==="solution"?"Solution Pages":"Worksheet Pages"
             }
 
-            render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=${mode}`, header).then(pdf => {
+            render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=${mode}`, header)
+            .then(pdf => {
                 if (all){
-                    return render(`${AUTHOR_URL}/page.html?sha=${sha}&mode=solution`, "Solution Pages").then(async pdf2 => {
+                    return render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=solution`, "Solution Pages").then(async pdf2 => {
                         var pdfsToMerge = [pdf, pdf2]
                         const mergedPdf = await PDFDocument.create(); 
                         for (const pdfBytes of pdfsToMerge) { 
@@ -43,6 +45,7 @@ module.exports = {
                         return Buffer.from(await mergedPdf.save()); 
                     })      
                 }
+                console.error("PDF PDF",pdf)
                 return pdf
             })
             .then( pdf =>{

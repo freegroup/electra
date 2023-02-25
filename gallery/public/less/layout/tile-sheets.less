@@ -25,12 +25,48 @@
             border-radius: @borderRadiusSmall;
             border:1px solid rgb(var(--border-color));
             
+
             img{
                 width: 100%;
                 margin-bottom: auto;
             }
-
-            &:after {
+            .downloadBar{
+                position: absolute;
+                bottom:0;
+                width:100%;
+                z-index: 1;
+                display: flex;
+                justify-content: flex-end;
+                gap: @controlSpacing;
+                padding: 4px;
+                a {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    gap:4px;
+                    
+                    svg,
+                    img {
+                        height:25px;
+                        color: white;
+                        border-color:transparent;
+            
+                        circle[stroke],
+                        polyline[stroke],
+                        path[stroke],
+                        g[stroke] {
+                            stroke: white !important;
+                        }
+                        rect[fill],
+                        tspan,
+                        circle[fill] {
+                            fill: white !important;
+                        }        
+                    }
+                }
+            }
+            &:before {
                 content: "";
                 position: absolute;
                 z-index: 1;

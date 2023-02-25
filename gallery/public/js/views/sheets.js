@@ -1,6 +1,6 @@
 import axios from "axios"
 import party from "party-js"
-
+import inlineSVG from "../../../common/js/inlineSVG"
 import conf from "../configuration"
 
 class View {
@@ -26,19 +26,35 @@ class View {
     let sheetsContainer = $("<div class='sheets'></div>")
     searchResult.append(sheetsContainer)
 
-   
     sheets.forEach(sheet => {
       let tags = sheet.tags.map( tag => `<div class="tag">${tag}</div>`).join("")
+      let exercise = sheet.exercise ? "<div>&#127891;</div>" : ""
+      let downloadBar = exercise ?
+                      `<div class="downloadBar">
+                        <a href="../sheets/pdf?global=${sheet.fullName}.sheet&mode=worksheet" class="electra-button" target="_pdf"><img class="svg" src="../common/images/toolbar_pdf.svg"> Worksheet</a>
+                        <a href="../sheets/pdf?global=${sheet.fullName}.sheet&mode=solution" class="electra-button" target="_pdf" ><img class="svg" src="../common/images/toolbar_pdf.svg"> Solution</a>
+                      </div>`
+                      :
+                      `<div class="downloadBar">
+                        <a href="../sheets/pdf?global=${sheet.fullName}.sheet" class="electra-button"  target="_pdf"><img class="svg" src="../common/images/toolbar_pdf.svg"> Document</a>
+                      </div>`
+
       sheetsContainer.append(`
-      <div class="tile" data-fullname="${sheet.fullName}" data-scope="${sheet.scope}">
+      <div class="tile" data-fullname="${sheet.fullName}" data-searchterm="${sheet.fullName}${exercise?' exercise':''}" data-scope="${sheet.scope}">
           <div class="headline"><div class="displayName">${sheet.displayName}</div>
             <div class="icons">
-              <div class="editIcon">&#9998;</div><div class="expandIcon"><img src="../common/images/toolbar_fullscreen.svg"/></div>
+              ${exercise}<div class="editIcon">&#9998;</div><div class="expandIcon"><img src="../common/images/toolbar_fullscreen.svg"/></div>
             </div>
           </div>
           <div class="tags">${tags}</div>
-          <div class="imgContainer"><img loading="lazy" src="${conf.sheets.backend[sheet.scope].image(sheet.imagePath)}"/></div>
-          <div class="rating"><div class="star">&#9734;</div><div class="counter">####</div></div>
+          <div class="imgContainer">
+            <img loading="lazy" src="${conf.sheets.backend[sheet.scope].image(sheet.imagePath)}"/>
+            ${downloadBar}
+          </div>
+          <div class="rating">
+            <div class="star">&#9734;</div>
+            <div class="counter">####</div>
+          </div>
       </div>`)
     });
 
@@ -63,6 +79,7 @@ class View {
     );
     
     tiles.forEach((tile) => {observer.observe(tile)})
+    inlineSVG.init()
   }
 
   loadTile(tile){
@@ -108,7 +125,8 @@ class View {
     text = text.toLowerCase()
     $(".tile").each( (i, e) => {
       e = $(e)
-      if(e.data("fullname").trim().toLowerCase().includes(text)){
+
+      if(e.data("searchterm").trim().toLowerCase().includes(text)){
         e.removeClass("hidden")
       }
       else{

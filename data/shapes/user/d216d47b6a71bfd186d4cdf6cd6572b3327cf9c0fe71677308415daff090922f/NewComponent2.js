@@ -1,20 +1,15 @@
-// Generated Code for the Draw2D touch HTML5 lib.
-// File will be generated if you save the *.shape file.
-//
-// created with http://www.draw2d.org
-//
-//
 var NewComponent2 = CircuitFigure.extend({
 
    NAME: "NewComponent2",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
-     var _this = this;
+     this._super( {...attr, stroke:0, bgColor:null, width:80,height:82 }, setter, getter);
+     this.read = {};
+     this.write = {};
 
-     this._super( $.extend({stroke:0, bgColor:null, width:80,height:82},attr), setter, getter);
-     var port;
+     let port;
    },
 
    createShapeElement : function()
@@ -36,7 +31,7 @@ var NewComponent2 = CircuitFigure.extend({
        
        // Rectangle
        shape = this.canvas.paper.path('M19 15L19 82L37.54283510886671 82L35.69140293311648 78.02959088624903L34.500329264702486 73.58444344016971L34.09924243511159 69L34.500329264702486 64.4155565598312L35.69140293311648 59.970409113750975L37.63627326965252 55.799621217555796L40.275846373286186 52.02992015095151L43.52992015095151 48.775846373286186L47.299621217555796 46.13627326965252L51.470409113750975 44.19140293311648L55.91555655983029 43.000329264702486L60.5 42.59924243511159L65.0844434401688 43.000329264702486L69.52959088624903 44.19140293311648L73.7003787824442 46.13627326965252L77.47007984904849 48.775846373286186L80 51.3057665242377L80 15L19 15Z');
-       shape.attr({});
+       shape.attr({"stroke":"rgba(48,48,48,1)","stroke-width":1,"fill":"rgba(255,255,255,1)","dasharray":null,"stroke-dasharray":null,"opacity":1});
        shape.data("name","Rectangle");
        
        // Circle
