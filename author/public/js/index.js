@@ -72,10 +72,10 @@ $(window).load(function () {
     s.onload = function(){
       app = require("./application").default
       app.init(permissions)
+      inlineSVG.init()
       $(".loader").fadeOut(500, function () {
        $(this).remove();
       })
-      inlineSVG.init()
     }
     document.head.appendChild(s)
   })

@@ -1,0 +1,49 @@
+.section[data-type="timing"] {
+  &.editMode{
+    padding:0px;
+
+    .tinyFlyoverMenu {
+      margin-top:-45px;
+    }
+
+  }
+
+  .sectionContent{
+    svg{
+      max-width: 100%;
+    }
+    
+    #editor-timing {
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      #timingEditor {
+        height: 100%;
+      }
+
+      .top {
+        flex: 50%;
+        text-align: initial;
+        border-right-width: 1px;
+        border-right-style: dotted;
+      }
+
+      .bottom {
+        flex:50%;
+        border-top: 1px solid rgb(var(--border-color));
+      }
+
+      .CodeMirror {
+        height:initial;
+      }
+
+      .CodeMirror-scroll {
+        height: auto;
+        overflow-y: hidden;
+        overflow-x: auto;
+      }
+
+    }
+
+  }
+}

@@ -5,6 +5,7 @@ import ImageEditor from "./image/editor"
 import FlashCardEditor from "./flashcard/editor"
 import PlaceholderEditor from "./placeholder/editor"
 import WysiwygEditor from "./wysiwyg/editor"
+import TimingEditor from "./timing/editor"
 import EmptyChapterEditor from "./empty-chapter/editor"
 import UnknownEditor from "./editor"
 
@@ -16,6 +17,7 @@ let editors = [
   new BrainEditor(),
   new PlaceholderEditor(),
   new WysiwygEditor(),
+  new TimingEditor(),
   new EmptyChapterEditor(),
   new ImageEditor()
 ]

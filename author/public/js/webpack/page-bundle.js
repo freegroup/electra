@@ -29694,11 +29694,12 @@ var _editor4 = _interopRequireDefault(__webpack_require__(/*! ./image/editor */ 
 var _editor5 = _interopRequireDefault(__webpack_require__(/*! ./flashcard/editor */ "./public/js/editor/flashcard/editor.js"));
 var _editor6 = _interopRequireDefault(__webpack_require__(/*! ./placeholder/editor */ "./public/js/editor/placeholder/editor.js"));
 var _editor7 = _interopRequireDefault(__webpack_require__(/*! ./wysiwyg/editor */ "./public/js/editor/wysiwyg/editor.js"));
-var _editor8 = _interopRequireDefault(__webpack_require__(/*! ./empty-chapter/editor */ "./public/js/editor/empty-chapter/editor.js"));
-var _editor9 = _interopRequireDefault(__webpack_require__(/*! ./editor */ "./public/js/editor/editor.js"));
+var _editor8 = _interopRequireDefault(__webpack_require__(/*! ./timing/editor */ "./public/js/editor/timing/editor.js"));
+var _editor9 = _interopRequireDefault(__webpack_require__(/*! ./empty-chapter/editor */ "./public/js/editor/empty-chapter/editor.js"));
+var _editor10 = _interopRequireDefault(__webpack_require__(/*! ./editor */ "./public/js/editor/editor.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-let unknownEditor = new _editor9.default();
-let editors = [new _editor.default(), new _editor3.default(), new _editor5.default(), new _editor2.default(), new _editor6.default(), new _editor7.default(), new _editor8.default(), new _editor4.default()];
+let unknownEditor = new _editor10.default();
+let editors = [new _editor.default(), new _editor3.default(), new _editor5.default(), new _editor2.default(), new _editor6.default(), new _editor7.default(), new _editor8.default(), new _editor9.default(), new _editor4.default()];
 function getByType(type) {
   return editors.find(editor => editor.type === type) ?? unknownEditor;
 }
@@ -29739,6 +29740,7 @@ class Editor extends _editor.default {
         <button data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
         <button data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
         <button data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
+        <button data-index="0" data-type="timing"    class='sectionMenuInsertSection electra-button' >&#8853; Timing</button>
         <button data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
         <button data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
       </div>
@@ -30239,15 +30241,152 @@ class Editor extends _editor.default {
       </div>
       <div class="placeholderButtons">
         <button data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection electra-button' >&#8853; Text</button>
-        <button data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</button>
-        <button data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection electra-button' >&#8853; Image</button>
-        <button data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</button>
+        <button data-id="${section.id}" data-type="brain"   class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</button>
+        <button data-id="${section.id}" data-type="timing"  class='placeholderMenuInsertSection electra-button' >&#8853; Timing</button>
+        <button data-id="${section.id}" data-type="image"   class='placeholderMenuInsertSection electra-button' >&#8853; Image</button>
+        <button data-id="${section.id}" data-type="cloze"   class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</button>
       </div>
     </div>
     `;
   }
   defaultContent() {
     return null;
+  }
+}
+exports["default"] = Editor;
+
+/***/ }),
+
+/***/ "./public/js/editor/timing/editor.js":
+/*!*******************************************!*\
+  !*** ./public/js/editor/timing/editor.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+__webpack_require__(/*! codemirror/lib/codemirror.css */ "./node_modules/codemirror/lib/codemirror.css");
+var _codemirror2 = _interopRequireDefault(__webpack_require__(/*! codemirror */ "./node_modules/codemirror/lib/codemirror.js"));
+__webpack_require__(/*! codemirror/mode/javascript/javascript */ "./node_modules/codemirror/mode/javascript/javascript.js");
+__webpack_require__(/*! codemirror/addon/selection/active-line.js */ "./node_modules/codemirror/addon/selection/active-line.js");
+var _editor = _interopRequireDefault(__webpack_require__(/*! ../editor */ "./public/js/editor/editor.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+let WaveDrom = __webpack_require__(/*! wavedrom */ "./node_modules/wavedrom/lib/index.js");
+let WaveSkin = __webpack_require__(/*! wavedrom/skins/default.js */ "./node_modules/wavedrom/skins/default.js");
+const renderAny = __webpack_require__(/*! wavedrom/lib/render-any */ "./node_modules/wavedrom/lib/render-any.js");
+const createElement = __webpack_require__(/*! wavedrom/lib/create-element */ "./node_modules/wavedrom/lib/create-element.js");
+class Editor extends _editor.default {
+  constructor(type = "timing") {
+    super(type);
+  }
+
+  /* public interface */
+  inject(section) {
+    super.inject(section);
+    let content = section.content;
+    $(".sections .activeSection .sectionContent").html(`
+              <div class="editorContainerSelector" id="editor-timing">
+                <div class="top">
+                  <textarea id="timingEditor"></textarea>
+                </div>
+                <div class="bottom" id="timingPreview">
+                </div>
+              </div>
+                `);
+    this.editorId = "timingEditor";
+    this.previewId = "timingPreview";
+    this.editor = _codemirror2.default.fromTextArea(document.getElementById(this.editorId), {
+      lineNumbers: true,
+      mode: 'javascript',
+      theme: 'default',
+      viewportMargin: Infinity,
+      autofocus: true,
+      lineWrapping: true,
+      styleActiveLine: {
+        nonEmpty: true
+      }
+    });
+    this.editor.setValue(content);
+    this.editor.on('changes', this.debounce(() => {
+      this.updatePreview();
+    }, 500, false));
+    this.updatePreview();
+    return this;
+  }
+
+  /* public interface */
+  commit() {
+    return super.commit().then(() => {
+      this.section.content = this.editor.getValue();
+      return this.section;
+    });
+  }
+
+  /**
+   * 
+   * @param {*} whereToAppend 
+   * @param {*} section 
+   * @param {String} mode Either "worksheet", "solution", "flashcard"
+   */
+  render(section, mode) {
+    let svg = "";
+    try {
+      svg = createElement(renderAny("1", JSON.parse(section.content), WaveSkin)).outerHTML;
+    } catch (exc) {
+      console.log(exc);
+    }
+    return `
+    <div class="sectionContent" data-type="${section.type}">
+    ${svg}
+    </div>`;
+  }
+  defaultContent() {
+    return `
+
+{ "signal" : [
+    { "name": "clk1",  "wave": "P.....H......" },
+    { "name": "clk2",  "wave": "d............" },
+    { "name": "bus1",  "wave": "x....=..=.=x.",   "data": "head body tail" },
+    { "name": "bus1",  "wave": "x.3..4.5x....",   "data": "head body tail" },
+    { "name": "wire",  "wave": "0....1..0..1." },
+    { "name": "wire",  "wave": "l....h...L.H." }
+  ],
+  "config": { 
+    "hscale": 2 
+  }
+}
+  
+`;
+  }
+  updatePreview() {
+    try {
+      let value = this.editor.getValue();
+      let json = JSON.parse(value);
+      let svg = createElement(renderAny("1", json, WaveSkin)).outerHTML;
+      document.getElementById(this.previewId).innerHTML = svg;
+    } catch (exc) {
+      console.log(exc);
+    }
+  }
+  debounce(func, wait, immediate) {
+    let timeout;
+    return function () {
+      let context = this;
+      let args = arguments;
+      let later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      let callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
   }
 }
 exports["default"] = Editor;
@@ -30883,6 +31022,544 @@ String.prototype.tuiMarkdownFix = function () {
     return tokenMap[matched];
   });
 };
+
+/***/ }),
+
+/***/ "./node_modules/bit-field/lib/render.js":
+/*!**********************************************!*\
+  !*** ./node_modules/bit-field/lib/render.js ***!
+  \**********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+
+// ----- ✂ ------------------------------------------------------------
+
+const round = Math.round;
+
+const getSVG = (w, h) => ['svg', {
+  xmlns: 'http://www.w3.org/2000/svg',
+  // TODO link ns?
+  width: w,
+  height: h,
+  viewBox: [0, 0, w, h].join(' ')
+}];
+
+const tt = (x, y, obj) => Object.assign(
+  {transform: 'translate(' + x + (y ? (',' + y) : '') + ')'},
+  (typeof obj === 'object') ? obj : {}
+);
+
+const colors = { // TODO compare with WaveDrom
+  2: 0,
+  3: 80,
+  4: 170,
+  5: 45,
+  6: 126,
+  7: 215
+};
+
+const typeStyle = t => (colors[t] !== undefined)
+  ? ';fill:hsl(' + colors[t] + ',100%,50%)'
+  : '';
+
+const norm = (obj, other) => Object.assign(
+  Object
+    .keys(obj)
+    .reduce((prev, key) => {
+      const val = Number(obj[key]);
+      const valInt = isNaN(val) ? 0 : Math.round(val);
+      if (valInt !== 0) { prev[key] = valInt; }
+      return prev;
+    }, {}),
+  other
+);
+
+const trimText = (text, availableSpace, charWidth) => {
+  if (!(typeof text === 'string' || text instanceof String))
+    return text;
+
+  const textWidth = text.length * charWidth;
+  if (textWidth <= availableSpace)
+    return text;
+
+  var end = text.length - ((textWidth - availableSpace) / charWidth) - 3;
+  if (end > 0)
+    return text.substring(0, end) + '...';
+  return text.substring(0, 1) + '...';
+};
+
+const text = (body, x, y, rotate) => {
+  const props = {y: 6};
+  if (rotate !== undefined) {
+    props.transform = 'rotate(' + rotate + ')';
+  }
+  return ['g', tt(round(x), round(y)), ['text', props].concat(tspan.parse(body))];
+};
+
+const hline = (len, x, y) => ['line', norm({x1: x, x2: x + len, y1: y, y2: y})];
+const vline = (len, x, y) => ['line', norm({x1: x, x2: x, y1: y, y2: y + len})];
+
+const getLabel = (val, x, y, step, len, rotate) => {
+  if (typeof val !== 'number') {
+    return text(val, x, y, rotate);
+  }
+  const res = ['g', {}];
+  for (let i = 0; i < len; i++) {
+    res.push(text(
+      (val >> i) & 1,
+      x + step * (len / 2 - i - 0.5),
+      y
+    ));
+  }
+  return res;
+};
+
+const getAttr = (e, opt, step, lsbm, msbm) => {
+  const x = opt.vflip
+    ? step * ((msbm + lsbm) / 2)
+    : step * (opt.mod - ((msbm + lsbm) / 2) - 1);
+
+  if (!Array.isArray(e.attr)) {
+    return getLabel(e.attr, x, 0, step, e.bits);
+  }
+  return e.attr.reduce((prev, a, i) =>
+    (a === undefined || a === null)
+      ? prev
+      : prev.concat([getLabel(a, x, opt.fontsize * i, step, e.bits)]),
+  ['g', {}]);
+};
+
+const labelArr = (desc, opt) => {
+  const {margin, hspace, vspace, mod, index, fontsize, vflip, trim, compact} = opt;
+  const width = hspace - margin.left - margin.right - 1;
+  const height = vspace - margin.top - margin.bottom;
+  const step = width / mod;
+  const blanks = ['g'];
+  const bits = ['g', tt(round(step / 2), -round(0.5 * fontsize + 4))];
+  const names = ['g', tt(round(step / 2), round(0.5 * height + 0.4 * fontsize - 6))];
+  const attrs = ['g', tt(round(step / 2), round(height + 0.7 * fontsize - 2))];
+  desc.map(e => {
+    let lsbm = 0;
+    let msbm = mod - 1;
+    let lsb = index * mod;
+    let msb = (index + 1) * mod - 1;
+    if (((e.lsb / mod) >> 0) === index) {
+      lsbm = e.lsbm;
+      lsb = e.lsb;
+      if (((e.msb / mod) >> 0) === index) {
+        msb = e.msb;
+        msbm = e.msbm;
+      }
+    } else {
+      if (((e.msb / mod) >> 0) === index) {
+        msb = e.msb;
+        msbm = e.msbm;
+      } else if (!(lsb > e.lsb && msb < e.msb)) {
+        return;
+      }
+    }
+    if (!compact) {
+      bits.push(text(lsb, step * (vflip ? lsbm : (mod - lsbm - 1))));
+      if (lsbm !== msbm) {
+        bits.push(text(msb, step * (vflip ? msbm : (mod - msbm - 1))));
+      }
+    }
+    if (e.name !== undefined) {
+      names.push(getLabel(
+        trim ? trimText(e.name, step * e.bits, trim) : e.name,
+        step * (vflip
+          ? ((msbm + lsbm) / 2)
+          : (mod - ((msbm + lsbm) / 2) - 1)
+        ),
+        0,
+        step,
+        e.bits,
+        e.rotate
+      ));
+    }
+
+    if ((e.name === undefined) || (e.type !== undefined)) {
+      if (!(opt.compact && e.type === undefined)) {
+        blanks.push(['rect', norm({
+          x: step * (vflip ? lsbm : (mod - msbm - 1)),
+          width: step * (msbm - lsbm + 1),
+          height: height
+        }, {
+          field: e.name,
+          style: 'fill-opacity:0.1' + typeStyle(e.type)
+        })]);
+      }
+    }
+    if (e.attr !== undefined) {
+      attrs.push(getAttr(e, opt, step, lsbm, msbm));
+    }
+  });
+  return ['g', blanks, bits, names, attrs];
+};
+
+const getLabelMask = (desc, mod) => {
+  const mask = [];
+  let idx = 0;
+  desc.map(e => {
+    mask[idx % mod] = true;
+    idx += e.bits;
+    mask[(idx - 1) % mod] = true;
+  });
+  return mask;
+};
+
+const getLegendItems = (opt) => {
+  const {hspace, margin, fontsize, legend} = opt;
+  const width = hspace - margin.left - margin.right - 1;
+  const items = ['g', tt(margin.left, -10)];
+  const legendSquarePadding = 36;
+  const legendNamePadding = 24;
+
+  let x = width / 2 - Object.keys(legend).length / 2 * (legendSquarePadding + legendNamePadding);
+  for(const key in legend) {
+    const value = legend[key];
+
+    items.push(['rect', norm({
+      x: x,
+      width: 12,
+      height: 12
+    }, {
+      style: 'fill-opacity:0.15; stroke: #000; stroke-width: 1.2;' + typeStyle(value)
+    })]);
+
+    x += legendSquarePadding;
+    items.push(text(
+      key,
+      x,
+      0.1 * fontsize + 4
+    ));
+    x += legendNamePadding;
+  }
+
+  return items;
+};
+
+const compactLabels = (desc, opt) => {
+  const {hspace, margin, mod, fontsize, vflip, legend} = opt;
+  const width = hspace - margin.left - margin.right - 1;
+  const step = width / mod;
+  const labels = ['g', tt(margin.left, legend ? 0 : -3)];
+
+  const mask = getLabelMask(desc, mod);
+
+  for (let i = 0; i < mod; i++) {
+    const idx = vflip ? i : (mod - i - 1);
+    if (mask[idx]) {
+      labels.push(text(
+        idx,
+        step * (i + .5),
+        0.5 * fontsize + 4
+      ));
+    }
+  }
+
+  return labels;
+};
+
+const skipDrawingEmptySpace = (desc, opt, laneIndex, laneLength, globalIndex) => {
+  if (!opt.compact)
+    return false;
+
+  const isEmptyBitfield = (bitfield) => bitfield.name === undefined && bitfield.type === undefined;
+  const bitfieldIndex = desc.findIndex((e) => isEmptyBitfield(e) && globalIndex >= e.lsb && globalIndex <= e.msb + 1);
+
+  if (bitfieldIndex === -1) {
+    return false;
+  }
+
+  if (globalIndex > desc[bitfieldIndex].lsb && globalIndex < desc[bitfieldIndex].msb + 1) {
+    return true;
+  }
+
+  if (globalIndex == desc[bitfieldIndex].lsb && (laneIndex === 0 || bitfieldIndex > 0 && isEmptyBitfield(desc[bitfieldIndex - 1]))) {
+    return true;
+  }
+
+  if (globalIndex == desc[bitfieldIndex].msb + 1 && (laneIndex === laneLength || bitfieldIndex < desc.length - 1 && isEmptyBitfield(desc[bitfieldIndex + 1]))) {
+    return true;
+  }
+
+  return false;
+};
+
+const cage = (desc, opt) => {
+  const {hspace, vspace, mod, margin, index, vflip} = opt;
+  const width = hspace - margin.left - margin.right - 1;
+  const height = vspace - margin.top - margin.bottom;
+  const res = ['g',
+    {
+      stroke: 'black',
+      'stroke-width': 1,
+      'stroke-linecap': 'round'
+    }
+  ];
+  if (opt.sparse) {
+    const skipEdge = opt.uneven && (opt.bits % 2 === 1) && (index === (opt.lanes - 1));
+    if (skipEdge) {
+      if (vflip) {
+        res.push(
+          hline(width - (width / mod), 0, 0),
+          hline(width - (width / mod), 0, height)
+        );
+      } else {
+        res.push(
+          hline(width - (width / mod), width / mod, 0),
+          hline(width - (width / mod), width / mod, height)
+        );
+      }
+    } else if (!opt.compact) {
+      res.push(
+        hline(width, 0, 0),
+        hline(width, 0, height),
+        vline(height, (vflip ? width : 0), 0)
+      );
+    }
+  } else {
+    res.push(
+      hline(width, 0, 0),
+      vline(height, (vflip ? width : 0), 0),
+      hline(width, 0, height)
+    );
+  }
+
+  let i = index * mod;
+  const delta = vflip ? 1 : -1;
+  let j = vflip ? 0 : mod;
+
+  if (opt.sparse) {
+    for (let k = 0; k <= mod; k++) {
+      if (skipDrawingEmptySpace(desc, opt, k, mod, i)) {
+        i++;
+        j += delta;
+        continue;
+      }
+      const xj = j * (width / mod);
+      if ((k === 0) || (k === mod) || desc.some(e => (e.msb + 1 === i))) {
+        res.push(vline(height, xj, 0));
+      } else {
+        res.push(
+          vline((height >>> 3), xj, 0),
+          vline(-(height >>> 3), xj, height)
+        );
+      }
+      if (opt.compact && k !== 0 && !skipDrawingEmptySpace(desc, opt, k - 1, mod, i - 1)) {
+        res.push(
+          hline(width / mod, xj, 0),
+          hline(width / mod, xj, height)
+        );
+      }
+      i++;
+      j += delta;
+    }
+  } else {
+    for (let k = 0; k < mod; k++) {
+      const xj = j * (width / mod);
+      if ((k === 0) || desc.some(e => (e.lsb === i))) {
+        res.push(vline(height, xj, 0));
+      } else {
+        res.push(
+          vline((height >>> 3), xj, 0),
+          vline(-(height >>> 3), xj, height)
+        );
+      }
+      i++;
+      j += delta;
+    }
+  }
+  return res;
+} /* eslint complexity: [1, 23] */;
+
+const lane = (desc, opt) => {
+  const {index, vspace, hspace, margin, hflip, lanes, compact, label} = opt;
+  const height = vspace - margin.top - margin.bottom;
+  const width = hspace - margin.left - margin.right - 1;
+
+  let tx = margin.left;
+  const idx = hflip ? index : (lanes - index - 1);
+  let ty = round(idx * vspace + margin.top);
+  if (compact) {
+    ty = round(idx * height + margin.top);
+  }
+  const res = ['g',
+    tt(tx, ty),
+    cage(desc, opt),
+    labelArr(desc, opt)
+  ];
+
+  if (label && label.left !== undefined) {
+    const lab = label.left;
+    let txt = index;
+    if (typeof lab === 'string') {
+      txt = lab;
+    } else
+    if (typeof lab === 'number') {
+      txt += lab;
+    } else
+    if (typeof lab === 'object') {
+      txt = lab[index] || txt;
+    }
+    res.push(['g', {'text-anchor': 'end'},
+      text(txt, -4, round(height / 2))
+    ]);
+  }
+
+  if (label && label.right !== undefined) {
+    const lab = label.right;
+    let txt = index;
+    if (typeof lab === 'string') {
+      txt = lab;
+    } else
+    if (typeof lab === 'number') {
+      txt += lab;
+    } else
+    if (typeof lab === 'object') {
+      txt = lab[index] || txt;
+    }
+    res.push(['g', {'text-anchor': 'start'},
+      text(txt, width + 4, round(height / 2))
+    ]);
+  }
+
+  return res;
+};
+
+// Maximum number of attributes across all fields
+const getMaxAttributes = desc =>
+  desc.reduce((prev, field) =>
+    Math.max(
+      prev,
+      (field.attr === undefined)
+        ? 0
+        : Array.isArray(field.attr)
+          ? field.attr.length
+          : 1
+    ),
+  0);
+
+const getTotalBits = desc =>
+  desc.reduce((prev, field) => prev + ((field.bits === undefined) ? 0 : field.bits), 0);
+
+const isIntGTorDefault = opt => row => {
+  const [key, min, def] = row;
+  const val = Math.round(opt[key]);
+  opt[key] = (typeof val === 'number' && val >= min) ? val : def;
+};
+
+const optDefaults = opt => {
+  opt = (typeof opt === 'object') ? opt : {};
+
+  [ // key         min default
+    // ['vspace', 20, 60],
+    ['hspace', 40, 800],
+    ['lanes', 1, 1],
+    ['bits', 1, undefined],
+    ['fontsize', 6, 14]
+  ].map(isIntGTorDefault(opt));
+
+  opt.fontfamily = opt.fontfamily || 'sans-serif';
+  opt.fontweight = opt.fontweight || 'normal';
+  opt.compact = opt.compact || false;
+  opt.hflip = opt.hflip || false;
+  opt.uneven = opt.uneven || false;
+  opt.margin = opt.margin || {};
+
+  return opt;
+};
+
+const render = (desc, opt) => {
+  opt = optDefaults(opt);
+
+  const maxAttributes = getMaxAttributes(desc);
+
+  opt.vspace = opt.vspace || ((maxAttributes + 4) * opt.fontsize);
+
+  if (opt.bits === undefined) {
+    opt.bits = getTotalBits(desc);
+  }
+
+  const {hspace, vspace, lanes, margin, compact, fontsize, bits, label, legend} = opt;
+
+  if (margin.right === undefined) {
+    if (label && label.right !== undefined) {
+      margin.right = round(.1 * hspace);
+    } else {
+      margin.right = 4;
+    }
+  }
+
+  if (margin.left === undefined) {
+    if (label && label.left !== undefined) {
+      margin.left = round(.1 * hspace);
+    } else {
+      margin.left = 4; // margin.right;
+    }
+  }
+  if (margin.top === undefined) {
+    margin.top = 1.5 * fontsize;
+    if (margin.bottom === undefined) {
+      margin.bottom = fontsize * (maxAttributes) + 4;
+    }
+  } else {
+    if (margin.bottom === undefined) {
+      margin.bottom = 4;
+    }
+  }
+
+  const width = hspace;
+  let height = vspace * lanes;
+  if (compact) {
+    height -= (lanes - 1) * (margin.top + margin.bottom);
+  }
+
+  const res = ['g',
+    tt(0.5, legend ? 12.5 : 0.5, {
+      'text-anchor': 'middle',
+      'font-size': opt.fontsize,
+      'font-family': opt.fontfamily,
+      'font-weight': opt.fontweight
+    })
+  ];
+
+  let lsb = 0;
+  const mod = Math.ceil(bits * 1.0 / lanes);
+  opt.mod = mod | 0;
+
+  desc.map(e => {
+    e.lsb = lsb;
+    e.lsbm = lsb % mod;
+    lsb += e.bits;
+    e.msb = lsb - 1;
+    e.msbm = e.msb % mod;
+  });
+
+  for (let i = 0; i < lanes; i++) {
+    opt.index = i;
+    res.push(lane(desc, opt));
+  }
+  if (compact) {
+    res.push(compactLabels(desc, opt));
+  }
+
+  if (legend) {
+    res.push(getLegendItems(opt));
+  }
+
+  return getSVG(width, height).concat([res]);
+};
+
+// ----- ✂ ------------------------------------------------------------
+
+module.exports = render;
+
 
 /***/ }),
 
@@ -41076,6 +41753,973 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
 }, "markdown");
 
   CodeMirror.defineMIME("text/x-gfm", "gfm");
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/codemirror/mode/javascript/javascript.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/codemirror/mode/javascript/javascript.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
+
+(function(mod) {
+  if (true) // CommonJS
+    mod(__webpack_require__(/*! ../../lib/codemirror */ "./node_modules/codemirror/lib/codemirror.js"));
+  else {}
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("javascript", function(config, parserConfig) {
+  var indentUnit = config.indentUnit;
+  var statementIndent = parserConfig.statementIndent;
+  var jsonldMode = parserConfig.jsonld;
+  var jsonMode = parserConfig.json || jsonldMode;
+  var trackScope = parserConfig.trackScope !== false
+  var isTS = parserConfig.typescript;
+  var wordRE = parserConfig.wordCharacters || /[\w$\xa1-\uffff]/;
+
+  // Tokenizer
+
+  var keywords = function(){
+    function kw(type) {return {type: type, style: "keyword"};}
+    var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c"), D = kw("keyword d");
+    var operator = kw("operator"), atom = {type: "atom", style: "atom"};
+
+    return {
+      "if": kw("if"), "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
+      "return": D, "break": D, "continue": D, "new": kw("new"), "delete": C, "void": C, "throw": C,
+      "debugger": kw("debugger"), "var": kw("var"), "const": kw("var"), "let": kw("var"),
+      "function": kw("function"), "catch": kw("catch"),
+      "for": kw("for"), "switch": kw("switch"), "case": kw("case"), "default": kw("default"),
+      "in": operator, "typeof": operator, "instanceof": operator,
+      "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom,
+      "this": kw("this"), "class": kw("class"), "super": kw("atom"),
+      "yield": C, "export": kw("export"), "import": kw("import"), "extends": C,
+      "await": C
+    };
+  }();
+
+  var isOperatorChar = /[+\-*&%=<>!?|~^@]/;
+  var isJsonldKeyword = /^@(context|id|value|language|type|container|list|set|reverse|index|base|vocab|graph)"/;
+
+  function readRegexp(stream) {
+    var escaped = false, next, inSet = false;
+    while ((next = stream.next()) != null) {
+      if (!escaped) {
+        if (next == "/" && !inSet) return;
+        if (next == "[") inSet = true;
+        else if (inSet && next == "]") inSet = false;
+      }
+      escaped = !escaped && next == "\\";
+    }
+  }
+
+  // Used as scratch variables to communicate multiple values without
+  // consing up tons of objects.
+  var type, content;
+  function ret(tp, style, cont) {
+    type = tp; content = cont;
+    return style;
+  }
+  function tokenBase(stream, state) {
+    var ch = stream.next();
+    if (ch == '"' || ch == "'") {
+      state.tokenize = tokenString(ch);
+      return state.tokenize(stream, state);
+    } else if (ch == "." && stream.match(/^\d[\d_]*(?:[eE][+\-]?[\d_]+)?/)) {
+      return ret("number", "number");
+    } else if (ch == "." && stream.match("..")) {
+      return ret("spread", "meta");
+    } else if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
+      return ret(ch);
+    } else if (ch == "=" && stream.eat(">")) {
+      return ret("=>", "operator");
+    } else if (ch == "0" && stream.match(/^(?:x[\dA-Fa-f_]+|o[0-7_]+|b[01_]+)n?/)) {
+      return ret("number", "number");
+    } else if (/\d/.test(ch)) {
+      stream.match(/^[\d_]*(?:n|(?:\.[\d_]*)?(?:[eE][+\-]?[\d_]+)?)?/);
+      return ret("number", "number");
+    } else if (ch == "/") {
+      if (stream.eat("*")) {
+        state.tokenize = tokenComment;
+        return tokenComment(stream, state);
+      } else if (stream.eat("/")) {
+        stream.skipToEnd();
+        return ret("comment", "comment");
+      } else if (expressionAllowed(stream, state, 1)) {
+        readRegexp(stream);
+        stream.match(/^\b(([gimyus])(?![gimyus]*\2))+\b/);
+        return ret("regexp", "string-2");
+      } else {
+        stream.eat("=");
+        return ret("operator", "operator", stream.current());
+      }
+    } else if (ch == "`") {
+      state.tokenize = tokenQuasi;
+      return tokenQuasi(stream, state);
+    } else if (ch == "#" && stream.peek() == "!") {
+      stream.skipToEnd();
+      return ret("meta", "meta");
+    } else if (ch == "#" && stream.eatWhile(wordRE)) {
+      return ret("variable", "property")
+    } else if (ch == "<" && stream.match("!--") ||
+               (ch == "-" && stream.match("->") && !/\S/.test(stream.string.slice(0, stream.start)))) {
+      stream.skipToEnd()
+      return ret("comment", "comment")
+    } else if (isOperatorChar.test(ch)) {
+      if (ch != ">" || !state.lexical || state.lexical.type != ">") {
+        if (stream.eat("=")) {
+          if (ch == "!" || ch == "=") stream.eat("=")
+        } else if (/[<>*+\-|&?]/.test(ch)) {
+          stream.eat(ch)
+          if (ch == ">") stream.eat(ch)
+        }
+      }
+      if (ch == "?" && stream.eat(".")) return ret(".")
+      return ret("operator", "operator", stream.current());
+    } else if (wordRE.test(ch)) {
+      stream.eatWhile(wordRE);
+      var word = stream.current()
+      if (state.lastType != ".") {
+        if (keywords.propertyIsEnumerable(word)) {
+          var kw = keywords[word]
+          return ret(kw.type, kw.style, word)
+        }
+        if (word == "async" && stream.match(/^(\s|\/\*([^*]|\*(?!\/))*?\*\/)*[\[\(\w]/, false))
+          return ret("async", "keyword", word)
+      }
+      return ret("variable", "variable", word)
+    }
+  }
+
+  function tokenString(quote) {
+    return function(stream, state) {
+      var escaped = false, next;
+      if (jsonldMode && stream.peek() == "@" && stream.match(isJsonldKeyword)){
+        state.tokenize = tokenBase;
+        return ret("jsonld-keyword", "meta");
+      }
+      while ((next = stream.next()) != null) {
+        if (next == quote && !escaped) break;
+        escaped = !escaped && next == "\\";
+      }
+      if (!escaped) state.tokenize = tokenBase;
+      return ret("string", "string");
+    };
+  }
+
+  function tokenComment(stream, state) {
+    var maybeEnd = false, ch;
+    while (ch = stream.next()) {
+      if (ch == "/" && maybeEnd) {
+        state.tokenize = tokenBase;
+        break;
+      }
+      maybeEnd = (ch == "*");
+    }
+    return ret("comment", "comment");
+  }
+
+  function tokenQuasi(stream, state) {
+    var escaped = false, next;
+    while ((next = stream.next()) != null) {
+      if (!escaped && (next == "`" || next == "$" && stream.eat("{"))) {
+        state.tokenize = tokenBase;
+        break;
+      }
+      escaped = !escaped && next == "\\";
+    }
+    return ret("quasi", "string-2", stream.current());
+  }
+
+  var brackets = "([{}])";
+  // This is a crude lookahead trick to try and notice that we're
+  // parsing the argument patterns for a fat-arrow function before we
+  // actually hit the arrow token. It only works if the arrow is on
+  // the same line as the arguments and there's no strange noise
+  // (comments) in between. Fallback is to only notice when we hit the
+  // arrow, and not declare the arguments as locals for the arrow
+  // body.
+  function findFatArrow(stream, state) {
+    if (state.fatArrowAt) state.fatArrowAt = null;
+    var arrow = stream.string.indexOf("=>", stream.start);
+    if (arrow < 0) return;
+
+    if (isTS) { // Try to skip TypeScript return type declarations after the arguments
+      var m = /:\s*(?:\w+(?:<[^>]*>|\[\])?|\{[^}]*\})\s*$/.exec(stream.string.slice(stream.start, arrow))
+      if (m) arrow = m.index
+    }
+
+    var depth = 0, sawSomething = false;
+    for (var pos = arrow - 1; pos >= 0; --pos) {
+      var ch = stream.string.charAt(pos);
+      var bracket = brackets.indexOf(ch);
+      if (bracket >= 0 && bracket < 3) {
+        if (!depth) { ++pos; break; }
+        if (--depth == 0) { if (ch == "(") sawSomething = true; break; }
+      } else if (bracket >= 3 && bracket < 6) {
+        ++depth;
+      } else if (wordRE.test(ch)) {
+        sawSomething = true;
+      } else if (/["'\/`]/.test(ch)) {
+        for (;; --pos) {
+          if (pos == 0) return
+          var next = stream.string.charAt(pos - 1)
+          if (next == ch && stream.string.charAt(pos - 2) != "\\") { pos--; break }
+        }
+      } else if (sawSomething && !depth) {
+        ++pos;
+        break;
+      }
+    }
+    if (sawSomething && !depth) state.fatArrowAt = pos;
+  }
+
+  // Parser
+
+  var atomicTypes = {"atom": true, "number": true, "variable": true, "string": true,
+                     "regexp": true, "this": true, "import": true, "jsonld-keyword": true};
+
+  function JSLexical(indented, column, type, align, prev, info) {
+    this.indented = indented;
+    this.column = column;
+    this.type = type;
+    this.prev = prev;
+    this.info = info;
+    if (align != null) this.align = align;
+  }
+
+  function inScope(state, varname) {
+    if (!trackScope) return false
+    for (var v = state.localVars; v; v = v.next)
+      if (v.name == varname) return true;
+    for (var cx = state.context; cx; cx = cx.prev) {
+      for (var v = cx.vars; v; v = v.next)
+        if (v.name == varname) return true;
+    }
+  }
+
+  function parseJS(state, style, type, content, stream) {
+    var cc = state.cc;
+    // Communicate our context to the combinators.
+    // (Less wasteful than consing up a hundred closures on every call.)
+    cx.state = state; cx.stream = stream; cx.marked = null, cx.cc = cc; cx.style = style;
+
+    if (!state.lexical.hasOwnProperty("align"))
+      state.lexical.align = true;
+
+    while(true) {
+      var combinator = cc.length ? cc.pop() : jsonMode ? expression : statement;
+      if (combinator(type, content)) {
+        while(cc.length && cc[cc.length - 1].lex)
+          cc.pop()();
+        if (cx.marked) return cx.marked;
+        if (type == "variable" && inScope(state, content)) return "variable-2";
+        return style;
+      }
+    }
+  }
+
+  // Combinator utils
+
+  var cx = {state: null, column: null, marked: null, cc: null};
+  function pass() {
+    for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
+  }
+  function cont() {
+    pass.apply(null, arguments);
+    return true;
+  }
+  function inList(name, list) {
+    for (var v = list; v; v = v.next) if (v.name == name) return true
+    return false;
+  }
+  function register(varname) {
+    var state = cx.state;
+    cx.marked = "def";
+    if (!trackScope) return
+    if (state.context) {
+      if (state.lexical.info == "var" && state.context && state.context.block) {
+        // FIXME function decls are also not block scoped
+        var newContext = registerVarScoped(varname, state.context)
+        if (newContext != null) {
+          state.context = newContext
+          return
+        }
+      } else if (!inList(varname, state.localVars)) {
+        state.localVars = new Var(varname, state.localVars)
+        return
+      }
+    }
+    // Fall through means this is global
+    if (parserConfig.globalVars && !inList(varname, state.globalVars))
+      state.globalVars = new Var(varname, state.globalVars)
+  }
+  function registerVarScoped(varname, context) {
+    if (!context) {
+      return null
+    } else if (context.block) {
+      var inner = registerVarScoped(varname, context.prev)
+      if (!inner) return null
+      if (inner == context.prev) return context
+      return new Context(inner, context.vars, true)
+    } else if (inList(varname, context.vars)) {
+      return context
+    } else {
+      return new Context(context.prev, new Var(varname, context.vars), false)
+    }
+  }
+
+  function isModifier(name) {
+    return name == "public" || name == "private" || name == "protected" || name == "abstract" || name == "readonly"
+  }
+
+  // Combinators
+
+  function Context(prev, vars, block) { this.prev = prev; this.vars = vars; this.block = block }
+  function Var(name, next) { this.name = name; this.next = next }
+
+  var defaultVars = new Var("this", new Var("arguments", null))
+  function pushcontext() {
+    cx.state.context = new Context(cx.state.context, cx.state.localVars, false)
+    cx.state.localVars = defaultVars
+  }
+  function pushblockcontext() {
+    cx.state.context = new Context(cx.state.context, cx.state.localVars, true)
+    cx.state.localVars = null
+  }
+  pushcontext.lex = pushblockcontext.lex = true
+  function popcontext() {
+    cx.state.localVars = cx.state.context.vars
+    cx.state.context = cx.state.context.prev
+  }
+  popcontext.lex = true
+  function pushlex(type, info) {
+    var result = function() {
+      var state = cx.state, indent = state.indented;
+      if (state.lexical.type == "stat") indent = state.lexical.indented;
+      else for (var outer = state.lexical; outer && outer.type == ")" && outer.align; outer = outer.prev)
+        indent = outer.indented;
+      state.lexical = new JSLexical(indent, cx.stream.column(), type, null, state.lexical, info);
+    };
+    result.lex = true;
+    return result;
+  }
+  function poplex() {
+    var state = cx.state;
+    if (state.lexical.prev) {
+      if (state.lexical.type == ")")
+        state.indented = state.lexical.indented;
+      state.lexical = state.lexical.prev;
+    }
+  }
+  poplex.lex = true;
+
+  function expect(wanted) {
+    function exp(type) {
+      if (type == wanted) return cont();
+      else if (wanted == ";" || type == "}" || type == ")" || type == "]") return pass();
+      else return cont(exp);
+    };
+    return exp;
+  }
+
+  function statement(type, value) {
+    if (type == "var") return cont(pushlex("vardef", value), vardef, expect(";"), poplex);
+    if (type == "keyword a") return cont(pushlex("form"), parenExpr, statement, poplex);
+    if (type == "keyword b") return cont(pushlex("form"), statement, poplex);
+    if (type == "keyword d") return cx.stream.match(/^\s*$/, false) ? cont() : cont(pushlex("stat"), maybeexpression, expect(";"), poplex);
+    if (type == "debugger") return cont(expect(";"));
+    if (type == "{") return cont(pushlex("}"), pushblockcontext, block, poplex, popcontext);
+    if (type == ";") return cont();
+    if (type == "if") {
+      if (cx.state.lexical.info == "else" && cx.state.cc[cx.state.cc.length - 1] == poplex)
+        cx.state.cc.pop()();
+      return cont(pushlex("form"), parenExpr, statement, poplex, maybeelse);
+    }
+    if (type == "function") return cont(functiondef);
+    if (type == "for") return cont(pushlex("form"), pushblockcontext, forspec, statement, popcontext, poplex);
+    if (type == "class" || (isTS && value == "interface")) {
+      cx.marked = "keyword"
+      return cont(pushlex("form", type == "class" ? type : value), className, poplex)
+    }
+    if (type == "variable") {
+      if (isTS && value == "declare") {
+        cx.marked = "keyword"
+        return cont(statement)
+      } else if (isTS && (value == "module" || value == "enum" || value == "type") && cx.stream.match(/^\s*\w/, false)) {
+        cx.marked = "keyword"
+        if (value == "enum") return cont(enumdef);
+        else if (value == "type") return cont(typename, expect("operator"), typeexpr, expect(";"));
+        else return cont(pushlex("form"), pattern, expect("{"), pushlex("}"), block, poplex, poplex)
+      } else if (isTS && value == "namespace") {
+        cx.marked = "keyword"
+        return cont(pushlex("form"), expression, statement, poplex)
+      } else if (isTS && value == "abstract") {
+        cx.marked = "keyword"
+        return cont(statement)
+      } else {
+        return cont(pushlex("stat"), maybelabel);
+      }
+    }
+    if (type == "switch") return cont(pushlex("form"), parenExpr, expect("{"), pushlex("}", "switch"), pushblockcontext,
+                                      block, poplex, poplex, popcontext);
+    if (type == "case") return cont(expression, expect(":"));
+    if (type == "default") return cont(expect(":"));
+    if (type == "catch") return cont(pushlex("form"), pushcontext, maybeCatchBinding, statement, poplex, popcontext);
+    if (type == "export") return cont(pushlex("stat"), afterExport, poplex);
+    if (type == "import") return cont(pushlex("stat"), afterImport, poplex);
+    if (type == "async") return cont(statement)
+    if (value == "@") return cont(expression, statement)
+    return pass(pushlex("stat"), expression, expect(";"), poplex);
+  }
+  function maybeCatchBinding(type) {
+    if (type == "(") return cont(funarg, expect(")"))
+  }
+  function expression(type, value) {
+    return expressionInner(type, value, false);
+  }
+  function expressionNoComma(type, value) {
+    return expressionInner(type, value, true);
+  }
+  function parenExpr(type) {
+    if (type != "(") return pass()
+    return cont(pushlex(")"), maybeexpression, expect(")"), poplex)
+  }
+  function expressionInner(type, value, noComma) {
+    if (cx.state.fatArrowAt == cx.stream.start) {
+      var body = noComma ? arrowBodyNoComma : arrowBody;
+      if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, expect("=>"), body, popcontext);
+      else if (type == "variable") return pass(pushcontext, pattern, expect("=>"), body, popcontext);
+    }
+
+    var maybeop = noComma ? maybeoperatorNoComma : maybeoperatorComma;
+    if (atomicTypes.hasOwnProperty(type)) return cont(maybeop);
+    if (type == "function") return cont(functiondef, maybeop);
+    if (type == "class" || (isTS && value == "interface")) { cx.marked = "keyword"; return cont(pushlex("form"), classExpression, poplex); }
+    if (type == "keyword c" || type == "async") return cont(noComma ? expressionNoComma : expression);
+    if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeop);
+    if (type == "operator" || type == "spread") return cont(noComma ? expressionNoComma : expression);
+    if (type == "[") return cont(pushlex("]"), arrayLiteral, poplex, maybeop);
+    if (type == "{") return contCommasep(objprop, "}", null, maybeop);
+    if (type == "quasi") return pass(quasi, maybeop);
+    if (type == "new") return cont(maybeTarget(noComma));
+    return cont();
+  }
+  function maybeexpression(type) {
+    if (type.match(/[;\}\)\],]/)) return pass();
+    return pass(expression);
+  }
+
+  function maybeoperatorComma(type, value) {
+    if (type == ",") return cont(maybeexpression);
+    return maybeoperatorNoComma(type, value, false);
+  }
+  function maybeoperatorNoComma(type, value, noComma) {
+    var me = noComma == false ? maybeoperatorComma : maybeoperatorNoComma;
+    var expr = noComma == false ? expression : expressionNoComma;
+    if (type == "=>") return cont(pushcontext, noComma ? arrowBodyNoComma : arrowBody, popcontext);
+    if (type == "operator") {
+      if (/\+\+|--/.test(value) || isTS && value == "!") return cont(me);
+      if (isTS && value == "<" && cx.stream.match(/^([^<>]|<[^<>]*>)*>\s*\(/, false))
+        return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
+      if (value == "?") return cont(expression, expect(":"), expr);
+      return cont(expr);
+    }
+    if (type == "quasi") { return pass(quasi, me); }
+    if (type == ";") return;
+    if (type == "(") return contCommasep(expressionNoComma, ")", "call", me);
+    if (type == ".") return cont(property, me);
+    if (type == "[") return cont(pushlex("]"), maybeexpression, expect("]"), poplex, me);
+    if (isTS && value == "as") { cx.marked = "keyword"; return cont(typeexpr, me) }
+    if (type == "regexp") {
+      cx.state.lastType = cx.marked = "operator"
+      cx.stream.backUp(cx.stream.pos - cx.stream.start - 1)
+      return cont(expr)
+    }
+  }
+  function quasi(type, value) {
+    if (type != "quasi") return pass();
+    if (value.slice(value.length - 2) != "${") return cont(quasi);
+    return cont(maybeexpression, continueQuasi);
+  }
+  function continueQuasi(type) {
+    if (type == "}") {
+      cx.marked = "string-2";
+      cx.state.tokenize = tokenQuasi;
+      return cont(quasi);
+    }
+  }
+  function arrowBody(type) {
+    findFatArrow(cx.stream, cx.state);
+    return pass(type == "{" ? statement : expression);
+  }
+  function arrowBodyNoComma(type) {
+    findFatArrow(cx.stream, cx.state);
+    return pass(type == "{" ? statement : expressionNoComma);
+  }
+  function maybeTarget(noComma) {
+    return function(type) {
+      if (type == ".") return cont(noComma ? targetNoComma : target);
+      else if (type == "variable" && isTS) return cont(maybeTypeArgs, noComma ? maybeoperatorNoComma : maybeoperatorComma)
+      else return pass(noComma ? expressionNoComma : expression);
+    };
+  }
+  function target(_, value) {
+    if (value == "target") { cx.marked = "keyword"; return cont(maybeoperatorComma); }
+  }
+  function targetNoComma(_, value) {
+    if (value == "target") { cx.marked = "keyword"; return cont(maybeoperatorNoComma); }
+  }
+  function maybelabel(type) {
+    if (type == ":") return cont(poplex, statement);
+    return pass(maybeoperatorComma, expect(";"), poplex);
+  }
+  function property(type) {
+    if (type == "variable") {cx.marked = "property"; return cont();}
+  }
+  function objprop(type, value) {
+    if (type == "async") {
+      cx.marked = "property";
+      return cont(objprop);
+    } else if (type == "variable" || cx.style == "keyword") {
+      cx.marked = "property";
+      if (value == "get" || value == "set") return cont(getterSetter);
+      var m // Work around fat-arrow-detection complication for detecting typescript typed arrow params
+      if (isTS && cx.state.fatArrowAt == cx.stream.start && (m = cx.stream.match(/^\s*:\s*/, false)))
+        cx.state.fatArrowAt = cx.stream.pos + m[0].length
+      return cont(afterprop);
+    } else if (type == "number" || type == "string") {
+      cx.marked = jsonldMode ? "property" : (cx.style + " property");
+      return cont(afterprop);
+    } else if (type == "jsonld-keyword") {
+      return cont(afterprop);
+    } else if (isTS && isModifier(value)) {
+      cx.marked = "keyword"
+      return cont(objprop)
+    } else if (type == "[") {
+      return cont(expression, maybetype, expect("]"), afterprop);
+    } else if (type == "spread") {
+      return cont(expressionNoComma, afterprop);
+    } else if (value == "*") {
+      cx.marked = "keyword";
+      return cont(objprop);
+    } else if (type == ":") {
+      return pass(afterprop)
+    }
+  }
+  function getterSetter(type) {
+    if (type != "variable") return pass(afterprop);
+    cx.marked = "property";
+    return cont(functiondef);
+  }
+  function afterprop(type) {
+    if (type == ":") return cont(expressionNoComma);
+    if (type == "(") return pass(functiondef);
+  }
+  function commasep(what, end, sep) {
+    function proceed(type, value) {
+      if (sep ? sep.indexOf(type) > -1 : type == ",") {
+        var lex = cx.state.lexical;
+        if (lex.info == "call") lex.pos = (lex.pos || 0) + 1;
+        return cont(function(type, value) {
+          if (type == end || value == end) return pass()
+          return pass(what)
+        }, proceed);
+      }
+      if (type == end || value == end) return cont();
+      if (sep && sep.indexOf(";") > -1) return pass(what)
+      return cont(expect(end));
+    }
+    return function(type, value) {
+      if (type == end || value == end) return cont();
+      return pass(what, proceed);
+    };
+  }
+  function contCommasep(what, end, info) {
+    for (var i = 3; i < arguments.length; i++)
+      cx.cc.push(arguments[i]);
+    return cont(pushlex(end, info), commasep(what, end), poplex);
+  }
+  function block(type) {
+    if (type == "}") return cont();
+    return pass(statement, block);
+  }
+  function maybetype(type, value) {
+    if (isTS) {
+      if (type == ":") return cont(typeexpr);
+      if (value == "?") return cont(maybetype);
+    }
+  }
+  function maybetypeOrIn(type, value) {
+    if (isTS && (type == ":" || value == "in")) return cont(typeexpr)
+  }
+  function mayberettype(type) {
+    if (isTS && type == ":") {
+      if (cx.stream.match(/^\s*\w+\s+is\b/, false)) return cont(expression, isKW, typeexpr)
+      else return cont(typeexpr)
+    }
+  }
+  function isKW(_, value) {
+    if (value == "is") {
+      cx.marked = "keyword"
+      return cont()
+    }
+  }
+  function typeexpr(type, value) {
+    if (value == "keyof" || value == "typeof" || value == "infer" || value == "readonly") {
+      cx.marked = "keyword"
+      return cont(value == "typeof" ? expressionNoComma : typeexpr)
+    }
+    if (type == "variable" || value == "void") {
+      cx.marked = "type"
+      return cont(afterType)
+    }
+    if (value == "|" || value == "&") return cont(typeexpr)
+    if (type == "string" || type == "number" || type == "atom") return cont(afterType);
+    if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType)
+    if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType)
+    if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType)
+    if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr)
+    if (type == "quasi") { return pass(quasiType, afterType); }
+  }
+  function maybeReturnType(type) {
+    if (type == "=>") return cont(typeexpr)
+  }
+  function typeprops(type) {
+    if (type.match(/[\}\)\]]/)) return cont()
+    if (type == "," || type == ";") return cont(typeprops)
+    return pass(typeprop, typeprops)
+  }
+  function typeprop(type, value) {
+    if (type == "variable" || cx.style == "keyword") {
+      cx.marked = "property"
+      return cont(typeprop)
+    } else if (value == "?" || type == "number" || type == "string") {
+      return cont(typeprop)
+    } else if (type == ":") {
+      return cont(typeexpr)
+    } else if (type == "[") {
+      return cont(expect("variable"), maybetypeOrIn, expect("]"), typeprop)
+    } else if (type == "(") {
+      return pass(functiondecl, typeprop)
+    } else if (!type.match(/[;\}\)\],]/)) {
+      return cont()
+    }
+  }
+  function quasiType(type, value) {
+    if (type != "quasi") return pass();
+    if (value.slice(value.length - 2) != "${") return cont(quasiType);
+    return cont(typeexpr, continueQuasiType);
+  }
+  function continueQuasiType(type) {
+    if (type == "}") {
+      cx.marked = "string-2";
+      cx.state.tokenize = tokenQuasi;
+      return cont(quasiType);
+    }
+  }
+  function typearg(type, value) {
+    if (type == "variable" && cx.stream.match(/^\s*[?:]/, false) || value == "?") return cont(typearg)
+    if (type == ":") return cont(typeexpr)
+    if (type == "spread") return cont(typearg)
+    return pass(typeexpr)
+  }
+  function afterType(type, value) {
+    if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, afterType)
+    if (value == "|" || type == "." || value == "&") return cont(typeexpr)
+    if (type == "[") return cont(typeexpr, expect("]"), afterType)
+    if (value == "extends" || value == "implements") { cx.marked = "keyword"; return cont(typeexpr) }
+    if (value == "?") return cont(typeexpr, expect(":"), typeexpr)
+  }
+  function maybeTypeArgs(_, value) {
+    if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, afterType)
+  }
+  function typeparam() {
+    return pass(typeexpr, maybeTypeDefault)
+  }
+  function maybeTypeDefault(_, value) {
+    if (value == "=") return cont(typeexpr)
+  }
+  function vardef(_, value) {
+    if (value == "enum") {cx.marked = "keyword"; return cont(enumdef)}
+    return pass(pattern, maybetype, maybeAssign, vardefCont);
+  }
+  function pattern(type, value) {
+    if (isTS && isModifier(value)) { cx.marked = "keyword"; return cont(pattern) }
+    if (type == "variable") { register(value); return cont(); }
+    if (type == "spread") return cont(pattern);
+    if (type == "[") return contCommasep(eltpattern, "]");
+    if (type == "{") return contCommasep(proppattern, "}");
+  }
+  function proppattern(type, value) {
+    if (type == "variable" && !cx.stream.match(/^\s*:/, false)) {
+      register(value);
+      return cont(maybeAssign);
+    }
+    if (type == "variable") cx.marked = "property";
+    if (type == "spread") return cont(pattern);
+    if (type == "}") return pass();
+    if (type == "[") return cont(expression, expect(']'), expect(':'), proppattern);
+    return cont(expect(":"), pattern, maybeAssign);
+  }
+  function eltpattern() {
+    return pass(pattern, maybeAssign)
+  }
+  function maybeAssign(_type, value) {
+    if (value == "=") return cont(expressionNoComma);
+  }
+  function vardefCont(type) {
+    if (type == ",") return cont(vardef);
+  }
+  function maybeelse(type, value) {
+    if (type == "keyword b" && value == "else") return cont(pushlex("form", "else"), statement, poplex);
+  }
+  function forspec(type, value) {
+    if (value == "await") return cont(forspec);
+    if (type == "(") return cont(pushlex(")"), forspec1, poplex);
+  }
+  function forspec1(type) {
+    if (type == "var") return cont(vardef, forspec2);
+    if (type == "variable") return cont(forspec2);
+    return pass(forspec2)
+  }
+  function forspec2(type, value) {
+    if (type == ")") return cont()
+    if (type == ";") return cont(forspec2)
+    if (value == "in" || value == "of") { cx.marked = "keyword"; return cont(expression, forspec2) }
+    return pass(expression, forspec2)
+  }
+  function functiondef(type, value) {
+    if (value == "*") {cx.marked = "keyword"; return cont(functiondef);}
+    if (type == "variable") {register(value); return cont(functiondef);}
+    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, mayberettype, statement, popcontext);
+    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, functiondef)
+  }
+  function functiondecl(type, value) {
+    if (value == "*") {cx.marked = "keyword"; return cont(functiondecl);}
+    if (type == "variable") {register(value); return cont(functiondecl);}
+    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, mayberettype, popcontext);
+    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, functiondecl)
+  }
+  function typename(type, value) {
+    if (type == "keyword" || type == "variable") {
+      cx.marked = "type"
+      return cont(typename)
+    } else if (value == "<") {
+      return cont(pushlex(">"), commasep(typeparam, ">"), poplex)
+    }
+  }
+  function funarg(type, value) {
+    if (value == "@") cont(expression, funarg)
+    if (type == "spread") return cont(funarg);
+    if (isTS && isModifier(value)) { cx.marked = "keyword"; return cont(funarg); }
+    if (isTS && type == "this") return cont(maybetype, maybeAssign)
+    return pass(pattern, maybetype, maybeAssign);
+  }
+  function classExpression(type, value) {
+    // Class expressions may have an optional name.
+    if (type == "variable") return className(type, value);
+    return classNameAfter(type, value);
+  }
+  function className(type, value) {
+    if (type == "variable") {register(value); return cont(classNameAfter);}
+  }
+  function classNameAfter(type, value) {
+    if (value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, classNameAfter)
+    if (value == "extends" || value == "implements" || (isTS && type == ",")) {
+      if (value == "implements") cx.marked = "keyword";
+      return cont(isTS ? typeexpr : expression, classNameAfter);
+    }
+    if (type == "{") return cont(pushlex("}"), classBody, poplex);
+  }
+  function classBody(type, value) {
+    if (type == "async" ||
+        (type == "variable" &&
+         (value == "static" || value == "get" || value == "set" || (isTS && isModifier(value))) &&
+         cx.stream.match(/^\s+#?[\w$\xa1-\uffff]/, false))) {
+      cx.marked = "keyword";
+      return cont(classBody);
+    }
+    if (type == "variable" || cx.style == "keyword") {
+      cx.marked = "property";
+      return cont(classfield, classBody);
+    }
+    if (type == "number" || type == "string") return cont(classfield, classBody);
+    if (type == "[")
+      return cont(expression, maybetype, expect("]"), classfield, classBody)
+    if (value == "*") {
+      cx.marked = "keyword";
+      return cont(classBody);
+    }
+    if (isTS && type == "(") return pass(functiondecl, classBody)
+    if (type == ";" || type == ",") return cont(classBody);
+    if (type == "}") return cont();
+    if (value == "@") return cont(expression, classBody)
+  }
+  function classfield(type, value) {
+    if (value == "!") return cont(classfield)
+    if (value == "?") return cont(classfield)
+    if (type == ":") return cont(typeexpr, maybeAssign)
+    if (value == "=") return cont(expressionNoComma)
+    var context = cx.state.lexical.prev, isInterface = context && context.info == "interface"
+    return pass(isInterface ? functiondecl : functiondef)
+  }
+  function afterExport(type, value) {
+    if (value == "*") { cx.marked = "keyword"; return cont(maybeFrom, expect(";")); }
+    if (value == "default") { cx.marked = "keyword"; return cont(expression, expect(";")); }
+    if (type == "{") return cont(commasep(exportField, "}"), maybeFrom, expect(";"));
+    return pass(statement);
+  }
+  function exportField(type, value) {
+    if (value == "as") { cx.marked = "keyword"; return cont(expect("variable")); }
+    if (type == "variable") return pass(expressionNoComma, exportField);
+  }
+  function afterImport(type) {
+    if (type == "string") return cont();
+    if (type == "(") return pass(expression);
+    if (type == ".") return pass(maybeoperatorComma);
+    return pass(importSpec, maybeMoreImports, maybeFrom);
+  }
+  function importSpec(type, value) {
+    if (type == "{") return contCommasep(importSpec, "}");
+    if (type == "variable") register(value);
+    if (value == "*") cx.marked = "keyword";
+    return cont(maybeAs);
+  }
+  function maybeMoreImports(type) {
+    if (type == ",") return cont(importSpec, maybeMoreImports)
+  }
+  function maybeAs(_type, value) {
+    if (value == "as") { cx.marked = "keyword"; return cont(importSpec); }
+  }
+  function maybeFrom(_type, value) {
+    if (value == "from") { cx.marked = "keyword"; return cont(expression); }
+  }
+  function arrayLiteral(type) {
+    if (type == "]") return cont();
+    return pass(commasep(expressionNoComma, "]"));
+  }
+  function enumdef() {
+    return pass(pushlex("form"), pattern, expect("{"), pushlex("}"), commasep(enummember, "}"), poplex, poplex)
+  }
+  function enummember() {
+    return pass(pattern, maybeAssign);
+  }
+
+  function isContinuedStatement(state, textAfter) {
+    return state.lastType == "operator" || state.lastType == "," ||
+      isOperatorChar.test(textAfter.charAt(0)) ||
+      /[,.]/.test(textAfter.charAt(0));
+  }
+
+  function expressionAllowed(stream, state, backUp) {
+    return state.tokenize == tokenBase &&
+      /^(?:operator|sof|keyword [bcd]|case|new|export|default|spread|[\[{}\(,;:]|=>)$/.test(state.lastType) ||
+      (state.lastType == "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0))))
+  }
+
+  // Interface
+
+  return {
+    startState: function(basecolumn) {
+      var state = {
+        tokenize: tokenBase,
+        lastType: "sof",
+        cc: [],
+        lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
+        localVars: parserConfig.localVars,
+        context: parserConfig.localVars && new Context(null, null, false),
+        indented: basecolumn || 0
+      };
+      if (parserConfig.globalVars && typeof parserConfig.globalVars == "object")
+        state.globalVars = parserConfig.globalVars;
+      return state;
+    },
+
+    token: function(stream, state) {
+      if (stream.sol()) {
+        if (!state.lexical.hasOwnProperty("align"))
+          state.lexical.align = false;
+        state.indented = stream.indentation();
+        findFatArrow(stream, state);
+      }
+      if (state.tokenize != tokenComment && stream.eatSpace()) return null;
+      var style = state.tokenize(stream, state);
+      if (type == "comment") return style;
+      state.lastType = type == "operator" && (content == "++" || content == "--") ? "incdec" : type;
+      return parseJS(state, style, type, content, stream);
+    },
+
+    indent: function(state, textAfter) {
+      if (state.tokenize == tokenComment || state.tokenize == tokenQuasi) return CodeMirror.Pass;
+      if (state.tokenize != tokenBase) return 0;
+      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical, top
+      // Kludge to prevent 'maybelse' from blocking lexical scope pops
+      if (!/^\s*else\b/.test(textAfter)) for (var i = state.cc.length - 1; i >= 0; --i) {
+        var c = state.cc[i];
+        if (c == poplex) lexical = lexical.prev;
+        else if (c != maybeelse && c != popcontext) break;
+      }
+      while ((lexical.type == "stat" || lexical.type == "form") &&
+             (firstChar == "}" || ((top = state.cc[state.cc.length - 1]) &&
+                                   (top == maybeoperatorComma || top == maybeoperatorNoComma) &&
+                                   !/^[,\.=+\-*:?[\(]/.test(textAfter))))
+        lexical = lexical.prev;
+      if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
+        lexical = lexical.prev;
+      var type = lexical.type, closing = firstChar == type;
+
+      if (type == "vardef") return lexical.indented + (state.lastType == "operator" || state.lastType == "," ? lexical.info.length + 1 : 0);
+      else if (type == "form" && firstChar == "{") return lexical.indented;
+      else if (type == "form") return lexical.indented + indentUnit;
+      else if (type == "stat")
+        return lexical.indented + (isContinuedStatement(state, textAfter) ? statementIndent || indentUnit : 0);
+      else if (lexical.info == "switch" && !closing && parserConfig.doubleIndentSwitch != false)
+        return lexical.indented + (/^(?:case|default)\b/.test(textAfter) ? indentUnit : 2 * indentUnit);
+      else if (lexical.align) return lexical.column + (closing ? 0 : 1);
+      else return lexical.indented + (closing ? 0 : indentUnit);
+    },
+
+    electricInput: /^\s*(?:case .*?:|default:|\{|\})$/,
+    blockCommentStart: jsonMode ? null : "/*",
+    blockCommentEnd: jsonMode ? null : "*/",
+    blockCommentContinue: jsonMode ? null : " * ",
+    lineComment: jsonMode ? null : "//",
+    fold: "brace",
+    closeBrackets: "()[]{}''\"\"``",
+
+    helperType: jsonMode ? "json" : "javascript",
+    jsonldMode: jsonldMode,
+    jsonMode: jsonMode,
+
+    expressionAllowed: expressionAllowed,
+
+    skipExpression: function(state) {
+      parseJS(state, "atom", "atom", "true", new CodeMirror.StringStream("", 2, null))
+    }
+  };
+});
+
+CodeMirror.registerHelper("wordChars", "javascript", /[\w$]/);
+
+CodeMirror.defineMIME("text/javascript", "javascript");
+CodeMirror.defineMIME("text/ecmascript", "javascript");
+CodeMirror.defineMIME("application/javascript", "javascript");
+CodeMirror.defineMIME("application/x-javascript", "javascript");
+CodeMirror.defineMIME("application/ecmascript", "javascript");
+CodeMirror.defineMIME("application/json", { name: "javascript", json: true });
+CodeMirror.defineMIME("application/x-json", { name: "javascript", json: true });
+CodeMirror.defineMIME("application/manifest+json", { name: "javascript", json: true })
+CodeMirror.defineMIME("application/ld+json", { name: "javascript", jsonld: true });
+CodeMirror.defineMIME("text/typescript", { name: "javascript", typescript: true });
+CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript: true });
+
 });
 
 
@@ -54710,6 +56354,347 @@ module.exports = assign;
 
 /***/ }),
 
+/***/ "./node_modules/logidrom/lib/draw_body.js":
+/*!************************************************!*\
+  !*** ./node_modules/logidrom/lib/draw_body.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+
+const circle = 'M 4,0 C 4,1.1 3.1,2 2,2 0.9,2 0,1.1 0,0 c 0,-1.1 0.9,-2 2,-2 1.1,0 2,0.9 2,2 z';
+const buf1 = 'M -11,-6 -11,6 0,0 z m -5,6 5,0';
+const and2 = 'm -16,-10 5,0 c 6,0 11,4 11,10 0,6 -5,10 -11,10 l -5,0 z';
+const or2 = 'm -18,-10 4,0 c 6,0 12,5 14,10 -2,5 -8,10 -14,10 l -4,0 c 2.5,-5 2.5,-15 0,-20 z';
+const xor2 = 'm -21,-10 c 1,3 2,6 2,10 m 0,0 c 0,4 -1,7 -2,10 m 3,-20 4,0 c 6,0 12,5 14,10 -2,5 -8,10 -14,10 l -4,0 c 1,-3 2,-6 2,-10 0,-4 -1,-7 -2,-10 z';
+const circle2 = 'c 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 4.418278,0 8,3.581722 8,8 z';
+
+const gates = {
+  '=': buf1, '~':  buf1 + circle,
+  '&': and2, '~&': and2 + circle,
+  '|': or2,  '~|': or2  + circle,
+  '^': xor2, '~^': xor2 + circle,
+  '+': 'm -8,5 0,-10 m -5,5 10,0 m 3,0' + circle2,
+  '*': 'm -4,4 -8,-8 m 0,8 8,-8  m 4,4' + circle2,
+  '-': 'm -3,0 -10,0 m 13,0' + circle2
+};
+
+
+const aliasGates = {
+  add: '+', mul: '*', sub: '-',
+  and: '&', or: '|', xor: '^',
+  andr: '&', orr: '|', xorr: '^',
+  input: '='
+};
+
+Object.keys(aliasGates).reduce((res, key) => {
+  res[key] = gates[aliasGates[key]];
+  return res;
+}, gates);
+
+const gater1 = {
+  is:     type => (gates[type] !== undefined),
+  render: type => ['path', {class:'gate', d: gates[type]}]
+};
+
+const iec = {
+  eq: '==', ne: '!=',
+  slt: '<', sle: '<=',
+  sgt: '>', sge: '>=',
+  ult: '<', ule: '<=',
+  ugt: '>', uge: '>=',
+  BUF: 1, INV: 1, AND: '&', NAND: '&',
+  OR: '\u22651', NOR: '\u22651', XOR: '=1', XNOR: '=1',
+  box: '', MUX: 'M'
+};
+
+const circled = {INV: 1, NAND: 1, NOR: 1, XNOR: 1};
+
+const gater2 = {
+  is:      type => (iec[type] !== undefined),
+  render: (type, ymin, ymax) => {
+    if (ymin === ymax) {
+      ymin = -4; ymax = 4;
+    }
+    return ['g',
+      ['path', {
+        class: 'gate',
+        d: 'm -16,' + (ymin - 3) + ' 16,0 0,' + (ymax - ymin + 6) + ' -16,0 z' + (circled[type] ? circle : '')
+      }],
+      ['text', {x:-14, y:4, class: 'wirename'}].concat(tspan.parse(iec[type]))
+    ];
+  }
+};
+
+function drawBody (type, ymin, ymax) {
+  if (gater1.is(type)) { return gater1.render(type); }
+  if (gater2.is(type)) { return gater2.render(type, ymin, ymax); }
+  return ['text', {x:-14, y:4, class: 'wirename'}].concat(tspan.parse(type));
+}
+
+module.exports = drawBody;
+
+
+/***/ }),
+
+/***/ "./node_modules/logidrom/lib/draw_boxes.js":
+/*!*************************************************!*\
+  !*** ./node_modules/logidrom/lib/draw_boxes.js ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+
+const drawGate = __webpack_require__(/*! ./draw_gate.js */ "./node_modules/logidrom/lib/draw_gate.js");
+
+function drawBoxes (tree, xmax) {
+  const ret = ['g'];
+  const spec = [];
+  if (Array.isArray(tree)) {
+    spec.push(tree[0].name);
+    spec.push([32 * (xmax - tree[0].x), 8 * tree[0].y]);
+
+    for (let i = 1; i < tree.length; i++) {
+      const branch = tree[i];
+      if (Array.isArray(branch)) {
+        spec.push([32 * (xmax - branch[0].x), 8 * branch[0].y]);
+      } else {
+        spec.push([32 * (xmax - branch.x), 8 * branch.y]);
+      }
+    }
+    ret.push(drawGate(spec));
+    for (let i = 1; i < tree.length; i++) {
+      const branch = tree[i];
+      ret.push(drawBoxes(branch, xmax));
+    }
+    return ret;
+  }
+
+  const fname = tree.name;
+  const fx = 32 * (xmax - tree.x);
+  const fy = 8 * tree.y;
+  ret.push(
+    ['g', {transform: 'translate(' + fx + ',' + fy + ')'},
+      ['title'].concat(tspan.parse(fname)),
+      ['path', {d:'M 2,0 a 2,2 0 1 1 -4,0 2,2 0 1 1 4,0 z'}],
+      ['text', {x:-4, y:4, class:'pinname'}]
+        .concat(tspan.parse(fname))
+    ]
+  );
+  return ret;
+}
+
+module.exports = drawBoxes;
+
+
+/***/ }),
+
+/***/ "./node_modules/logidrom/lib/draw_gate.js":
+/*!************************************************!*\
+  !*** ./node_modules/logidrom/lib/draw_gate.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+const drawBody = __webpack_require__(/*! ./draw_body.js */ "./node_modules/logidrom/lib/draw_body.js");
+
+// ['type', [x,y], [x,y] ... ]
+function drawGate (spec) { // ['type', [x,y], [x,y] ... ]
+
+  const ilen = spec.length;
+  const ys = [];
+
+  for (let i = 2; i < ilen; i++) {
+    ys.push(spec[i][1]);
+  }
+
+  const ret = ['g'];
+
+  const ymin = Math.min.apply(null, ys);
+  const ymax = Math.max.apply(null, ys);
+
+  ret.push(['g',
+    {transform: 'translate(16,0)'},
+    ['path', {
+      d: 'M' + spec[2][0] + ',' + ymin + ' ' + spec[2][0] + ',' + ymax,
+      class: 'wire'
+    }]
+  ]);
+
+  for (let i = 2; i < ilen; i++) {
+    ret.push(['g',
+      ['path', {
+        d: 'm' + spec[i][0] + ',' + spec[i][1] + ' 16,0',
+        class: 'wire'
+      }]
+    ]);
+  }
+
+  ret.push(['g',
+    {transform: 'translate(' + spec[1][0] + ',' + spec[1][1] + ')'},
+    ['title'].concat(tspan.parse(spec[0])),
+    drawBody(spec[0], ymin - spec[1][1], ymax - spec[1][1])
+  ]);
+
+  return ret;
+}
+
+module.exports = drawGate;
+
+
+/***/ }),
+
+/***/ "./node_modules/logidrom/lib/insert-svg-template-assign.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/logidrom/lib/insert-svg-template-assign.js ***!
+  \*****************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function insertSVGTemplateAssign () {
+  return ['style', '.pinname {font-size:12px; font-style:normal; font-variant:normal; font-weight:500; font-stretch:normal; text-align:center; text-anchor:end; font-family:Helvetica} .wirename {font-size:12px; font-style:normal; font-variant:normal; font-weight:500; font-stretch:normal; text-align:center; text-anchor:start; font-family:Helvetica} .wirename:hover {fill:blue} .gate {color:#000; fill:#ffc; fill-opacity: 1;stroke:#000; stroke-width:1; stroke-opacity:1} .gate:hover {fill:red !important; } .wire {fill:none; stroke:#000; stroke-width:1; stroke-opacity:1} .grid {fill:#fff; fill-opacity:1; stroke:none}'];
+}
+
+module.exports = insertSVGTemplateAssign;
+
+
+/***/ }),
+
+/***/ "./node_modules/logidrom/lib/render-assign.js":
+/*!****************************************************!*\
+  !*** ./node_modules/logidrom/lib/render-assign.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const render = __webpack_require__(/*! ./render.js */ "./node_modules/logidrom/lib/render.js");
+const drawBoxes = __webpack_require__(/*! ./draw_boxes.js */ "./node_modules/logidrom/lib/draw_boxes.js");
+const insertSVGTemplateAssign = __webpack_require__(/*! ./insert-svg-template-assign.js */ "./node_modules/logidrom/lib/insert-svg-template-assign.js");
+
+function renderAssign (index, source) {
+  // var tree,
+  //     state,
+  //     xmax,
+  //     // grid = ['g'],
+  //     // svgcontent,
+  //     width,
+  //     height,
+  //     i,
+  //     ilen;
+  //     // j,
+  //     // jlen;
+
+  let state = {x: 0, y: 2, xmax: 0};
+  const tree = source.assign;
+  const ilen = tree.length;
+  for (let i = 0; i < ilen; i++) {
+    state = render(tree[i], state);
+    state.x++;
+  }
+  const xmax = state.xmax + 3;
+
+  const svg = ['g'];
+  for (let i = 0; i < ilen; i++) {
+    svg.push(drawBoxes(tree[i], xmax));
+  }
+  const width  = 32 * (xmax + 1) + 1;
+  const height = 8 * (state.y + 1) - 7;
+
+  // const ilen = 4 * (xmax + 1);
+  // jlen = state.y + 1;
+  // for (i = 0; i <= ilen; i++) {
+  //     for (j = 0; j <= jlen; j++) {
+  //         grid.push(['rect', {
+  //             height: 1,
+  //             width: 1,
+  //             x: (i * 8 - 0.5),
+  //             y: (j * 8 - 0.5),
+  //             class: 'grid'
+  //         }]);
+  //     }
+  // }
+
+  return ['svg', {
+    id: 'svgcontent_' + index,
+    viewBox: '0 0 ' + width + ' ' + height,
+    width: width,
+    height: height
+  },
+  insertSVGTemplateAssign(),
+  ['g', {transform:'translate(0.5, 0.5)'}, svg]
+  ];
+}
+
+module.exports = renderAssign;
+
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/logidrom/lib/render.js":
+/*!*********************************************!*\
+  !*** ./node_modules/logidrom/lib/render.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function render(tree, state) {
+  // var y, i, ilen;
+
+  state.xmax = Math.max(state.xmax, state.x);
+
+  const y = state.y;
+  const ilen = tree.length;
+
+  for (let i = 1; i < ilen; i++) {
+    const branch = tree[i];
+    if (Array.isArray(branch)) {
+      state = render(branch, {
+        x: (state.x + 1),
+        y: state.y,
+        xmax: state.xmax
+      });
+    } else {
+      tree[i] = {
+        name: branch,
+        x: (state.x + 1),
+        y: state.y
+      };
+      state.y += 2;
+    }
+  }
+
+  tree[0] = {
+    name: tree[0],
+    x: state.x,
+    y: Math.round((y + (state.y - 2)) / 2)
+  };
+
+  state.x--;
+  return state;
+}
+
+module.exports = render;
+
+
+/***/ }),
+
 /***/ "./node_modules/markdown-it-asciimath/index.js":
 /*!*****************************************************!*\
   !*** ./node_modules/markdown-it-asciimath/index.js ***!
@@ -62644,6 +64629,130 @@ module.exports = urlParse;
 
 /***/ }),
 
+/***/ "./node_modules/onml/stringify.js":
+/*!****************************************!*\
+  !*** ./node_modules/onml/stringify.js ***!
+  \****************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+const isObject = o => o && Object.prototype.toString.call(o) === '[object Object]';
+
+function indenter (indentation) {
+  if (!(indentation > 0)) {
+    return txt => txt;
+  }
+  var space = ' '.repeat(indentation);
+  return txt => {
+
+    if (typeof txt !== 'string') {
+      return txt;
+    }
+
+    const arr = txt.split('\n');
+
+    if (arr.length === 1) {
+      return space + txt;
+    }
+
+    return arr
+      .map(e => (e.trim() === '') ? e : space + e)
+      .join('\n');
+  };
+}
+
+const clean = txt => txt
+  .split('\n')
+  .filter(e => e.trim() !== '')
+  .join('\n');
+
+function stringify (a, indentation) {
+  const cr = (indentation > 0) ? '\n' : '';
+  const indent = indenter(indentation);
+
+  function rec(a) {
+    let body = '';
+    let isFlat = true;
+
+    let res;
+    const isEmpty = a.some((e, i, arr) => {
+      if (i === 0) {
+        res = '<' + e;
+        return (arr.length === 1);
+      }
+
+      if (i === 1) {
+        if (isObject(e)) {
+          Object.keys(e).map(key => {
+            let val = e[key];
+            if (Array.isArray(val)) {
+              val = val.join(' ');
+            }
+            res += ' ' + key + '="' + val + '"';
+          });
+          if (arr.length === 2) {
+            return true;
+          }
+          res += '>';
+          return;
+        }
+        res += '>';
+      }
+
+      switch (typeof e) {
+      case 'string':
+      case 'number':
+      case 'boolean':
+      case 'undefined':
+        body += e + cr;
+        return;
+      }
+
+      isFlat = false;
+      body += rec(e);
+    });
+
+    if (isEmpty) {
+      return res + '/>' + cr; // short form
+    }
+
+    return isFlat
+      ? res + clean(body) + '</' + a[0] + '>' + cr
+      : res + cr + indent(body) + '</' + a[0] + '>' + cr;
+  }
+
+  return rec(a);
+}
+
+module.exports = stringify;
+
+
+/***/ }),
+
+/***/ "./node_modules/onml/tt.js":
+/*!*********************************!*\
+  !*** ./node_modules/onml/tt.js ***!
+  \*********************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = (x, y, obj) => {
+  let objt = {};
+  if (x || y) {
+    const tt = [x || 0].concat(y ? [y] : []);
+    objt = {transform: 'translate(' + tt.join(',') + ')'};
+  }
+  obj = (typeof obj === 'object') ? obj : {};
+  return Object.assign(objt, obj);
+};
+
+
+/***/ }),
+
 /***/ "./node_modules/punycode/punycode.es6.js":
 /*!***********************************************!*\
   !*** ./node_modules/punycode/punycode.es6.js ***!
@@ -64733,6 +66842,211 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./node_modules/tspan/lib/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/tspan/lib/index.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var parse = __webpack_require__(/*! ./parse */ "./node_modules/tspan/lib/parse.js"),
+    reparse = __webpack_require__(/*! ./reparse */ "./node_modules/tspan/lib/reparse.js");
+
+exports.parse = parse;
+exports.reparse = reparse;
+
+
+/***/ }),
+
+/***/ "./node_modules/tspan/lib/parse.js":
+/*!*****************************************!*\
+  !*** ./node_modules/tspan/lib/parse.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+var escapeMap = {
+    '&': '&amp;',
+    '"': '&quot;',
+    '<': '&lt;',
+    '>': '&gt;'
+};
+
+function xscape (val) {
+    if (typeof val !== 'string') {
+        return val;
+    }
+    return val.replace(
+        /([&"<>])/g,
+        function (_, e) {
+            return escapeMap[e];
+        }
+    );
+}
+
+var token = /<o>|<ins>|<s>|<sub>|<sup>|<b>|<i>|<tt>|<\/o>|<\/ins>|<\/s>|<\/sub>|<\/sup>|<\/b>|<\/i>|<\/tt>/;
+
+function update (s, cmd) {
+    if (cmd.add) {
+        cmd.add.split(';').forEach(function (e) {
+            var arr = e.split(' ');
+            s[arr[0]][arr[1]] = true;
+        });
+    }
+    if (cmd.del) {
+        cmd.del.split(';').forEach(function (e) {
+            var arr = e.split(' ');
+            delete s[arr[0]][arr[1]];
+        });
+    }
+}
+
+var trans = {
+    '<o>'    : { add: 'text-decoration overline' },
+    '</o>'   : { del: 'text-decoration overline' },
+
+    '<ins>'  : { add: 'text-decoration underline' },
+    '</ins>' : { del: 'text-decoration underline' },
+
+    '<s>'    : { add: 'text-decoration line-through' },
+    '</s>'   : { del: 'text-decoration line-through' },
+
+    '<b>'    : { add: 'font-weight bold' },
+    '</b>'   : { del: 'font-weight bold' },
+
+    '<i>'    : { add: 'font-style italic' },
+    '</i>'   : { del: 'font-style italic' },
+
+    '<sub>'  : { add: 'baseline-shift sub;font-size .7em' },
+    '</sub>' : { del: 'baseline-shift sub;font-size .7em' },
+
+    '<sup>'  : { add: 'baseline-shift super;font-size .7em' },
+    '</sup>' : { del: 'baseline-shift super;font-size .7em' },
+
+    '<tt>'   : { add: 'font-family monospace' },
+    '</tt>'  : { del: 'font-family monospace' }
+};
+
+function dump (s) {
+    return Object.keys(s).reduce(function (pre, cur) {
+        var keys = Object.keys(s[cur]);
+        if (keys.length > 0) {
+            pre[cur] = keys.join(' ');
+        }
+        return pre;
+    }, {});
+}
+
+function parse (str) {
+    var state, res, i, m, a;
+
+    if (str === undefined) {
+        return [];
+    }
+
+    if (typeof str === 'number') {
+        return [str + ''];
+    }
+
+    if (typeof str !== 'string') {
+        return [str];
+    }
+
+    res = [];
+
+    state = {
+        'text-decoration': {},
+        'font-weight': {},
+        'font-style': {},
+        'baseline-shift': {},
+        'font-size': {},
+        'font-family': {}
+    };
+
+    while (true) {
+        i = str.search(token);
+
+        if (i === -1) {
+            res.push(['tspan', dump(state), xscape(str)]);
+            return res;
+        }
+
+        if (i > 0) {
+            a = str.slice(0, i);
+            res.push(['tspan', dump(state), xscape(a)]);
+        }
+
+        m = str.match(token)[0];
+
+        update(state, trans[m]);
+
+        str = str.slice(i + m.length);
+
+        if (str.length === 0) {
+            return res;
+        }
+    }
+}
+
+module.exports = parse;
+/* eslint no-constant-condition: 0 */
+
+
+/***/ }),
+
+/***/ "./node_modules/tspan/lib/reparse.js":
+/*!*******************************************!*\
+  !*** ./node_modules/tspan/lib/reparse.js ***!
+  \*******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var parse = __webpack_require__(/*! ./parse */ "./node_modules/tspan/lib/parse.js");
+
+function deDash (str) {
+    var m = str.match(/(\w+)-(\w)(\w+)/);
+    if (m === null) {
+        return str;
+    }
+    var newStr = m[1] + m[2].toUpperCase() + m[3];
+    return newStr;
+}
+
+function reparse (React) {
+
+    var $ = React.createElement;
+
+    function reTspan (e, i) {
+        var tag = e[0];
+        var attr = e[1];
+
+        var newAttr = Object.keys(attr).reduce(function (res, key) {
+            var newKey = deDash(key);
+            res[newKey] = attr[key];
+            return res;
+        }, {});
+
+        var body = e[2];
+        newAttr.key = i;
+        return $(tag, newAttr, body);
+    }
+
+    return function (str) {
+        return parse(str).map(reTspan);
+    };
+}
+
+module.exports = reparse;
+
+
+/***/ }),
+
 /***/ "./node_modules/uc.micro/categories/Cc/regex.js":
 /*!******************************************************!*\
   !*** ./node_modules/uc.micro/categories/Cc/regex.js ***!
@@ -65656,6 +67970,2121 @@ function version(uuid) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (version);
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/append-save-as-dialog.js":
+/*!************************************************************!*\
+  !*** ./node_modules/wavedrom/lib/append-save-as-dialog.js ***!
+  \************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function appendSaveAsDialog (index, output) {
+    let menu;
+
+    function closeMenu(e) {
+        const left = parseInt(menu.style.left, 10);
+        const top = parseInt(menu.style.top, 10);
+        if (
+            e.x < left ||
+            e.x > (left + menu.offsetWidth) ||
+            e.y < top ||
+            e.y > (top + menu.offsetHeight)
+        ) {
+            menu.parentNode.removeChild(menu);
+            document.body.removeEventListener('mousedown', closeMenu, false);
+        }
+    }
+
+    const div = document.getElementById(output + index);
+
+    div.childNodes[0].addEventListener('contextmenu',
+        function (e) {
+            menu = document.createElement('div');
+
+            menu.className = 'wavedromMenu';
+            menu.style.top = e.y + 'px';
+            menu.style.left = e.x + 'px';
+
+            const list = document.createElement('ul');
+            const savePng = document.createElement('li');
+            savePng.innerHTML = 'Save as PNG';
+            list.appendChild(savePng);
+
+            const saveSvg = document.createElement('li');
+            saveSvg.innerHTML = 'Save as SVG';
+            list.appendChild(saveSvg);
+
+            //const saveJson = document.createElement('li');
+            //saveJson.innerHTML = 'Save as JSON';
+            //list.appendChild(saveJson);
+
+            menu.appendChild(list);
+
+            document.body.appendChild(menu);
+
+            savePng.addEventListener('click',
+                function () {
+                    let html = '';
+                    if (index !== 0) {
+                        const firstDiv = document.getElementById(output + 0);
+                        html += firstDiv.innerHTML.substring(166, firstDiv.innerHTML.indexOf('<g id="waves_0">'));
+                    }
+                    html = [div.innerHTML.slice(0, 166), html, div.innerHTML.slice(166)].join('');
+                    const svgdata = 'data:image/svg+xml;base64,' + btoa(html);
+                    const img = new Image();
+                    img.src = svgdata;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(img, 0, 0);
+
+                    const pngdata = canvas.toDataURL('image/png');
+
+                    const a = document.createElement('a');
+                    a.href = pngdata;
+                    a.download = 'wavedrom.png';
+                    a.click();
+
+                    menu.parentNode.removeChild(menu);
+                    document.body.removeEventListener('mousedown', closeMenu, false);
+                },
+                false
+            );
+
+            saveSvg.addEventListener('click',
+                function () {
+                    let html = '';
+                    if (index !== 0) {
+                        const firstDiv = document.getElementById(output + 0);
+                        html += firstDiv.innerHTML.substring(166, firstDiv.innerHTML.indexOf('<g id="waves_0">'));
+                    }
+                    html = [div.innerHTML.slice(0, 166), html, div.innerHTML.slice(166)].join('');
+                    const svgdata = 'data:image/svg+xml;base64,' + btoa(html);
+
+                    const a = document.createElement('a');
+                    a.href = svgdata;
+                    a.download = 'wavedrom.svg';
+                    a.click();
+
+                    menu.parentNode.removeChild(menu);
+                    document.body.removeEventListener('mousedown', closeMenu, false);
+                },
+                false
+            );
+
+            menu.addEventListener('contextmenu',
+                function (ee) {
+                    ee.preventDefault();
+                },
+                false
+            );
+
+            document.body.addEventListener('mousedown', closeMenu, false);
+
+            e.preventDefault();
+        },
+        false
+    );
+}
+
+module.exports = appendSaveAsDialog;
+
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/arc-shape.js":
+/*!************************************************!*\
+  !*** ./node_modules/wavedrom/lib/arc-shape.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function arcShape (Edge, from, to) {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    let lx = ((from.x + to.x) / 2);
+    const ly = ((from.y + to.y) / 2);
+    let d;
+    let style;
+    switch (Edge.shape) {
+    case '-'  : {
+        break;
+    }
+    case '~'  : {
+        d = ('M ' + from.x + ',' + from.y + ' c ' + (0.7 * dx) + ', 0 ' + (0.3 * dx) + ', ' + dy + ' ' + dx + ', ' + dy);
+        break;
+    }
+    case '-~' : {
+        d = ('M ' + from.x + ',' + from.y + ' c ' + (0.7 * dx) + ', 0 ' +         dx + ', ' + dy + ' ' + dx + ', ' + dy);
+        if (Edge.label) { lx = (from.x + (to.x - from.x) * 0.75); }
+        break;
+    }
+    case '~-' : {
+        d = ('M ' + from.x + ',' + from.y + ' c ' + 0          + ', 0 ' + (0.3 * dx) + ', ' + dy + ' ' + dx + ', ' + dy);
+        if (Edge.label) { lx = (from.x + (to.x - from.x) * 0.25); }
+        break;
+    }
+    case '-|' : {
+        d = ('m ' + from.x + ',' + from.y + ' ' + dx + ',0 0,' + dy);
+        if (Edge.label) { lx = to.x; }
+        break;
+    }
+    case '|-' : {
+        d = ('m ' + from.x + ',' + from.y + ' 0,' + dy + ' ' + dx + ',0');
+        if (Edge.label) { lx = from.x; }
+        break;
+    }
+    case '-|-': {
+        d = ('m ' + from.x + ',' + from.y + ' ' + (dx / 2) + ',0 0,' + dy + ' ' + (dx / 2) + ',0');
+        break;
+    }
+    case '->' : {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        break;
+    }
+    case '~>' : {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('M ' + from.x + ',' + from.y + ' ' + 'c ' + (0.7 * dx) + ', 0 ' + 0.3 * dx + ', ' + dy + ' ' + dx + ', ' + dy);
+        break;
+    }
+    case '-~>': {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('M ' + from.x + ',' + from.y + ' ' + 'c ' + (0.7 * dx) + ', 0 ' +     dx + ', ' + dy + ' ' + dx + ', ' + dy);
+        if (Edge.label) { lx = (from.x + (to.x - from.x) * 0.75); }
+        break;
+    }
+    case '~->': {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('M ' + from.x + ',' + from.y + ' ' + 'c ' + 0      + ', 0 ' + (0.3 * dx) + ', ' + dy + ' ' + dx + ', ' + dy);
+        if (Edge.label) { lx = (from.x + (to.x - from.x) * 0.25); }
+        break;
+    }
+    case '-|>' : {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('m ' + from.x + ',' + from.y + ' ' + dx + ',0 0,' + dy);
+        if (Edge.label) { lx = to.x; }
+        break;
+    }
+    case '|->' : {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('m ' + from.x + ',' + from.y + ' 0,' + dy + ' ' + dx + ',0');
+        if (Edge.label) { lx = from.x; }
+        break;
+    }
+    case '-|->': {
+        style = ('marker-end:url(#arrowhead);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('m ' + from.x + ',' + from.y + ' ' + (dx / 2) + ',0 0,' + dy + ' ' + (dx / 2) + ',0');
+        break;
+    }
+    case '<->' : {
+        style = ('marker-end:url(#arrowhead);marker-start:url(#arrowtail);stroke:#0041c4;stroke-width:1;fill:none');
+        break;
+    }
+    case '<~>' : {
+        style = ('marker-end:url(#arrowhead);marker-start:url(#arrowtail);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('M ' + from.x + ',' + from.y + ' ' + 'c ' + (0.7 * dx) + ', 0 ' + (0.3 * dx) + ', ' + dy + ' ' + dx + ', ' + dy);
+        break;
+    }
+    case '<-~>': {
+        style = ('marker-end:url(#arrowhead);marker-start:url(#arrowtail);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('M ' + from.x + ',' + from.y + ' ' + 'c ' + (0.7 * dx) + ', 0 ' +     dx + ', ' + dy + ' ' + dx + ', ' + dy);
+        if (Edge.label) { lx = (from.x + (to.x - from.x) * 0.75); }
+        break;
+    }
+    case '<-|>' : {
+        style = ('marker-end:url(#arrowhead);marker-start:url(#arrowtail);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('m ' + from.x + ',' + from.y + ' ' + dx + ',0 0,' + dy);
+        if (Edge.label) { lx = to.x; }
+        break;
+    }
+    case '<-|->': {
+        style = ('marker-end:url(#arrowhead);marker-start:url(#arrowtail);stroke:#0041c4;stroke-width:1;fill:none');
+        d = ('m ' + from.x + ',' + from.y + ' ' + (dx / 2) + ',0 0,' + dy + ' ' + (dx / 2) + ',0');
+        break;
+    }
+    case '+':   { style = ('marker-end:url(#tee);marker-start:url(#tee);fill:none;stroke:#00F;stroke-width:1'); break; }
+    default   : { style = ('fill:none;stroke:#F00;stroke-width:1'); }
+    }
+    return {
+        lx: lx,
+        ly: ly,
+        d: d,
+        style: style
+    };
+} /* eslint complexity: [1, 40] */
+
+module.exports = arcShape;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/create-element.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/wavedrom/lib/create-element.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const stringify = __webpack_require__(/*! onml/stringify.js */ "./node_modules/onml/stringify.js");
+const w3 = __webpack_require__(/*! ./w3.js */ "./node_modules/wavedrom/lib/w3.js");
+
+function createElement (arr) {
+    arr[1].xmlns = w3.svg;
+    arr[1]['xmlns:xlink'] = w3.xlink;
+    const s1 = stringify(arr);
+    // const s2 = s1.replace(/&/g, '&amp;');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(s1, 'image/svg+xml');
+    return doc.firstChild;
+}
+
+module.exports = createElement;
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/editor-refresh.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/wavedrom/lib/editor-refresh.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const eva = __webpack_require__(/*! ./eva.js */ "./node_modules/wavedrom/lib/eva.js");
+const renderWaveForm = __webpack_require__(/*! ./render-wave-form.js */ "./node_modules/wavedrom/lib/render-wave-form.js");
+
+function editorRefresh () {
+    // let svg,
+    // ser,
+    // ssvg,
+    // asvg,
+    // sjson,
+    // ajson;
+
+    renderWaveForm(0, eva('InputJSON_0'), 'WaveDrom_Display_');
+
+    /*
+    svg = document.getElementById('svgcontent_0');
+    ser = new XMLSerializer();
+    ssvg = '<?xml version='1.0' standalone='no'?>\n' +
+    '<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n' +
+    '<!-- Created with WaveDrom -->\n' +
+    ser.serializeToString(svg);
+
+    asvg = document.getElementById('download_svg');
+    asvg.href = 'data:image/svg+xml;base64,' + window.btoa(ssvg);
+
+    sjson = localStorage.waveform;
+    ajson = document.getElementById('download_json');
+    ajson.href = 'data:text/json;base64,' + window.btoa(sjson);
+    */
+}
+
+module.exports = editorRefresh;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/eva.js":
+/*!******************************************!*\
+  !*** ./node_modules/wavedrom/lib/eva.js ***!
+  \******************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function erra (e) {
+    console.log('Error in WaveJS: ', e) /* eslint no-console: 0 */;
+    const msg = ['tspan', ['tspan', {class:'error h5'}, 'Error: '], e.message];
+    msg.textWidth = 1000;  // set dummy width because we cannot measure tspans
+    return {signal: [{name: msg}]};
+}
+
+function eva (id) {
+    const TheTextBox = document.getElementById(id);
+
+    /* eslint-disable no-eval */
+    let source;
+    if (TheTextBox.type && TheTextBox.type === 'textarea') {
+        try {
+            source = eval('(' + TheTextBox.value + ')');
+        } catch (e) {
+            return erra(e);
+        }
+    } else {
+        try {
+            source = eval('(' + TheTextBox.innerHTML + ')');
+        } catch (e) {
+            return erra(e);
+        }
+    }
+    /* eslint-enable  no-eval */
+
+    if (Object.prototype.toString.call(source) !== '[object Object]') {
+        return erra({ message: '[Semantic]: The root has to be an Object: "{signal:[...]}"'});
+    }
+    if (source.signal) {
+        if (!Array.isArray(source.signal)) {
+            return erra({ message: '[Semantic]: "signal" object has to be an Array "signal:[]"'});
+        }
+    } else if (source.assign) {
+        if (!Array.isArray(source.assign)) {
+            return erra({ message: '[Semantic]: "assign" object hasto be an Array "assign:[]"'});
+        }
+    } else if (source.reg) {
+        // test register
+    } else {
+        return erra({ message: '[Semantic]: "signal:[...]" or "assign:[...]" property is missing inside the root Object'});
+    }
+    return source;
+}
+
+module.exports = eva;
+
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/find-lane-markers.js":
+/*!********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/find-lane-markers.js ***!
+  \********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function findLaneMarkers (lanetext) {
+    let gcount = 0;
+    let lcount = 0;
+    const ret = [];
+
+    lanetext.forEach(function (e) {
+        if (
+            (e === 'vvv-2') ||
+            (e === 'vvv-3') ||
+            (e === 'vvv-4') ||
+            (e === 'vvv-5') ||
+            (e === 'vvv-6') ||
+            (e === 'vvv-7') ||
+            (e === 'vvv-8') ||
+            (e === 'vvv-9')
+        ) {
+            lcount += 1;
+        } else {
+            if (lcount !== 0) {
+                ret.push(gcount - ((lcount + 1) / 2));
+                lcount = 0;
+            }
+        }
+        gcount += 1;
+
+    });
+
+    if (lcount !== 0) {
+        ret.push(gcount - ((lcount + 1) / 2));
+    }
+
+    return ret;
+}
+
+module.exports = findLaneMarkers;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/gen-brick.js":
+/*!************************************************!*\
+  !*** ./node_modules/wavedrom/lib/gen-brick.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+const genBrick = (texts, extra, times) => {
+    const R = [];
+
+    if (!Array.isArray(texts)) {
+        texts = [texts];
+    }
+
+    if (texts.length === 4) {
+        for (let j = 0; j < times; j += 1) {
+            R.push(texts[0]);
+            for (let i = 0; i < extra; i += 1) {
+                R.push(texts[1]);
+            }
+            R.push(texts[2]);
+            for (let i = 0; i < extra; i += 1) {
+                R.push(texts[3]);
+            }
+        }
+        return R;
+    }
+    if (texts.length === 1) {
+        texts.push(texts[0]);
+    }
+    R.push(texts[0]);
+    for (let i = 0; i < (times * (2 * (extra + 1)) - 1); i += 1) {
+        R.push(texts[1]);
+    }
+    return R;
+};
+
+module.exports = genBrick;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/gen-first-wave-brick.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/gen-first-wave-brick.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const genBrick = __webpack_require__(/*! ./gen-brick.js */ "./node_modules/wavedrom/lib/gen-brick.js");
+
+const lookUpTable = {
+    p:       ['pclk', '111', 'nclk', '000'],
+    n:       ['nclk', '000', 'pclk', '111'],
+    P:       ['Pclk', '111', 'nclk', '000'],
+    N:       ['Nclk', '000', 'pclk', '111'],
+    l:       '000',
+    L:       '000',
+    0:       '000',
+    h:       '111',
+    H:       '111',
+    1:       '111',
+    '=':     'vvv-2',
+    2:       'vvv-2',
+    3:       'vvv-3',
+    4:       'vvv-4',
+    5:       'vvv-5',
+    6:       'vvv-6',
+    7:       'vvv-7',
+    8:       'vvv-8',
+    9:       'vvv-9',
+    d:       'ddd',
+    u:       'uuu',
+    z:       'zzz',
+    default: 'xxx'
+};
+
+const genFirstWaveBrick = (text, extra, times) =>
+    genBrick((lookUpTable[text] || lookUpTable.default), extra, times);
+
+module.exports = genFirstWaveBrick;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/gen-wave-brick.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/wavedrom/lib/gen-wave-brick.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const genBrick = __webpack_require__(/*! ./gen-brick.js */ "./node_modules/wavedrom/lib/gen-brick.js");
+
+function genWaveBrick (text, extra, times) {
+
+    const x1 = {p: 'pclk', n: 'nclk', P: 'Pclk', N: 'Nclk', h: 'pclk', l: 'nclk', H: 'Pclk', L: 'Nclk'};
+
+    const x2 = {
+        '0':'0', '1':'1',
+        'x':'x',
+        'd':'d',
+        'u':'u',
+        'z':'z',
+        '=':'v',  '2':'v',  '3':'v',  '4':'v', '5':'v', '6':'v', '7':'v', '8':'v', '9':'v'
+    };
+
+    const x3 = {
+        '0': '', '1': '',
+        'x': '',
+        'd': '',
+        'u': '',
+        'z': '',
+        '=':'-2', '2':'-2', '3':'-3', '4':'-4', '5':'-5', '6':'-6', '7':'-7', '8':'-8', '9':'-9'
+    };
+
+    const y1 = {
+        'p':'0', 'n':'1',
+        'P':'0', 'N':'1',
+        'h':'1', 'l':'0',
+        'H':'1', 'L':'0',
+        '0':'0', '1':'1',
+        'x':'x',
+        'd':'d',
+        'u':'u',
+        'z':'z',
+        '=':'v', '2':'v', '3':'v', '4':'v', '5':'v', '6':'v', '7':'v', '8':'v', '9':'v'
+    };
+
+    const y2 = {
+        'p': '', 'n': '',
+        'P': '', 'N': '',
+        'h': '', 'l': '',
+        'H': '', 'L': '',
+        '0': '', '1': '',
+        'x': '',
+        'd': '',
+        'u': '',
+        'z': '',
+        '=':'-2', '2':'-2', '3':'-3', '4':'-4', '5':'-5', '6':'-6', '7':'-7', '8':'-8', '9':'-9'
+    };
+
+    const x4 = {
+        'p': '111', 'n': '000',
+        'P': '111', 'N': '000',
+        'h': '111', 'l': '000',
+        'H': '111', 'L': '000',
+        '0': '000', '1': '111',
+        'x': 'xxx',
+        'd': 'ddd',
+        'u': 'uuu',
+        'z': 'zzz',
+        '=': 'vvv-2', '2': 'vvv-2', '3': 'vvv-3', '4': 'vvv-4', '5': 'vvv-5', '6':'vvv-6', '7':'vvv-7', '8':'vvv-8', '9':'vvv-9'
+    };
+
+    const x5 = {p: 'nclk', n: 'pclk', P: 'nclk', N: 'pclk'};
+
+    const x6 = {p: '000', n: '111', P: '000', N: '111'};
+
+    const xclude = {hp: '111', Hp: '111', ln: '000', Ln: '000', nh: '111', Nh: '111', pl: '000', Pl: '000'};
+
+    const atext = text.split('');
+    //if (atext.length !== 2) { return genBrick(['xxx'], extra, times); }
+
+    const tmp0 = x4[atext[1]];
+    let tmp1 = x1[atext[1]];
+    if (tmp1 === undefined) {
+        const tmp2 = x2[atext[1]];
+        if (tmp2 === undefined) {
+            // unknown
+            return genBrick('xxx', extra, times);
+        } else {
+            const tmp3 = y1[atext[0]];
+            if (tmp3 === undefined) {
+                // unknown
+                return genBrick('xxx', extra, times);
+            }
+            // soft curves
+            return genBrick([tmp3 + 'm' + tmp2 + y2[atext[0]] + x3[atext[1]], tmp0], extra, times);
+        }
+    } else {
+        const tmp4 = xclude[text];
+        if (tmp4 !== undefined) {
+            tmp1 = tmp4;
+        }
+        // sharp curves
+        const tmp5 = x5[atext[1]];
+        if (tmp5 === undefined) {
+            // hlHL
+            return genBrick([tmp1, tmp0], extra, times);
+        }
+        // pnPN
+        return genBrick([tmp1, tmp0, tmp5, x6[atext[1]]], extra, times);
+    }
+}
+
+module.exports = genWaveBrick;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/wavedrom/lib/index.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+const stringify = __webpack_require__(/*! onml/stringify.js */ "./node_modules/onml/stringify.js");
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+const pkg = __webpack_require__(/*! ../package.json */ "./node_modules/wavedrom/package.json");
+const processAll = __webpack_require__(/*! ./process-all.js */ "./node_modules/wavedrom/lib/process-all.js");
+const eva = __webpack_require__(/*! ./eva.js */ "./node_modules/wavedrom/lib/eva.js");
+const renderWaveForm = __webpack_require__(/*! ./render-wave-form.js */ "./node_modules/wavedrom/lib/render-wave-form.js");
+const renderWaveElement = __webpack_require__(/*! ./render-wave-element.js */ "./node_modules/wavedrom/lib/render-wave-element.js");
+const renderAny = __webpack_require__(/*! ./render-any.js */ "./node_modules/wavedrom/lib/render-any.js");
+const editorRefresh = __webpack_require__(/*! ./editor-refresh.js */ "./node_modules/wavedrom/lib/editor-refresh.js");
+const def = __webpack_require__(/*! ../skins/default.js */ "./node_modules/wavedrom/skins/default.js");
+
+exports.version = pkg.version;
+exports.processAll = processAll;
+exports.eva = eva;
+exports.renderAny = renderAny;
+exports.renderWaveForm = renderWaveForm;
+exports.renderWaveElement = renderWaveElement;
+exports.editorRefresh = editorRefresh;
+exports.waveSkin = def;
+exports.onml = {
+    stringify: stringify,
+    tt: tt
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/insert-svg-template.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/insert-svg-template.js ***!
+  \**********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+const w3 = __webpack_require__(/*! ./w3.js */ "./node_modules/wavedrom/lib/w3.js");
+
+function insertSVGTemplate (index, source, lane, waveSkin, content, lanes, groups, notFirstSignal) {
+    const waveSkinNames = Object.keys(waveSkin);
+
+    let skin = waveSkin.default || waveSkin[waveSkinNames[0]];
+
+    if (source && source.config && source.config.skin && waveSkin[source.config.skin]) {
+        skin = waveSkin[source.config.skin];
+    }
+
+    const e = notFirstSignal
+        ? ['svg', {id: 'svg', xmlns: w3.svg, 'xmlns:xlink': w3.xlink}, ['g']]
+        : skin;
+
+    const width = (lane.xg + (lane.xs * (lane.xmax + 1)));
+    const height = (content.length * lane.yo + lane.yh0 + lane.yh1 + lane.yf0 + lane.yf1);
+
+    const body = e[e.length - 1];
+
+    body[1] = {id: 'waves_'  + index};
+
+    body[2] = ['g', tt(
+        lane.xg + 0.5,
+        lane.yh0 + lane.yh1 + 0.5,
+        {id: 'lanes_'  + index}
+    )].concat(lanes);
+
+    body[3] = ['g', {
+        id: 'groups_' + index
+    }, groups];
+
+    const head = e[1];
+
+    head.id = 'svgcontent_' + index;
+    head.height = height;
+    head.width = width;
+    head.viewBox = '0 0 ' + width + ' ' + height;
+    head.overflow = 'hidden';
+
+    return e;
+}
+
+module.exports = insertSVGTemplate;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/lane.js":
+/*!*******************************************!*\
+  !*** ./node_modules/wavedrom/lib/lane.js ***!
+  \*******************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+const lane = {
+    xs     : 20,    // tmpgraphlane0.width
+    ys     : 20,    // tmpgraphlane0.height
+    xg     : 120,   // tmpgraphlane0.x
+    // yg     : 0,     // head gap
+    yh0    : 0,     // head gap title
+    yh1    : 0,     // head gap
+    yf0    : 0,     // foot gap
+    yf1    : 0,     // foot gap
+    y0     : 5,     // tmpgraphlane0.y
+    yo     : 30,    // tmpgraphlane1.y - y0;
+    tgo    : -10,   // tmptextlane0.x - xg;
+    ym     : 15,    // tmptextlane0.y - y0
+    xlabel : 6,     // tmptextlabel.x - xg;
+    xmax   : 1,
+    scale  : 1,
+    head   : {},
+    foot   : {}
+};
+
+module.exports = lane;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/parse-config.js":
+/*!***************************************************!*\
+  !*** ./node_modules/wavedrom/lib/parse-config.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function parseConfig (source, lane) {
+    function tonumber (x) {
+        return x > 0 ? Math.round(x) : 1;
+    }
+
+    lane.hscale = 1;
+
+    if (lane.hscale0) {
+        lane.hscale = lane.hscale0;
+    }
+    if (source && source.config && source.config.hscale) {
+        let hscale = Math.round(tonumber(source.config.hscale));
+        if (hscale > 0) {
+            if (hscale > 100) {
+                hscale = 100;
+            }
+            lane.hscale = hscale;
+        }
+    }
+    lane.yh0 = 0;
+    lane.yh1 = 0;
+    lane.head = source.head;
+
+    lane.xmin_cfg = 0;
+    lane.xmax_cfg = 1e12; // essentially infinity
+    if (source && source.config && source.config.hbounds && source.config.hbounds.length==2) {
+        source.config.hbounds[0] = Math.floor(source.config.hbounds[0]);
+        source.config.hbounds[1] = Math.ceil(source.config.hbounds[1]);
+        if (  source.config.hbounds[0] < source.config.hbounds[1] ) {
+            // convert hbounds ticks min, max to bricks min, max
+            // TODO: do we want to base this on ticks or tocks in
+            //  head or foot?  All 4 can be different... or just 0 reference?
+            lane.xmin_cfg = 2 * Math.floor(source.config.hbounds[0]);
+            lane.xmax_cfg = 2 * Math.floor(source.config.hbounds[1]);
+        }
+    }
+
+    if (source && source.head) {
+        if (
+            source.head.tick || source.head.tick === 0 ||
+            source.head.tock || source.head.tock === 0
+        ) {
+            lane.yh0 = 20;
+        }
+        // if tick defined, modify start tick by lane.xmin_cfg
+        if ( source.head.tick || source.head.tick === 0 ) {
+            source.head.tick = source.head.tick + lane.xmin_cfg/2;
+        }
+        // if tock defined, modify start tick by lane.xmin_cfg
+        if ( source.head.tock || source.head.tock === 0 ) {
+            source.head.tock = source.head.tock + lane.xmin_cfg/2;
+        }
+
+        if (source.head.text) {
+            lane.yh1 = 46;
+            lane.head.text = source.head.text;
+        }
+    }
+
+    lane.yf0 = 0;
+    lane.yf1 = 0;
+    lane.foot = source.foot;
+    if (source && source.foot) {
+        if (
+            source.foot.tick || source.foot.tick === 0 ||
+            source.foot.tock || source.foot.tock === 0
+        ) {
+            lane.yf0 = 20;
+        }
+        // if tick defined, modify start tick by lane.xmin_cfg
+        if ( source.foot.tick || source.foot.tick === 0 ) {
+            source.foot.tick = source.foot.tick + lane.xmin_cfg/2;
+        }
+        // if tock defined, modify start tick by lane.xmin_cfg
+        if ( source.foot.tock || source.foot.tock === 0 ) {
+            source.foot.tock = source.foot.tock + lane.xmin_cfg/2;
+        }
+
+        if (source.foot.text) {
+            lane.yf1 = 46;
+            lane.foot.text = source.foot.text;
+        }
+    }
+} /* eslint complexity: [1, 40] */
+
+module.exports = parseConfig;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/parse-wave-lane.js":
+/*!******************************************************!*\
+  !*** ./node_modules/wavedrom/lib/parse-wave-lane.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const genFirstWaveBrick = __webpack_require__(/*! ./gen-first-wave-brick.js */ "./node_modules/wavedrom/lib/gen-first-wave-brick.js");
+const genWaveBrick = __webpack_require__(/*! ./gen-wave-brick.js */ "./node_modules/wavedrom/lib/gen-wave-brick.js");
+const findLaneMarkers = __webpack_require__(/*! ./find-lane-markers.js */ "./node_modules/wavedrom/lib/find-lane-markers.js");
+
+// src is the wave member of the signal object
+// extra = hscale-1 ( padding )
+// lane is an object containing all properties for this waveform
+function parseWaveLane (src, extra, lane) {
+    const Stack = src.split('');
+    let Next  = Stack.shift();
+
+    let Repeats = 1;
+    while (Stack[0] === '.' || Stack[0] === '|') { // repeaters parser
+        Stack.shift();
+        Repeats += 1;
+    }
+    let R = [];
+    R = R.concat(genFirstWaveBrick(Next, extra, Repeats));
+
+    let Top;
+    let subCycle = false;
+    while (Stack.length) {
+        Top = Next;
+        Next = Stack.shift();
+        if (Next === '<') { // sub-cycles on
+            subCycle = true;
+            Next = Stack.shift();
+        }
+        if (Next === '>') { // sub-cycles off
+            subCycle = false;
+            Next = Stack.shift();
+        }
+        Repeats = 1;
+        while (Stack[0] === '.' || Stack[0] === '|') { // repeaters parser
+            Stack.shift();
+            Repeats += 1;
+        }
+        if (subCycle) {
+            R = R.concat(genWaveBrick((Top + Next), 0, Repeats - lane.period));
+        } else {
+            R = R.concat(genWaveBrick((Top + Next), extra, Repeats));
+        }
+    }
+    // shift out unseen bricks due to phase shift, and save them in
+    const unseen_bricks = [];
+    for (let i = 0; i < lane.phase; i += 1) {
+        unseen_bricks.push(R.shift());
+    }
+
+    let num_unseen_markers;
+    if (unseen_bricks.length > 0) {
+        num_unseen_markers = findLaneMarkers( unseen_bricks ).length;
+        // if end of unseen_bricks and start of R both have a marker,
+        //  then one less unseen marker
+        if (findLaneMarkers( [unseen_bricks[unseen_bricks.length-1]] ).length == 1 &&
+            findLaneMarkers( [R[0]] ).length == 1
+        ) {
+            num_unseen_markers -= 1;
+        }
+    } else {
+        num_unseen_markers = 0;
+    }
+
+    // R is array of half brick types, each is item is string
+    // num_unseen_markers is how many markers are now unseen due to phase
+    return [R, num_unseen_markers];
+}
+
+module.exports = parseWaveLane;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/parse-wave-lanes.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/wavedrom/lib/parse-wave-lanes.js ***!
+  \*******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const parseWaveLane = __webpack_require__(/*! ./parse-wave-lane.js */ "./node_modules/wavedrom/lib/parse-wave-lane.js");
+
+function data_extract (e, num_unseen_markers) {
+    let ret_data = e.data;
+    if (ret_data === undefined) { return null; }
+    if (typeof (ret_data) === 'string') {
+        ret_data = ret_data.trim().split(/\s+/);
+    }
+    // slice data array after unseen markers
+    ret_data = ret_data.slice( num_unseen_markers );
+    return ret_data;
+}
+
+function parseWaveLanes (sig, lane) {
+    const content = [];
+    const tmp0 = [];
+
+    sig.map(function (sigx) {
+        const current = [];
+        content.push(current);
+
+        lane.period = sigx.period || 1;
+        // xmin_cfg is min. brick of hbounds, add to lane.phase of all signals
+        lane.phase = (sigx.phase ? sigx.phase * 2 : 0) + lane.xmin_cfg;
+        tmp0[0] = sigx.name || ' ';
+        // xmin_cfg is min. brick of hbounds, add 1/2 to sigx.phase of all sigs
+        tmp0[1] = (sigx.phase || 0) + lane.xmin_cfg/2;
+
+        let content_wave = null;
+        let num_unseen_markers;
+        if (typeof sigx.wave === 'string') {
+            const parsed_wave_lane = parseWaveLane(sigx.wave, lane.period * lane.hscale - 1, lane);
+            content_wave = parsed_wave_lane[0] ;
+            num_unseen_markers = parsed_wave_lane[1];
+        }
+        current.push(
+            tmp0.slice(0),
+            content_wave,
+            data_extract(sigx, num_unseen_markers),
+            sigx
+        );
+    });
+    // content is an array of arrays, representing the list of signals using
+    //  the same order:
+    // content[0] = [ [name,phase], parsedwavelaneobj, dataextracted ]
+    return content;
+}
+
+module.exports = parseWaveLanes;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/process-all.js":
+/*!**************************************************!*\
+  !*** ./node_modules/wavedrom/lib/process-all.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const eva = __webpack_require__(/*! ./eva.js */ "./node_modules/wavedrom/lib/eva.js");
+const appendSaveAsDialog = __webpack_require__(/*! ./append-save-as-dialog.js */ "./node_modules/wavedrom/lib/append-save-as-dialog.js");
+const renderWaveForm = __webpack_require__(/*! ./render-wave-form.js */ "./node_modules/wavedrom/lib/render-wave-form.js");
+
+function processAll () {
+    // first pass
+    let index = 0; // actual number of valid anchor
+    const points = document.querySelectorAll('*');
+    for (let i = 0; i < points.length; i++) {
+        if (points.item(i).type && points.item(i).type.toLowerCase() === 'wavedrom') {
+            points.item(i).setAttribute('id', 'InputJSON_' + index);
+
+            const node0 = document.createElement('div');
+            // node0.className += 'WaveDrom_Display_' + index;
+            node0.id = 'WaveDrom_Display_' + index;
+            points.item(i).parentNode.insertBefore(node0, points.item(i));
+            // WaveDrom.InsertSVGTemplate(i, node0);
+            index += 1;
+        }
+    }
+    // second pass
+    let notFirstSignal = false;
+    for (let i = 0; i < index; i += 1) {
+        const obj = eva('InputJSON_' + i);
+        renderWaveForm(i, obj, 'WaveDrom_Display_', notFirstSignal);
+        if (obj && obj.signal && !notFirstSignal) {
+            notFirstSignal = true;
+        }
+        appendSaveAsDialog(i, 'WaveDrom_Display_');
+    }
+    // add styles
+    document.head.innerHTML += '<style type="text/css">div.wavedromMenu{position:fixed;border:solid 1pt#CCCCCC;background-color:white;box-shadow:0px 10px 20px #808080;cursor:default;margin:0px;padding:0px;}div.wavedromMenu>ul{margin:0px;padding:0px;}div.wavedromMenu>ul>li{padding:2px 10px;list-style:none;}div.wavedromMenu>ul>li:hover{background-color:#b5d5ff;}</style>';
+}
+
+module.exports = processAll;
+
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/rec.js":
+/*!******************************************!*\
+  !*** ./node_modules/wavedrom/lib/rec.js ***!
+  \******************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+function rec (tmp, state) {
+    let deltaX = 10;
+
+    let name;
+    if (typeof tmp[0] === 'string' || typeof tmp[0] === 'number') {
+        name = tmp[0];
+        deltaX = 25;
+    }
+    state.x += deltaX;
+    for (let i = 0; i < tmp.length; i++) {
+        if (typeof tmp[i] === 'object') {
+            if (Array.isArray(tmp[i])) {
+                const oldY = state.y;
+                state = rec(tmp[i], state);
+                state.groups.push({x: state.xx, y: oldY, height: (state.y - oldY), name: state.name});
+            } else {
+                state.lanes.push(tmp[i]);
+                state.width.push(state.x);
+                state.y += 1;
+            }
+        }
+    }
+    state.xx = state.x;
+    state.x -= deltaX;
+    state.name = name;
+    return state;
+}
+
+module.exports = rec;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-any.js":
+/*!*************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-any.js ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const renderAssign = __webpack_require__(/*! logidrom/lib/render-assign.js */ "./node_modules/logidrom/lib/render-assign.js");
+
+const renderReg = __webpack_require__(/*! ./render-reg.js */ "./node_modules/wavedrom/lib/render-reg.js");
+const renderSignal = __webpack_require__(/*! ./render-signal.js */ "./node_modules/wavedrom/lib/render-signal.js");
+
+function renderAny (index, source, waveSkin, notFirstSignal) {
+    const res = source.signal
+        ? renderSignal(index, source, waveSkin, notFirstSignal)
+        : source.assign
+            ? renderAssign(index, source)
+            : source.reg
+                ? renderReg(index, source)
+                : ['div', {}];
+
+    res[1].class = 'WaveDrom';
+    return res;
+}
+
+module.exports = renderAny;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-arcs.js":
+/*!**************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-arcs.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const arcShape = __webpack_require__(/*! ./arc-shape.js */ "./node_modules/wavedrom/lib/arc-shape.js");
+const renderLabel = __webpack_require__(/*! ./render-label.js */ "./node_modules/wavedrom/lib/render-label.js");
+
+const renderArc = (Edge, from, to, shapeProps) =>
+    ['path', {
+        id: 'gmark_' + Edge.from + '_' + Edge.to,
+        d: shapeProps.d || 'M ' + from.x + ',' + from.y + ' ' + to.x + ',' + to.y,
+        style: shapeProps.style || 'fill:none;stroke:#00F;stroke-width:1'
+    }];
+
+const labeler = (lane, Events) => (element, i) => {
+    const text = element.node;
+    lane.period = element.period ? element.period : 1;
+    lane.phase  = (element.phase ? element.phase * 2 : 0) + lane.xmin_cfg;
+    if (text) {
+        const stack = text.split('');
+        let pos = 0;
+        while (stack.length) {
+            const eventname = stack.shift();
+            if (eventname !== '.') {
+                Events[eventname] = {
+                    x: lane.xs * (2 * pos * lane.period * lane.hscale - lane.phase) + lane.xlabel,
+                    y: i * lane.yo + lane.y0 + lane.ys * 0.5
+                };
+            }
+            pos += 1;
+        }
+    }
+};
+
+const archer = (res, Events, arcFontSize) => (element) => {
+    const words = element.trim().split(/\s+/);
+    const Edge = {
+        words: words,
+        label: element.substring(words[0].length).substring(1),
+        from:  words[0].substr(0, 1),
+        to:    words[0].substr(-1, 1),
+        shape: words[0].slice(1, -1)
+    };
+    const from = Events[Edge.from];
+    const to = Events[Edge.to];
+
+    if (from && to) {
+        const shapeProps = arcShape(Edge, from, to);
+        const lx = shapeProps.lx;
+        const ly = shapeProps.ly;
+        res.push(renderArc(Edge, from, to, shapeProps));
+        if (Edge.label) {
+            res.push(renderLabel({x: lx, y: ly}, Edge.label, arcFontSize));
+        }
+    }
+};
+
+function renderArcs (lanes, index, source, lane) {
+    const arcFontSize = (source && source.config && source.config.arcFontSize)
+        ? source.config.arcFontSize
+        : 11;
+
+    const res = ['g', {id: 'wavearcs_' + index}];
+    const Events = {};
+    if (Array.isArray(lanes)) {
+        lanes.map(labeler(lane, Events));
+        if (Array.isArray(source.edge)) {
+            source.edge.map(archer(res, Events, arcFontSize));
+        }
+        Object.keys(Events).map(function (k) {
+            if (k === k.toLowerCase()) {
+                if (Events[k].x > 0) {
+                    res.push(renderLabel({
+                        x: Events[k].x,
+                        y: Events[k].y
+                    }, k + '', arcFontSize));
+                }
+            }
+        });
+    }
+    return res;
+}
+
+module.exports = renderArcs;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-gaps.js":
+/*!**************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-gaps.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+function renderGapUses (text, lane) {
+    const res = [];
+    const Stack = (text || '').split('');
+    let pos = 0;
+    let subCycle = false;
+    while (Stack.length) {
+        let next = Stack.shift();
+        if (next === '<') { // sub-cycles on
+            subCycle = true;
+            next = Stack.shift();
+        }
+        if (next === '>') { // sub-cycles off
+            subCycle = false;
+            next = Stack.shift();
+        }
+        if (subCycle) {
+            pos += 1;
+        } else {
+            pos += (2 * lane.period);
+        }
+        if (next === '|') {
+            res.push(['use', tt(
+                lane.xs * ((pos - (subCycle ? 0 : lane.period)) * lane.hscale - lane.phase),
+                0,
+                {'xlink:href': '#gap'}
+            )]);
+        }
+    }
+    return res;
+}
+
+
+function renderGaps (lanes, index, source, lane) {
+    let res = [];
+    if (lanes) {
+        const lanesLen = lanes.length;
+
+        const vline = (x) => ['line', {
+            x1: x, x2: x,
+            y2: lanesLen * lane.yo,
+            style: 'stroke:#000;stroke-width:1px'
+        }];
+
+        const lineStyle = 'fill:none;stroke:#000;stroke-width:1px';
+        const bracket = {
+            square: {
+                left:  ['path', {d: 'M  2 0 h -4 v ' + (lanesLen * lane.yo - 1) + ' h  4', style: lineStyle}],
+                right: ['path', {d: 'M -2 0 h  4 v ' + (lanesLen * lane.yo - 1) + ' h -4', style: lineStyle}]
+            },
+            round: {
+                left:      ['path', {d: 'M  2 0 a 4 4 0 0 0 -4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 0 0 0  4 4', style: lineStyle}],
+                right:     ['path', {d: 'M -2 0 a 4 4 1 0 1  4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 1 0 1 -4 4', style: lineStyle}],
+                rightLeft: ['path', {
+                    d:  'M -5 0 a 4 4 1 0 1  4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 1 0 1 -4 4' +
+                        'M  5 0 a 4 4 0 0 0 -4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 0 0 0  4 4',
+                    style: lineStyle
+                }],
+                leftLeft: ['path', {
+                    d:  'M  2 0 a 4 4 0 0 0 -4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 0 0 0  4 4' +
+                        'M  5 1 a 3 3 0 0 0 -3 3 v ' + (lanesLen * lane.yo - 9) + ' a 3 3 0 0 0  3 3',
+                    style: lineStyle
+                }],
+                rightRight: ['path', {
+                    d:  'M -5 1 a 3 3 1 0 1  3 3 v ' + (lanesLen * lane.yo - 9) + ' a 3 3 1 0 1 -3 3' +
+                        'M -2 0 a 4 4 1 0 1  4 4 v ' + (lanesLen * lane.yo - 9) + ' a 4 4 1 0 1 -4 4',
+                    style: lineStyle
+                }]
+            }
+        };
+
+        const backDrop = (w) => ['rect', {
+            x: -w / 2,
+            width: w,
+            height: lanesLen * lane.yo,
+            style: 'fill:#ffffffcc;stroke:none'
+        }];
+
+        if (source && typeof source.gaps === 'string') {
+            const scale = lane.hscale * lane.xs * 2;
+
+            const gaps = source.gaps.trim().split(/\s+/);
+
+            for (let x = 0; x < gaps.length; x++) {
+                const c = gaps[x];
+                if (c.match(/^[.]$/)) {
+                    continue;
+                }
+                const offset = (c === c.toLowerCase()) ? 0.5 : 0;
+
+                let marks = [];
+                switch(c) {
+                case '0': marks = [backDrop(4)]; break;
+                case '1': marks = [backDrop(4), vline(0)]; break;
+                case '|': marks = [backDrop(4), vline(0)]; break;
+                case '2': marks = [backDrop(4), vline(-2), vline(2)]; break;
+                case '3': marks = [backDrop(6), vline(-3), vline(0), vline(3)]; break;
+                case '[': marks = [backDrop(4), bracket.square.left]; break;
+                case ']': marks = [backDrop(4), bracket.square.right]; break;
+                case '(': marks = [backDrop(4), bracket.round.left]; break;
+                case ')': marks = [backDrop(4), bracket.round.right]; break;
+                case ')(': marks = [backDrop(8), bracket.round.rightLeft]; break;
+                case '((': marks = [backDrop(8), bracket.round.leftLeft]; break;
+                case '))': marks = [backDrop(8), bracket.round.rightRight]; break;
+                case 's':
+                    for (let idx = 0; idx < lanesLen; idx++) {
+                        if (lanes[idx] && lanes[idx].wave && lanes[idx].wave.length > x) {
+                            marks.push(['use', tt(2, 5 + lane.yo * idx, {'xlink:href': '#gap'})]);
+                        }
+                    }
+                    break;
+                }
+
+
+                res.push(['g', tt(scale * (x + offset))].concat(marks));
+            }
+        }
+        for (let idx = 0; idx < lanesLen; idx++) {
+            const val = lanes[idx];
+            lane.period = val.period ? val.period : 1;
+            lane.phase  = (val.phase  ? val.phase * 2 : 0) + lane.xmin_cfg;
+
+            if (typeof val.wave === 'string') {
+                const gaps = renderGapUses(val.wave, lane);
+                res = res.concat([['g', tt(
+                    0,
+                    lane.y0 + idx * lane.yo,
+                    {id: 'wavegap_' + idx + '_' + index}
+                )].concat(gaps)]);
+            }
+        }
+    }
+    return ['g', {id: 'wavegaps_' + index}].concat(res);
+} /* eslint complexity: [1, 100] */
+
+module.exports = renderGaps;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-groups.js":
+/*!****************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-groups.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+function renderGroups (groups, index, lane) {
+    const res = ['g'];
+
+    groups.map((e, i) => {
+        res.push(['path',
+            {
+                id: 'group_' + i + '_' + index,
+                d: ('m ' + (e.x + 0.5) + ',' + (e.y * lane.yo + 3.5 + lane.yh0 + lane.yh1)
+                    + ' c -3,0 -5,2 -5,5 l 0,' + (e.height * lane.yo - 16)
+                    + ' c 0,3 2,5 5,5'),
+                style: 'stroke:#0041c4;stroke-width:1;fill:none'
+            }
+        ]);
+
+        if (e.name === undefined) {
+            return;
+        }
+
+        const x = e.x - 10;
+        const y = lane.yo * (e.y + (e.height / 2)) + lane.yh0 + lane.yh1;
+        const ts = tspan.parse(e.name);
+        res.push(['g', tt(x, y),
+            ['g', {transform: 'rotate(270)'},
+                ['text', {
+                    'text-anchor': 'middle',
+                    class: 'info',
+                    'xml:space': 'preserve'
+                }].concat(ts)
+            ]
+        ]);
+    });
+    return res;
+}
+
+module.exports = renderGroups;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-label.js":
+/*!***************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-label.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+const textWidth = __webpack_require__(/*! ./text-width.js */ "./node_modules/wavedrom/lib/text-width.js");
+
+function renderLabel (p, text, fontSize) {
+    fontSize = fontSize || 11;
+    const w = textWidth(text, fontSize) + 2;
+    return ['g',
+        tt(p.x, p.y),
+        ['rect', {
+            x: -(w >> 1),
+            y: -(fontSize >> 1),
+            width: w,
+            height: fontSize,
+            style: 'fill:#FFF;'
+        }],
+        ['text', {
+            'text-anchor': 'middle',
+            y: Math.round(0.3 * fontSize),
+            style: 'font-size:' + fontSize + 'px;'
+        }].concat(tspan.parse(text))
+    ];
+}
+
+module.exports = renderLabel;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-lanes.js":
+/*!***************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-lanes.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const renderMarks = __webpack_require__(/*! ./render-marks.js */ "./node_modules/wavedrom/lib/render-marks.js");
+const renderArcs = __webpack_require__(/*! ./render-arcs.js */ "./node_modules/wavedrom/lib/render-arcs.js");
+const renderGaps = __webpack_require__(/*! ./render-gaps.js */ "./node_modules/wavedrom/lib/render-gaps.js");
+const renderPieceWise = __webpack_require__(/*! ./render-piece-wise.js */ "./node_modules/wavedrom/lib/render-piece-wise.js");
+
+function renderLanes (index, content, waveLanes, ret, source, lane) {
+    return [
+        renderMarks(content, index, lane, source)
+    ].concat(
+        waveLanes.res,
+        [
+            renderArcs(ret.lanes, index, source, lane),
+            renderGaps(ret.lanes, index, source, lane),
+            renderPieceWise(ret.lanes, index, lane)
+        ]
+    );
+}
+
+module.exports = renderLanes;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-marks.js":
+/*!***************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-marks.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+
+function captext (cxt, anchor, y) {
+    if (cxt[anchor] && cxt[anchor].text) {
+        return [
+            ['text', {
+                x: cxt.xmax * cxt.xs / 2,
+                y: y,
+                fill: '#000',
+                'text-anchor': 'middle',
+                'xml:space': 'preserve'
+            }].concat(tspan.parse(cxt[anchor].text))
+        ];
+    }
+    return [];
+}
+
+function ticktock (cxt, ref1, ref2, x, dx, y, len) {
+    let offset;
+    let L = [];
+
+    if (cxt[ref1] === undefined || cxt[ref1][ref2] === undefined) {
+        return [];
+    }
+
+    let val = cxt[ref1][ref2];
+
+    if (typeof val === 'string') {
+        val = val.trim().split(/\s+/);
+    } else
+    if (typeof val === 'number' || typeof val === 'boolean') {
+        const offset = Number(val);
+        val = [];
+        for (let i = 0; i < len; i += 1) {
+            val.push(i + offset);
+        }
+    }
+    if (Array.isArray(val)) {
+        if (val.length === 0) {
+            return [];
+        } else
+        if (val.length === 1) {
+            offset = Number(val[0]);
+            if (isNaN(offset)) {
+                L = val;
+            } else {
+                for (let i = 0; i < len; i += 1) {
+                    L[i] = i + offset;
+                }
+            }
+        } else
+        if (val.length === 2) {
+            offset = Number(val[0]);
+            const step = Number(val[1]);
+            const tmp = val[1].split('.');
+            let dp = 0;
+            if (tmp.length === 2) {
+                dp = tmp[1].length;
+            }
+            if (isNaN(offset) || isNaN(step)) {
+                L = val;
+            } else {
+                offset = step * offset;
+                for (let i = 0; i < len; i += 1) {
+                    L[i] = (step * i + offset).toFixed(dp);
+                }
+            }
+        } else {
+            L = val;
+        }
+    } else {
+        return [];
+    }
+
+    const res = ['g', {
+        class: 'muted',
+        'text-anchor': 'middle',
+        'xml:space': 'preserve'
+    }];
+
+    for (let i = 0; i < len; i += 1) {
+        if (cxt[ref1] && cxt[ref1].every && (i + offset) % cxt[ref1].every != 0) {
+            continue;
+        }
+        res.push(['text', {x: i * dx + x, y: y}].concat(tspan.parse(L[i])));
+    }
+    return [res];
+} /* eslint complexity: [1, 30] */
+
+function renderMarks (content, index, lane, source) {
+    const mstep  = 2 * (lane.hscale);
+    const mmstep = mstep * lane.xs;
+    const marks  = lane.xmax / mstep;
+    const gy     = content.length * lane.yo;
+
+    const res = ['g', {id: ('gmarks_' + index)}];
+    const gmarkLines = ['g', {style: 'stroke:#888;stroke-width:0.5;stroke-dasharray:1,3'}];
+    if (!(source && source.config && source.config.marks === false)) {
+        for (let i = 0; i < (marks + 1); i += 1) {
+            gmarkLines.push(['line', {
+                id: 'gmark_' + i + '_' + index,
+                x1: i * mmstep, y1: 0,
+                x2: i * mmstep, y2: gy
+            }]);
+        }
+        res.push(gmarkLines);
+    }
+    return res.concat(
+        captext(lane, 'head', (lane.yh0 ? -33 : -13)),
+        captext(lane, 'foot', gy + (lane.yf0 ? 45 : 25)),
+        ticktock(lane, 'head', 'tick',          0, mmstep,      -5, marks + 1),
+        ticktock(lane, 'head', 'tock', mmstep / 2, mmstep,      -5, marks),
+        ticktock(lane, 'foot', 'tick',          0, mmstep, gy + 15, marks + 1),
+        ticktock(lane, 'foot', 'tock', mmstep / 2, mmstep, gy + 15, marks)
+    );
+}
+
+module.exports = renderMarks;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-over-under.js":
+/*!********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-over-under.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+const colors = {
+    1: '#000000',
+    2: '#e90000',
+    3: '#3edd00',
+    4: '#0074cd',
+    5: '#ff15db',
+    6: '#af9800',
+    7: '#00864f',
+    8: '#a076ff'
+};
+
+function renderOverUnder (el, key, lane) {
+    const xs = lane.xs;
+    const ys = lane.ys;
+    const period = (el.period || 1) * 2 * xs;
+    const xoffset = -(el.phase || 0) * 2 * xs;
+    const gap1 = 12;
+    const serif = 7;
+    let color;
+    const y = (key === 'under') ? ys : 0;
+    let start;
+
+    function line (x) {
+        return (start === undefined) ? [] : [['line', {
+            style: 'stroke:' + color,
+            x1: period * start + gap1,
+            x2: period * x
+        }]];
+    }
+
+    if (el[key]) {
+        let res = ['g', tt(
+            xoffset,
+            y,
+            {style: 'stroke-width:3'}
+        )];
+        const arr = el[key].split('');
+        arr.map(function (dot, i) {
+            if ((dot !== '.') && (start !== undefined)) {
+                res = res.concat(line(i));
+                if (key === 'over') {
+                    res.push(['path', {
+                        style: 'stroke:none;fill:' + color,
+                        d: 'm' + (period * i - serif) + ' 0 l' + serif + ' ' + serif + ' v-' + serif + ' z'
+                    }]);
+                }
+            }
+            if (dot === '0') {
+                start = undefined;
+            } else
+            if (dot !== '.') {
+                start = i;
+                color = colors[dot] || colors[1];
+            }
+        });
+        if (start !== undefined) {
+            res = res.concat(line(arr.length));
+        }
+        return [res];
+    }
+    return [];
+}
+
+module.exports = renderOverUnder;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-piece-wise.js":
+/*!********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-piece-wise.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+
+const scaled = (d, sx, sy) => {
+    if (sy === undefined) {
+        sy = sx;
+    }
+    let i = 0;
+    while (i < d.length) {
+        switch (d[i].toLowerCase()) {
+        case 'h':
+            while ((i < d.length) && !isNaN(d[i + 1])) {
+                d[i + 1] *= sx; i++;
+            }
+            break;
+        case 'v':
+            while ((i < d.length) && !isNaN(d[i + 1])) {
+                d[i + 1] *= sy; i++;
+            }
+            break;
+        case 'm':
+        case 'l':
+        case 't':
+            while (((i + 1) < d.length) && !isNaN(d[i + 1])) {
+                d[i + 1] *= sx; d[i + 2] *= sy; i += 2;
+            }
+            break;
+        case 'q':
+            while (((i + 3) < d.length) && !isNaN(d[i + 1])) {
+                d[i + 1] *= sx; d[i + 2] *= sy; d[i + 3] *= sx; d[i + 4] *= sy; i += 4;
+            }
+            break;
+        case 'a':
+            while (((i + 6) < d.length) && !isNaN(d[i + 1])) {
+                d[i + 1] *= sx; d[i + 2] *= sy; d[i + 6] *= sx; d[i + 7] *= sy; i += 7;
+            }
+            break;
+        }
+        i++;
+    }
+    return d;
+};
+
+function scale (d, cfg) {
+    if (typeof d === 'string') {
+        d = d.trim().split(/[\s,]+/);
+    }
+
+    if (!Array.isArray(d)) {
+        return;
+    }
+
+    return scaled(d, 2 * cfg.xs, -cfg.ys);
+}
+
+function renderLane (wave, idx, cfg) {
+    if (Array.isArray(wave)) {
+        const tag = wave[0];
+        const attr = wave[1];
+        if (tag === 'pw' && (typeof attr === 'object')) {
+            const d = scale(attr.d, cfg);
+            return ['g',
+                tt(0, cfg.yo * idx + cfg.ys + cfg.y0),
+                ['path', {style: 'fill:none;stroke:#000;stroke-width:1px;', d: d}]
+            ];
+        }
+    }
+}
+
+function renderPieceWise (lanes, index, cfg) {
+    let res = ['g'];
+    lanes.map((row, idx) => {
+        const wave = row.wave;
+        if (Array.isArray(wave)) {
+            res.push(renderLane(wave, idx, cfg));
+        }
+    });
+    return res;
+}
+
+module.exports = renderPieceWise;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-reg.js":
+/*!*************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-reg.js ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const render = __webpack_require__(/*! bit-field/lib/render.js */ "./node_modules/bit-field/lib/render.js");
+
+function renderReg (index, source) {
+    return render(source.reg, source.config);
+}
+
+module.exports = renderReg;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-signal.js":
+/*!****************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-signal.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const rec = __webpack_require__(/*! ./rec.js */ "./node_modules/wavedrom/lib/rec.js");
+const lane = __webpack_require__(/*! ./lane.js */ "./node_modules/wavedrom/lib/lane.js");
+const parseConfig = __webpack_require__(/*! ./parse-config.js */ "./node_modules/wavedrom/lib/parse-config.js");
+const parseWaveLanes = __webpack_require__(/*! ./parse-wave-lanes.js */ "./node_modules/wavedrom/lib/parse-wave-lanes.js");
+const renderGroups = __webpack_require__(/*! ./render-groups.js */ "./node_modules/wavedrom/lib/render-groups.js");
+const renderLanes = __webpack_require__(/*! ./render-lanes.js */ "./node_modules/wavedrom/lib/render-lanes.js");
+const renderWaveLane = __webpack_require__(/*! ./render-wave-lane.js */ "./node_modules/wavedrom/lib/render-wave-lane.js");
+
+const insertSVGTemplate = __webpack_require__(/*! ./insert-svg-template.js */ "./node_modules/wavedrom/lib/insert-svg-template.js");
+
+function laneParamsFromSkin (index, source, lane, waveSkin) {
+
+    if (index !== 0) {
+        return;
+    }
+
+    const waveSkinNames = Object.keys(waveSkin);
+    if (waveSkinNames.length === 0) {
+        throw new Error('no skins found');
+    }
+
+    let skin = waveSkin.default || waveSkin[waveSkinNames[0]];
+
+    if (source && source.config && source.config.skin && waveSkin[source.config.skin]) {
+        skin = waveSkin[source.config.skin];
+    }
+
+    const socket = skin[3][1][2][1];
+
+    lane.xs     = Number(socket.width);
+    lane.ys     = Number(socket.height);
+    lane.xlabel = Number(socket.x);
+    lane.ym     = Number(socket.y);
+}
+
+function renderSignal (index, source, waveSkin, notFirstSignal) {
+
+    laneParamsFromSkin (index, source, lane, waveSkin);
+
+    parseConfig(source, lane);
+    const ret = rec(source.signal, {x: 0, y: 0, xmax: 0, width: [], lanes: [], groups: []});
+    const content = parseWaveLanes(ret.lanes, lane);
+
+    const waveLanes = renderWaveLane(content, index, lane);
+    const waveGroups = renderGroups(ret.groups, index, lane);
+
+    const xmax = waveLanes.glengths.reduce((res, len, i) =>
+        Math.max(res, len + ret.width[i]), 0);
+
+    lane.xg = Math.ceil((xmax - lane.tgo) / lane.xs) * lane.xs;
+
+    return insertSVGTemplate(
+        index, source, lane, waveSkin, content,
+        renderLanes(index, content, waveLanes, ret, source, lane),
+        waveGroups,
+        notFirstSignal
+    );
+
+}
+
+module.exports = renderSignal;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-wave-element.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-wave-element.js ***!
+  \**********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const renderAny = __webpack_require__(/*! ./render-any.js */ "./node_modules/wavedrom/lib/render-any.js");
+const createElement = __webpack_require__(/*! ./create-element.js */ "./node_modules/wavedrom/lib/create-element.js");
+
+function renderWaveElement (index, source, outputElement, waveSkin, notFirstSignal) {
+
+    // cleanup
+    while (outputElement.childNodes.length) {
+        outputElement.removeChild(outputElement.childNodes[0]);
+    }
+
+    outputElement.insertBefore(createElement(
+        renderAny(index, source, waveSkin, notFirstSignal)
+    ), null);
+}
+
+module.exports = renderWaveElement;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-wave-form.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-wave-form.js ***!
+  \*******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const renderWaveElement = __webpack_require__(/*! ./render-wave-element.js */ "./node_modules/wavedrom/lib/render-wave-element.js");
+
+function renderWaveForm (index, source, output, notFirstSignal) {
+    renderWaveElement(index, source, document.getElementById(output + index), window.WaveSkin, notFirstSignal);
+}
+
+module.exports = renderWaveForm;
+
+/* eslint-env browser */
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/render-wave-lane.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/wavedrom/lib/render-wave-lane.js ***!
+  \*******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const tt = __webpack_require__(/*! onml/tt.js */ "./node_modules/onml/tt.js");
+const tspan = __webpack_require__(/*! tspan */ "./node_modules/tspan/lib/index.js");
+const textWidth = __webpack_require__(/*! ./text-width.js */ "./node_modules/wavedrom/lib/text-width.js");
+const findLaneMarkers = __webpack_require__(/*! ./find-lane-markers.js */ "./node_modules/wavedrom/lib/find-lane-markers.js");
+const renderOverUnder = __webpack_require__(/*! ./render-over-under.js */ "./node_modules/wavedrom/lib/render-over-under.js");
+
+function renderLaneUses (cont, lane) {
+    const res = [];
+
+    if (cont[1]) {
+        cont[1].map(function (ref, i) {
+            res.push(['use', tt(i * lane.xs, 0, {'xlink:href': '#' + ref})]);
+        });
+        if (cont[2] && cont[2].length) {
+            const labels = findLaneMarkers(cont[1]);
+            if (labels.length) {
+                labels.map(function (label, i) {
+                    if (cont[2] && (cont[2][i] !== undefined)) {
+                        res.push(['text', {
+                            x: label * lane.xs + lane.xlabel,
+                            y: lane.ym,
+                            'text-anchor': 'middle',
+                            'xml:space': 'preserve'
+                        }].concat(tspan.parse(cont[2][i])));
+                    }
+                });
+            }
+        }
+    }
+    return res;
+}
+
+function renderWaveLane (content, index, lane) {
+    let xmax = 0;
+    const glengths = [];
+    const res = [];
+
+    content.map(function (el, j) {
+        const name = el[0][0];
+        if (name) { // check name
+            let xoffset = el[0][1];
+            xoffset = (xoffset > 0)
+                ? (Math.ceil(2 * xoffset) - 2 * xoffset)
+                : (-2 * xoffset);
+
+            res.push(['g', tt(
+                0,
+                lane.y0 + j * lane.yo,
+                {id: 'wavelane_' + j + '_' + index}
+            )]
+                .concat([['text', {
+                    x: lane.tgo,
+                    y: lane.ym,
+                    class: 'info',
+                    'text-anchor': 'end',
+                    'xml:space': 'preserve'
+                }]
+                    .concat(tspan.parse(name))
+                ])
+                .concat([['g', tt(
+                    xoffset * lane.xs,
+                    0,
+                    {id: 'wavelane_draw_' + j + '_' + index}
+                )]
+                    .concat(renderLaneUses(el, lane))
+                ])
+                .concat(
+                    renderOverUnder(el[3], 'over', lane),
+                    renderOverUnder(el[3], 'under', lane)
+                )
+            );
+            xmax = Math.max(xmax, (el[1] || []).length);
+            glengths.push(name.textWidth ? name.textWidth : name.charCodeAt ? textWidth(name, 11) : 0);
+        }
+    });
+    // xmax if no xmax_cfg,xmin_cfg, else set to config
+    lane.xmax = Math.min(xmax, lane.xmax_cfg - lane.xmin_cfg);
+    const xgmax = 0;
+    lane.xg = xgmax + 20;
+    return {glengths: glengths, res: res};
+}
+
+module.exports = renderWaveLane;
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/text-width.js":
+/*!*************************************************!*\
+  !*** ./node_modules/wavedrom/lib/text-width.js ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+const charWidth = __webpack_require__(/*! ./char-width.json */ "./node_modules/wavedrom/lib/char-width.json");
+
+/**
+    Calculates text string width in pixels.
+
+    @param {String} str text string to be measured
+    @param {Number} size font size used
+    @return {Number} text string width
+*/
+
+module.exports = function (str, size) {
+    size = size || 11; // default size 11pt
+    let width = 0;
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        let w = charWidth.chars[c];
+        if (w === undefined) {
+            w = charWidth.other;
+        }
+        width += w;
+    }
+    return (width * size) / 100; // normalize
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/w3.js":
+/*!*****************************************!*\
+  !*** ./node_modules/wavedrom/lib/w3.js ***!
+  \*****************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = {
+    svg: 'http://www.w3.org/2000/svg',
+    xlink: 'http://www.w3.org/1999/xlink',
+    xmlns: 'http://www.w3.org/XML/1998/namespace'
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/skins/default.js":
+/*!************************************************!*\
+  !*** ./node_modules/wavedrom/skins/default.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+var WaveSkin=WaveSkin||{};WaveSkin.default=['svg',{id:'svg',xmlns:'http://www.w3.org/2000/svg','xmlns:xlink':'http://www.w3.org/1999/xlink',height:'0'},['style',{type:'text/css'},'text{font-size:11pt;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;fill-opacity:1;font-family:Helvetica}.h1{font-size:33pt;font-weight:bold}.h2{font-size:27pt;font-weight:bold}.h3{font-size:20pt;font-weight:bold}.h4{font-size:14pt;font-weight:bold}.h5{font-size:11pt;font-weight:bold}.h6{font-size:8pt;font-weight:bold}.muted{fill:#aaa}.warning{fill:#f6b900}.error{fill:#f60000}.info{fill:#0041c4}.success{fill:#00ab00}.s1{fill:none;stroke:#000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}.s2{fill:none;stroke:#000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}.s3{color:#000;fill:none;stroke:#000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1, 3;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible}.s4{color:#000;fill:none;stroke:#000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible}.s5{fill:#fff;stroke:none}.s6{fill:#000;fill-opacity:1;stroke:none}.s7{color:#000;fill:#fff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s8{color:#000;fill:#ffffb4;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s9{color:#000;fill:#ffe0b9;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s10{color:#000;fill:#b9e0ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s11{color:#000;fill:#ccfdfe;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s12{color:#000;fill:#cdfdc5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s13{color:#000;fill:#f0c1fb;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s14{color:#000;fill:#f5c2c0;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible}.s15{fill:#0041c4;fill-opacity:1;stroke:none}.s16{fill:none;stroke:#0041c4;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}'],['defs',['g',{id:'socket'},['rect',{y:'15',x:'6',height:'20',width:'20'}]],['g',{id:'pclk'},['path',{d:'M0,20 0,0 20,0',class:'s1'}]],['g',{id:'nclk'},['path',{d:'m0,0 0,20 20,0',class:'s1'}]],['g',{id:'000'},['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'0m0'},['path',{d:'m0,20 3,0 3,-10 3,10 11,0',class:'s1'}]],['g',{id:'0m1'},['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'0mx'},['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 5,20',class:'s2'}],['path',{d:'M20,0 4,16',class:'s2'}],['path',{d:'M15,0 6,9',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'0md'},['path',{d:'m8,20 10,0',class:'s3'}],['path',{d:'m0,20 5,0',class:'s1'}]],['g',{id:'0mu'},['path',{d:'m0,20 3,0 C 7,10 10.107603,0 20,0',class:'s1'}]],['g',{id:'0mz'},['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'111'},['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'1m0'},['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}]],['g',{id:'1m1'},['path',{d:'M0,0 3,0 6,10 9,0 20,0',class:'s1'}]],['g',{id:'1mx'},['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 6,9',class:'s2'}],['path',{d:'M10,0 5,5',class:'s2'}],['path',{d:'M3.5,1.5 5,0',class:'s2'}]],['g',{id:'1md'},['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}]],['g',{id:'1mu'},['path',{d:'M0,0 5,0',class:'s1'}],['path',{d:'M8,0 18,0',class:'s3'}]],['g',{id:'1mz'},['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}]],['g',{id:'xxx'},['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,5 5,0',class:'s2'}],['path',{d:'M0,10 10,0',class:'s2'}],['path',{d:'M0,15 15,0',class:'s2'}],['path',{d:'M0,20 20,0',class:'s2'}],['path',{d:'M5,20 20,5',class:'s2'}],['path',{d:'M10,20 20,10',class:'s2'}],['path',{d:'m15,20 5,-5',class:'s2'}]],['g',{id:'xm0'},['path',{d:'M0,0 4,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,5 4,1',class:'s2'}],['path',{d:'M0,10 5,5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 7,13',class:'s2'}],['path',{d:'M5,20 8,17',class:'s2'}]],['g',{id:'xm1'},['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 4,20 9,0',class:'s1'}],['path',{d:'M0,5 5,0',class:'s2'}],['path',{d:'M0,10 9,1',class:'s2'}],['path',{d:'M0,15 7,8',class:'s2'}],['path',{d:'M0,20 5,15',class:'s2'}]],['g',{id:'xmx'},['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,5 5,0',class:'s2'}],['path',{d:'M0,10 10,0',class:'s2'}],['path',{d:'M0,15 15,0',class:'s2'}],['path',{d:'M0,20 20,0',class:'s2'}],['path',{d:'M5,20 20,5',class:'s2'}],['path',{d:'M10,20 20,10',class:'s2'}],['path',{d:'m15,20 5,-5',class:'s2'}]],['g',{id:'xmd'},['path',{d:'m0,0 4,0 c 3,10 6,20 16,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,5 4,1',class:'s2'}],['path',{d:'M0,10 5.5,4.5',class:'s2'}],['path',{d:'M0,15 6.5,8.5',class:'s2'}],['path',{d:'M0,20 8,12',class:'s2'}],['path',{d:'m5,20 5,-5',class:'s2'}],['path',{d:'m10,20 2.5,-2.5',class:'s2'}]],['g',{id:'xmu'},['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'m0,20 4,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,5 5,0',class:'s2'}],['path',{d:'M0,10 10,0',class:'s2'}],['path',{d:'M0,15 10,5',class:'s2'}],['path',{d:'M0,20 6,14',class:'s2'}]],['g',{id:'xmz'},['path',{d:'m0,0 4,0 c 6,10 11,10 16,10',class:'s1'}],['path',{d:'m0,20 4,0 C 10,10 15,10 20,10',class:'s1'}],['path',{d:'M0,5 4.5,0.5',class:'s2'}],['path',{d:'M0,10 6.5,3.5',class:'s2'}],['path',{d:'M0,15 8.5,6.5',class:'s2'}],['path',{d:'M0,20 11.5,8.5',class:'s2'}]],['g',{id:'ddd'},['path',{d:'m0,20 20,0',class:'s3'}]],['g',{id:'dm0'},['path',{d:'m0,20 10,0',class:'s3'}],['path',{d:'m12,20 8,0',class:'s1'}]],['g',{id:'dm1'},['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'dmx'},['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 5,20',class:'s2'}],['path',{d:'M20,0 4,16',class:'s2'}],['path',{d:'M15,0 6,9',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'dmd'},['path',{d:'m0,20 20,0',class:'s3'}]],['g',{id:'dmu'},['path',{d:'m0,20 3,0 C 7,10 10.107603,0 20,0',class:'s1'}]],['g',{id:'dmz'},['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'uuu'},['path',{d:'M0,0 20,0',class:'s3'}]],['g',{id:'um0'},['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}]],['g',{id:'um1'},['path',{d:'M0,0 10,0',class:'s3'}],['path',{d:'m12,0 8,0',class:'s1'}]],['g',{id:'umx'},['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 6,9',class:'s2'}],['path',{d:'M10,0 5,5',class:'s2'}],['path',{d:'M3.5,1.5 5,0',class:'s2'}]],['g',{id:'umd'},['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}]],['g',{id:'umu'},['path',{d:'M0,0 20,0',class:'s3'}]],['g',{id:'umz'},['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s4'}]],['g',{id:'zzz'},['path',{d:'m0,10 20,0',class:'s1'}]],['g',{id:'zm0'},['path',{d:'m0,10 6,0 3,10 11,0',class:'s1'}]],['g',{id:'zm1'},['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'zmx'},['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 6.5,8.5',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'zmd'},['path',{d:'m0,10 7,0 c 3,5 8,10 13,10',class:'s1'}]],['g',{id:'zmu'},['path',{d:'m0,10 7,0 C 10,5 15,0 20,0',class:'s1'}]],['g',{id:'zmz'},['path',{d:'m0,10 20,0',class:'s1'}]],['g',{id:'gap'},['path',{d:'m7,-2 -4,0 c -5,0 -5,24 -10,24 l 4,0 C 2,22 2,-2 7,-2 z',class:'s5'}],['path',{d:'M-7,22 C -2,22 -2,-2 3,-2',class:'s1'}],['path',{d:'M-3,22 C 2,22 2,-2 7,-2',class:'s1'}]],['g',{id:'Pclk'},['path',{d:'M-3,12 0,3 3,12 C 1,11 -1,11 -3,12 z',class:'s6'}],['path',{d:'M0,20 0,0 20,0',class:'s1'}]],['g',{id:'Nclk'},['path',{d:'M-3,8 0,17 3,8 C 1,9 -1,9 -3,8 z',class:'s6'}],['path',{d:'m0,0 0,20 20,0',class:'s1'}]],['g',{id:'0mv-2'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s7'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-2'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s7'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-2'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s7'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-2'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s7'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-2'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s7'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-2'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s7'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-2'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s7'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-2'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-2'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s7'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-2'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s7'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-2'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s7'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-3'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s8'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-3'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s8'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-3'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s8'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-3'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s8'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-3'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s8'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-3'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s8'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-3'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s8'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-3'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-3'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s8'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-3'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s8'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-3'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s8'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-4'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s9'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-4'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s9'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-4'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s9'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-4'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s9'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-4'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s9'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-4'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s9'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-4'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s9'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-4'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-4'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s9'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-4'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s9'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-4'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s9'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-5'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s10'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-5'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s10'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-5'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s10'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-5'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s10'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-5'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s10'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-5'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s10'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-5'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s10'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-5'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-5'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s10'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-5'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s10'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-5'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s10'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-6'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s11'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-6'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s11'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-6'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s11'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-6'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s11'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-6'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s11'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-6'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s11'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-6'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s11'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-6'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-6'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s11'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-6'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s11'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-6'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s11'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-7'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s12'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-7'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s12'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-7'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s12'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-7'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s12'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-7'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s12'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-7'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s12'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-7'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s12'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-7'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-7'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s12'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-7'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s12'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-7'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s12'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-8'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s13'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-8'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s13'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-8'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s13'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-8'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s13'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-8'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s13'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-8'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s13'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-8'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s13'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-8'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-8'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s13'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-8'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s13'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-8'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s13'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'0mv-9'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s14'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'1mv-9'},['path',{d:'M2.875,0 20,0 20,20 9,20 z',class:'s14'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'xmv-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,5 3.5,1.5',class:'s2'}],['path',{d:'M0,10 4.5,5.5',class:'s2'}],['path',{d:'M0,15 6,9',class:'s2'}],['path',{d:'M0,20 4,16',class:'s2'}]],['g',{id:'dmv-9'},['path',{d:'M9,0 20,0 20,20 3,20 z',class:'s14'}],['path',{d:'M3,20 9,0 20,0',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'umv-9'},['path',{d:'M3,0 20,0 20,20 9,20 z',class:'s14'}],['path',{d:'m3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'zmv-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'m6,10 3,10 11,0',class:'s1'}],['path',{d:'M0,10 6,10 9,0 20,0',class:'s1'}]],['g',{id:'vvv-9'},['path',{d:'M20,20 0,20 0,0 20,0',class:'s14'}],['path',{d:'m0,20 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vm0-9'},['path',{d:'M0,20 0,0 3,0 9,20',class:'s14'}],['path',{d:'M0,0 3,0 9,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vm1-9'},['path',{d:'M0,0 0,20 3,20 9,0',class:'s14'}],['path',{d:'M0,0 20,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0',class:'s1'}]],['g',{id:'vmx-9'},['path',{d:'M0,0 0,20 3,20 6,10 3,0',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}],['path',{d:'m20,15 -5,5',class:'s2'}],['path',{d:'M20,10 10,20',class:'s2'}],['path',{d:'M20,5 8,17',class:'s2'}],['path',{d:'M20,0 7,13',class:'s2'}],['path',{d:'M15,0 7,8',class:'s2'}],['path',{d:'M10,0 9,1',class:'s2'}]],['g',{id:'vmd-9'},['path',{d:'m0,0 0,20 20,0 C 10,20 7,10 3,0',class:'s14'}],['path',{d:'m0,0 3,0 c 4,10 7,20 17,20',class:'s1'}],['path',{d:'m0,20 20,0',class:'s1'}]],['g',{id:'vmu-9'},['path',{d:'m0,0 0,20 3,0 C 7,10 10,0 20,0',class:'s14'}],['path',{d:'m0,20 3,0 C 7,10 10,0 20,0',class:'s1'}],['path',{d:'M0,0 20,0',class:'s1'}]],['g',{id:'vmz-9'},['path',{d:'M0,0 3,0 C 10,10 15,10 20,10 15,10 10,10 3,20 L 0,20',class:'s14'}],['path',{d:'m0,0 3,0 c 7,10 12,10 17,10',class:'s1'}],['path',{d:'m0,20 3,0 C 10,10 15,10 20,10',class:'s1'}]],['g',{id:'vmv-2-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-2'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s7'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-3'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s8'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-4'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s9'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-5'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s10'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-6'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s11'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-7'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s12'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-8'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s13'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-2-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s7'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-3-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s8'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-4-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s9'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-5-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s10'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-6-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s11'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-7-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s12'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-8-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s13'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'vmv-9-9'},['path',{d:'M9,0 20,0 20,20 9,20 6,10 z',class:'s14'}],['path',{d:'M3,0 0,0 0,20 3,20 6,10 z',class:'s14'}],['path',{d:'m0,0 3,0 6,20 11,0',class:'s1'}],['path',{d:'M0,20 3,20 9,0 20,0',class:'s1'}]],['g',{id:'arrow0'},['path',{d:'m-12,-3 9,3 -9,3 c 1,-2 1,-4 0,-6 z',class:'s15'}],['path',{d:'M0,0 -15,0',class:'s16'}]],['marker',{id:'arrowhead',style:'fill:#0041c4',markerHeight:7,markerWidth:10,markerUnits:'strokeWidth',viewBox:'0 -4 11 8',refX:15,refY:0,orient:'auto'},['path',{d:'M0 -4 11 0 0 4z'}]],['marker',{id:'arrowtail',style:'fill:#0041c4',markerHeight:7,markerWidth:10,markerUnits:'strokeWidth',viewBox:'-11 -4 11 8',refX:-15,refY:0,orient:'auto'},['path',{d:'M0 -4 -11 0 0 4z'}]],['marker',{id:'tee',style:'fill:#0041c4',markerHeight:6,markerWidth:1,markerUnits:'strokeWidth',viewBox:'0 0 1 6',refX:0,refY:3,orient:'auto'},['path',{d:'M 0 0 L 0 6',style:'stroke:#0041c4;stroke-width:2'}]]],['g',{id:'waves'},['g',{id:'lanes'}],['g',{id:'groups'}]]];
+try { module.exports = WaveSkin; } catch(err) {}
+
+
 
 /***/ }),
 
@@ -83245,6 +87674,28 @@ exports.shift = shift;
 
 "use strict";
 module.exports = JSON.parse('{"Aacute":"Á","aacute":"á","Abreve":"Ă","abreve":"ă","ac":"∾","acd":"∿","acE":"∾̳","Acirc":"Â","acirc":"â","acute":"´","Acy":"А","acy":"а","AElig":"Æ","aelig":"æ","af":"⁡","Afr":"𝔄","afr":"𝔞","Agrave":"À","agrave":"à","alefsym":"ℵ","aleph":"ℵ","Alpha":"Α","alpha":"α","Amacr":"Ā","amacr":"ā","amalg":"⨿","amp":"&","AMP":"&","andand":"⩕","And":"⩓","and":"∧","andd":"⩜","andslope":"⩘","andv":"⩚","ang":"∠","ange":"⦤","angle":"∠","angmsdaa":"⦨","angmsdab":"⦩","angmsdac":"⦪","angmsdad":"⦫","angmsdae":"⦬","angmsdaf":"⦭","angmsdag":"⦮","angmsdah":"⦯","angmsd":"∡","angrt":"∟","angrtvb":"⊾","angrtvbd":"⦝","angsph":"∢","angst":"Å","angzarr":"⍼","Aogon":"Ą","aogon":"ą","Aopf":"𝔸","aopf":"𝕒","apacir":"⩯","ap":"≈","apE":"⩰","ape":"≊","apid":"≋","apos":"\'","ApplyFunction":"⁡","approx":"≈","approxeq":"≊","Aring":"Å","aring":"å","Ascr":"𝒜","ascr":"𝒶","Assign":"≔","ast":"*","asymp":"≈","asympeq":"≍","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","awconint":"∳","awint":"⨑","backcong":"≌","backepsilon":"϶","backprime":"‵","backsim":"∽","backsimeq":"⋍","Backslash":"∖","Barv":"⫧","barvee":"⊽","barwed":"⌅","Barwed":"⌆","barwedge":"⌅","bbrk":"⎵","bbrktbrk":"⎶","bcong":"≌","Bcy":"Б","bcy":"б","bdquo":"„","becaus":"∵","because":"∵","Because":"∵","bemptyv":"⦰","bepsi":"϶","bernou":"ℬ","Bernoullis":"ℬ","Beta":"Β","beta":"β","beth":"ℶ","between":"≬","Bfr":"𝔅","bfr":"𝔟","bigcap":"⋂","bigcirc":"◯","bigcup":"⋃","bigodot":"⨀","bigoplus":"⨁","bigotimes":"⨂","bigsqcup":"⨆","bigstar":"★","bigtriangledown":"▽","bigtriangleup":"△","biguplus":"⨄","bigvee":"⋁","bigwedge":"⋀","bkarow":"⤍","blacklozenge":"⧫","blacksquare":"▪","blacktriangle":"▴","blacktriangledown":"▾","blacktriangleleft":"◂","blacktriangleright":"▸","blank":"␣","blk12":"▒","blk14":"░","blk34":"▓","block":"█","bne":"=⃥","bnequiv":"≡⃥","bNot":"⫭","bnot":"⌐","Bopf":"𝔹","bopf":"𝕓","bot":"⊥","bottom":"⊥","bowtie":"⋈","boxbox":"⧉","boxdl":"┐","boxdL":"╕","boxDl":"╖","boxDL":"╗","boxdr":"┌","boxdR":"╒","boxDr":"╓","boxDR":"╔","boxh":"─","boxH":"═","boxhd":"┬","boxHd":"╤","boxhD":"╥","boxHD":"╦","boxhu":"┴","boxHu":"╧","boxhU":"╨","boxHU":"╩","boxminus":"⊟","boxplus":"⊞","boxtimes":"⊠","boxul":"┘","boxuL":"╛","boxUl":"╜","boxUL":"╝","boxur":"└","boxuR":"╘","boxUr":"╙","boxUR":"╚","boxv":"│","boxV":"║","boxvh":"┼","boxvH":"╪","boxVh":"╫","boxVH":"╬","boxvl":"┤","boxvL":"╡","boxVl":"╢","boxVL":"╣","boxvr":"├","boxvR":"╞","boxVr":"╟","boxVR":"╠","bprime":"‵","breve":"˘","Breve":"˘","brvbar":"¦","bscr":"𝒷","Bscr":"ℬ","bsemi":"⁏","bsim":"∽","bsime":"⋍","bsolb":"⧅","bsol":"\\\\","bsolhsub":"⟈","bull":"•","bullet":"•","bump":"≎","bumpE":"⪮","bumpe":"≏","Bumpeq":"≎","bumpeq":"≏","Cacute":"Ć","cacute":"ć","capand":"⩄","capbrcup":"⩉","capcap":"⩋","cap":"∩","Cap":"⋒","capcup":"⩇","capdot":"⩀","CapitalDifferentialD":"ⅅ","caps":"∩︀","caret":"⁁","caron":"ˇ","Cayleys":"ℭ","ccaps":"⩍","Ccaron":"Č","ccaron":"č","Ccedil":"Ç","ccedil":"ç","Ccirc":"Ĉ","ccirc":"ĉ","Cconint":"∰","ccups":"⩌","ccupssm":"⩐","Cdot":"Ċ","cdot":"ċ","cedil":"¸","Cedilla":"¸","cemptyv":"⦲","cent":"¢","centerdot":"·","CenterDot":"·","cfr":"𝔠","Cfr":"ℭ","CHcy":"Ч","chcy":"ч","check":"✓","checkmark":"✓","Chi":"Χ","chi":"χ","circ":"ˆ","circeq":"≗","circlearrowleft":"↺","circlearrowright":"↻","circledast":"⊛","circledcirc":"⊚","circleddash":"⊝","CircleDot":"⊙","circledR":"®","circledS":"Ⓢ","CircleMinus":"⊖","CirclePlus":"⊕","CircleTimes":"⊗","cir":"○","cirE":"⧃","cire":"≗","cirfnint":"⨐","cirmid":"⫯","cirscir":"⧂","ClockwiseContourIntegral":"∲","CloseCurlyDoubleQuote":"”","CloseCurlyQuote":"’","clubs":"♣","clubsuit":"♣","colon":":","Colon":"∷","Colone":"⩴","colone":"≔","coloneq":"≔","comma":",","commat":"@","comp":"∁","compfn":"∘","complement":"∁","complexes":"ℂ","cong":"≅","congdot":"⩭","Congruent":"≡","conint":"∮","Conint":"∯","ContourIntegral":"∮","copf":"𝕔","Copf":"ℂ","coprod":"∐","Coproduct":"∐","copy":"©","COPY":"©","copysr":"℗","CounterClockwiseContourIntegral":"∳","crarr":"↵","cross":"✗","Cross":"⨯","Cscr":"𝒞","cscr":"𝒸","csub":"⫏","csube":"⫑","csup":"⫐","csupe":"⫒","ctdot":"⋯","cudarrl":"⤸","cudarrr":"⤵","cuepr":"⋞","cuesc":"⋟","cularr":"↶","cularrp":"⤽","cupbrcap":"⩈","cupcap":"⩆","CupCap":"≍","cup":"∪","Cup":"⋓","cupcup":"⩊","cupdot":"⊍","cupor":"⩅","cups":"∪︀","curarr":"↷","curarrm":"⤼","curlyeqprec":"⋞","curlyeqsucc":"⋟","curlyvee":"⋎","curlywedge":"⋏","curren":"¤","curvearrowleft":"↶","curvearrowright":"↷","cuvee":"⋎","cuwed":"⋏","cwconint":"∲","cwint":"∱","cylcty":"⌭","dagger":"†","Dagger":"‡","daleth":"ℸ","darr":"↓","Darr":"↡","dArr":"⇓","dash":"‐","Dashv":"⫤","dashv":"⊣","dbkarow":"⤏","dblac":"˝","Dcaron":"Ď","dcaron":"ď","Dcy":"Д","dcy":"д","ddagger":"‡","ddarr":"⇊","DD":"ⅅ","dd":"ⅆ","DDotrahd":"⤑","ddotseq":"⩷","deg":"°","Del":"∇","Delta":"Δ","delta":"δ","demptyv":"⦱","dfisht":"⥿","Dfr":"𝔇","dfr":"𝔡","dHar":"⥥","dharl":"⇃","dharr":"⇂","DiacriticalAcute":"´","DiacriticalDot":"˙","DiacriticalDoubleAcute":"˝","DiacriticalGrave":"`","DiacriticalTilde":"˜","diam":"⋄","diamond":"⋄","Diamond":"⋄","diamondsuit":"♦","diams":"♦","die":"¨","DifferentialD":"ⅆ","digamma":"ϝ","disin":"⋲","div":"÷","divide":"÷","divideontimes":"⋇","divonx":"⋇","DJcy":"Ђ","djcy":"ђ","dlcorn":"⌞","dlcrop":"⌍","dollar":"$","Dopf":"𝔻","dopf":"𝕕","Dot":"¨","dot":"˙","DotDot":"⃜","doteq":"≐","doteqdot":"≑","DotEqual":"≐","dotminus":"∸","dotplus":"∔","dotsquare":"⊡","doublebarwedge":"⌆","DoubleContourIntegral":"∯","DoubleDot":"¨","DoubleDownArrow":"⇓","DoubleLeftArrow":"⇐","DoubleLeftRightArrow":"⇔","DoubleLeftTee":"⫤","DoubleLongLeftArrow":"⟸","DoubleLongLeftRightArrow":"⟺","DoubleLongRightArrow":"⟹","DoubleRightArrow":"⇒","DoubleRightTee":"⊨","DoubleUpArrow":"⇑","DoubleUpDownArrow":"⇕","DoubleVerticalBar":"∥","DownArrowBar":"⤓","downarrow":"↓","DownArrow":"↓","Downarrow":"⇓","DownArrowUpArrow":"⇵","DownBreve":"̑","downdownarrows":"⇊","downharpoonleft":"⇃","downharpoonright":"⇂","DownLeftRightVector":"⥐","DownLeftTeeVector":"⥞","DownLeftVectorBar":"⥖","DownLeftVector":"↽","DownRightTeeVector":"⥟","DownRightVectorBar":"⥗","DownRightVector":"⇁","DownTeeArrow":"↧","DownTee":"⊤","drbkarow":"⤐","drcorn":"⌟","drcrop":"⌌","Dscr":"𝒟","dscr":"𝒹","DScy":"Ѕ","dscy":"ѕ","dsol":"⧶","Dstrok":"Đ","dstrok":"đ","dtdot":"⋱","dtri":"▿","dtrif":"▾","duarr":"⇵","duhar":"⥯","dwangle":"⦦","DZcy":"Џ","dzcy":"џ","dzigrarr":"⟿","Eacute":"É","eacute":"é","easter":"⩮","Ecaron":"Ě","ecaron":"ě","Ecirc":"Ê","ecirc":"ê","ecir":"≖","ecolon":"≕","Ecy":"Э","ecy":"э","eDDot":"⩷","Edot":"Ė","edot":"ė","eDot":"≑","ee":"ⅇ","efDot":"≒","Efr":"𝔈","efr":"𝔢","eg":"⪚","Egrave":"È","egrave":"è","egs":"⪖","egsdot":"⪘","el":"⪙","Element":"∈","elinters":"⏧","ell":"ℓ","els":"⪕","elsdot":"⪗","Emacr":"Ē","emacr":"ē","empty":"∅","emptyset":"∅","EmptySmallSquare":"◻","emptyv":"∅","EmptyVerySmallSquare":"▫","emsp13":" ","emsp14":" ","emsp":" ","ENG":"Ŋ","eng":"ŋ","ensp":" ","Eogon":"Ę","eogon":"ę","Eopf":"𝔼","eopf":"𝕖","epar":"⋕","eparsl":"⧣","eplus":"⩱","epsi":"ε","Epsilon":"Ε","epsilon":"ε","epsiv":"ϵ","eqcirc":"≖","eqcolon":"≕","eqsim":"≂","eqslantgtr":"⪖","eqslantless":"⪕","Equal":"⩵","equals":"=","EqualTilde":"≂","equest":"≟","Equilibrium":"⇌","equiv":"≡","equivDD":"⩸","eqvparsl":"⧥","erarr":"⥱","erDot":"≓","escr":"ℯ","Escr":"ℰ","esdot":"≐","Esim":"⩳","esim":"≂","Eta":"Η","eta":"η","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","euro":"€","excl":"!","exist":"∃","Exists":"∃","expectation":"ℰ","exponentiale":"ⅇ","ExponentialE":"ⅇ","fallingdotseq":"≒","Fcy":"Ф","fcy":"ф","female":"♀","ffilig":"ﬃ","fflig":"ﬀ","ffllig":"ﬄ","Ffr":"𝔉","ffr":"𝔣","filig":"ﬁ","FilledSmallSquare":"◼","FilledVerySmallSquare":"▪","fjlig":"fj","flat":"♭","fllig":"ﬂ","fltns":"▱","fnof":"ƒ","Fopf":"𝔽","fopf":"𝕗","forall":"∀","ForAll":"∀","fork":"⋔","forkv":"⫙","Fouriertrf":"ℱ","fpartint":"⨍","frac12":"½","frac13":"⅓","frac14":"¼","frac15":"⅕","frac16":"⅙","frac18":"⅛","frac23":"⅔","frac25":"⅖","frac34":"¾","frac35":"⅗","frac38":"⅜","frac45":"⅘","frac56":"⅚","frac58":"⅝","frac78":"⅞","frasl":"⁄","frown":"⌢","fscr":"𝒻","Fscr":"ℱ","gacute":"ǵ","Gamma":"Γ","gamma":"γ","Gammad":"Ϝ","gammad":"ϝ","gap":"⪆","Gbreve":"Ğ","gbreve":"ğ","Gcedil":"Ģ","Gcirc":"Ĝ","gcirc":"ĝ","Gcy":"Г","gcy":"г","Gdot":"Ġ","gdot":"ġ","ge":"≥","gE":"≧","gEl":"⪌","gel":"⋛","geq":"≥","geqq":"≧","geqslant":"⩾","gescc":"⪩","ges":"⩾","gesdot":"⪀","gesdoto":"⪂","gesdotol":"⪄","gesl":"⋛︀","gesles":"⪔","Gfr":"𝔊","gfr":"𝔤","gg":"≫","Gg":"⋙","ggg":"⋙","gimel":"ℷ","GJcy":"Ѓ","gjcy":"ѓ","gla":"⪥","gl":"≷","glE":"⪒","glj":"⪤","gnap":"⪊","gnapprox":"⪊","gne":"⪈","gnE":"≩","gneq":"⪈","gneqq":"≩","gnsim":"⋧","Gopf":"𝔾","gopf":"𝕘","grave":"`","GreaterEqual":"≥","GreaterEqualLess":"⋛","GreaterFullEqual":"≧","GreaterGreater":"⪢","GreaterLess":"≷","GreaterSlantEqual":"⩾","GreaterTilde":"≳","Gscr":"𝒢","gscr":"ℊ","gsim":"≳","gsime":"⪎","gsiml":"⪐","gtcc":"⪧","gtcir":"⩺","gt":">","GT":">","Gt":"≫","gtdot":"⋗","gtlPar":"⦕","gtquest":"⩼","gtrapprox":"⪆","gtrarr":"⥸","gtrdot":"⋗","gtreqless":"⋛","gtreqqless":"⪌","gtrless":"≷","gtrsim":"≳","gvertneqq":"≩︀","gvnE":"≩︀","Hacek":"ˇ","hairsp":" ","half":"½","hamilt":"ℋ","HARDcy":"Ъ","hardcy":"ъ","harrcir":"⥈","harr":"↔","hArr":"⇔","harrw":"↭","Hat":"^","hbar":"ℏ","Hcirc":"Ĥ","hcirc":"ĥ","hearts":"♥","heartsuit":"♥","hellip":"…","hercon":"⊹","hfr":"𝔥","Hfr":"ℌ","HilbertSpace":"ℋ","hksearow":"⤥","hkswarow":"⤦","hoarr":"⇿","homtht":"∻","hookleftarrow":"↩","hookrightarrow":"↪","hopf":"𝕙","Hopf":"ℍ","horbar":"―","HorizontalLine":"─","hscr":"𝒽","Hscr":"ℋ","hslash":"ℏ","Hstrok":"Ħ","hstrok":"ħ","HumpDownHump":"≎","HumpEqual":"≏","hybull":"⁃","hyphen":"‐","Iacute":"Í","iacute":"í","ic":"⁣","Icirc":"Î","icirc":"î","Icy":"И","icy":"и","Idot":"İ","IEcy":"Е","iecy":"е","iexcl":"¡","iff":"⇔","ifr":"𝔦","Ifr":"ℑ","Igrave":"Ì","igrave":"ì","ii":"ⅈ","iiiint":"⨌","iiint":"∭","iinfin":"⧜","iiota":"℩","IJlig":"Ĳ","ijlig":"ĳ","Imacr":"Ī","imacr":"ī","image":"ℑ","ImaginaryI":"ⅈ","imagline":"ℐ","imagpart":"ℑ","imath":"ı","Im":"ℑ","imof":"⊷","imped":"Ƶ","Implies":"⇒","incare":"℅","in":"∈","infin":"∞","infintie":"⧝","inodot":"ı","intcal":"⊺","int":"∫","Int":"∬","integers":"ℤ","Integral":"∫","intercal":"⊺","Intersection":"⋂","intlarhk":"⨗","intprod":"⨼","InvisibleComma":"⁣","InvisibleTimes":"⁢","IOcy":"Ё","iocy":"ё","Iogon":"Į","iogon":"į","Iopf":"𝕀","iopf":"𝕚","Iota":"Ι","iota":"ι","iprod":"⨼","iquest":"¿","iscr":"𝒾","Iscr":"ℐ","isin":"∈","isindot":"⋵","isinE":"⋹","isins":"⋴","isinsv":"⋳","isinv":"∈","it":"⁢","Itilde":"Ĩ","itilde":"ĩ","Iukcy":"І","iukcy":"і","Iuml":"Ï","iuml":"ï","Jcirc":"Ĵ","jcirc":"ĵ","Jcy":"Й","jcy":"й","Jfr":"𝔍","jfr":"𝔧","jmath":"ȷ","Jopf":"𝕁","jopf":"𝕛","Jscr":"𝒥","jscr":"𝒿","Jsercy":"Ј","jsercy":"ј","Jukcy":"Є","jukcy":"є","Kappa":"Κ","kappa":"κ","kappav":"ϰ","Kcedil":"Ķ","kcedil":"ķ","Kcy":"К","kcy":"к","Kfr":"𝔎","kfr":"𝔨","kgreen":"ĸ","KHcy":"Х","khcy":"х","KJcy":"Ќ","kjcy":"ќ","Kopf":"𝕂","kopf":"𝕜","Kscr":"𝒦","kscr":"𝓀","lAarr":"⇚","Lacute":"Ĺ","lacute":"ĺ","laemptyv":"⦴","lagran":"ℒ","Lambda":"Λ","lambda":"λ","lang":"⟨","Lang":"⟪","langd":"⦑","langle":"⟨","lap":"⪅","Laplacetrf":"ℒ","laquo":"«","larrb":"⇤","larrbfs":"⤟","larr":"←","Larr":"↞","lArr":"⇐","larrfs":"⤝","larrhk":"↩","larrlp":"↫","larrpl":"⤹","larrsim":"⥳","larrtl":"↢","latail":"⤙","lAtail":"⤛","lat":"⪫","late":"⪭","lates":"⪭︀","lbarr":"⤌","lBarr":"⤎","lbbrk":"❲","lbrace":"{","lbrack":"[","lbrke":"⦋","lbrksld":"⦏","lbrkslu":"⦍","Lcaron":"Ľ","lcaron":"ľ","Lcedil":"Ļ","lcedil":"ļ","lceil":"⌈","lcub":"{","Lcy":"Л","lcy":"л","ldca":"⤶","ldquo":"“","ldquor":"„","ldrdhar":"⥧","ldrushar":"⥋","ldsh":"↲","le":"≤","lE":"≦","LeftAngleBracket":"⟨","LeftArrowBar":"⇤","leftarrow":"←","LeftArrow":"←","Leftarrow":"⇐","LeftArrowRightArrow":"⇆","leftarrowtail":"↢","LeftCeiling":"⌈","LeftDoubleBracket":"⟦","LeftDownTeeVector":"⥡","LeftDownVectorBar":"⥙","LeftDownVector":"⇃","LeftFloor":"⌊","leftharpoondown":"↽","leftharpoonup":"↼","leftleftarrows":"⇇","leftrightarrow":"↔","LeftRightArrow":"↔","Leftrightarrow":"⇔","leftrightarrows":"⇆","leftrightharpoons":"⇋","leftrightsquigarrow":"↭","LeftRightVector":"⥎","LeftTeeArrow":"↤","LeftTee":"⊣","LeftTeeVector":"⥚","leftthreetimes":"⋋","LeftTriangleBar":"⧏","LeftTriangle":"⊲","LeftTriangleEqual":"⊴","LeftUpDownVector":"⥑","LeftUpTeeVector":"⥠","LeftUpVectorBar":"⥘","LeftUpVector":"↿","LeftVectorBar":"⥒","LeftVector":"↼","lEg":"⪋","leg":"⋚","leq":"≤","leqq":"≦","leqslant":"⩽","lescc":"⪨","les":"⩽","lesdot":"⩿","lesdoto":"⪁","lesdotor":"⪃","lesg":"⋚︀","lesges":"⪓","lessapprox":"⪅","lessdot":"⋖","lesseqgtr":"⋚","lesseqqgtr":"⪋","LessEqualGreater":"⋚","LessFullEqual":"≦","LessGreater":"≶","lessgtr":"≶","LessLess":"⪡","lesssim":"≲","LessSlantEqual":"⩽","LessTilde":"≲","lfisht":"⥼","lfloor":"⌊","Lfr":"𝔏","lfr":"𝔩","lg":"≶","lgE":"⪑","lHar":"⥢","lhard":"↽","lharu":"↼","lharul":"⥪","lhblk":"▄","LJcy":"Љ","ljcy":"љ","llarr":"⇇","ll":"≪","Ll":"⋘","llcorner":"⌞","Lleftarrow":"⇚","llhard":"⥫","lltri":"◺","Lmidot":"Ŀ","lmidot":"ŀ","lmoustache":"⎰","lmoust":"⎰","lnap":"⪉","lnapprox":"⪉","lne":"⪇","lnE":"≨","lneq":"⪇","lneqq":"≨","lnsim":"⋦","loang":"⟬","loarr":"⇽","lobrk":"⟦","longleftarrow":"⟵","LongLeftArrow":"⟵","Longleftarrow":"⟸","longleftrightarrow":"⟷","LongLeftRightArrow":"⟷","Longleftrightarrow":"⟺","longmapsto":"⟼","longrightarrow":"⟶","LongRightArrow":"⟶","Longrightarrow":"⟹","looparrowleft":"↫","looparrowright":"↬","lopar":"⦅","Lopf":"𝕃","lopf":"𝕝","loplus":"⨭","lotimes":"⨴","lowast":"∗","lowbar":"_","LowerLeftArrow":"↙","LowerRightArrow":"↘","loz":"◊","lozenge":"◊","lozf":"⧫","lpar":"(","lparlt":"⦓","lrarr":"⇆","lrcorner":"⌟","lrhar":"⇋","lrhard":"⥭","lrm":"‎","lrtri":"⊿","lsaquo":"‹","lscr":"𝓁","Lscr":"ℒ","lsh":"↰","Lsh":"↰","lsim":"≲","lsime":"⪍","lsimg":"⪏","lsqb":"[","lsquo":"‘","lsquor":"‚","Lstrok":"Ł","lstrok":"ł","ltcc":"⪦","ltcir":"⩹","lt":"<","LT":"<","Lt":"≪","ltdot":"⋖","lthree":"⋋","ltimes":"⋉","ltlarr":"⥶","ltquest":"⩻","ltri":"◃","ltrie":"⊴","ltrif":"◂","ltrPar":"⦖","lurdshar":"⥊","luruhar":"⥦","lvertneqq":"≨︀","lvnE":"≨︀","macr":"¯","male":"♂","malt":"✠","maltese":"✠","Map":"⤅","map":"↦","mapsto":"↦","mapstodown":"↧","mapstoleft":"↤","mapstoup":"↥","marker":"▮","mcomma":"⨩","Mcy":"М","mcy":"м","mdash":"—","mDDot":"∺","measuredangle":"∡","MediumSpace":" ","Mellintrf":"ℳ","Mfr":"𝔐","mfr":"𝔪","mho":"℧","micro":"µ","midast":"*","midcir":"⫰","mid":"∣","middot":"·","minusb":"⊟","minus":"−","minusd":"∸","minusdu":"⨪","MinusPlus":"∓","mlcp":"⫛","mldr":"…","mnplus":"∓","models":"⊧","Mopf":"𝕄","mopf":"𝕞","mp":"∓","mscr":"𝓂","Mscr":"ℳ","mstpos":"∾","Mu":"Μ","mu":"μ","multimap":"⊸","mumap":"⊸","nabla":"∇","Nacute":"Ń","nacute":"ń","nang":"∠⃒","nap":"≉","napE":"⩰̸","napid":"≋̸","napos":"ŉ","napprox":"≉","natural":"♮","naturals":"ℕ","natur":"♮","nbsp":" ","nbump":"≎̸","nbumpe":"≏̸","ncap":"⩃","Ncaron":"Ň","ncaron":"ň","Ncedil":"Ņ","ncedil":"ņ","ncong":"≇","ncongdot":"⩭̸","ncup":"⩂","Ncy":"Н","ncy":"н","ndash":"–","nearhk":"⤤","nearr":"↗","neArr":"⇗","nearrow":"↗","ne":"≠","nedot":"≐̸","NegativeMediumSpace":"​","NegativeThickSpace":"​","NegativeThinSpace":"​","NegativeVeryThinSpace":"​","nequiv":"≢","nesear":"⤨","nesim":"≂̸","NestedGreaterGreater":"≫","NestedLessLess":"≪","NewLine":"\\n","nexist":"∄","nexists":"∄","Nfr":"𝔑","nfr":"𝔫","ngE":"≧̸","nge":"≱","ngeq":"≱","ngeqq":"≧̸","ngeqslant":"⩾̸","nges":"⩾̸","nGg":"⋙̸","ngsim":"≵","nGt":"≫⃒","ngt":"≯","ngtr":"≯","nGtv":"≫̸","nharr":"↮","nhArr":"⇎","nhpar":"⫲","ni":"∋","nis":"⋼","nisd":"⋺","niv":"∋","NJcy":"Њ","njcy":"њ","nlarr":"↚","nlArr":"⇍","nldr":"‥","nlE":"≦̸","nle":"≰","nleftarrow":"↚","nLeftarrow":"⇍","nleftrightarrow":"↮","nLeftrightarrow":"⇎","nleq":"≰","nleqq":"≦̸","nleqslant":"⩽̸","nles":"⩽̸","nless":"≮","nLl":"⋘̸","nlsim":"≴","nLt":"≪⃒","nlt":"≮","nltri":"⋪","nltrie":"⋬","nLtv":"≪̸","nmid":"∤","NoBreak":"⁠","NonBreakingSpace":" ","nopf":"𝕟","Nopf":"ℕ","Not":"⫬","not":"¬","NotCongruent":"≢","NotCupCap":"≭","NotDoubleVerticalBar":"∦","NotElement":"∉","NotEqual":"≠","NotEqualTilde":"≂̸","NotExists":"∄","NotGreater":"≯","NotGreaterEqual":"≱","NotGreaterFullEqual":"≧̸","NotGreaterGreater":"≫̸","NotGreaterLess":"≹","NotGreaterSlantEqual":"⩾̸","NotGreaterTilde":"≵","NotHumpDownHump":"≎̸","NotHumpEqual":"≏̸","notin":"∉","notindot":"⋵̸","notinE":"⋹̸","notinva":"∉","notinvb":"⋷","notinvc":"⋶","NotLeftTriangleBar":"⧏̸","NotLeftTriangle":"⋪","NotLeftTriangleEqual":"⋬","NotLess":"≮","NotLessEqual":"≰","NotLessGreater":"≸","NotLessLess":"≪̸","NotLessSlantEqual":"⩽̸","NotLessTilde":"≴","NotNestedGreaterGreater":"⪢̸","NotNestedLessLess":"⪡̸","notni":"∌","notniva":"∌","notnivb":"⋾","notnivc":"⋽","NotPrecedes":"⊀","NotPrecedesEqual":"⪯̸","NotPrecedesSlantEqual":"⋠","NotReverseElement":"∌","NotRightTriangleBar":"⧐̸","NotRightTriangle":"⋫","NotRightTriangleEqual":"⋭","NotSquareSubset":"⊏̸","NotSquareSubsetEqual":"⋢","NotSquareSuperset":"⊐̸","NotSquareSupersetEqual":"⋣","NotSubset":"⊂⃒","NotSubsetEqual":"⊈","NotSucceeds":"⊁","NotSucceedsEqual":"⪰̸","NotSucceedsSlantEqual":"⋡","NotSucceedsTilde":"≿̸","NotSuperset":"⊃⃒","NotSupersetEqual":"⊉","NotTilde":"≁","NotTildeEqual":"≄","NotTildeFullEqual":"≇","NotTildeTilde":"≉","NotVerticalBar":"∤","nparallel":"∦","npar":"∦","nparsl":"⫽⃥","npart":"∂̸","npolint":"⨔","npr":"⊀","nprcue":"⋠","nprec":"⊀","npreceq":"⪯̸","npre":"⪯̸","nrarrc":"⤳̸","nrarr":"↛","nrArr":"⇏","nrarrw":"↝̸","nrightarrow":"↛","nRightarrow":"⇏","nrtri":"⋫","nrtrie":"⋭","nsc":"⊁","nsccue":"⋡","nsce":"⪰̸","Nscr":"𝒩","nscr":"𝓃","nshortmid":"∤","nshortparallel":"∦","nsim":"≁","nsime":"≄","nsimeq":"≄","nsmid":"∤","nspar":"∦","nsqsube":"⋢","nsqsupe":"⋣","nsub":"⊄","nsubE":"⫅̸","nsube":"⊈","nsubset":"⊂⃒","nsubseteq":"⊈","nsubseteqq":"⫅̸","nsucc":"⊁","nsucceq":"⪰̸","nsup":"⊅","nsupE":"⫆̸","nsupe":"⊉","nsupset":"⊃⃒","nsupseteq":"⊉","nsupseteqq":"⫆̸","ntgl":"≹","Ntilde":"Ñ","ntilde":"ñ","ntlg":"≸","ntriangleleft":"⋪","ntrianglelefteq":"⋬","ntriangleright":"⋫","ntrianglerighteq":"⋭","Nu":"Ν","nu":"ν","num":"#","numero":"№","numsp":" ","nvap":"≍⃒","nvdash":"⊬","nvDash":"⊭","nVdash":"⊮","nVDash":"⊯","nvge":"≥⃒","nvgt":">⃒","nvHarr":"⤄","nvinfin":"⧞","nvlArr":"⤂","nvle":"≤⃒","nvlt":"<⃒","nvltrie":"⊴⃒","nvrArr":"⤃","nvrtrie":"⊵⃒","nvsim":"∼⃒","nwarhk":"⤣","nwarr":"↖","nwArr":"⇖","nwarrow":"↖","nwnear":"⤧","Oacute":"Ó","oacute":"ó","oast":"⊛","Ocirc":"Ô","ocirc":"ô","ocir":"⊚","Ocy":"О","ocy":"о","odash":"⊝","Odblac":"Ő","odblac":"ő","odiv":"⨸","odot":"⊙","odsold":"⦼","OElig":"Œ","oelig":"œ","ofcir":"⦿","Ofr":"𝔒","ofr":"𝔬","ogon":"˛","Ograve":"Ò","ograve":"ò","ogt":"⧁","ohbar":"⦵","ohm":"Ω","oint":"∮","olarr":"↺","olcir":"⦾","olcross":"⦻","oline":"‾","olt":"⧀","Omacr":"Ō","omacr":"ō","Omega":"Ω","omega":"ω","Omicron":"Ο","omicron":"ο","omid":"⦶","ominus":"⊖","Oopf":"𝕆","oopf":"𝕠","opar":"⦷","OpenCurlyDoubleQuote":"“","OpenCurlyQuote":"‘","operp":"⦹","oplus":"⊕","orarr":"↻","Or":"⩔","or":"∨","ord":"⩝","order":"ℴ","orderof":"ℴ","ordf":"ª","ordm":"º","origof":"⊶","oror":"⩖","orslope":"⩗","orv":"⩛","oS":"Ⓢ","Oscr":"𝒪","oscr":"ℴ","Oslash":"Ø","oslash":"ø","osol":"⊘","Otilde":"Õ","otilde":"õ","otimesas":"⨶","Otimes":"⨷","otimes":"⊗","Ouml":"Ö","ouml":"ö","ovbar":"⌽","OverBar":"‾","OverBrace":"⏞","OverBracket":"⎴","OverParenthesis":"⏜","para":"¶","parallel":"∥","par":"∥","parsim":"⫳","parsl":"⫽","part":"∂","PartialD":"∂","Pcy":"П","pcy":"п","percnt":"%","period":".","permil":"‰","perp":"⊥","pertenk":"‱","Pfr":"𝔓","pfr":"𝔭","Phi":"Φ","phi":"φ","phiv":"ϕ","phmmat":"ℳ","phone":"☎","Pi":"Π","pi":"π","pitchfork":"⋔","piv":"ϖ","planck":"ℏ","planckh":"ℎ","plankv":"ℏ","plusacir":"⨣","plusb":"⊞","pluscir":"⨢","plus":"+","plusdo":"∔","plusdu":"⨥","pluse":"⩲","PlusMinus":"±","plusmn":"±","plussim":"⨦","plustwo":"⨧","pm":"±","Poincareplane":"ℌ","pointint":"⨕","popf":"𝕡","Popf":"ℙ","pound":"£","prap":"⪷","Pr":"⪻","pr":"≺","prcue":"≼","precapprox":"⪷","prec":"≺","preccurlyeq":"≼","Precedes":"≺","PrecedesEqual":"⪯","PrecedesSlantEqual":"≼","PrecedesTilde":"≾","preceq":"⪯","precnapprox":"⪹","precneqq":"⪵","precnsim":"⋨","pre":"⪯","prE":"⪳","precsim":"≾","prime":"′","Prime":"″","primes":"ℙ","prnap":"⪹","prnE":"⪵","prnsim":"⋨","prod":"∏","Product":"∏","profalar":"⌮","profline":"⌒","profsurf":"⌓","prop":"∝","Proportional":"∝","Proportion":"∷","propto":"∝","prsim":"≾","prurel":"⊰","Pscr":"𝒫","pscr":"𝓅","Psi":"Ψ","psi":"ψ","puncsp":" ","Qfr":"𝔔","qfr":"𝔮","qint":"⨌","qopf":"𝕢","Qopf":"ℚ","qprime":"⁗","Qscr":"𝒬","qscr":"𝓆","quaternions":"ℍ","quatint":"⨖","quest":"?","questeq":"≟","quot":"\\"","QUOT":"\\"","rAarr":"⇛","race":"∽̱","Racute":"Ŕ","racute":"ŕ","radic":"√","raemptyv":"⦳","rang":"⟩","Rang":"⟫","rangd":"⦒","range":"⦥","rangle":"⟩","raquo":"»","rarrap":"⥵","rarrb":"⇥","rarrbfs":"⤠","rarrc":"⤳","rarr":"→","Rarr":"↠","rArr":"⇒","rarrfs":"⤞","rarrhk":"↪","rarrlp":"↬","rarrpl":"⥅","rarrsim":"⥴","Rarrtl":"⤖","rarrtl":"↣","rarrw":"↝","ratail":"⤚","rAtail":"⤜","ratio":"∶","rationals":"ℚ","rbarr":"⤍","rBarr":"⤏","RBarr":"⤐","rbbrk":"❳","rbrace":"}","rbrack":"]","rbrke":"⦌","rbrksld":"⦎","rbrkslu":"⦐","Rcaron":"Ř","rcaron":"ř","Rcedil":"Ŗ","rcedil":"ŗ","rceil":"⌉","rcub":"}","Rcy":"Р","rcy":"р","rdca":"⤷","rdldhar":"⥩","rdquo":"”","rdquor":"”","rdsh":"↳","real":"ℜ","realine":"ℛ","realpart":"ℜ","reals":"ℝ","Re":"ℜ","rect":"▭","reg":"®","REG":"®","ReverseElement":"∋","ReverseEquilibrium":"⇋","ReverseUpEquilibrium":"⥯","rfisht":"⥽","rfloor":"⌋","rfr":"𝔯","Rfr":"ℜ","rHar":"⥤","rhard":"⇁","rharu":"⇀","rharul":"⥬","Rho":"Ρ","rho":"ρ","rhov":"ϱ","RightAngleBracket":"⟩","RightArrowBar":"⇥","rightarrow":"→","RightArrow":"→","Rightarrow":"⇒","RightArrowLeftArrow":"⇄","rightarrowtail":"↣","RightCeiling":"⌉","RightDoubleBracket":"⟧","RightDownTeeVector":"⥝","RightDownVectorBar":"⥕","RightDownVector":"⇂","RightFloor":"⌋","rightharpoondown":"⇁","rightharpoonup":"⇀","rightleftarrows":"⇄","rightleftharpoons":"⇌","rightrightarrows":"⇉","rightsquigarrow":"↝","RightTeeArrow":"↦","RightTee":"⊢","RightTeeVector":"⥛","rightthreetimes":"⋌","RightTriangleBar":"⧐","RightTriangle":"⊳","RightTriangleEqual":"⊵","RightUpDownVector":"⥏","RightUpTeeVector":"⥜","RightUpVectorBar":"⥔","RightUpVector":"↾","RightVectorBar":"⥓","RightVector":"⇀","ring":"˚","risingdotseq":"≓","rlarr":"⇄","rlhar":"⇌","rlm":"‏","rmoustache":"⎱","rmoust":"⎱","rnmid":"⫮","roang":"⟭","roarr":"⇾","robrk":"⟧","ropar":"⦆","ropf":"𝕣","Ropf":"ℝ","roplus":"⨮","rotimes":"⨵","RoundImplies":"⥰","rpar":")","rpargt":"⦔","rppolint":"⨒","rrarr":"⇉","Rrightarrow":"⇛","rsaquo":"›","rscr":"𝓇","Rscr":"ℛ","rsh":"↱","Rsh":"↱","rsqb":"]","rsquo":"’","rsquor":"’","rthree":"⋌","rtimes":"⋊","rtri":"▹","rtrie":"⊵","rtrif":"▸","rtriltri":"⧎","RuleDelayed":"⧴","ruluhar":"⥨","rx":"℞","Sacute":"Ś","sacute":"ś","sbquo":"‚","scap":"⪸","Scaron":"Š","scaron":"š","Sc":"⪼","sc":"≻","sccue":"≽","sce":"⪰","scE":"⪴","Scedil":"Ş","scedil":"ş","Scirc":"Ŝ","scirc":"ŝ","scnap":"⪺","scnE":"⪶","scnsim":"⋩","scpolint":"⨓","scsim":"≿","Scy":"С","scy":"с","sdotb":"⊡","sdot":"⋅","sdote":"⩦","searhk":"⤥","searr":"↘","seArr":"⇘","searrow":"↘","sect":"§","semi":";","seswar":"⤩","setminus":"∖","setmn":"∖","sext":"✶","Sfr":"𝔖","sfr":"𝔰","sfrown":"⌢","sharp":"♯","SHCHcy":"Щ","shchcy":"щ","SHcy":"Ш","shcy":"ш","ShortDownArrow":"↓","ShortLeftArrow":"←","shortmid":"∣","shortparallel":"∥","ShortRightArrow":"→","ShortUpArrow":"↑","shy":"­","Sigma":"Σ","sigma":"σ","sigmaf":"ς","sigmav":"ς","sim":"∼","simdot":"⩪","sime":"≃","simeq":"≃","simg":"⪞","simgE":"⪠","siml":"⪝","simlE":"⪟","simne":"≆","simplus":"⨤","simrarr":"⥲","slarr":"←","SmallCircle":"∘","smallsetminus":"∖","smashp":"⨳","smeparsl":"⧤","smid":"∣","smile":"⌣","smt":"⪪","smte":"⪬","smtes":"⪬︀","SOFTcy":"Ь","softcy":"ь","solbar":"⌿","solb":"⧄","sol":"/","Sopf":"𝕊","sopf":"𝕤","spades":"♠","spadesuit":"♠","spar":"∥","sqcap":"⊓","sqcaps":"⊓︀","sqcup":"⊔","sqcups":"⊔︀","Sqrt":"√","sqsub":"⊏","sqsube":"⊑","sqsubset":"⊏","sqsubseteq":"⊑","sqsup":"⊐","sqsupe":"⊒","sqsupset":"⊐","sqsupseteq":"⊒","square":"□","Square":"□","SquareIntersection":"⊓","SquareSubset":"⊏","SquareSubsetEqual":"⊑","SquareSuperset":"⊐","SquareSupersetEqual":"⊒","SquareUnion":"⊔","squarf":"▪","squ":"□","squf":"▪","srarr":"→","Sscr":"𝒮","sscr":"𝓈","ssetmn":"∖","ssmile":"⌣","sstarf":"⋆","Star":"⋆","star":"☆","starf":"★","straightepsilon":"ϵ","straightphi":"ϕ","strns":"¯","sub":"⊂","Sub":"⋐","subdot":"⪽","subE":"⫅","sube":"⊆","subedot":"⫃","submult":"⫁","subnE":"⫋","subne":"⊊","subplus":"⪿","subrarr":"⥹","subset":"⊂","Subset":"⋐","subseteq":"⊆","subseteqq":"⫅","SubsetEqual":"⊆","subsetneq":"⊊","subsetneqq":"⫋","subsim":"⫇","subsub":"⫕","subsup":"⫓","succapprox":"⪸","succ":"≻","succcurlyeq":"≽","Succeeds":"≻","SucceedsEqual":"⪰","SucceedsSlantEqual":"≽","SucceedsTilde":"≿","succeq":"⪰","succnapprox":"⪺","succneqq":"⪶","succnsim":"⋩","succsim":"≿","SuchThat":"∋","sum":"∑","Sum":"∑","sung":"♪","sup1":"¹","sup2":"²","sup3":"³","sup":"⊃","Sup":"⋑","supdot":"⪾","supdsub":"⫘","supE":"⫆","supe":"⊇","supedot":"⫄","Superset":"⊃","SupersetEqual":"⊇","suphsol":"⟉","suphsub":"⫗","suplarr":"⥻","supmult":"⫂","supnE":"⫌","supne":"⊋","supplus":"⫀","supset":"⊃","Supset":"⋑","supseteq":"⊇","supseteqq":"⫆","supsetneq":"⊋","supsetneqq":"⫌","supsim":"⫈","supsub":"⫔","supsup":"⫖","swarhk":"⤦","swarr":"↙","swArr":"⇙","swarrow":"↙","swnwar":"⤪","szlig":"ß","Tab":"\\t","target":"⌖","Tau":"Τ","tau":"τ","tbrk":"⎴","Tcaron":"Ť","tcaron":"ť","Tcedil":"Ţ","tcedil":"ţ","Tcy":"Т","tcy":"т","tdot":"⃛","telrec":"⌕","Tfr":"𝔗","tfr":"𝔱","there4":"∴","therefore":"∴","Therefore":"∴","Theta":"Θ","theta":"θ","thetasym":"ϑ","thetav":"ϑ","thickapprox":"≈","thicksim":"∼","ThickSpace":"  ","ThinSpace":" ","thinsp":" ","thkap":"≈","thksim":"∼","THORN":"Þ","thorn":"þ","tilde":"˜","Tilde":"∼","TildeEqual":"≃","TildeFullEqual":"≅","TildeTilde":"≈","timesbar":"⨱","timesb":"⊠","times":"×","timesd":"⨰","tint":"∭","toea":"⤨","topbot":"⌶","topcir":"⫱","top":"⊤","Topf":"𝕋","topf":"𝕥","topfork":"⫚","tosa":"⤩","tprime":"‴","trade":"™","TRADE":"™","triangle":"▵","triangledown":"▿","triangleleft":"◃","trianglelefteq":"⊴","triangleq":"≜","triangleright":"▹","trianglerighteq":"⊵","tridot":"◬","trie":"≜","triminus":"⨺","TripleDot":"⃛","triplus":"⨹","trisb":"⧍","tritime":"⨻","trpezium":"⏢","Tscr":"𝒯","tscr":"𝓉","TScy":"Ц","tscy":"ц","TSHcy":"Ћ","tshcy":"ћ","Tstrok":"Ŧ","tstrok":"ŧ","twixt":"≬","twoheadleftarrow":"↞","twoheadrightarrow":"↠","Uacute":"Ú","uacute":"ú","uarr":"↑","Uarr":"↟","uArr":"⇑","Uarrocir":"⥉","Ubrcy":"Ў","ubrcy":"ў","Ubreve":"Ŭ","ubreve":"ŭ","Ucirc":"Û","ucirc":"û","Ucy":"У","ucy":"у","udarr":"⇅","Udblac":"Ű","udblac":"ű","udhar":"⥮","ufisht":"⥾","Ufr":"𝔘","ufr":"𝔲","Ugrave":"Ù","ugrave":"ù","uHar":"⥣","uharl":"↿","uharr":"↾","uhblk":"▀","ulcorn":"⌜","ulcorner":"⌜","ulcrop":"⌏","ultri":"◸","Umacr":"Ū","umacr":"ū","uml":"¨","UnderBar":"_","UnderBrace":"⏟","UnderBracket":"⎵","UnderParenthesis":"⏝","Union":"⋃","UnionPlus":"⊎","Uogon":"Ų","uogon":"ų","Uopf":"𝕌","uopf":"𝕦","UpArrowBar":"⤒","uparrow":"↑","UpArrow":"↑","Uparrow":"⇑","UpArrowDownArrow":"⇅","updownarrow":"↕","UpDownArrow":"↕","Updownarrow":"⇕","UpEquilibrium":"⥮","upharpoonleft":"↿","upharpoonright":"↾","uplus":"⊎","UpperLeftArrow":"↖","UpperRightArrow":"↗","upsi":"υ","Upsi":"ϒ","upsih":"ϒ","Upsilon":"Υ","upsilon":"υ","UpTeeArrow":"↥","UpTee":"⊥","upuparrows":"⇈","urcorn":"⌝","urcorner":"⌝","urcrop":"⌎","Uring":"Ů","uring":"ů","urtri":"◹","Uscr":"𝒰","uscr":"𝓊","utdot":"⋰","Utilde":"Ũ","utilde":"ũ","utri":"▵","utrif":"▴","uuarr":"⇈","Uuml":"Ü","uuml":"ü","uwangle":"⦧","vangrt":"⦜","varepsilon":"ϵ","varkappa":"ϰ","varnothing":"∅","varphi":"ϕ","varpi":"ϖ","varpropto":"∝","varr":"↕","vArr":"⇕","varrho":"ϱ","varsigma":"ς","varsubsetneq":"⊊︀","varsubsetneqq":"⫋︀","varsupsetneq":"⊋︀","varsupsetneqq":"⫌︀","vartheta":"ϑ","vartriangleleft":"⊲","vartriangleright":"⊳","vBar":"⫨","Vbar":"⫫","vBarv":"⫩","Vcy":"В","vcy":"в","vdash":"⊢","vDash":"⊨","Vdash":"⊩","VDash":"⊫","Vdashl":"⫦","veebar":"⊻","vee":"∨","Vee":"⋁","veeeq":"≚","vellip":"⋮","verbar":"|","Verbar":"‖","vert":"|","Vert":"‖","VerticalBar":"∣","VerticalLine":"|","VerticalSeparator":"❘","VerticalTilde":"≀","VeryThinSpace":" ","Vfr":"𝔙","vfr":"𝔳","vltri":"⊲","vnsub":"⊂⃒","vnsup":"⊃⃒","Vopf":"𝕍","vopf":"𝕧","vprop":"∝","vrtri":"⊳","Vscr":"𝒱","vscr":"𝓋","vsubnE":"⫋︀","vsubne":"⊊︀","vsupnE":"⫌︀","vsupne":"⊋︀","Vvdash":"⊪","vzigzag":"⦚","Wcirc":"Ŵ","wcirc":"ŵ","wedbar":"⩟","wedge":"∧","Wedge":"⋀","wedgeq":"≙","weierp":"℘","Wfr":"𝔚","wfr":"𝔴","Wopf":"𝕎","wopf":"𝕨","wp":"℘","wr":"≀","wreath":"≀","Wscr":"𝒲","wscr":"𝓌","xcap":"⋂","xcirc":"◯","xcup":"⋃","xdtri":"▽","Xfr":"𝔛","xfr":"𝔵","xharr":"⟷","xhArr":"⟺","Xi":"Ξ","xi":"ξ","xlarr":"⟵","xlArr":"⟸","xmap":"⟼","xnis":"⋻","xodot":"⨀","Xopf":"𝕏","xopf":"𝕩","xoplus":"⨁","xotime":"⨂","xrarr":"⟶","xrArr":"⟹","Xscr":"𝒳","xscr":"𝓍","xsqcup":"⨆","xuplus":"⨄","xutri":"△","xvee":"⋁","xwedge":"⋀","Yacute":"Ý","yacute":"ý","YAcy":"Я","yacy":"я","Ycirc":"Ŷ","ycirc":"ŷ","Ycy":"Ы","ycy":"ы","yen":"¥","Yfr":"𝔜","yfr":"𝔶","YIcy":"Ї","yicy":"ї","Yopf":"𝕐","yopf":"𝕪","Yscr":"𝒴","yscr":"𝓎","YUcy":"Ю","yucy":"ю","yuml":"ÿ","Yuml":"Ÿ","Zacute":"Ź","zacute":"ź","Zcaron":"Ž","zcaron":"ž","Zcy":"З","zcy":"з","Zdot":"Ż","zdot":"ż","zeetrf":"ℨ","ZeroWidthSpace":"​","Zeta":"Ζ","zeta":"ζ","zfr":"𝔷","Zfr":"ℨ","ZHcy":"Ж","zhcy":"ж","zigrarr":"⇝","zopf":"𝕫","Zopf":"ℤ","Zscr":"𝒵","zscr":"𝓏","zwj":"‍","zwnj":"‌"}');
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/lib/char-width.json":
+/*!***************************************************!*\
+  !*** ./node_modules/wavedrom/lib/char-width.json ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"chars":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,34,47,74,74,118,89,25,44,44,52,78,37,44,37,37,74,74,74,74,74,74,74,74,74,74,37,37,78,78,78,74,135,89,89,96,96,89,81,103,96,37,67,89,74,109,96,103,89,103,96,89,81,96,89,127,89,87,81,37,37,37,61,74,44,74,74,67,74,74,37,74,74,30,30,67,30,112,74,74,74,74,44,67,37,74,67,95,66,65,67,44,34,44,78,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,43,74,74,74,74,34,74,44,98,49,74,78,0,98,73,53,73,44,44,44,77,71,37,44,44,49,74,111,111,111,81,89,89,89,89,89,89,133,96,89,89,89,89,37,37,37,37,96,96,103,103,103,103,103,78,103,96,96,96,96,87,89,81,74,74,74,74,74,74,118,67,74,74,74,74,36,36,36,36,74,74,74,74,74,74,74,73,81,74,74,74,74,65,74,65,89,74,89,74,89,74,96,67,96,67,96,67,96,67,96,82,96,74,89,74,89,74,89,74,89,74,89,74,103,74,103,74,103,74,103,74,96,74,96,74,37,36,37,36,37,36,37,30,37,36,98,59,67,30,89,67,67,74,30,74,30,74,39,74,44,74,30,96,74,96,74,96,74,80,96,74,103,74,103,74,103,74,133,126,96,44,96,44,96,44,89,67,89,67,89,67,89,67,81,38,81,50,81,37,96,74,96,74,96,74,96,74,96,74,96,74,127,95,87,65,87,81,67,81,67,81,67,30,84,97,91,84,91,84,94,92,73,104,109,91,84,81,84,100,82,76,74,103,91,131,47,40,99,77,37,79,130,100,84,104,114,87,126,101,87,84,93,84,69,84,46,52,82,52,82,114,89,102,96,100,98,91,70,88,88,77,70,85,89,77,67,84,39,65,61,39,189,173,153,111,105,61,123,123,106,89,74,37,30,103,74,96,74,96,74,96,74,96,74,96,74,81,91,81,91,81,130,131,102,84,103,84,87,78,104,81,104,81,88,76,37,189,173,153,103,84,148,90,100,84,89,74,133,118,103,81],"other":114}');
+
+/***/ }),
+
+/***/ "./node_modules/wavedrom/package.json":
+/*!********************************************!*\
+  !*** ./node_modules/wavedrom/package.json ***!
+  \********************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"wavedrom","version":"3.2.0","description":"Digital timing diagram in your browser","homepage":"http://wavedrom.com","author":"alex.drom@gmail.com","license":"MIT","repository":{"type":"git","url":"https://github.com/wavedrom/wavedrom.git"},"bugs":{"url":"https://github.com/wavedrom/wavedrom/issues"},"main":"./lib","unpkg":"wavedrom.unpkg.min.js","files":["bin/cli.js","wavedrom.js","wavedrom.min.js","wavedrom.unpkg.js","wavedrom.unpkg.min.js","LICENSE","lib/**","skins/**"],"scripts":{"test":"npm-run-all eslint nyc","eslint":"eslint lib/*.js","nyc":"nyc -r=lcov -r=text mocha test","dist":"browserify ./lib/wave-drom.js > wavedrom.js","watch.dist":"watchify ./lib/wave-drom.js -o wavedrom.js -v","dist.min":"terser --compress --mengle -- wavedrom.js | node ./bin/header.js > wavedrom.min.js","unpkg":"browserify --standalone wavedrom lib/index.js > wavedrom.unpkg.js","unpkg.min":"terser --compress --mengle -- wavedrom.unpkg.js | node ./bin/header.js > wavedrom.unpkg.min.js","cli":"{ echo \'#!/usr/bin/env node\' ; browserify --node bin/cli.js ; } > bin/wavedrom.js ; chmod +x bin/wavedrom.js","prepare":"npm-run-all test dist dist.min unpkg unpkg.min","coverage":"nyc report -r=text-lcov | coveralls","clean":"rm -rf wavedrom.js wavedrom.*.js coverage .nyc_output","skins":"for S in default narrow dark lowkey ; do node bin/svg2js.js -i unpacked/skins/$S.svg > skins/$S.js ; done"},"keywords":["waveform","verilog","RTL"],"devDependencies":{"@drom/eslint-config":"^0.10.0","browserify":"^17.0.0","chai":"^4.3","coveralls":"^3.1.1","eslint":"^8.32","fs-extra":"^11.1","json5":"^2.2.3","mocha":"^10","npm-run-all":"^4.1.5","nyc":"^15.1.0","terser":"^5.16","watchify":"^4.0.0","yargs":"^17.6"},"dependencies":{"bit-field":"^1.8.0","logidrom":"^0.3.1","onml":"^2.1.0","tspan":"^0.4.0"},"eslintConfig":{"extends":"@drom/eslint-config/eslint4/node4","rules":{"camelcase":0}}}');
 
 /***/ })
 

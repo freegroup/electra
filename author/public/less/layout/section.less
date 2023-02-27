@@ -64,6 +64,7 @@
     }
   }
 
+  &[data-type='timing'],
   &[data-type='image']{
     text-align: center;
   }
@@ -289,6 +290,9 @@
   }
   &[data-type="markdown"]::before {
     content: "Text 🎓";
+  }
+  &[data-type="timing"]::before {
+    content: "Timing Diagram";
   }
   
   

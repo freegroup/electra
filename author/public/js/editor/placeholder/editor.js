@@ -32,9 +32,10 @@ export default class Editor extends GenericEditor{
       </div>
       <div class="placeholderButtons">
         <button data-id="${section.id}" data-type="wysiwyg" class='placeholderMenuInsertSection electra-button' >&#8853; Text</button>
-        <button data-id="${section.id}" data-type="brain" class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</button>
-        <button data-id="${section.id}" data-type="image" class='placeholderMenuInsertSection electra-button' >&#8853; Image</button>
-        <button data-id="${section.id}" data-type="cloze" class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</button>
+        <button data-id="${section.id}" data-type="brain"   class='placeholderMenuInsertSection electra-button' >&#8853; Diagram</button>
+        <button data-id="${section.id}" data-type="timing"  class='placeholderMenuInsertSection electra-button' >&#8853; Timing</button>
+        <button data-id="${section.id}" data-type="image"   class='placeholderMenuInsertSection electra-button' >&#8853; Image</button>
+        <button data-id="${section.id}" data-type="cloze"   class='placeholderMenuInsertSection electra-button' >&#8853; Cloze</button>
       </div>
     </div>
     `

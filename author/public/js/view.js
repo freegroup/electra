@@ -285,6 +285,7 @@ export default class View {
             <button data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
             <button data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
             <button data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
+            <button data-index="${index}" data-type="timing"   class='sectionMenuInsertSection electra-button' >&#8853; Timing</button>
             <button data-index="${index}" data-type="brain"    class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
             <button data-index="${index}" data-type="image"    class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
           </div>

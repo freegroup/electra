@@ -20,6 +20,7 @@ export default class Editor extends GenericEditor{
         <button data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
         <button data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
         <button data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
+        <button data-index="0" data-type="timing"    class='sectionMenuInsertSection electra-button' >&#8853; Timing</button>
         <button data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
         <button data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
       </div>
