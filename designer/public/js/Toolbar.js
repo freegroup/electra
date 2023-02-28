@@ -40,7 +40,7 @@ export default class Toolbar {
 
     if(permissions.shapes.global.update || permissions.shapes.global.create ||
        permissions.shapes.update        || permissions.shapes.create) {
-      this.saveButton = $('<div class="image-button"  id="editorFileSave" data-toggle="tooltip" title="Save File <span class=\'highlight\'> [ Ctrl+S ]</span>"  ><img class="svg" src="../common/images/toolbar_save.svg"/><div>Save</div></div>')
+      this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`)
       buttonGroup.append(this.saveButton)
       this.saveButton.on("click", () => {
         this.saveButton.tooltip("hide")
@@ -56,7 +56,7 @@ export default class Toolbar {
     //
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
-    this.undoButton = $('<div class="image-button" id="editUndo" data-toggle="tooltip" title="Undo <span class=\'highlight\'> [ Ctrl+Z ]</span>"  ><img class="icon disabled svg"  src="../common/images/toolbar_undo.svg"/><div>Undo</div></div>')
+    this.undoButton = $(`<div class="image-button" id="editUndo"><img class="icon disabled svg"  src="../common/images/toolbar_undo.svg"/><div data-i18n="common:toolbar.undo">${t("common:toolbar.undo")}</div></div>`)
     buttonGroup.append(this.undoButton)
     this.html .delegate("#editUndo:not(.disabled)", "click", () => {
       this.view.getCommandStack().undo()
@@ -69,7 +69,7 @@ export default class Toolbar {
 
     // Inject the REDO Button and the callback
     //
-    this.redoButton = $('<div class="image-button" id="editRedo" data-toggle="tooltip" title="Redo <span class=\'highlight\'> [ Ctrl+Y ]</span>"  ><img  class="icon disabled svg" src="../common/images/toolbar_redo.svg"/><div>Redo</div></div>')
+    this.redoButton = $(`<div class="image-button" id="editRedo"><img  class="icon disabled svg" src="../common/images/toolbar_redo.svg"/><div data-i18n="common:toolbar.redo">${t("common:toolbar.redo")}</div></div>`)
     buttonGroup.append(this.redoButton)
     this.html .delegate("#editRedo:not(.disabled)", "click", () => {
       this.view.getCommandStack().redo()
@@ -81,7 +81,7 @@ export default class Toolbar {
 
     // Inject the DELETE Button
     //
-    this.deleteButton = $('<div class="image-button" id="editDelete" data-toggle="tooltip" title="Delete <span class=\'highlight\'> [ Del ]</span>"  ><img class="icon disabled svg" src="../common/images/toolbar_delete.svg"/><div>Delete</div></div>')
+    this.deleteButton = $(`<div class="image-button" id="editDelete"><img class="icon disabled svg" src="../common/images/toolbar_delete.svg"/><div data-i18n="common:toolbar.delete">${t("common:toolbar.delete")}</div></div>`)
     buttonGroup.append(this.deleteButton)
     this.html.delegate("#editDelete:not(.disabled)", "click", function () {
       view.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape)
@@ -103,7 +103,7 @@ export default class Toolbar {
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
 
-    this.selectButton = $('<div class="image-button" id="editSelect" data-toggle="tooltip" title="Select mode <span class=\'highlight\'> [ spacebar ]</span>" ><img class="svg" src="./images/toolbar_select.svg"/><div>Select</div></div>')
+    this.selectButton = $(`<div class="image-button" id="editSelect"><img class="svg" src="./images/toolbar_select.svg"/><div data-i18n="common:toolbar.select">${t("common:toolbar.select")}</div></div>`)
     buttonGroup.append(this.selectButton)
     this.selectButton.on("click", () => {
       this.view.installEditPolicy(new SelectionToolPolicy())
@@ -117,14 +117,14 @@ export default class Toolbar {
       <div id="tool_shape" class="dropdown" >
           <div class="image-button" data-toggle="dropdown"  id="tool_shape_image" >
             <img class="svg" src="./images/toolbar_insert.svg">
-            <div>Add</div>
+            <div data-i18n="common:toolbar.add" >${t("common:toolbar.add")}</div>
           </div>
           <ul class="dropdown-menu" role="menu" >
-             <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="./images/toolbar_rectangle.svg"><span class="tool_label">Rectangle</span><span class="tool_shortcut">R</span></li>
-             <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="./images/toolbar_circle.svg"><span class="tool_label">Circle</span><span class="tool_shortcut">C</span></li>
-             <li class="tool_shape_entry policyLineToolPolicy"      ><img src="./images/toolbar_line.svg"><span class="tool_label">Line</span><span class="tool_shortcut">L</span></li>
-             <li class="tool_shape_entry policyTextToolPolicy"      ><img src="./images/toolbar_text.svg"><span class="tool_label">Text</span><span class="tool_shortcut">T</span></li>
-             <li class="tool_shape_entry policyPortToolPolicy"      ><img src="./images/toolbar_port.svg"><span class="tool_label">Port</span><span class="tool_shortcut">P</span></li>
+             <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="./images/toolbar_rectangle.svg"><span data-i18n="common:toolbar.rectangle" class="tool_label">${t("common:toolbar.rectangle")}</span><span class="tool_shortcut">R</span></li>
+             <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="./images/toolbar_circle.svg">   <span data-i18n="common:toolbar.circle" class="tool_label">${t("common:toolbar.circle")}</span><span class="tool_shortcut">C</span></li>
+             <li class="tool_shape_entry policyLineToolPolicy"      ><img src="./images/toolbar_line.svg">     <span data-i18n="common:toolbar.line" class="tool_label">${t("common:toolbar.line")}</span><span class="tool_shortcut">L</span></li>
+             <li class="tool_shape_entry policyTextToolPolicy"      ><img src="./images/toolbar_text.svg">     <span data-i18n="common:toolbar.text" class="tool_label">${t("common:toolbar.text")}</span><span class="tool_shortcut">T</span></li>
+             <li class="tool_shape_entry policyPortToolPolicy"      ><img src="./images/toolbar_port.svg">     <span data-i18n="common:toolbar.port" class="tool_label">${t("common:toolbar.port")}</span><span class="tool_shortcut">P</span></li>
           </ul>
       </div>`
     )

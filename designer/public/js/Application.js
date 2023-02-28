@@ -57,16 +57,7 @@ class Application {
     // Show the user an alert if there are unsaved changes
     //
     window.onbeforeunload = ()=> {
-      return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
-    }
-
-    this.localStorage = []
-    try {
-      if ('localStorage' in window && window.localStorage !== null) {
-        this.localStorage = localStorage
-      }
-    } catch (e) {
-
+      return this.hasUnsavedChanges?   t("common:message.changes_get_lost"): undefined;
     }
 
     $( "body" )
@@ -272,7 +263,7 @@ class Application {
     fileSave.show(this.currentFile, this.storage,this.view)
       .then( (filePath) => {
         this.hasUnsavedChanges = false
-        toast("Saved")
+        toast(t("common:message.saved"))
         $("#editorFileSave div").removeClass("highlight")
         this.filePane.refresh(conf, this.permissions.shapes, this.currentFile)
       })

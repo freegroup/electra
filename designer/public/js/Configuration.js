@@ -3,10 +3,6 @@ export default {
   fileNew: "NewComponent",
   appName: "Designer",
   
-  fileScreen: {
-    title: "Component Library"
-  },
-  
   backend: {
     user: {
       get:    file => `../shapes/user/get?filePath=${file}`,

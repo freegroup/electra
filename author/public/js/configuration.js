@@ -3,9 +3,6 @@ export default {
   fileNew: "NewDocument",
   appName: "Author",
 
-  fileScreen: {
-    title: "Documentation Library"
-  },
 
   backend: {
     shared: {
