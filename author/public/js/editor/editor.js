@@ -36,13 +36,23 @@ export default class Editor {
       })
     }
   
-    /* public interface */
+    /**
+     * render the pure HTML Content 
+     **/
     render(section, mode){
       return ""
     }
+
+    /**
+     * The Editor can append the content in a special way. Maybe working with shadow DOM to hide CSS stuff.
+     * 
+     */
+    append(whereToAppend, content){
+      whereToAppend.append(`<div class="sectionContent" data-type="${this.type}">${content}</div>`)
+    }
   
     startEditAfterInsert(section){
-      // start editing if the user insert a new section
+      // start immediatly editing if the user insert a new section
       return true;
     }
 

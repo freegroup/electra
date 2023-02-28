@@ -72,11 +72,22 @@ export default class Editor extends GenericEditor{
     catch(exc ){
       console.log(exc)
     }
-    return `
-    <div class="sectionContent" data-type="${section.type}">
-    ${svg}
-    </div>`
+    return svg
   }
+
+  /**
+   * The Editor can append the content in a special way. Maybe working with shadow DOM to hide CSS stuff.
+   * 
+   */
+  append(whereToAppend, content){
+    const sectionContent = $(`<div class="sectionContent" data-type="${this.type}"></div>`)
+    const host = document.createElement("div")
+    const shadowRoot = host.attachShadow({mode: 'open'});
+    shadowRoot.innerHTML = content
+    sectionContent.append(host)
+    whereToAppend.append(sectionContent)
+  }
+
 
   defaultContent(){
     return `

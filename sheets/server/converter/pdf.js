@@ -3,17 +3,15 @@ const fs = require('fs')
 
 module.exports = {
 
-  render: async (url, headerText="") => {
+  render: async (url, headerText="", footerText="") => {
     try {
       const templateHeader = fs.readFileSync(__dirname+'/header.html', 'utf-8').replace("{headerText}",headerText)
-      const templateFooter = fs.readFileSync(__dirname+'/footer.html', 'utf-8')
+      const templateFooter = fs.readFileSync(__dirname+'/footer.html', 'utf-8').replace("{footerText}",footerText)
     
       let browser = await puppeteer.launch( )
 
       const page = await browser.newPage()
-
       await page.emulateMediaType('screen')
-      console.log(url)
       await page.goto(url)
       await page.waitForFunction(() =>  mathMLdone === true)
       const pdf = await page.pdf({

@@ -1957,11 +1957,6 @@ class Userinfo {
       $(".userinfo_toggler").remove();
     } else {
       // https://console.cloud.google.com/apis/credentials
-      console.log({
-        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
-        login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
-        ux_mode: "redirect"
-      });
       google.accounts.id.initialize({
         client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
         login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,

@@ -88,10 +88,10 @@ export default class Editor extends GenericEditor{
    */
   render(section, mode){
     if (section.content) {
-      return `<div class="sectionContent" data-type="${section.type}"><img src="${section.content.image}"></div>`
+      return `<div style="text-align:center"><img src="${section.content.image}"></div>`
     }
 
-    return `<div class="sectionContent" data-type="${section.type}">-double click to edit brain-</div>`
+    return `-double click to edit brain`
   }
 
   resetDOM(){

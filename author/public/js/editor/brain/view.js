@@ -79,7 +79,7 @@ export default draw2d.Canvas.extend({
 //    this.installEditPolicy(new draw2d.policy.canvas.ShowGridEditPolicy())
     this.grid = new draw2d.policy.canvas.ShowDotEditPolicy(15)
     // HACK
-    this.grid.dotColor.rgba = ()=> {console.log("called"); return "rgba(var(--border-color))"}
+    this.grid.dotColor.rgba = ()=> {return "rgba(var(--border-color))"}
     this.installEditPolicy(this.grid);
     
     this.installEditPolicy(new EditEditPolicy())

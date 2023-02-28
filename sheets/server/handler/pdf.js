@@ -1,3 +1,4 @@
+const path = require("path")
 const PDFDocument = require('pdf-lib').PDFDocument
 const die = require("../utils/die")
 const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
@@ -19,6 +20,7 @@ module.exports = {
             let mode = req.query.mode ?? "worksheet"     
             let all = false
             let header = mode==="solution"?"Solution Pages":""
+            let footer = path.basename(file)
             
             let {render} = require("../converter/pdf")
             // if "all" are requested, we start with the "worksheet" and append the "solution" later on
@@ -29,10 +31,10 @@ module.exports = {
                 header = mode==="solution"?"Solution Pages":"Worksheet Pages"
             }
 
-            render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=${mode}`, header)
+            render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=${mode}`, header, footer)
             .then(pdf => {
                 if (all){
-                    return render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=solution`, "Solution Pages").then(async pdf2 => {
+                    return render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=solution`, "Solution Pages", footer).then(async pdf2 => {
                         var pdfsToMerge = [pdf, pdf2]
                         const mergedPdf = await PDFDocument.create(); 
                         for (const pdfBytes of pdfsToMerge) { 
@@ -45,7 +47,6 @@ module.exports = {
                         return Buffer.from(await mergedPdf.save()); 
                     })      
                 }
-                console.error("PDF PDF",pdf)
                 return pdf
             })
             .then( pdf =>{

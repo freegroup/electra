@@ -182,9 +182,9 @@ export default class Editor extends GenericEditor{
     section.content = this.convertToNewContentFormat(section.content)
  
     if (section.content) {
-      return `<div class="sectionContent" data-type="${section.type}"><img src="${section.content.src}" width="${section.content.scale}%"></div>`
+      return `<div style="text-align:center"><img src="${section.content.src}" width="${section.content.scale}%"></div>`
     } 
-    return `<div class="sectionContent" data-type="${section.type}">-double click to edit image-</div>`
+    return `-double click to edit image-`
   }
 
   defaultContent(){

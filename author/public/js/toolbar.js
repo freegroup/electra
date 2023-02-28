@@ -114,13 +114,16 @@ export default class Toolbar {
         return "worksheet"
       })
       .then((mode) => {
+        if(file.scope === "global"){
+          return {scope: "global", file: file.name, mode: mode}
+        }
         return storage.shareFile(file.name,file.scope)
           .then( (response)=>{
-            return {sha: response.data.filePath, mode: mode}
+            return {scope: "sha", file: response.data.filePath, mode: mode}
           })
       })
-      .then(({sha, mode}) => {        
-        window.open(`../sheets/pdf?sha=${sha}&mode=${mode}`, "__blank")
+      .then(({scope, file, mode}) => {        
+        window.open(`../sheets/pdf?${scope}=${file}&mode=${mode}`, "__blank")
       })
       .catch((error)=>{
         console.log(error)

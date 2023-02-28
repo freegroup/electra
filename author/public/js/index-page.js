@@ -1,6 +1,6 @@
 import "../../common/js/polyfill"
 
-import "../less/index-page.less"
+import "../less/index.less"
 const axios = require("axios")
 import renderMode from "./renderMode"
 
@@ -50,8 +50,11 @@ $(window).load(function () {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)
         page.sections.forEach( (section) => {
-          let content = editorByType(section.type).render(section, mode)
-          container.append(`<div class='section' data-id="${section.id}" data-type="${section.type}">${content}<div class="fc"></div></div>`)
+          let editor = editorByType(section.type)
+          let content = editor.render(section, mode)
+          container.append(`<div class='section' data-id="${section.id}" data-type="${section.type}"></div>`)
+          let sectionNode = container.find(`*[data-id="${section.id}"]`)
+          editor.append(sectionNode, content)
         })
         if(index < (pages.length-1))
           container.append("<div style='page-break-before:always;'></div>")

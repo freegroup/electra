@@ -232,7 +232,9 @@ export default class View {
           this.render(this.page)
         } 
         else {
-          this.html.find(".sections").append(editorByType(type).render(section, renderMode.EDITOR))
+          let editor = editorByType(type)
+          let content = editor.render(section, renderMode.EDITOR)
+          editor.append(this.html.find(".sections"), content)
         }
         doneCallback()
         return section         
@@ -258,11 +260,10 @@ export default class View {
     page.forEach((section, index) => {
       let editor = editorByType(section.type)
       let content = editor.render(section, renderMode.EDITOR)
-      whereToAppend.append(`
-        <div 
-          class='section' 
-          data-id="${section.id}" 
-          data-type="${section.type}">${content}
+      whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}"></div>`)
+      let sectionNode = whereToAppend.find(`*[data-id='${section.id}']`)
+      editor.append(sectionNode, content)
+      sectionNode.append(`
             <div class="fc">
               <div class='tinyFlyoverMenu'>
                 ${editor.getMenu(section)}
@@ -271,8 +272,8 @@ export default class View {
                 <div                         class="sectionMenuHelp"   >?</div>
                 <div data-id="${section.id}" class="sectionMenuDelete" >&#8855;</div>
               </div>  
-            </div>
-        </div>`)
+            </div>`)
+
       this.renderSpacer(whereToAppend, index + 1)
       delete section.flippedStateDuringInject
     })

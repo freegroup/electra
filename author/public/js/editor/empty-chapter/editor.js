@@ -9,7 +9,6 @@ export default class Editor extends GenericEditor{
   /* public interface */
   render(section, mode){
     return `
-    <div class="sectionContent markdownRendering" >
     <div class="placeholderContainer">
       <div class="placeholderText">  
         <img src="../common/images/pencil.svg">
@@ -24,7 +23,6 @@ export default class Editor extends GenericEditor{
         <button data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
         <button data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
       </div>
-    </div>
     </div>
     `
   }

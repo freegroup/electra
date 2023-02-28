@@ -46,7 +46,11 @@ export default class Editor extends MarkdownEditor {
       errorCSS = " error"
     }
 
-    return `<div class="sectionContent markdownRendering${errorCSS}" data-type="${section.type}">${markdown}</div>`
+    return markdown
+  }
+
+  append(whereToAppend, content){
+    whereToAppend.append(`<div class="sectionContent markdownRendering" data-type="${this.type}">${content}</div>`)
   }
 
   hasLearningContent(){
