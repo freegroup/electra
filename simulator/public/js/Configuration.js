@@ -5,12 +5,6 @@ export default {
   appName: "Simulator",
   loginRedirect: "simulator",
 
-  fileScreen: {
-    title: "Circuit Library",
-    addFolderButton: "Library",
-    addFileButton: "Circuit"
-  },
-
   backend: {
 
     shared: {

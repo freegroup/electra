@@ -1,3 +1,6 @@
+import i18next from 'i18next';
+const t = i18next.t
+
 import inlineSVG from "../../common/js/inlineSVG"
 import DecoratedHybridPort from "../../common/js/DecoratedHybridPort"
 import DecoratedInputPort from "../../common/js/DecoratedInputPort"
@@ -39,5 +42,7 @@ export default {
   inlineSVG,
   LabelInplaceEditor,
   ConnectionRouter,
-  CircuitFigure
+  CircuitFigure,
+  i18next,
+  t
 }

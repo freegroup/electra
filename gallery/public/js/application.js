@@ -2,6 +2,7 @@ import axios from "axios"
 
 import Userinfo from "../../common/js/Userinfo"
 import AppSwitch from "../../common/js/AppSwitch";
+import LngSwitch from "../../common/js/LngSwitch"
 
 import conf from "./configuration"
 import ShapesView from "./views/shapes"
@@ -18,6 +19,7 @@ class Application {
     this.appSwitch = new AppSwitch(permissions)
     this.shapesView = new ShapesView(permissions)
     this.sheetsView = new SheetsView(permissions)
+    this.lngSwitch = new LngSwitch(permissions)
 
     this.currentView = this.sheetsView
 

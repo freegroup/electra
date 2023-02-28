@@ -58,16 +58,9 @@ window.conf = conf
 $(window).load(function () {
   document.title = conf.appName
 
+  // set the global socket object
   socket = io( { path: '/socket.io'})
-
   
-  // export all required classes for deserialize JSON with "eval"
-  // "eval" code didn't sees imported class or code
-  //
-
-  // Init the UI after we have receive the UI/UX permissions of this kind of installation
-  // (fake event from the socket.io mock )
-  //
   i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
     fallbackLng: "en",
     ns: ['common', 'author'],
@@ -96,7 +89,7 @@ $(window).load(function () {
       app = require("./application").default
       app.init(permissions)
       inlineSVG.init()
-      $('body').localize();
+      $('body').localize()
       $(".loader").fadeOut(500, function () {
        $(this).remove();
       })

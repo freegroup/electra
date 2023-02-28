@@ -18,8 +18,8 @@ export default class Files {
     $("body").append(` 
         <script id="filesTemplate" type="text/x-jsrender">
         <div class="fileOperations">
-            <button data-folder="{{folder}}" class='fileOperationsFolderAdd electra-button' >&#43; ${conf.fileScreen.addFolderButton}</button>
-            <button data-folder="{{folder}}" class='fileOperationsDocumentAdd electra-button' >&#43; ${conf.fileScreen.addFileButton}</button>
+            <button data-i18n="button.create_folder" data-folder="{{folder}}" class='fileOperationsFolderAdd electra-button' >${t("button.create_folder")}</button>
+            <button data-i18n="button.create_file" data-folder="{{folder}}" class='fileOperationsDocumentAdd electra-button' >${t("button.create_file")}</button>
         </div>
         <div class="filePath">Folder: {{folder}}</div>
         <ul class="fileList">
@@ -122,7 +122,7 @@ export default class Files {
     $(document)
       .on("click", "#userFiles .fileOperationsFolderAdd", (event) => {
         let folder = $(event.target).data("folder") || ""
-        inputPrompt.show("Create Library", "Name")
+        inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "user")
           this.initPane("user", "#userFiles", conf.backend.user, permissions, folder)
@@ -130,7 +130,7 @@ export default class Files {
       })
       .on("click", "#globalFiles .fileOperationsFolderAdd", (event) => {
         let folder = $(event.target).data("folder") || ""
-        inputPrompt.show("Create Library", "Name")
+        inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "global")
           this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, folder)

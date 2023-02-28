@@ -34,11 +34,12 @@
         <h1>Electra.Academy</h1>
         <h2>Designer</h2>
     </div>
-    <div class="slogan">
-      makes digital logic accessible for anyone
-    </div>
+    <div class="slogan" data-i18n="common:header.slogan"></div>
+
 
     <span class="spacer"></span>
+
+    <select name="language" id="languageSwitcher"></select>
 
     <span class="group applicationSwitch">
       <label class="dropdown userinfo_toggler" >
@@ -79,7 +80,7 @@
           </div>
 
            <div id="layer" class="palette">
-             <div id="layer_header" class="panetitle">Layers</div>
+             <div data-i18n="pane.editor.layer" id="layer_header" class="panetitle">Layers</div>
              <div id="layer_elements" class="tinyScrollbar list"></div>
            </div>
 
@@ -98,7 +99,7 @@
                <img id="canvas_config" src="./images/canvas_configure.svg" class="dropdown-toggle " data-toggle="dropdown"/>
                <div class="dropdown-menu" id="canvas_config_items">
                   <div class="">
-                    <label class="">Grid
+                    <label data-i18n="pane.editor.grid"  class="">Grid
                         <input id="canvas_config_grid" type="checkbox" checked="checked" data-toggle="toggle" >
                     </label>
                   </div>
@@ -106,13 +107,13 @@
             </div>
 
            <div id="filter">
-              <div class="filter_header">Properties</div>
+              <div data-i18n="pane.editor.properties" class="filter_header">Properties</div>
               <div class="filter_actions tinyScrollbar" ></div>
               <div class="filter_toolbar" >
                 <div class="btn-group dropup">
                     <button id="add_filter_button" class="disabled btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                         <span class="glyphicon glyphicon-plus-sign"></span>
-                        Filter
+                        <span data-i18n="pane.editor.filter" >Filter</span>
                     </button>
                     <ul class="dropdown-menu" id="add_filter_action_menu">
                     </ul>
@@ -127,15 +128,15 @@
       <div class="tab-pane" id="files">
         <div class="filesTeaser">
           <img class="icon svg" src="../common/images/navigation_file.svg"/>
-          <div class="title">Component Library</div>
+          <div data-i18n="pane.files.title" class="title">Component Library</div>
         </div>
   
         <div class="filesFinder">
           <header>
             <div id="material-tabs">
               <span class="sliding-bar"></span>
-              <a id="userFilesTab" href="#userFiles" class="active">User Components</a>
-              <a id="globalFilesTab" href="#globalFiles">Build In Components</a>
+              <a data-i18n="pane.files.title_your"   id="userFilesTab" href="#userFiles" class="active">User Components</a>
+              <a data-i18n="pane.files.title_global" id="globalFilesTab" href="#globalFiles">Build In Components</a>
             </div>
           </header>
 
@@ -158,20 +159,15 @@
   </div>
 </div>
 
-
-
-
 <script id="welcomeTemplate" type="text/x-jsrender">
 
   <div class="welcomeMessage">
     <div class="teaser">
-      <h2>Component Designer</h2>
-      <p>
-        Create custom components for Electra.Academy.
-      </p>
+      <h2 data-i18n="app.title">Component Designer</h2>
+      <p  data-i18n="app.slogan">Create custom components for Electra.Academy</p>
     </div>
     <div class="description">
-      <p>
+      <p  data-i18n="[html]app.description">
       <i>Electra.Academy</i> can simulate wide variety of digital electronics and logical components to provide an 
       easy and comfortable way to create circuits, documents and course material online. One of the coolest feature in 
       Electra.Academy is, that user can define a new or custom component.

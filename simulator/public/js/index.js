@@ -1,4 +1,9 @@
 import axios from "axios"
+import i18next from 'i18next';
+import Backend from 'i18next-http-backend';
+import jqueryI18next from "jquery-i18next"
+import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
+
 import "../../common/js/polyfill"
 
 import "../less/index.less"
@@ -54,10 +59,21 @@ $(window).load(function () {
 
   socket = io( { path: '/socket.io'})
   
-  // Init the UI after we have receive the UI/UX permissions of this kind of installation
-  // (fake event from the socket.io mock )
-  //
-  axios.get("../permissions").then( (response) => {
+  i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
+    fallbackLng: "en",
+    ns: ['common', 'simulator'],
+    defaultNS: 'simulator',
+    debug: true,
+    backend: {
+      // for all available options read the backend's repository readme file
+      loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
+    }
+  })
+  .then( ()=>{
+    jqueryI18next.init(i18next, $, { useOptionsAttr: true });
+    $('body').localize();
+    return axios.get("../permissions")})
+  .then( (response) => {
     let permissions = response.data
 
     // export all required classes for deserialize JSON with "eval"

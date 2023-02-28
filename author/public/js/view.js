@@ -288,7 +288,7 @@ export default class View {
             <button data-i18n="button.add_flashcard" data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >${t("button.add_flashcard")}</button>
             <button data-i18n="button.add_timing"    data-index="${index}" data-type="timing"    class='sectionMenuInsertSection electra-button' >${t("button.add_timing")}</button>
             <button data-i18n="button.add_brain"     data-index="${index}" data-type="brain"     class='sectionMenuInsertSection electra-button' >${t("button.add_brain")}</button>
-            <button data-i18n="button.add_picture"   data-index="${index}" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>
+            <button data-i18n="button.add_image"     data-index="${index}" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>
           </div>
         </div>
       `)

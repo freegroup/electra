@@ -4,9 +4,7 @@ export default {
   appName: "Author",
 
   fileScreen: {
-    title: "Documentation Library",
-    addFolderButton: "Library",
-    addFileButton: "Document"
+    title: "Documentation Library"
   },
 
   backend: {

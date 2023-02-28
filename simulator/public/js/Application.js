@@ -13,6 +13,7 @@ import progress from "./dialog/Progress"
 import shareDialog from "../../common/js/LinkShareDialog";
 import AuthorPage from "../../common/js/AuthorPage";
 import AppSwitch from "../../common/js/AppSwitch";
+import LngSwitch from "../../common/js/LngSwitch"
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
@@ -33,6 +34,7 @@ class Application {
     this.userinfo = new Userinfo(permissions)
     this.indexPane = new AuthorPage("#home", "readme/en/simulator/Readme.sheet")
     this.appSwitch = new AppSwitch(permissions)
+    this.lngSwitch = new LngSwitch(permissions)
 
     this.indexPane.render()
 

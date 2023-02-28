@@ -4,9 +4,7 @@ export default {
   appName: "Designer",
   
   fileScreen: {
-    title: "Component Library",
-    addFolderButton: "Library",
-    addFileButton: "Component"
+    title: "Component Library"
   },
   
   backend: {

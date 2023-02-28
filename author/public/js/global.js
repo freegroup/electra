@@ -1,4 +1,6 @@
 import i18next from 'i18next';
+const t = i18next.t
+
 import inlineSVG from "../../common/js/inlineSVG"
 import DecoratedInputPort from "../../common/js/DecoratedInputPort"
 import DecoratedOutputPort from "../../common/js/DecoratedOutputPort"
@@ -15,7 +17,6 @@ import "./util/mousetrap-global"
 import "./util/mousetrap-pause"
 import hardware from "./hardware"
 
-const t = i18next.t
 
 export default {
   ConnectionSelectionFeedbackPolicy,

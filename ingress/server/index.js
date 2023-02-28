@@ -48,6 +48,16 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
 
+let sessionMiddleware = session({
+    secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false
+})
+
+// convert a connect middleware to a Socket.IO middleware
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+
 function ensureLocalhost(req, res, next) {
 	var remote = req.ip || req.connection.remoteAddress
 	console.log("in islocal")
@@ -56,11 +66,12 @@ function ensureLocalhost(req, res, next) {
 	else 
 		return next('route'); //call next /test route to handle check on authentication.
 }
-
+let browserId = 42;
 function onProxyReq(proxyReq, req, res){
     const session = req.session
+    session.browserId ??= (browserId++)
+
     if (session.idToken){
-        console.log("Found user in session: "+session.email);
         proxyReq.setHeader("x-mail", session.email);
         proxyReq.setHeader("x-picture", session.picture);
         proxyReq.setHeader("x-name", session.name);
@@ -69,7 +80,6 @@ function onProxyReq(proxyReq, req, res){
         proxyReq.setHeader("x-role", session.email==="openjacob@gmail.com"?"admin":"user");
     }
     else {
-        console.log("No user in session: ")
         proxyReq.setHeader("x-mail", 'Guest');
         proxyReq.setHeader("x-name", 'Guest');
         proxyReq.setHeader("x-family_name", 'Guest');
@@ -81,12 +91,8 @@ function onProxyReq(proxyReq, req, res){
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cookieParser());
-app.use(session({
-    secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
-    saveUninitialized:true,
-    cookie: { maxAge: oneDay },
-    resave: false
-}));
+app.use(sessionMiddleware);
+
 app.get('/', function(req, res) {
     res.redirect('/home');
 });
@@ -221,7 +227,6 @@ app.use('/oauth/callback/:componentUri', async function(req, res) {
         audience: clientId
     })
 
-
     const payload = ticket.getPayload();
     req.session.idToken = token;
     req.session.email = payload.email;
@@ -235,22 +240,31 @@ app.use('/oauth/callback/:componentUri', async function(req, res) {
 //then, after all proxys
 app.use(bodyParser.json());
 
+
 // Start Proxy
 try {
     const http = require('http').Server(app)
     const io = require('./websocket').connect(http, {path: '/socket.io'})
 
+    io.use(wrap(sessionMiddleware));
 
     io.on("connection", (socket) => {
-        console.log("CONNECTED.....")
-        // send a message to the client
-        socket.emit("hello from server", 1, "2", { 3: Buffer.from([4]) });
-    
+        console.log(socket.request.session.browserId)
+        if(socket.request.session.browserId){
+            console.log("Join to room:", socket.request.session.browserId)
+            socket.join(socket.request.session.browserId);
+        }
+
         // receive a message from the client
-        socket.on("hello from client", (...args) => {
-        // ...
+        socket.on("i18n", locale => {
+            console.log("send to room", socket.request.session.browserId, locale)
+            io.to(socket.request.session.browserId).emit("i18n", locale);
         });
     });
+    
+    io.on("i18n", (socket) => {
+        console.log(socket.request.session)
+    })
 
     app.use('/broadcast', ensureLocalhost, function( req, res){
         const topic = req.body.topic
@@ -277,6 +291,8 @@ try{
     var credentials = {key: privateKey, cert: certificate};
     const https = require('https').Server(credentials, app);
     const io = require('./websocket').connect(https, {path: '/socket.io'})
+    io.use(wrap(sessionMiddleware));
+
     https.listen(8443, () => {
         console.log(`Starting Ingress at http://localhost:8443`);
     });

@@ -2,6 +2,7 @@ import Files from "../../common/js/FilesScreen"
 import Userinfo from "../../common/js/Userinfo"
 import AuthorPage from "../../common/js/AuthorPage"
 import AppSwitch from "../../common/js/AppSwitch"
+import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
@@ -90,6 +91,7 @@ class Application {
     this.filePane = new Files(this, conf, permissions.shapes)
     this.indexPane = new AuthorPage("#home", "readme/en/designer/Readme.sheet")
     this.appSwitch = new AppSwitch(permissions)
+    this.lngSwitch = new LngSwitch(permissions)
 
     this.indexPane.render()
     this.view.installEditPolicy(new SelectionToolPolicy())
