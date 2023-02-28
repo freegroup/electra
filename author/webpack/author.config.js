@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 const projectDir = path.resolve(__dirname)+"/../"
 const contentDir = projectDir+"/public"

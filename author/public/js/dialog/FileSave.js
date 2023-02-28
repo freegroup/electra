@@ -14,6 +14,7 @@ class Dialog {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="media-heading">Save Document</h4>
+                        <div class="description"></div>
                     </div>
                     <div class="modal-body">
                       <div class="media">

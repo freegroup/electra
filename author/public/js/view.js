@@ -164,7 +164,7 @@ export default class View {
   addPage() {
     // commit the current changes if an editor is active
     this.onCommitEdit().then(()=>{
-      inputPrompt.show("Add new Chapter", "Name").then( value => {
+      inputPrompt.show(t("dialog.add_chapter"), t("label.name")).then( value => {
         commandStack.push(new State(this.app)).then( doneCallback => {
           let page = new Page()
           page.name = value
@@ -188,10 +188,10 @@ export default class View {
       .then((clipText) => {
         let json = JSON.parse(clipText)
         if(!("type" in json && "data" in json)){
-          throw new Error("Clipboard data is not an electra.academy page")
+          throw new Error(t("error.clipboard_not_page"))
         }
         if( json.type !== "page"){
-          throw new Error("Clipboard data is not an electra.academy page")
+          throw new Error(t("error.clipboard_not_page"))
         }
         json.data.id = shortid.generate()
         json.data.name = json.data.name+"Copy"
@@ -203,7 +203,7 @@ export default class View {
       })
       .catch( exc => {
         $(`#editorPageCopy`).notify(
-          "You can only paste chapter into this document if you have previously \ncopied it to the clipboard using this 'copy' button", 
+          t("error.copy_before_paste"), 
           { position: "bottom left",
           gap: 20,
           showDuration: 100,
@@ -283,12 +283,12 @@ export default class View {
     whereToAppend.append(`
         <div class='section'>
           <div class='sectionContent ' data-type="spacer" >
-            <button data-index="${index}" data-type="wysiwyg"  class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
-            <button data-index="${index}" data-type="cloze"    class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
-            <button data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
-            <button data-index="${index}" data-type="timing"   class='sectionMenuInsertSection electra-button' >&#8853; Timing</button>
-            <button data-index="${index}" data-type="brain"    class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
-            <button data-index="${index}" data-type="image"    class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
+            <button data-i18n="button.add_text"      data-index="${index}" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >${t("button.add_text")}</button>
+            <button data-i18n="button.add_cloze"     data-index="${index}" data-type="cloze"     class='sectionMenuInsertSection electra-button' >${t("button.add_cloze")}</button>
+            <button data-i18n="button.add_flashcard" data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >${t("button.add_flashcard")}</button>
+            <button data-i18n="button.add_timing"    data-index="${index}" data-type="timing"    class='sectionMenuInsertSection electra-button' >${t("button.add_timing")}</button>
+            <button data-i18n="button.add_brain"     data-index="${index}" data-type="brain"     class='sectionMenuInsertSection electra-button' >${t("button.add_brain")}</button>
+            <button data-i18n="button.add_picture"   data-index="${index}" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>
           </div>
         </div>
       `)
@@ -335,8 +335,8 @@ export default class View {
     this.onCommitEdit().then( () => {
       this.onSelect(section)
       $(".activeSection .tinyFlyoverMenu").html(`
-        <div data-id="${section.id}" class="sectionMenuCommitEdit electra-button">Save</div>
-        <div data-id="${section.id}" class="sectionMenuCancelEdit electra-button">Cancel</div>
+        <div data-i18n="common:button.save"   data-id="${section.id}" class="sectionMenuCommitEdit electra-button">${t("common:button.save")}</div>
+        <div data-i18n="common:button.cancel" data-id="${section.id}" class="sectionMenuCancelEdit electra-button">${t("common:button.cancel")}</div>
       `)
       this.currentEditor = editorByType(section.type)
       this.currentEditor.inject(section)
@@ -356,8 +356,8 @@ export default class View {
     let item = new ClipboardItem({'text/plain': blob });
     navigator.clipboard.write([item ]).then( ()=>{
       $(`.section[data-id='${section.id}'] .tinyFlyoverMenu`).notify(
-        "section copied to clipboard", 
-        { position: "bottom center",
+        t("message.section_to_clipboard"), 
+        { position: "bottom right",
         gap: 20,
         showDuration: 40,
         arrowShow: false,
@@ -365,7 +365,6 @@ export default class View {
         autoHideDelay: 2000,
       });
     })
-
   }
 
   onDelete(section) {

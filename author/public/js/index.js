@@ -1,9 +1,17 @@
 import "../../common/js/polyfill"
 import axios from "axios"
+
+import i18next from 'i18next';
+import Backend from 'i18next-http-backend';
+import jqueryI18next from "jquery-i18next"
+import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
+
 import "../less/index.less"
 import conf from "./configuration"
 
 require('js-treeview/dist/treeview.min.css')
+
+
 
 // Resolve name collision between jQuery UI and Twitter Bootstrap
 /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
@@ -60,7 +68,22 @@ $(window).load(function () {
   // Init the UI after we have receive the UI/UX permissions of this kind of installation
   // (fake event from the socket.io mock )
   //
-  axios.get("../permissions").then( (response) => {
+  i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
+    fallbackLng: "en",
+    ns: ['common', 'author'],
+    defaultNS: 'author',
+    debug: true,
+    backend: {
+      // for all available options read the backend's repository readme file
+      loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
+    }
+  })
+  .then( ()=>{
+    jqueryI18next.init(i18next, $, { useOptionsAttr: true });
+    $('body').localize();
+    return axios.get("../permissions")
+  })
+  .then( (response) => {
     let permissions = response.data
     let global = require("./global")
     for (let k in global.default) window[k] = global.default[k];
@@ -73,6 +96,7 @@ $(window).load(function () {
       app = require("./application").default
       app.init(permissions)
       inlineSVG.init()
+      $('body').localize();
       $(".loader").fadeOut(500, function () {
        $(this).remove();
       })

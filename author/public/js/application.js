@@ -3,6 +3,7 @@ import AuthorPage from "../../common/js/AuthorPage"
 import Files from "../../common/js/FilesScreen"
 import Userinfo from "../../common/js/Userinfo"
 import AppSwitch from "../../common/js/AppSwitch"
+import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
 
 import Toolbar from "./toolbar"
@@ -39,6 +40,7 @@ class Application {
     this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
     this.userinfo = new Userinfo(permissions)
     this.appSwitch = new AppSwitch(permissions)
+    this.lngSwitch = new LngSwitch(permissions)
 
     commandStack.on("change", this)
 
@@ -47,7 +49,7 @@ class Application {
     // Show the user an alert if there are unsaved changes
     //
     window.onbeforeunload = ()=> {
-      return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
+      return this.hasUnsavedChanges? t("common:message.changes_get_lost"): undefined;
     }
 
     let user = this.getParam("user")
@@ -120,7 +122,7 @@ class Application {
       }
     }).then(()=>{
       this.hasUnsavedChanges = false
-      toast("Saved")
+      toast(t("common:message.saved"))
       $("#editorFileSave div").removeClass("highlight")
       this.filePane.refresh(conf, this.permissions.sheets, this.currentFile)
     })

@@ -33,7 +33,7 @@ export default class Palette {
       .off("click", ".pageElement .chapter_edit_name")
       .on("click", ".pageElement .chapter_edit_name", (event) => {
         let page = this.app.getDocument().find($(event.currentTarget).data("page"))
-        inputPrompt.show("Rename Chapter", "Name", page.name, value => {
+        inputPrompt.show(t("message.rename_chapter"), t("common:label.name"), page.name, value => {
           commandStack.push(new State(this.app)).then( doneCallback => {
             page.name = value
             doneCallback()
@@ -77,14 +77,14 @@ export default class Palette {
 
     $("#paletteFilter").html(`
       <div class='toc'>
-        Chapters 
+        <span data-i18n="label.chapter">${t("label.chapter")}</span>
         <div class="fabButton" id="documentContentAdd" >
           <input type="checkbox" id="toggle"/>
           <label class="button" for="toggle"></label>
           <nav class="nav">
             <ul>
-              <a id="documentPageAdd" >Add Chapter</a>
-              <a id="documentClipboardPaste" >Paste Clipboard</a>
+              <a data-i18n="button.add_chapter"   id="documentPageAdd" >${t("button.add_chapter")}</a>
+              <a data-i18n="button.paste_chapter" id="documentClipboardPaste" >${t("button.paste_chapter")}</a>
             </ul>
           </nav>
         </div>
@@ -126,15 +126,15 @@ export default class Palette {
       if (this.app.hasModifyPermissionForCurrentFile()) {
         $("#documentContentAdd").show()
         pages.forEach((page) => {
-          let tooltip = page.hasLearningContent()?"This page contains learning material which ends later in two documents: a worksheet and a solution paper.":""
-          let icon    = page.hasLearningContent()?" &#127891;":""
+          let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
+          let icon    = page.hasLearningContent()?"&#127891;":""
           this.html.append(`
           <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
             <span>${page.name}${icon}</span>
             <span class="spacer"></span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Edit Name of Chapter" class="list-item-action chapter_edit_name" >&#9998; </span>
-            <span                         data-toggle="tooltip" title="Help"                 class="list-item-action chapter_help" > ? </span>
-            <span data-page="${page.id}"  data-toggle="tooltip" title="Delete the page"      class="list-item-action chapter_delete" >&#8855;</span>
+            <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >&#9998;</span>
+            <span                         class="list-item-action chapter_help" > ? </span>
+            <span data-page="${page.id}"  class="list-item-action chapter_delete" >&#8855;</span>
           </div>`)
         }, true)
       } else {

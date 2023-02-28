@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import inlineSVG from "../../common/js/inlineSVG"
 import DecoratedInputPort from "../../common/js/DecoratedInputPort"
 import DecoratedOutputPort from "../../common/js/DecoratedOutputPort"
@@ -14,6 +15,7 @@ import "./util/mousetrap-global"
 import "./util/mousetrap-pause"
 import hardware from "./hardware"
 
+const t = i18next.t
 
 export default {
   ConnectionSelectionFeedbackPolicy,
@@ -27,5 +29,7 @@ export default {
   inlineSVG,
   LabelInplaceEditor,
   ConnectionRouter,
-  CircuitFigure
+  CircuitFigure,
+  i18next,
+  t
 }

@@ -29,12 +29,10 @@
         <h1>Electra.Academy</h1>
         <h2>Author</h2>
     </div>
-    <div class="slogan">
-      makes digital logic accessible for anyone {{{__ "Hello"}}}
-    </div>
+    <div class="slogan" data-i18n="common:header.slogan">makes digital logic accessible for anyone</div>
 
     <div class="spacer"></div>
-
+    <select name="language" id="languageSwitcher"></select>
     <span class="group applicationSwitch">
 
       <label class="dropdown userinfo_toggler" >
@@ -77,11 +75,11 @@
                <span class="group" id="editorgroup_fileoperations">
                   <span class="image-button" id="editorFileSave" >
                     <img title="Save Document" class="icon svg" src="../common/images/toolbar_save.svg"/>
-                    <div>Save</div>
+                    <div data-i18n="common:toolbar.save">Save</div>
                   </span>
                   <span class="image-button" id="editorPageCopy" >
                     <img title="Copy Page" class="icon svg" src="../common/images/toolbar_copy.svg"/>
-                    <div>Copy</div>
+                    <div data-i18n="common:toolbar.copy">Copy</div>
                   </span>
                </span>
 
@@ -89,22 +87,22 @@
               <span class="group">
                 <span class="image-button disabled" id="editUndo">
                   <img class="icon svg" src="../common/images/toolbar_undo.svg"/>
-                  <div>Undo</div>
+                  <div data-i18n="common:toolbar.undo">Undo</div>
                 </span>
                 <span class="image-button disabled" id="editRedo">
                   <img class="icon svg" src="../common/images/toolbar_redo.svg"/>
-                  <div>Redo</div>
+                  <div data-i18n="common:toolbar.redo">Redo</div>
                 </span>
               </span>
 
               <span class="group" id="editorgroup_share">
                   <span class="image-button" id="editorFileShare" >
                     <img class="icon svg" title="Share the Document" src="../common/images/toolbar_share.svg"/>
-                    <div>Share</div>
+                    <div data-i18n="common:toolbar.share">Share</div>
                   </span>
                   <span class="image-button" id="editorFileToPDF" >
                     <img class="icon svg" title="Download Document as PDF" src="../common/images/toolbar_pdf.svg"/>
-                    <div>Download</div>
+                    <div data-i18n="common:toolbar.download" >Download</div>
                   </span>
               </span>
           </div>
@@ -124,20 +122,18 @@
        </div>
     </div>
 
-
-
     <div class="tab-pane" id="files">
       <div class="filesTeaser">
         <img class="icon svg" src="../common/images/navigation_file.svg"/>
-        <div class="title">Document Library</div>
+        <div data-i18n="pane.files.title" class="title">Document Library</div>
       </div>
 
       <div class="filesFinder">
         <header>
           <div id="material-tabs">
             <span class="sliding-bar"></span>
-            <a id="userFilesTab" href="#userFiles" class="active">Your Documents</a>
-            <a id="globalFilesTab" href="#globalFiles">Public Documents</a>
+            <a data-i18n="pane.files.title_your" id="userFilesTab" href="#userFiles" class="active">Your Documents</a>
+            <a data-i18n="pane.files.title_global" id="globalFilesTab" href="#globalFiles">Public Documents</a>
           </div>
         </header>
 
@@ -151,8 +147,7 @@
     </div>
 
 
-    <div class="tab-pane" id="home">
-      Home
+    <div  class="tab-pane" id="home">
     </div>
 
   </div>
@@ -169,7 +164,7 @@
 
       </div>
       <div class="modal-footer">
-        <button class="electra-button" data-dismiss="modal">Close</button>
+        <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -191,18 +186,19 @@
 
   <div class="welcomeMessage">
     <div class="teaser">
-      <h2>Documentation Author</h2>
-      <p>
+      <h2 data-i18n="app.title">Documentation Author</h2>
+      <p data-i18n="app.slogan">
         Create exciting educational content using Electra Academy.
       </p>
     </div>
     <div class="description">
-      <p>
+      <p data-i18n="app.description">
         With <i>Documentation Author</i>, you can easily create and share documents, worksheets, and course 
         materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more 
         engaging and informative. Sharing your work with others has never been easier. <b>I hope you'll give it a try!</b>
       </p>
-      <button class="electra-button" id="welcomeNewDocument">New Document</button> <button class="electra-button" id="welcomeOpenExample">Open Example</button>
+      <button data-i18n="button.new_document" class="electra-button" id="welcomeNewDocument">New Document</button> 
+      <button data-i18n="button.open_example" class="electra-button" id="welcomeOpenExample">Open Example</button>
     </div>
     <img src="../common/images/app_lessons.svg" width="200px">
   </div>
@@ -211,7 +207,7 @@
 
 
 <div class="loader">
-  <div class="title">Loading the <i>Documentation Author</i>...</div>
+  <div class="title" data-i18n="[html]app.loading"></div>
   <div class="gooey">
     <span class="dot"></span>
     <div class="dots">

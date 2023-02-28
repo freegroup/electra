@@ -35,7 +35,7 @@ export default class Toolbar {
       let item = new ClipboardItem({'text/plain': blob });
       navigator.clipboard.write([item ]).then( ()=>{
         $(`#editorPageCopy`).notify(
-          "chapter copied to clipboard", 
+          t("message.chapter_to_clipboard"), 
           { position: "bottom left",
           gap: 20,
           showDuration: 40,
@@ -51,7 +51,7 @@ export default class Toolbar {
       this.shareButton.tooltip("hide")
       if (this.app.hasUnsavedChanges) {
         // File must be saved before sharing
-        app.fileSave("File must be saved before you can share it").then(() => {
+        app.fileSave(t("message.save_before_share")).then(() => {
           app.fileShare()
         })
       } else {
@@ -103,7 +103,7 @@ export default class Toolbar {
       })
       .then(() => {
         if(this.app.hasUnsavedChanges){
-          return app.fileSave("File must be saved before you can export it to PDF")
+          return app.fileSave(t("message.save_before_pdf"))
         }
         return true
       })
