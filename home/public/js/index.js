@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
 import jqueryI18next from "jquery-i18next"
 import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
+import global from "./global"
 
 import "../../common/js/polyfill"
 
