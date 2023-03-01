@@ -10,17 +10,26 @@ export default class LngSwitch {
 
     constructor(permissions){
 
+      $(".appbar").append(`
+        <span class="group">
+          <div class="dropdown" id="languageSwitcher" >
+            <span class="image-button" data-toggle="dropdown">
+              <img src="../common/images/toolbar_language.svg"/>
+            </span>
+            <ul class="dropdown-menu  dropdown-menu-right" role="menu" >
+            </ul>
+          </div>
+        </span>
+      `)
+      
       // fill language switcher
       Object.keys(lngs).map((lng) => {
-        const opt = new Option(lngs[lng].nativeName, lng);
-        if (lng === i18next.resolvedLanguage) {
-          opt.setAttribute("selected", "selected");
-        }
-        $('#languageSwitcher').append(opt);
+        const name = lngs[lng].nativeName;
+        $('#languageSwitcher .dropdown-menu').append(`<li data-name="${name}" data-lng="${lng}">${name}</li>`);
       });
 
-      $('#languageSwitcher').on("change", (event) => {
-        const locale = $(event.currentTarget).val()
+      $('#languageSwitcher li').on("click", (event) => {
+        const locale = $(event.currentTarget).data("lng")
         i18next.changeLanguage(locale, () => {
           this.rerender();
         });
@@ -32,7 +41,6 @@ export default class LngSwitch {
       // receive event from different browser to sync the langugage
       //
       socket.on("i18n", locale => {
-        $('#languageSwitcher').val(locale)
         i18next.changeLanguage(locale, () => {
           this.rerender();
         });

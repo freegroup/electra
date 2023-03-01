@@ -59,8 +59,11 @@ body.light {
         border: 1px solid rgb(var(--border-color));
         border-radius: @borderRadiusSmall;
         background-color: rgb(var(--pane-bg-color));
-        li>a {
-            color: rgb(var(--input-color));        
+        li {
+            color: rgb(var(--input-color));
+            &:hover{
+                background-color: rgb(var(--list-item-hover-bg-color));
+            }
         }
     }
 
@@ -103,7 +106,7 @@ body.light {
             }
         }
 
-        .application-waffel {
+        .image-button {
             border: 1px solid transparent;
 
             &:hover{
@@ -125,10 +128,6 @@ body.light {
                 circle[fill] {
                     fill: white !important;
                 }
-            }
-    
-            &.disabled {
-                opacity: 0.2;
             }
         }
     }
