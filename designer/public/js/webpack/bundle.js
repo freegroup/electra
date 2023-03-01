@@ -7683,7 +7683,6 @@ var _cursor_circle = _interopRequireDefault(__webpack_require__(/*! ../../images
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = _AbstractToolPolicy.default.extend({
-  TITLE: "Circle",
   init: function () {
     this._super();
 
@@ -7841,11 +7840,9 @@ var _default = _AbstractGeoToolPolicy.default.extend({
       if (this.firstFigure === null) {
         this.firstFigure = figure;
         this.select(canvas, figure);
-        this.setToolText("Select polygon to subtract");
       } else {
         this.execute(canvas, this.firstFigure, figure);
         this.firstFigure = null;
-        this.setToolText("Select polygon to subtract from");
       }
     }
   }
@@ -7902,11 +7899,9 @@ var _default = _AbstractGeoToolPolicy.default.extend({
       if (this.firstFigure === null) {
         this.firstFigure = figure;
         this.select(canvas, figure);
-        this.setToolText("Select polygon to intersect");
       } else {
         this.execute(canvas, this.firstFigure, figure);
         this.firstFigure = null;
-        this.setToolText("Select polygon to intersect with");
       }
     }
   }
@@ -7963,11 +7958,9 @@ var _default = _AbstractGeoToolPolicy.default.extend({
       if (this.firstFigure === null) {
         this.firstFigure = figure;
         this.select(canvas, figure);
-        this.setToolText("Select polygon to merge");
       } else {
         this.execute(canvas, this.firstFigure, figure);
         this.firstFigure = null;
-        this.setToolText("Select polygon to add to");
       }
     }
   }

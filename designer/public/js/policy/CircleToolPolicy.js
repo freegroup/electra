@@ -4,8 +4,6 @@ import cursor from "../../images/cursors/cursor_circle.png"
 
 export default AbstractToolPolicy.extend({
 
-  TITLE: "Circle",
-
   init: function () {
     this._super()
 

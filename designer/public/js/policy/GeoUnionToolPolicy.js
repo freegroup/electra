@@ -30,12 +30,10 @@ export default AbstractGeoToolPolicy.extend({
       if (this.firstFigure === null) {
         this.firstFigure = figure
         this.select(canvas, figure)
-        this.setToolText("Select polygon to merge")
       }
       else {
         this.execute(canvas, this.firstFigure, figure)
         this.firstFigure = null
-        this.setToolText("Select polygon to add to")
       }
     }
   }
