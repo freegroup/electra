@@ -23,20 +23,23 @@ class Application {
 
     this.currentView = this.sheetsView
 
-    this.currentView.init()
-
-    $('.search-input').on("keyup", (event) => {
-       this.currentView.filter($('.search-input').val())
-    });
-
-    $("#search-worksheet").on("click", ()=>{
-      this.currentView = this.sheetsView
-      this.currentView.init()
-    })
-
-    $("#search-components").on("click", ()=>{
-      this.currentView = this.shapesView
-      this.currentView.init()
+    return this.currentView.init()
+    .then(()=>{
+      $('.search-input').on("keyup", (event) => {
+        this.currentView.filter($('.search-input').val())
+      });
+  
+      $("#search-worksheet").on("click", ()=>{
+        this.currentView = this.sheetsView
+        this.currentView.init()
+      })
+  
+      $("#search-components").on("click", ()=>{
+        this.currentView = this.shapesView
+        this.currentView.init()
+      })
+      
+      return this
     })
   }
 }

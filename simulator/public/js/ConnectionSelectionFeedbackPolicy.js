@@ -1,3 +1,4 @@
+import inputPrompt from "../../common/js/InputPrompt"
 import ProbeFigure from "./figures/ProbeFigure"
 
 export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
@@ -28,12 +29,12 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
     // add/remove of connection segments is only possible in the edit mode
     //
     if (conn.getCanvas().isSimulationRunning() === false) {
-      items.split = {name: draw2d.Configuration.i18n.menu.addSegment}
+      items.split = {name: t("contextmenu.add_segment")}
 
       // "remove" a segment isn't always possible. depends from the router algorithm
       //
       if (conn.getRouter().canRemoveSegmentAt(conn, segment.index)) {
-        items.remove = {name: draw2d.Configuration.i18n.menu.deleteSegment}
+        items.remove = {name:  t("contextmenu.deletesegment")}
       }
     }
 
@@ -41,12 +42,12 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
     //
     let probeFigure = conn.getProbeFigure()
     if (probeFigure === null) {
-      items.probe = {name: "Add Probe"}
+      items.probe = {name: t("contextmenu.add_probe")}
     } else {
-      items.unprobe = {name: "Remove Probe"}
+      items.unprobe = {name: t("contextmenu.remove_probe")}
     }
 
-    items["delete"] = {name: "Delete"}
+    items["delete"] = {name: t("contextmenu.delete")}
 
     $.contextMenu({
       selector: 'body',
@@ -80,13 +81,13 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
             break
 
           case "probe":
-            let text = prompt("Probe Signal Label")
-            if (text) {
-              let label = new ProbeFigure({text: text, x: -20, y: -40})
+            inputPrompt.show(t("dialog.add_probe"), t("label.name"))
+            .then( value => {
+              let label = new ProbeFigure({text: value, x: -20, y: -40})
               let locator = new draw2d.layout.locator.ManhattanMidpointLocator()
               label.installEditor(new draw2d.ui.LabelInplaceEditor())
               conn.add(label, locator)
-            }
+            })
             break
 
           case "unprobe":

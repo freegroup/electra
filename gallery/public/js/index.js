@@ -12,8 +12,6 @@ import conf from "./configuration"
 import global from "./global"
 
 
-
-
 $(window).load(function () {
   document.title = conf.appName
 
@@ -42,11 +40,11 @@ $(window).load(function () {
   .then( (response) => {
     let permissions = response.data
       app = require("./application").default
-      app.init(permissions)
-
-      $(".loader").fadeOut(500, function () {
-        $(this).remove()
-        inlineSVG.init()
-      }) 
+      return app.init(permissions)
+  })
+  .then( (app) =>{    
+    inlineSVG.init({}, ()=>{
+      $(".loader").fadeOut(500, function () {$(this).remove()}) 
     })
+  })
 });

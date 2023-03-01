@@ -1,6 +1,6 @@
 {
 	"app":{
-		"loading": "Lade den <i>Dokumentation Autor</i>...",
+		"loading": "Lade den <i>Electra.Simulator</i>...",
 		"title": "Dokumentation Author",
 		"slogan": "Erstellen Sie inspirierende Bildungsinhalte mit Electra Academy.",
 		"description": "Mit der Dokumentations-Author können Sie einfach Dokumente, Arbeitsblätter und Kursmaterialien online erstellen und teilen. Sie können Schaltkreise, mathematische Formeln, Lückentexte, Bilder und vieles mehr zu Ihren Dokumenten hinzufügen, um sie ansprechender und informativer zu gestalten. Das Teilen Ihrer Arbeit mit anderen war noch nie einfacher. Ich hoffe, Sie probieren es aus."
@@ -10,6 +10,9 @@
 		"create_file": "Neue Schaltung"
 	},
 	"dialog":{
+		"save": "Schaltung speichern",
+		"add_probe": "Bezeichnung des Messpunkt",
+		"add_label": "Beschriftung hinzufügen",
 		"add_folder": "Neuen Ordner anlegen"
 	},
 	"pane": {
@@ -17,12 +20,29 @@
 			"title": "Gespeicherte Schaltungen",
 			"title_your": "Deine Schaltungen",
 			"title_global": "Beispiel Schaltungen"
+		},
+		"editor": {
+			"components": "Elemente"
 		}
 	},
+	"contextmenu":{
+		"add_segment": "Segment einfügen",
+		"remove_segment": "Segment entfernen",
+		"add_probe": "Messpunkt einfügen",
+		"remove_probe": "Messpunkt entfernen",
+		"add_label": "Beschriftung",
+		"delete": "Löschen",
+		"open_designer": "Im Designer öffnen",
+		"description": "Beschreibung"
+	},
 	"label": {
-		"name": "Name"
+		"name": "Name",
+		"label": "Text"
 	},
 	"message": {
+		"loading": "Lade...",
+		"unable_to_load_element": "Element vom Typ [{{name}}] kann nicht eingefügt werden",
+		"probe_hint":"Rechte Maustaste auf einer Verbindung drücken -> <i>Messpunkt hinzufügen</i> auswählen, um diesen dann hier sehen zu können"
 	},
 	"error": {
 	}

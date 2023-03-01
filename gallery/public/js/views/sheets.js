@@ -11,7 +11,7 @@ class View {
 
   init(){
     //load the worksheets first
-    axios.get(conf.sheets.jsonUrl)
+    return axios.get(conf.sheets.jsonUrl)
     .then((response) => {
       this.render(response.data)
     })

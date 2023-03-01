@@ -32,7 +32,7 @@ export default draw2d.Connection.extend({
     });
   },
 
-  getValue: function () {
+  getValue: function() {
     return this.value
   },
 
@@ -41,9 +41,9 @@ export default draw2d.Connection.extend({
    *
    * @return {ProbeFigure}
    */
-  getProbeFigure: function () {
+  getProbeFigure: function() {
     let entry = this.children.find( entry => entry.figure instanceof ProbeFigure)
-    return (entry !== null) ? entry.figure : null
+    return entry?.figure ?? null
   },
 
   disconnect: function () {

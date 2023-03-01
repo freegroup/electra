@@ -78,13 +78,13 @@ export default draw2d.shape.composite.Raft.extend({
         //
         $.each(memento.labels,(i,json)=> {
             // create the figure stored in the JSON
-            var figure =  eval("new "+json.type+"()")
+            var figure =  eval(`new ${json.type}()`)
 
             // apply all attributes
             figure.attr(json)
 
             // instantiate the locator
-            var locator =  eval("new "+json.locator+"()")
+            var locator =  eval(`new ${json.locator}()`)
 
             // add the new figure as child to this figure
             this.add(figure, locator)

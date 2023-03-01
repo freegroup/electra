@@ -7,6 +7,7 @@ import conf from "./Configuration"
 import Connection from "./figures/Connection"
 import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
+import inputPrompt from "../../common/js/InputPrompt"
 import colors from "../../common/js/Colors"
 import WebUSBHelpDialog from "./dialog/WebUSBHelpDialog"
 import figureConfigDialog from "./dialog/FigureConfigDialog"
@@ -91,7 +92,7 @@ export default draw2d.Canvas.extend({
 
     this.grid = new draw2d.policy.canvas.ShowDotEditPolicy(15)
     // HACK
-    this.grid.dotColor.rgba = ()=> {console.log("called"); return "rgba(var(--border-color))"}
+    this.grid.dotColor.rgba = ()=> "rgba(var(--border-color))"
     this.installEditPolicy(this.grid)
 
     // add some SnapTo policy for better shape/figure alignment
@@ -291,20 +292,20 @@ export default draw2d.Canvas.extend({
         if (figure instanceof CircuitFigure) {
           if(this.permissions.shapes.global.update) {
             items = {
-              "label": {name: "Attach Label"},
-              "delete": {name: "Delete"},
+              "label": {name: t("contextmenu.add_label")},
+              "delete": {name: t("contextmenu.delete")},
               "sep1": "---------",
-              "design": {name: "Open in Component Editor"},
-              "help": {name: "Description"}
+              "design": {name: t("contextmenu.open_designer")},
+              "help": {name: t("contextmenu.description")}
             }
           }
           else {
             items = {
-              "label": {name: "Attach Label"},
-              "delete": {name: "Delete"},
+              "label": {name: t("contextmenu.add_label")},
+              "delete": {name: t("contextmenu.delete")},
               "sep1": "---------",
-              "design": {name: "Open in Component Editor"},
-              "help": {name: "Description"}
+              "design": {name: t("contextmenu.open_designer")},
+              "help": {name: t("contextmenu.description")}
             }
           }
 
@@ -314,16 +315,16 @@ export default draw2d.Canvas.extend({
           }
         } else if (figure instanceof draw2d.shape.basic.Label) {
           items = {
-            "delete": {name: "Delete"}
+            "delete": {name: t("contextmenu.delete")}
           }
         } else if (figure instanceof draw2d.Port) {
           return
         } else {
           items = {
-            "label": {name: "Attach Label"},
-            "help": {name: "Description"},
+            "label": {name: t("contextmenu.add_label")},
+            "help": {name: t("contextmenu.description")},
             "sep1": "---------",
-            "delete": {name: "Delete"}
+            "delete": {name: t("contextmenu.delete")}
           }
         }
 
@@ -337,15 +338,13 @@ export default draw2d.Canvas.extend({
           callback: (key, options) => {
             switch (key) {
               case "label":
-                let text = prompt("Label")
-                if (text) {
-                  let label = new draw2d.shape.basic.Label({text: text, stroke: 0, x: -20, y: -40})
+                inputPrompt.show(t("dialog.add_label"), t("label.label"))
+                .then( value => {
+                  let label = new draw2d.shape.basic.Label({text: value, stroke: 0, x: -20, y: -40})
                   let locator = new draw2d.layout.locator.SmartDraggableLocator()
                   label.installEditor(new LabelInplaceEditor())
                   figure.add(label, locator)
-                  // ?!?!?!?!
-                  //Object.defineProperty(figure, "canvas", {configurable: false, writable: false})
-                }
+                })
                 break
               case "design":
                 let scope = figure.attr("userData.scope")
@@ -486,7 +485,7 @@ export default draw2d.Canvas.extend({
     catch(exc){
       console.log(exc)
       figure = new draw2d.shape.basic.Label({
-        text: `Unable to load shape '${name}'`,
+        text: t("message.unable_to_load_element", {name}),
         color: "#ff0000"
       })
     }

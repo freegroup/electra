@@ -24,83 +24,86 @@ class Application {
   }
 
   init(permissions) {
-    this.currentFile = { name:"NewDocument"+conf.fileSuffix, scope:"user"}
-    this.permissions = permissions
-    this.hasUnsavedChanges = false
-    this.palette = new Palette(permissions)
-    this.view = new View("draw2dCanvas", permissions)
-    this.filePane = new Files(this, conf, permissions.brains)
-
-    this.userinfo = new Userinfo(permissions)
-    this.indexPane = new AuthorPage("#home", "readme/en/simulator/Readme.sheet")
-    this.appSwitch = new AppSwitch(permissions)
-    this.lngSwitch = new LngSwitch(permissions)
-
-    this.indexPane.render()
-
-    // Show the user an alert if there are unsaved changes
-    //
-    window.onbeforeunload = ()=> {
-      return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
-    }
-
-    this.view.getCommandStack().addEventListener(this)
-
-
-    if(permissions.brains.update || permissions.brains.create) {
-      $("#editorFileSave").on("click", () => {
-        this.fileSave()
-      })
-    }
-    else{
-      $("#editorFileSave").remove()
-    }
-
-
-    this.shareButton = $("#editorFileShare")
-    if(permissions.featureset.share) {
-      this.shareButton.on("click", () => {
-        this.shareButton.tooltip("hide")
-        app.fileShare()
-      })
-    }
-    else{
-      this.shareButton.remove()
-    }
-
-
-    // check if the user has added a "file" parameter. In this case we load the shape from
-    // the draw2d.shape github repository
-    //
-    let user = this.getParam("user")
-    let global = this.getParam("global")
-    let shared = this.getParam("shared")
-    if (user) {
-      $("#leftTabStrip .editor").click()
-      this.load(user, "user")
-    }
-    // check if the user has added a "file" parameter. In this case we load the shape from
-    // the draw2d.shape github repository
-    //
-    else if (global) {
-      $("#leftTabStrip .editor").click()
-      this.load(global, "global")
-    }
-    else if (shared) {
-      $("#leftTabStrip .editor").click()
-      this.load(shared, "shared")
-    }
-    else {
-      this.fileNew()
-    }
-
-    // listen on the history object to load files
-    //
-    window.addEventListener('popstate', (event) => {
-      if (event.state && event.state.id === 'editor') {
-        let scope = event.state.scope
-        this.load(event.state.file, scope)
+    return new Promise( (resolve, reject)=>{
+      this.currentFile = { name:"NewDocument"+conf.fileSuffix, scope:"user"}
+      this.permissions = permissions
+      this.hasUnsavedChanges = false
+      this.palette = new Palette(permissions)
+      this.view = new View("draw2dCanvas", permissions)
+      this.filePane = new Files(this, conf, permissions.brains)
+  
+      this.userinfo = new Userinfo(permissions)
+      this.indexPane = new AuthorPage("#home", "readme/en/simulator/Readme.sheet")
+      this.appSwitch = new AppSwitch(permissions)
+      this.lngSwitch = new LngSwitch(permissions)
+  
+      this.indexPane.render()
+  
+      // Show the user an alert if there are unsaved changes
+      //
+      window.onbeforeunload = ()=> {
+        return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
       }
+  
+      this.view.getCommandStack().addEventListener(this)
+  
+  
+      if(permissions.brains.update || permissions.brains.create) {
+        $("#editorFileSave").on("click", () => {
+          this.fileSave()
+        })
+      }
+      else{
+        $("#editorFileSave").remove()
+      }
+  
+  
+      this.shareButton = $("#editorFileShare")
+      if(permissions.featureset.share) {
+        this.shareButton.on("click", () => {
+          this.shareButton.tooltip("hide")
+          app.fileShare()
+        })
+      }
+      else{
+        this.shareButton.remove()
+      }
+  
+  
+      // check if the user has added a "file" parameter. In this case we load the shape from
+      // the draw2d.shape github repository
+      //
+      let user = this.getParam("user")
+      let global = this.getParam("global")
+      let shared = this.getParam("shared")
+      if (user) {
+        $("#leftTabStrip .editor").click()
+        this.load(user, "user")
+      }
+      // check if the user has added a "file" parameter. In this case we load the shape from
+      // the draw2d.shape github repository
+      //
+      else if (global) {
+        $("#leftTabStrip .editor").click()
+        this.load(global, "global")
+      }
+      else if (shared) {
+        $("#leftTabStrip .editor").click()
+        this.load(shared, "shared")
+      }
+      else {
+        this.fileNew()
+      }
+  
+      // listen on the history object to load files
+      //
+      window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.id === 'editor') {
+          let scope = event.state.scope
+          this.load(event.state.file, scope)
+        }
+      })
+      resolve(this)
     })
   }
 

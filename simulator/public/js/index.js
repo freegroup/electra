@@ -5,6 +5,7 @@ import jqueryI18next from "jquery-i18next"
 import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 
 import "../../common/js/polyfill"
+import loadScript from "../../common/js/loadScript"
 
 import "../less/index.less"
 
@@ -58,7 +59,8 @@ $(window).load(function () {
   document.title = conf.appName
 
   socket = io( { path: '/socket.io'})
-  
+  let permissions = null
+
   i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
     fallbackLng: "en",
     ns: ['common', 'simulator'],
@@ -71,26 +73,27 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
     return axios.get("../permissions")})
   .then( (response) => {
-    let permissions = response.data
+    permissions = response.data
 
     // export all required classes for deserialize JSON with "eval"
     // "eval" code didn't sees imported class or code
     //
     let global = require("./global")
     for (let k in global.default) window[k] = global.default[k]
-    var s = document.createElement("script")
-    s.setAttribute("src",conf.shapes.jsUrl)
-    s.onload = function(){
-      app = require("./Application").default
-      app.init(permissions)
-      require("./hardware").default.init(socket)
-      inlineSVG.init()
+    return loadScript(conf.shapes.jsUrl)
+  })
+  .then( ()=>{
+    app = require("./Application").default
+    return app.init(permissions)
+  })
+  .then( ()=>{
+    require("./hardware").default.init(socket)
+    $('body').localize(); 
+    inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
-    }
-    document.head.appendChild(s);
+    })
   });
 
 

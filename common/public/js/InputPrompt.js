@@ -1,6 +1,5 @@
 class Dialog {
 
-
   constructor() {
     $("body").append(`
             <div id="inputPromptDialog" class="modal fade genericDialog" tabindex="-1">
@@ -16,8 +15,8 @@ class Dialog {
                     </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="electra-button" data-dismiss="modal">Cancel</button>
-                  <button class="electra-button electra-primary okButton">Ok</button>
+                  <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal"></button>
+                  <button data-i18n="common:button.save" class="electra-button electra-primary okButton"></button>
                 </div>
               </div>
             </div>

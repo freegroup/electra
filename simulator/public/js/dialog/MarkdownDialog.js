@@ -3,7 +3,6 @@ import fs from "path-browserify"
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()
 
-import CircuitFigure from "../figures/CircuitFigure"
 import conf from "../Configuration"
 
 class Dialog {

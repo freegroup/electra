@@ -86,15 +86,15 @@
 
       <div class="filesTeaser">
         <img class="icon svg" src="../common/images/navigation_file.svg"/>
-        <div class="title">Circuit Library</div>
+        <div data-i18n="pane.files.title" class="title">Circuit Library</div>
       </div>
 
       <div class="filesFinder">
         <header>
           <div id="material-tabs">
             <span class="sliding-bar"></span>
-            <a id="userFilesTab" href="#userFiles" class="active">Your Circuits</a>
-            <a id="globalFilesTab" href="#globalFiles">Demo Circuits </a>
+            <a data-i18n="pane.files.title_your" id="userFilesTab" href="#userFiles" class="active">Your Circuits</a>
+            <a data-i18n="pane.files.title_global" id="globalFilesTab" href="#globalFiles">Demo Circuits </a>
           </div>
         </header>
 
@@ -113,7 +113,7 @@
 
         <div class="paletteContainer">
           <div id="paletteHeader">
-            <div class="paletteFilterTitle">Components</div>
+            <div data-i18n="pane.editor.components" class="paletteFilterTitle">Components</div>
             <div id="paletteFilter" class="tree tinyScrollbar"></div>
           </div>
           <div id="paletteElementsScroll" class="tinyScrollbar">
@@ -126,25 +126,25 @@
           <span class="group" id="editorgroup_fileoperations">
               <span class="image-button" id="editorFileSave" >
                 <img title="Save circuit" src="../common/images/toolbar_save.svg" class="svg"/>
-                <div>Save</div>
+                <div data-i18n="common:toolbar.save" >Save</div>
               </span>
           </span>
 
            <span class="group">
               <span class="image-button disabled"  id="editDelete">
                 <img  src="../common/images/toolbar_delete.svg" class="svg"/>
-                <div>Delete</div>
+                <div data-i18n="common:toolbar.delete" >Delete</div>
               </span>
           </span>
 
           <span class="group">
               <span class="image-button disabled" id="editUndo">
                 <img src="../common/images/toolbar_undo.svg" class="svg"/>
-                <div>Undo</div>
+                <div data-i18n="common:toolbar.undo" >Undo</div>
               </span>
               <span class="image-button disabled" id="editRedo">
                 <img src="../common/images/toolbar_redo.svg" class="svg"/>
-                <div>Redo</div>
+                <div data-i18n="common:toolbar.redo" >Redo</div>
               </span>
           </span>
 
@@ -152,16 +152,16 @@
               <div id="tool_shape" class="dropdown" >
                 <div class="image-button" id="editConnections" data-toggle="dropdown" >
                   <img src="./images/status_index.svg" class="svg">
-                  <div>Connection</div>
+                  <div data-i18n="common:toolbar.connect" >Connection</div>
                 </div>
 
                 <div class="dropdown-menu" role="menu" >
                   <label class="statusIndicator" id="statusWebUSB" >
                     <img src="./images/status_arduino.svg"/>
                     <span>WebUSB</span>
-                    <span class="connected">Connected</span>
-                    <span class="disconnected">Disconnected</span>
-                    <span class="notSupported">Not Supported - <a class="help-link" href="#">why?</a></span>
+                    <span data-i18n="common:toolbar.connected" class="connected">Connected</span>
+                    <span data-i18n="common:toolbar.disconnected"  class="disconnected">Disconnected</span>
+                    <span class="notSupported"><span data-i18n="common:toolbar.not_supported" >Not Supported</span> - <a class="help-link" href="#">why?</a></span>
                   </label>
                 </div>
               </div>
@@ -171,7 +171,7 @@
           <span class="group" id="editorgroup_share">
               <span class="image-button" id="editorFileShare" >
                 <img title="Share Document" src="../common/images/toolbar_share.svg" class="svg"/>
-                <div>Share</div>
+                <div data-i18n="common:toolbar.share" >Share</div>
               </span>
           </span>
 
@@ -188,7 +188,7 @@
                        data-slider-tooltip="hide"
                        data-slider-id="simulationBaseTimerSlider"
                        data-slider-orientation="horizontal">
-                <div>Simulation Speed</div>
+                <div data-i18n="common:toolbar.speed" >Simulation Speed</div>
               </div>
           </span>
 
@@ -196,7 +196,7 @@
           <span class="group">
             <span class="image-button" id="editorFullscreen" >
               <img title="Toggle Fullscreen Mode" src="../common/images/toolbar_fullscreen.svg" class="svg"/>
-              <div>Fullscreen</div>
+              <div data-i18n="common:toolbar.fullscreen" >Fullscreen</div>
             </span>
           </span>
 
@@ -221,9 +221,7 @@
         </div>
         <div id='probe_window'>
           <div id="probe_window_stick" class="ion-ios-eye-outline" title="Stick Window"><img id="probe_window_opener" src="./images/slideout_bottom.svg"/></div>
-          <div id="probe_hint"><span class="ion-ios-information-outline"></span>Right click on a connection to add a
-            probe signal to this logic analyzer window
-          </div>
+          <div data-i18n="[html]message.probe_hint" id="probe_hint">Right click on a connection to add a probe signal to this logic analyzer window</div>
         </div>
       </div>
     </div>
@@ -279,44 +277,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="electra-button" data-dismiss="modal">Cancel</button>
-        <button class="electra-button btn-primary okButton"><span>Create</span></button>
+        <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">Cancel</button>
+        <button data-i18n="common:button.create" class="electra-button btn-primary okButton"><span>Create</span></button>
       </div>
     </div>
   </div>
 </div>
 
-
-<!--
-  Dialog with behaviour code preview of the shapes
- -->
-<div id="codePreviewDialog" class="modal fade genericDialog" tabindex="-1">
-  <div class="modal-dialog ">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="media-heading">Javascript Code of the Shape</h4>
-      </div>
-      <div class="modal-body">
-          <pre class="prettyprint">
-          </pre>
-      </div>
-      <div class="modal-footer">
-        <div class="btn-group">
-          <button type="button" class="electra-button editButton ">Edit Code</button>
-          <button type="button" class="electra-button dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>  <!-- caret -->
-          </button>
-
-          <ul class="dropdown-menu" role="menu"> <!-- class dropdown-menu -->
-            <li><a href="#" class="electra-button editButtonGuided">..with guided tour</a></li>
-          </ul>
-        </div>
-
-        <button class="electra-button  btn-primary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <!--
@@ -326,15 +293,13 @@
   <div class="modal-dialog ">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="media-heading">Shape Documentation</h4>
+        <h4 class="media-heading"></h4>
       </div>
       <div class="modal-body">
-        <div class="markdownRendering">
-
-        </div>
+        <div class="markdownRendering"></div>
       </div>
       <div class="modal-footer">
-        <button class="electra-button  btn-primary" data-dismiss="modal">Close</button>
+        <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -347,9 +312,7 @@
       <div class="progress">
         <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
       </div>
-      <div class="modal-body">
-        loading...
-      </div>
+      <div data-i18n="message.loading" class="modal-body">loading...</div>
     </div>
   </div>
 </div>
@@ -364,8 +327,8 @@
 
       </div>
       <div class="modal-footer">
-       <button class="electra-button  btn-primary" data-dismiss="modal">Cancel</button>
-       <button class="electra-button okBtn" >Save</button>
+       <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">Cancel</button>
+       <button data-i18n="common:button.save"   class="electra-button okBtn" >Save</button>
       </div>
     </div>
   </div>

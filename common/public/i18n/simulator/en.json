@@ -10,6 +10,9 @@
 		"create_file": "New Circuit"
 	},
 	"dialog":{
+		"save": "Save the Circuit",
+		"add_probe": "Probe Label",
+		"add_label": "Add Label",
 		"add_folder": "Create new folder"
 	},
     "pane": {
@@ -17,12 +20,28 @@
 			"title": "Circuit Library",
 			"title_your": "Your Circuits",
 			"title_global": "Public Circuits"
+		},
+		"editor": {
+			"components": "Components"
 		}
+	},
+	"contextmenu":{
+		"add_segment": "Insert Segment",
+		"delete_segment": "Delete Segment",
+		"add_probe": "Add Probe",
+		"remove_probe": "Remove Probe",
+		"add_label": "Add Label",
+		"delete": "Delete",
+		"open_designer": "Open in Designer",
+		"description": "Description"
 	},
 	"label": {
 		"name": "Name"
 	},
 	"message": {
+		"loading": "Loading...",
+		"unable_to_load_element": "Unable to load element of type [{{name}}]",
+		"probe_hint":"Right click on a connection to add a probe signal to this logic analyzer window"
 	},
 	"error": {
 	}

@@ -18,7 +18,7 @@ class Dialog {
           <div class="modal-dialog ">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="media-heading">Save the circuit</h4>
+                <h4 class="media-heading">${t("dialog.save")}</h4>
               </div>
               <div class="modal-body">
 
@@ -28,7 +28,7 @@ class Dialog {
                   </div>
                   <div class="media-body">
                     <div class="controlWithHeader">
-                      <label>Name</label>
+                      <label>${t("label.name")}</label>
                       <input type="text"  class="fileName" autofocus value="">
                     </div>
                   </div>
@@ -36,8 +36,8 @@ class Dialog {
 
               </div>
               <div class="modal-footer">
-                <button class="electra-button" data-dismiss="modal">Cancel</button>
-                <button class="electra-button electra-primary okButton"><span>Save</span></button>
+                <button class="electra-button" data-dismiss="modal">${t("common:button.cancel")}</button>
+                <button class="electra-button electra-primary okButton">${t("common:button.save")}</button>
               </div>
             </div>
           </div>
