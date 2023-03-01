@@ -103,7 +103,7 @@ export default class Toolbar {
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
 
-    this.selectButton = $(`<div class="image-button" id="editSelect"><img class="svg" src="./images/toolbar_select.svg"/><div data-i18n="common:toolbar.select">${t("common:toolbar.select")}</div></div>`)
+    this.selectButton = $(`<div class="image-button" id="editSelect"><img class="svg" src="../common/images/toolbar_select.svg"/><div data-i18n="common:toolbar.select">${t("common:toolbar.select")}</div></div>`)
     buttonGroup.append(this.selectButton)
     this.selectButton.on("click", () => {
       this.view.installEditPolicy(new SelectionToolPolicy())
@@ -116,15 +116,15 @@ export default class Toolbar {
     this.shapeButton = $(`
       <div id="tool_shape" class="dropdown" >
           <div class="image-button" data-toggle="dropdown"  id="tool_shape_image" >
-            <img class="svg" src="./images/toolbar_insert.svg">
+            <img class="svg" src="../common/images/toolbar_insert.svg">
             <div data-i18n="common:toolbar.add" >${t("common:toolbar.add")}</div>
           </div>
           <ul class="dropdown-menu" role="menu" >
-             <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="./images/toolbar_rectangle.svg"><span data-i18n="common:toolbar.rectangle" class="tool_label">${t("common:toolbar.rectangle")}</span><span class="tool_shortcut">R</span></li>
-             <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="./images/toolbar_circle.svg">   <span data-i18n="common:toolbar.circle" class="tool_label">${t("common:toolbar.circle")}</span><span class="tool_shortcut">C</span></li>
-             <li class="tool_shape_entry policyLineToolPolicy"      ><img src="./images/toolbar_line.svg">     <span data-i18n="common:toolbar.line" class="tool_label">${t("common:toolbar.line")}</span><span class="tool_shortcut">L</span></li>
-             <li class="tool_shape_entry policyTextToolPolicy"      ><img src="./images/toolbar_text.svg">     <span data-i18n="common:toolbar.text" class="tool_label">${t("common:toolbar.text")}</span><span class="tool_shortcut">T</span></li>
-             <li class="tool_shape_entry policyPortToolPolicy"      ><img src="./images/toolbar_port.svg">     <span data-i18n="common:toolbar.port" class="tool_label">${t("common:toolbar.port")}</span><span class="tool_shortcut">P</span></li>
+             <li class="tool_shape_entry policyRectangleToolPolicy" ><img src="../common/images/toolbar_rectangle.svg"><span data-i18n="common:toolbar.rectangle" class="tool_label">${t("common:toolbar.rectangle")}</span><span class="tool_shortcut">R</span></li>
+             <li class="tool_shape_entry policyCircleToolPolicy"    ><img src="../common/images/toolbar_circle.svg">   <span data-i18n="common:toolbar.circle" class="tool_label">${t("common:toolbar.circle")}</span><span class="tool_shortcut">C</span></li>
+             <li class="tool_shape_entry policyLineToolPolicy"      ><img src="../common/images/toolbar_line.svg">     <span data-i18n="common:toolbar.line" class="tool_label">${t("common:toolbar.line")}</span><span class="tool_shortcut">L</span></li>
+             <li class="tool_shape_entry policyTextToolPolicy"      ><img src="../common/images/toolbar_text.svg">     <span data-i18n="common:toolbar.text" class="tool_label">${t("common:toolbar.text")}</span><span class="tool_shortcut">T</span></li>
+             <li class="tool_shape_entry policyPortToolPolicy"      ><img src="../common/images/toolbar_port.svg">     <span data-i18n="common:toolbar.port" class="tool_label">${t("common:toolbar.port")}</span><span class="tool_shortcut">P</span></li>
           </ul>
       </div>`
     )
@@ -172,7 +172,7 @@ export default class Toolbar {
       return false
     })
 
-    this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="./images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`)
+    this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="../common/images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`)
     buttonGroup.append(this.unionButton)
     this.html.delegate("#toolUnion:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -188,7 +188,7 @@ export default class Toolbar {
       return false
     })
 
-    this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="./images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`)
+    this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="../common/images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`)
     buttonGroup.append(this.differenceButton)
     this.html.delegate("#toolDifference:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -204,7 +204,7 @@ export default class Toolbar {
       return false
     })
 
-    this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="./images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`)
+    this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="../common/images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`)
     buttonGroup.append(this.intersectionButton)
     this.html.delegate("#toolIntersection:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -225,7 +225,7 @@ export default class Toolbar {
 
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
-    this.testButton = $(`<div class="image-button" id="editTest"><img class="svg" src="./images/toolbar_element_test.svg"/><div data-i18n="common:toolbar.test">${t("common:toolbar.test")}</div></div>`)
+    this.testButton = $(`<div class="image-button" id="editTest"><img class="svg" src="../common/images/toolbar_element_test.svg"/><div data-i18n="common:toolbar.test">${t("common:toolbar.test")}</div></div>`)
     buttonGroup.append(this.testButton)
     this.testButton.on("click", () => {
       // if any error happens during the shape code create/execute -> goto the the JS editor
@@ -239,13 +239,13 @@ export default class Toolbar {
       }
     })
 
-    this.codeButton = $(`<div class="image-button" id="editCode"><img class="svg" src="./images/toolbar_element_js.svg"/><div data-i18n="common:toolbar.code">${t("common:toolbar.code")}</div></div>`)
+    this.codeButton = $(`<div class="image-button" id="editCode"><img class="svg" src="../common/images/toolbar_element_js.svg"/><div data-i18n="common:toolbar.code">${t("common:toolbar.code")}</div></div>`)
     buttonGroup.append(this.codeButton)
     this.codeButton.on("click", () => {
       new FigureCodeEdit().show()
     })
 
-    this.markdownButton = $(`<div class="image-button" id="editDoc"><img class="svg" src="./images/toolbar_element_doc.svg"/><div data-i18n="common:toolbar.docu">${t("common:toolbar.docu")}</div></div>`)
+    this.markdownButton = $(`<div class="image-button" id="editDoc"><img class="svg" src="../common/images/toolbar_element_doc.svg"/><div data-i18n="common:toolbar.docu">${t("common:toolbar.docu")}</div></div>`)
     buttonGroup.append(this.markdownButton)
     $(document).on("click", "#editDoc", () => {
       new FigureMarkdownEdit().show()

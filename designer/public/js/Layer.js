@@ -17,7 +17,8 @@ export default class Layer {
     // Register a Selection listener for the state handling
     // of the Delete Button
     //
-    view.on("select", this.onSelectionChanged.bind(this))
+    view.on("select", (emitter, event) => this.onSelectionChanged(emitter,event))
+    view.on("unselect", (emitter, event) => this.onSelectionChanged(emitter,{figure:null}))
   }
 
   /**
