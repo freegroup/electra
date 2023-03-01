@@ -51,11 +51,6 @@ if (!jQuery.browser) {
   jQuery.browser = browser
 }
 
-// need to be global for the "static" version hosted on gh-pages
-//
-window.conf = conf
-
-
 $(window).load(function () {
 
   document.title = conf.appName
@@ -82,13 +77,12 @@ $(window).load(function () {
     $('body').localize();
     return axios.get("../permissions")})
   .then( (response) => {
-    let permissions = response.data
-
     app = require("./Application").default
-    app.init(permissions)
+    return app.init(response.data)
+  })
+  .then( app => {
     shape_designer.app = app
-    inlineSVG.init()
     $('body').localize()
-    $(".loader").fadeOut(500, function() { $(this).remove(); })
+    $(".loader").fadeOut(500, function() {  $(this).remove(); })  
   })
 })

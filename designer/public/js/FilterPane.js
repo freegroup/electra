@@ -9,7 +9,8 @@ export default class FilterPane {
     // Register a Selection listener for the state handling
     // of the Delete Button
     //
-    view.on("select", this.onSelectionChanged.bind(this))
+    view.on("select", (emitter, event) => this.onSelectionChanged(emitter,event))
+    view.on("unselect", (emitter, event) => this.onSelectionChanged(emitter,{figure:null}))
   }
 
   /**
@@ -37,6 +38,7 @@ export default class FilterPane {
       figure.filters.each((i, filter) => {
         filter.insertPane(figure, this.html)
       })
+      console.log("remove")
       $('#add_filter_button').removeClass('disabled')
 
       $.each(figure.getPotentialFilters(), (i, e) => {

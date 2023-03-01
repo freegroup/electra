@@ -18,7 +18,7 @@
     // Defaults
     var defaults = {
         initClass: 'js-inlinesvg',
-        svgSelector: 'img.svg'
+        svgSelector: 'img.svg:not(.loading-in-progress)'
     };
 
     /**
@@ -86,10 +86,7 @@
      * @public
      */
     var getAll = function () {
-
-        var svgs = document.querySelectorAll(settings.svgSelector);
-        return svgs;
-
+        return document.querySelectorAll(settings.svgSelector)
     };
 
     /**
@@ -99,7 +96,15 @@
     var inliner = function (cb) {
 
         var svgs = getAll();
+        if(svgs.length===0){
+            cb(settings.svgSelector)
+            return
+        }
+
         var callback = after(svgs.length, cb);
+        Array.prototype.forEach.call(svgs, function (svg, i) {
+            svg.classList.add('loading-in-progress');
+        })
 
         Array.prototype.forEach.call(svgs, function (svg, i) {
 
@@ -146,13 +151,8 @@
                         }
                     });
 
-                    // Add an additional class to the inlined SVG to imply it was
-                    // infact inlined, might be useful to know
-                    if (inlinedSVG.classList) {
-                        inlinedSVG.classList.add('inlined-svg');
-                    } else {
-                        inlinedSVG.className += ' ' + 'inlined-svg';
-                    }
+                    inlinedSVG.classList.remove('loading-in-progress');
+                    inlinedSVG.classList.add('inlined-svg');
 
                     // Add in some accessibility quick wins
                     inlinedSVG.setAttribute('role', 'img');
@@ -182,7 +182,6 @@
 
                     // Fire the callback
                     callback(settings.svgSelector);
-
                 } else {
 
                     console.error('There was an error retrieving the source of the SVG.');
@@ -194,9 +193,7 @@
             request.onerror = function () {
                 console.error('There was an error connecting to the origin server.');
             };
-
             request.send();
-
         });
 
     };
@@ -207,14 +204,14 @@
      */
     inlineSVG.init = function (options, callback) {
 
+
         // Test for support
         if (!supports) return;
 
         // Merge users option with defaults
-        settings = extend(defaults, options || {});
+        settings = {...defaults, ...options}
 
-        // Kick-off the inliner
-        inliner(callback || function(){});
+        inliner(callback ?? function(){})
     };
 
     return inlineSVG;

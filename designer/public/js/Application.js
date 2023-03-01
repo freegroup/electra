@@ -13,6 +13,7 @@ import FilterPane from "./FilterPane"
 import SelectionToolPolicy from './policy/SelectionToolPolicy'
 import conf from "./Configuration"
 import fileSave from "./dialog/FileSave"
+import inlineSVG from "../../common/js/inlineSVG"
 
 let storage = require('../../common/js/BackendStorage').default(conf)
 
@@ -46,83 +47,84 @@ class Application {
   }
 
   init(permissions){
-    this.permissions = permissions
-    this.hasUnsavedChanges = false
-    this.currentFile = { name: conf.fileNew + conf.fileSuffix, scope: "user"}
-    this.documentConfigurationTempl = {
-      baseClass: "draw2d.SetFigure",
-      code: $("#shape-edit-template").text().trim()
-    }
-
-    // Show the user an alert if there are unsaved changes
-    //
-    window.onbeforeunload = ()=> {
-      return this.hasUnsavedChanges?   t("common:message.changes_get_lost"): undefined;
-    }
-
-    $( "body" )
-      .delegate( ".mousetrap-pause", "focus", function() {
-        Mousetrap.pause()
-      })
-      .delegate(".mousetrap-pause", "blur", function (){
-        Mousetrap.unpause()
-      });
-
-    // automatic add the configuration to the very first shape
-    // in the document as userData
-    //
-    this.documentConfiguration = { ...this.documentConfigurationTempl}
-
-    this.storage = storage
-    this.view = new View(this, "canvas", permissions)
-    this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
-    this.layer = new Layer(this, "layer_elements", this.view, permissions)
-    this.filter = new FilterPane(this, "#filter .filter_actions", this.view, permissions)
-    this.userinfo = new Userinfo(permissions)
-    this.filePane = new Files(this, conf, permissions.shapes)
-    this.indexPane = new AuthorPage("#home", "readme/en/designer/Readme.sheet")
-    this.appSwitch = new AppSwitch(permissions)
-    this.lngSwitch = new LngSwitch(permissions)
-
-    this.indexPane.render()
-    this.view.installEditPolicy(new SelectionToolPolicy())
-
-    this.view.getCommandStack().addEventListener(this)
-
-    // check if the user has added a "file" parameter. In this case we load the shape from
-    // the draw2d.shape github repository
-    //
-    let user = this.getParam("user")
-    let global = this.getParam("global")
-    if (user) {
-      this.load(user, "user")
-    }
-    else if (global) {
-      this.load(global, "global")
-    }
-    else {
-      this.view.showWelcomeMessage()
-    }
-
-    // listen on the history object to load files
-    //
-    window.addEventListener('popstate', (event) => {
-      if (event.state && event.state.id === 'editor') {
-        let scope = event.state.scope
-        let url = conf.backend[scope].get(event.state.file)
-        this.load(url, scope)
+    return new Promise( (resolve, reject) => {
+      this.permissions = permissions
+      this.hasUnsavedChanges = false
+      this.currentFile = { name: conf.fileNew + conf.fileSuffix, scope: "user"}
+      this.documentConfigurationTempl = {
+        baseClass: "draw2d.SetFigure",
+        code: $("#shape-edit-template").text().trim()
       }
+  
+      // Show the user an alert if there are unsaved changes
+      //
+      window.onbeforeunload = ()=> {
+        return this.hasUnsavedChanges?   t("common:message.changes_get_lost"): undefined;
+      }
+  
+      $( "body" )
+        .delegate( ".mousetrap-pause", "focus", function() {
+          Mousetrap.pause()
+        })
+        .delegate(".mousetrap-pause", "blur", function (){
+          Mousetrap.unpause()
+        });
+  
+      // automatic add the configuration to the very first shape
+      // in the document as userData
+      //
+      this.documentConfiguration = { ...this.documentConfigurationTempl}
+  
+      this.storage = storage
+      this.view = new View(this, "canvas", permissions)
+      this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
+      this.layer = new Layer(this, "layer_elements", this.view, permissions)
+      this.filter = new FilterPane(this, "#filter .filter_actions", this.view, permissions)
+      this.userinfo = new Userinfo(permissions)
+      this.filePane = new Files(this, conf, permissions.shapes)
+      this.indexPane = new AuthorPage("#home", "readme/en/designer/Readme.sheet")
+      this.appSwitch = new AppSwitch(permissions)
+      this.lngSwitch = new LngSwitch(permissions)
+  
+      this.indexPane.render()
+      this.view.installEditPolicy(new SelectionToolPolicy())
+  
+      this.view.getCommandStack().addEventListener(this)
+  
+      // check if the user has added a "file" parameter. In this case we load the shape from
+      // the draw2d.shape github repository
+      //
+      let user = this.getParam("user")
+      let global = this.getParam("global")
+      if (user) {
+        this.load(user, "user")
+      }
+      else if (global) {
+        this.load(global, "global")
+      }
+      else {
+        this.view.showWelcomeMessage()
+      }
+  
+      // listen on the history object to load files
+      //
+      window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.id === 'editor') {
+          let scope = event.state.scope
+          let url = conf.backend[scope].get(event.state.file)
+          this.load(url, scope)
+        }
+      })
+  
+      // check if the user has added a "file" parameter. In this case we load the shape from
+      // the draw2d.shape github repository
+      //
+      let tutorial = this.getParam("tutorial")
+      if(tutorial) {
+        this.checkForTutorialMode()
+      }
+      inlineSVG.init({}, () => resolve(this))
     })
-
-    // check if the user has added a "file" parameter. In this case we load the shape from
-    // the draw2d.shape github repository
-    //
-    let tutorial = this.getParam("tutorial")
-    if(tutorial) {
-      this.checkForTutorialMode()
-    }
-
-    inlineSVG.init()
   }
 
   checkForTutorialMode() {
