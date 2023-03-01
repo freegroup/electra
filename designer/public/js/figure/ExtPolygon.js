@@ -1,3 +1,4 @@
+require ("../filter/index")
 import PositionFilter from "../filter/PositionFilter"
 import SizeFilter from "../filter/SizeFilter"
 import StrokeFilter from "../filter/StrokeFilter"
@@ -39,12 +40,12 @@ export default shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.ext
 
   getPotentialFilters: function () {
     return [
-      {label: "Stroke", impl: "shape_designer.filter.StrokeFilter"},
-      {label: "Opacity", impl: "shape_designer.filter.OpacityFilter"},
-      {label: "Blur", impl: "shape_designer.filter.BlurFilter"},
-      {label: "Corner Radius", impl: "shape_designer.filter.RadiusFilter"},
-      {label: "Linear Gradient", impl: "shape_designer.filter.LinearGradientFilter"},
-      {label: "Fill Color", impl: "shape_designer.filter.FillColorFilter"}
+      new shape_designer.filter.StrokeFilter(),
+      new shape_designer.filter.OpacityFilter(),
+      new shape_designer.filter.BlurFilter(),
+      new shape_designer.filter.RadiusFilter(),
+      new shape_designer.filter.LinearGradientFilter(),
+      new shape_designer.filter.FillColorFilter()
     ]
   },
 

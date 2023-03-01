@@ -4,7 +4,7 @@ import jscolor from "../widget/jscolor/jscolor"
 export default shape_designer.filter.FillColorFilter = class FillColorFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.FillColorFilter")
+    super("shape_designer.filter.FillColorFilter", "filter.fillcolor")
     this.colorPicker = null
   }
 
@@ -13,7 +13,7 @@ export default shape_designer.filter.FillColorFilter = class FillColorFilter ext
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.fillcolor" >${t("filter.fillcolor")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
        </div>

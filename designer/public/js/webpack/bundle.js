@@ -2793,7 +2793,6 @@ exports["default"] = void 0;
 
 class FilterPane {
   constructor(app, elementId, view) {
-    this.DEFAULT_LABEL = "Properties";
     this.html = $(elementId);
     this.view = view;
     this.currentFigure = null; // Register a Selection listener for the state handling
@@ -2832,8 +2831,8 @@ class FilterPane {
         filter.insertPane(figure, this.html);
       });
       $('#add_filter_button').removeClass('disabled');
-      $.each(figure.getPotentialFilters(), function (i, e) {
-        $("#add_filter_action_menu").append("<li><a href='#' data-filter='" + e.impl + "' >" + e.label + "</a></li>");
+      $.each(figure.getPotentialFilters(), (i, e) => {
+        $("#add_filter_action_menu").append(`<li><a data-i18n="${e.LABEL}" href='#' data-filter='${e.NAME}' >${t(e.LABEL)}</a></li>`);
       });
 
       var _this = this;
@@ -2841,7 +2840,7 @@ class FilterPane {
       $("#add_filter_action_menu a").on("click", function () {
         var $this = $(this);
         var filterName = $this.data("filter");
-        var filter = eval("new " + filterName + "()");
+        var filter = eval(`new ${filterName}()`);
 
         _this.currentFigure.addFilter(filter);
 
@@ -4645,11 +4644,11 @@ var _default = draw2d.SetFigure.extend({
 
     $.each(memento.labels, $.proxy(function (i, json) {
       // create the figure stored in the JSON
-      let figure = eval("new " + json.type + "()"); // apply all attributes
+      let figure = eval(`new ${json.type}()`); // apply all attributes
 
       figure.attr(json); // instantiate the locator
 
-      let locator = eval("new " + json.locator + "()"); // add the new figure as child to this figure
+      let locator = eval(`new ${json.locator}()`); // add the new figure as child to this figure
 
       this.add(figure, locator);
     }, this));
@@ -4664,7 +4663,7 @@ exports["default"] = _default;
 /*!**************************************!*\
   !*** ./public/js/figure/ExtLabel.js ***!
   \**************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -4673,6 +4672,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
+
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
 
 var _default = shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend({
   NAME: "shape_designer.figure.ExtLabel",
@@ -4692,25 +4693,7 @@ var _default = shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
     this.installEditor(new LabelInplaceEditor());
   },
   getPotentialFilters: function () {
-    return [{
-      label: "Opacity",
-      impl: "shape_designer.filter.OpacityFilter"
-    }, {
-      label: "Blur",
-      impl: "shape_designer.filter.BlurFilter"
-    }, {
-      label: "Outline",
-      impl: "shape_designer.filter.OutlineStrokeFilter"
-    }, {
-      label: "Gradient",
-      impl: "shape_designer.filter.TextLinearGradientFilter"
-    }, {
-      label: "Font Size",
-      impl: "shape_designer.filter.FontSizeFilter"
-    }, {
-      label: "Font Color",
-      impl: "shape_designer.filter.FontColorFilter"
-    }];
+    return [new shape_designer.filter.OpacityFilter(), new shape_designer.filter.BlurFilter(), new shape_designer.filter.OutlineStrokeFilter(), new shape_designer.filter.TextLinearGradientFilter(), new shape_designer.filter.FontSizeFilter(), new shape_designer.filter.FontColorFilter()];
   },
   setBlur: function (value) {
     this.blur = value;
@@ -4810,7 +4793,7 @@ exports["default"] = _default;
 /*!*************************************!*\
   !*** ./public/js/figure/ExtLine.js ***!
   \*************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -4819,6 +4802,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
+
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
 
 var _default = shape_designer.figure.ExtLine = draw2d.shape.basic.PolyLine.extend({
   NAME: "shape_designer.figure.ExtLine",
@@ -4843,22 +4828,7 @@ var _default = shape_designer.figure.ExtLine = draw2d.shape.basic.PolyLine.exten
     return this.blur;
   },
   getPotentialFilters: function () {
-    return [{
-      label: "Opacity",
-      impl: "shape_designer.filter.OpacityFilter"
-    }, {
-      label: "Blur",
-      impl: "shape_designer.filter.BlurFilter"
-    }, {
-      label: "Outline",
-      impl: "shape_designer.filter.OutlineStrokeFilter"
-    }, {
-      label: "Corner Radius",
-      impl: "shape_designer.filter.RadiusFilter"
-    }, {
-      label: "Stroke",
-      impl: "shape_designer.filter.StrokeFilter"
-    }];
+    return [new shape_designer.filter.OpacityFilter(), new shape_designer.filter.BlurFilter(), new shape_designer.filter.OutlineStrokeFilter(), new shape_designer.filter.RadiusFilter(), new shape_designer.filter.StrokeFilter()];
   },
   removeFilter: function (filter) {
     this.filters.remove(filter);
@@ -4952,6 +4922,8 @@ var _FillColorFilter = _interopRequireDefault(__webpack_require__(/*! ../filter/
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
+
 /* jshint evil:true */
 // required for serialie/deserialize of JSON
 var _default = shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.extend({
@@ -4980,25 +4952,7 @@ var _default = shape_designer.figure.ExtPolygon = draw2d.shape.basic.Polygon.ext
     return this.blur;
   },
   getPotentialFilters: function () {
-    return [{
-      label: "Stroke",
-      impl: "shape_designer.filter.StrokeFilter"
-    }, {
-      label: "Opacity",
-      impl: "shape_designer.filter.OpacityFilter"
-    }, {
-      label: "Blur",
-      impl: "shape_designer.filter.BlurFilter"
-    }, {
-      label: "Corner Radius",
-      impl: "shape_designer.filter.RadiusFilter"
-    }, {
-      label: "Linear Gradient",
-      impl: "shape_designer.filter.LinearGradientFilter"
-    }, {
-      label: "Fill Color",
-      impl: "shape_designer.filter.FillColorFilter"
-    }];
+    return [new shape_designer.filter.StrokeFilter(), new shape_designer.filter.OpacityFilter(), new shape_designer.filter.BlurFilter(), new shape_designer.filter.RadiusFilter(), new shape_designer.filter.LinearGradientFilter(), new shape_designer.filter.FillColorFilter()];
   },
   removeFilter: function (filter) {
     this.filters.remove(filter);
@@ -5108,7 +5062,7 @@ exports["default"] = _default;
 /*!*************************************!*\
   !*** ./public/js/figure/ExtPort.js ***!
   \*************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -5117,6 +5071,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
+
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
 
 var _default = shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
   NAME: "shape_designer.figure.ExtPort",
@@ -5234,16 +5190,7 @@ var _default = shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend(
     this.decoration?.setVisible(true);
   },
   getPotentialFilters: function () {
-    return [{
-      label: "Port Type",
-      impl: "shape_designer.filter.PortTypeFilter"
-    }, {
-      label: "Port Direction",
-      impl: "shape_designer.filter.PortDirectionFilter"
-    }, {
-      label: "Color",
-      impl: "shape_designer.filter.FillColorFilter"
-    }];
+    return [new shape_designer.filter.PortTypeFilter(), new shape_designer.filter.PortDirectionFilter(), new shape_designer.filter.FillColorFilter()];
   },
   removeFilter: function (filter) {
     this.filters.remove(filter);
@@ -5334,17 +5281,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-/**
- * The markerFigure is the left hand side annotation for a DecoratedPort.
- *
- * It contains two children
- *
- * StateAFigure: if the mouse hover and the figure isn't permanent visible
- * StateBFigure: either the mouse is over or the user pressed the checkbox to stick the figure on the port
- *
- * This kind of decoration is usefull for defualt values on workflwos enginges or circuit diagrams
- *
- */
 var _default = shape_designer.figure.MarkerFigure = draw2d.shape.layout.VerticalLayout.extend({
   NAME: "MarkerFigure",
   init: function (attr, setter, getter) {
@@ -5492,11 +5428,6 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-/**
- * This is only the mouseover reactive shape. A little bit smaller than the visible shape
- *
- * Or you can display this shape with opacity of 0.2 to indicate that this is a reactive area.
- */
 var _default = shape_designer.figure.MarkerStateAFigure = draw2d.shape.basic.Label.extend({
   NAME: "MarkerStateAFigure",
 
@@ -5715,7 +5646,7 @@ exports["default"] = _default;
 /*!****************************************!*\
   !*** ./public/js/figure/PolyCircle.js ***!
   \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -5724,6 +5655,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
+
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
 
 var _default = shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend({
   NAME: "shape_designer.figure.PolyCircle",
@@ -5754,22 +5687,7 @@ var _default = shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
     this.filters.add(new shape_designer.filter.FillColorFilter());
   },
   getPotentialFilters: function () {
-    return [{
-      label: "Stroke",
-      impl: "shape_designer.filter.StrokeFilter"
-    }, {
-      label: "Opacity",
-      impl: "shape_designer.filter.OpacityFilter"
-    }, {
-      label: "Blur",
-      impl: "shape_designer.filter.BlurFilter"
-    }, {
-      label: "Linear Gradient",
-      impl: "shape_designer.filter.LinearGradientFilter"
-    }, {
-      label: "Fill Color",
-      impl: "shape_designer.filter.FillColorFilter"
-    }];
+    return [new shape_designer.filter.StrokeFilter(), new shape_designer.filter.OpacityFilter(), new shape_designer.filter.BlurFilter(), new shape_designer.filter.LinearGradientFilter(), new shape_designer.filter.FillColorFilter()];
   },
   removeFilter: function (filter) {
     this.filters.remove(filter);
@@ -5877,6 +5795,8 @@ var _ExtPolygon = _interopRequireDefault(__webpack_require__(/*! ./ExtPolygon */
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+__webpack_require__(/*! ../filter/index */ "./public/js/filter/index.js");
+
 var _default = shape_designer.figure.PolyRect = _ExtPolygon.default.extend({
   NAME: "shape_designer.figure.PolyRect",
   init: function (topLeft, bottomRight) {
@@ -5910,7 +5830,7 @@ exports["default"] = _default;
 /*!****************************************!*\
   !*** ./public/js/figure/TestSwitch.js ***!
   \****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
@@ -5919,10 +5839,6 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
-
-var _Colors = _interopRequireDefault(__webpack_require__(/*! ../../../common/js/Colors */ "../common/public/js/Colors.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = shape_designer.figure.TestSwitch = draw2d.shape.basic.Label.extend({
   NAME: "shape_designer.figure.TestSwitch",
@@ -6012,13 +5928,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.BlurFilter = class BlurFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.BlurFilter");
+    super("shape_designer.filter.BlurFilter", "filter.blur");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`<div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.blur" >${t("filter.blur")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;/span>
       </div>
@@ -6082,15 +5998,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.FanoutFilter = class FanoutFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.FanoutFilter");
+    super("shape_designer.filter.FanoutFilter", "filter.fanout");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-           <span data-i18n="filter.fanout" ${t("filter.fanout")}</span>
-           <span class="spacer"></span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
+          <span class="spacer"></span>
         </div>
 
         <div class="panel-body collapse in" id="${this.cssScope}_panel">
@@ -6149,7 +6065,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.FillColorFilter = class FillColorFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.FillColorFilter");
+    super("shape_designer.filter.FillColorFilter", "filter.fillcolor");
     this.colorPicker = null;
   }
 
@@ -6157,7 +6073,7 @@ var _default = shape_designer.filter.FillColorFilter = class FillColorFilter ext
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.fillcolor" >${t("filter.fillcolor")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
        </div>
@@ -6221,8 +6137,9 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = void 0;
 
 class Filter {
-  constructor(name) {
+  constructor(name, label) {
     this.NAME = name;
+    this.LABEL = label;
     this.colorPicker = null;
     this.cssScope = this.NAME.replace(/[.]/g, "_");
     this.containerId = this.cssScope + "_container";
@@ -6272,7 +6189,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.FontColorFilter = class FontColorFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.FontColorFilter");
+    super("shape_designer.filter.FontColorFilter", "filter.fontcolor");
     this.colorPicker = null;
   }
 
@@ -6280,7 +6197,7 @@ var _default = shape_designer.filter.FontColorFilter = class FontColorFilter ext
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.fontcolor" >${t("filter.fontcolor")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
        </div>
@@ -6349,14 +6266,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.FontSizeFilter = class FontSizeFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.FontSizeFilter");
+    super("shape_designer.filter.FontSizeFilter", "filter.fontsize");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.fontsize" >${t("filter.fontsize")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
       </div>
@@ -6428,7 +6345,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.LinearGradientFilter = class LinearGradientFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.LinearGradientFilter");
+    super("shape_designer.filter.LinearGradientFilter", "filter.gradient");
     this.colorPicker1 = null;
     this.colorPicker2 = null;
     this.startColor = "#f0f0f0";
@@ -6440,7 +6357,7 @@ var _default = shape_designer.filter.LinearGradientFilter = class LinearGradient
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.gradient" >${t("filter.gradient")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>
@@ -6559,14 +6476,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.OpacityFilter = class OpacityFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.OpacityFilter");
+    super("shape_designer.filter.OpacityFilter", "filter.opacity");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.opacity" >${t("filter.opacity")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>
@@ -6634,7 +6551,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.OutlineStrokeFilter = class OutlineStrokeFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.OutlineStrokeFilter");
+    super("shape_designer.filter.OutlineStrokeFilter", "filter.stroke");
     this.colorPicker = null;
   }
 
@@ -6642,7 +6559,7 @@ var _default = shape_designer.filter.OutlineStrokeFilter = class OutlineStrokeFi
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.stroke" >${t("filter.stroke")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>
@@ -6723,7 +6640,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.PortDirectionFilter = class PortDirectionFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.PortDirectionFilter");
+    super("shape_designer.filter.PortDirectionFilter", "filter.direction");
   }
 
   insertPane(figure, $parent) {
@@ -6732,10 +6649,10 @@ var _default = shape_designer.filter.PortDirectionFilter = class PortDirectionFi
     var dir = figure.getConnectionDirection();
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
-       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-           <span data-i18n="filter.direction" >${t("filter.direction")}</span>
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
-      </div>
+        </div>
 
        <div class="panel-body collapse in" id="${this.cssScope}_panel">
          <div class="form-group portDirectionOption">
@@ -6812,7 +6729,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.PortTypeFilter = class PortTypeFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.PortTypeFilter");
+    super("shape_designer.filter.PortTypeFilter", "filter.porttype");
   }
 
   insertPane(figure, $parent) {
@@ -6823,7 +6740,7 @@ var _default = shape_designer.filter.PortTypeFilter = class PortTypeFilter exten
       <div id="${this.containerId}" class="panel panel-default">
 
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.porttype" >${t("filter.porttype")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
 
@@ -6885,7 +6802,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.PositionFilter = class PositionFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.PositionFilter");
+    super("shape_designer.filter.PositionFilter", "filter.position");
   }
 
   insertPane(figure, $parent) {
@@ -6893,7 +6810,7 @@ var _default = shape_designer.filter.PositionFilter = class PositionFilter exten
       <div id="${this.containerId}" class="panel panel-default">
 
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">
-           <span data-i18n="filter.position" >${t("filter.position")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
 
@@ -6987,14 +6904,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.RadiusFilter = class RadiusFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.RadiusFilter");
+    super("shape_designer.filter.RadiusFilter", "filter.radius");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.radius" >${t("filter.radius")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>
@@ -7059,14 +6976,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.SizeFilter = class SizeFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.SizeFilter");
+    super("shape_designer.filter.SizeFilter", "filter.size");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">
-          <span data-i18n="filter.size" >${t("filter.size")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
         <div class="panel-body  collapse in" id="size_width_panel">
@@ -7155,14 +7072,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.StrokeFilter = class StrokeFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.StrokeFilter");
+    super("shape_designer.filter.StrokeFilter", "filter.stroke");
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.stroke" >${t("filter.stroke")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>
@@ -7248,7 +7165,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var _default = shape_designer.filter.TextLinearGradientFilter = class TextLinearGradientFilter extends _Filter.default {
   constructor() {
-    super("shape_designer.filter.TextLinearGradientFilter");
+    super("shape_designer.filter.TextLinearGradientFilter", "filter.textgradient");
     this.colorPicker1 = null;
     this.colorPicker2 = null;
     this.startColor = "#f0f0f0";
@@ -7260,7 +7177,7 @@ var _default = shape_designer.filter.TextLinearGradientFilter = class TextLinear
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.textgradient" >${t("filter.textgradient")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>

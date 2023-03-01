@@ -1,3 +1,5 @@
+require ("../filter/index")
+
 export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend({
 
   NAME: "shape_designer.figure.PolyCircle",
@@ -28,11 +30,11 @@ export default shape_designer.figure.PolyCircle = draw2d.shape.basic.Oval.extend
 
   getPotentialFilters: function () {
     return [
-      {label: "Stroke", impl: "shape_designer.filter.StrokeFilter"},
-      {label: "Opacity", impl: "shape_designer.filter.OpacityFilter"},
-      {label: "Blur", impl: "shape_designer.filter.BlurFilter"},
-      {label: "Linear Gradient", impl: "shape_designer.filter.LinearGradientFilter"},
-      {label: "Fill Color", impl: "shape_designer.filter.FillColorFilter"}
+      new shape_designer.filter.StrokeFilter(),
+      new shape_designer.filter.OpacityFilter(),
+      new shape_designer.filter.BlurFilter(),
+      new shape_designer.filter.LinearGradientFilter(),
+      new shape_designer.filter.FillColorFilter()
     ]
   },
 

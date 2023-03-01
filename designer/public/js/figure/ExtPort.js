@@ -1,7 +1,8 @@
+require ("../filter/index")
+
 export default shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend({
 
   NAME: "shape_designer.figure.ExtPort",
-
 
   init: function () {
     this.isExtFigure = true
@@ -112,9 +113,9 @@ export default shape_designer.figure.ExtPort = draw2d.shape.basic.Circle.extend(
 
   getPotentialFilters: function () {
     return [
-      {label: "Port Type",      impl: "shape_designer.filter.PortTypeFilter"},
-      {label: "Port Direction", impl: "shape_designer.filter.PortDirectionFilter"},
-      {label: "Color",          impl: "shape_designer.filter.FillColorFilter"}
+      new shape_designer.filter.PortTypeFilter(),
+      new shape_designer.filter.PortDirectionFilter(),
+      new shape_designer.filter.FillColorFilter()
     ]
   },
 

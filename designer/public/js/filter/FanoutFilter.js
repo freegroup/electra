@@ -3,15 +3,15 @@ import Filter from "./Filter"
 export default shape_designer.filter.FanoutFilter = class FanoutFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.FanoutFilter")
+    super("shape_designer.filter.FanoutFilter","filter.fanout")
   }
 
   insertPane(figure, $parent) {
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-           <span data-i18n="filter.fanout" ${t("filter.fanout")}</span>
-           <span class="spacer"></span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
+          <span class="spacer"></span>
         </div>
 
         <div class="panel-body collapse in" id="${this.cssScope }_panel">

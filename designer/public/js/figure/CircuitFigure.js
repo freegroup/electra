@@ -154,13 +154,13 @@ export default draw2d.SetFigure.extend({
     //
     $.each(memento.labels, $.proxy(function (i, json) {
       // create the figure stored in the JSON
-      let figure = eval("new " + json.type + "()")
+      let figure = eval(`new ${json.type}()`)
 
       // apply all attributes
       figure.attr(json)
 
       // instantiate the locator
-      let locator = eval("new " + json.locator + "()")
+      let locator = eval(`new ${json.locator}()`)
 
       // add the new figure as child to this figure
       this.add(figure, locator)

@@ -3,7 +3,7 @@ import Filter from "./Filter"
 export default shape_designer.filter.PositionFilter = class PositionFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.PositionFilter")
+    super("shape_designer.filter.PositionFilter", "filter.position")
   }
 
   insertPane(figure, $parent) {
@@ -12,7 +12,7 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
       <div id="${this.containerId}" class="panel panel-default">
 
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">
-           <span data-i18n="filter.position" >${t("filter.position")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
 

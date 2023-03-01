@@ -1,11 +1,3 @@
-/**
- * This is only the mouseover reactive shape. A little bit smaller than the visible shape
- *
- * Or you can display this shape with opacity of 0.2 to indicate that this is a reactive area.
- */
-
-
-
 
 export default shape_designer.figure.MarkerStateAFigure = draw2d.shape.basic.Label.extend({
 

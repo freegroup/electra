@@ -2,7 +2,6 @@ export default class FilterPane {
 
 
   constructor(app, elementId, view) {
-    this.DEFAULT_LABEL = "Properties"
     this.html = $(elementId)
     this.view = view
     this.currentFigure = null
@@ -40,15 +39,15 @@ export default class FilterPane {
       })
       $('#add_filter_button').removeClass('disabled')
 
-      $.each(figure.getPotentialFilters(), function (i, e) {
-        $("#add_filter_action_menu").append("<li><a href='#' data-filter='" + e.impl + "' >" + e.label + "</a></li>")
+      $.each(figure.getPotentialFilters(), (i, e) => {
+        $("#add_filter_action_menu").append(`<li><a data-i18n="${e.LABEL}" href='#' data-filter='${e.NAME}' >${t(e.LABEL)}</a></li>`)
       })
 
       var _this = this
       $("#add_filter_action_menu a").on("click", function () {
         var $this = $(this)
         var filterName = $this.data("filter")
-        var filter = eval("new " + filterName + "()")
+        var filter = eval(`new ${filterName}()`)
         _this.currentFigure.addFilter(filter)
         _this.onSelectionChanged(_this.view, {figure: _this.currentFigure})
       })

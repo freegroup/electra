@@ -6,7 +6,7 @@ import "../widget/ui.anglepicker"
 export default shape_designer.filter.TextLinearGradientFilter = class TextLinearGradientFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.TextLinearGradientFilter")
+    super("shape_designer.filter.TextLinearGradientFilter", "filter.textgradient")
     this.colorPicker1 = null
     this.colorPicker2 = null
     this.startColor = "#f0f0f0"
@@ -19,7 +19,7 @@ export default shape_designer.filter.TextLinearGradientFilter = class TextLinear
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.textgradient" >${t("filter.textgradient")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
           <span id="button_remove_${this.cssScope}">&#8855;</span>
         </div>

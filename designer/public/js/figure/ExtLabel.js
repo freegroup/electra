@@ -1,3 +1,4 @@
+require ("../filter/index")
 
 export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend({
 
@@ -22,12 +23,12 @@ export default shape_designer.figure.ExtLabel = draw2d.shape.basic.Label.extend(
 
   getPotentialFilters: function () {
     return [
-      {label: "Opacity", impl: "shape_designer.filter.OpacityFilter"},
-      {label: "Blur", impl: "shape_designer.filter.BlurFilter"},
-      {label: "Outline", impl: "shape_designer.filter.OutlineStrokeFilter"},
-      {label: "Gradient", impl: "shape_designer.filter.TextLinearGradientFilter"},
-      {label: "Font Size", impl: "shape_designer.filter.FontSizeFilter"},
-      {label: "Font Color", impl: "shape_designer.filter.FontColorFilter"}
+      new shape_designer.filter.OpacityFilter(),
+      new shape_designer.filter.BlurFilter(),
+      new shape_designer.filter.OutlineStrokeFilter(),
+      new shape_designer.filter.TextLinearGradientFilter(),
+      new shape_designer.filter.FontSizeFilter(),
+      new shape_designer.filter.FontColorFilter()
     ]
   },
 

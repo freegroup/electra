@@ -3,7 +3,7 @@ import Filter from "./Filter"
 export default shape_designer.filter.PortTypeFilter = class PortTypeFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.PortTypeFilter")
+    super("shape_designer.filter.PortTypeFilter", "filter.porttype")
   }
 
   insertPane(figure, $parent) {
@@ -13,7 +13,7 @@ export default shape_designer.filter.PortTypeFilter = class PortTypeFilter exten
       <div id="${this.containerId}" class="panel panel-default">
 
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-          <span data-i18n="filter.porttype" >${t("filter.porttype")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
 

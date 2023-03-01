@@ -1,3 +1,5 @@
+require ("../filter/index")
+
 import ExtPolygon from "./ExtPolygon"
 
 export default shape_designer.figure.PolyRect = ExtPolygon.extend({

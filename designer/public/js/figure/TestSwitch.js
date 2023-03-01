@@ -1,4 +1,3 @@
-import colors from "../../../common/js/Colors"
 
 export default shape_designer.figure.TestSwitch = draw2d.shape.basic.Label.extend({
 

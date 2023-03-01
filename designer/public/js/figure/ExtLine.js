@@ -1,3 +1,5 @@
+require ("../filter/index")
+
 export default shape_designer.figure.ExtLine = draw2d.shape.basic.PolyLine.extend({
 
   NAME: "shape_designer.figure.ExtLine",
@@ -29,11 +31,11 @@ export default shape_designer.figure.ExtLine = draw2d.shape.basic.PolyLine.exten
 
   getPotentialFilters: function () {
     return [
-      {label: "Opacity", impl: "shape_designer.filter.OpacityFilter"},
-      {label: "Blur", impl: "shape_designer.filter.BlurFilter"},
-      {label: "Outline", impl: "shape_designer.filter.OutlineStrokeFilter"},
-      {label: "Corner Radius", impl: "shape_designer.filter.RadiusFilter"},
-      {label: "Stroke", impl: "shape_designer.filter.StrokeFilter"}
+      new shape_designer.filter.OpacityFilter(),
+      new shape_designer.filter.BlurFilter(),
+      new shape_designer.filter.OutlineStrokeFilter(),
+      new shape_designer.filter.RadiusFilter(),
+      new shape_designer.filter.StrokeFilter()
     ]
   },
 

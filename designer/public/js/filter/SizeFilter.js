@@ -3,7 +3,7 @@ import Filter from "./Filter"
 export default shape_designer.filter.SizeFilter = class SizeFilter extends Filter {
 
   constructor() {
-    super("shape_designer.filter.SizeFilter")
+    super("shape_designer.filter.SizeFilter", "filter.size")
   }
 
   insertPane(figure, $parent) {
@@ -11,7 +11,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
     $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
         <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">
-          <span data-i18n="filter.size" >${t("filter.size")}</span>
+          <span data-i18n="${this.LABEL}" >${t(this.LABEL)}</span>
           <span class="spacer"></span>
         </div>
         <div class="panel-body  collapse in" id="size_width_panel">
