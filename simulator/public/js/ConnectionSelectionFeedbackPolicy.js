@@ -51,11 +51,8 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
 
     $.contextMenu({
       selector: 'body',
-      events:
-        {
-          hide: function () {
-            $.contextMenu('destroy')
-          }
+      events:{
+          hide: () => {$.contextMenu('destroy')}
         },
       callback: $.proxy(function (key, options) {
         let originalVertices, newVertices
@@ -72,6 +69,7 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
           case "delete":
             conn.getCanvas().getCommandStack().execute(new draw2d.command.CommandDelete(conn))
             break
+
           case "split":
             // deep copy of the vertices of the connection for the command stack to avoid side effects
             originalVertices = conn.getVertices().clone(true)
@@ -93,6 +91,7 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
           case "unprobe":
             conn.remove(conn.getProbeFigure())
             break
+
           default:
             break
         }

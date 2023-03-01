@@ -249,7 +249,6 @@ try {
     io.use(wrap(sessionMiddleware));
 
     io.on("connection", (socket) => {
-        console.log(socket.request.session.browserId)
         if(socket.request.session.browserId){
             console.log("Join to room:", socket.request.session.browserId)
             socket.join(socket.request.session.browserId);
@@ -262,10 +261,6 @@ try {
         });
     });
     
-    io.on("i18n", (socket) => {
-        console.log(socket.request.session)
-    })
-
     app.use('/broadcast', ensureLocalhost, function( req, res){
         const topic = req.body.topic
         const event = req.body.event
@@ -293,6 +288,19 @@ try{
     const io = require('./websocket').connect(https, {path: '/socket.io'})
     io.use(wrap(sessionMiddleware));
 
+    io.on("connection", (socket) => {
+        if(socket.request.session.browserId){
+            console.log("Join to room:", socket.request.session.browserId)
+            socket.join(socket.request.session.browserId);
+        }
+
+        // receive a message from the client
+        socket.on("i18n", locale => {
+            console.log("send to room", socket.request.session.browserId, locale)
+            io.to(socket.request.session.browserId).emit("i18n", locale);
+        });
+    });
+    
     https.listen(8443, () => {
         console.log(`Starting Ingress at http://localhost:8443`);
     });
