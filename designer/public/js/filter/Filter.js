@@ -15,7 +15,6 @@ export default class Filter {
   }
 
   insertPane(figure, $parent) {
-
   }
 
   removePane() {

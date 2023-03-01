@@ -16,30 +16,33 @@ export default shape_designer.filter.TextLinearGradientFilter = class TextLinear
 
   insertPane(figure, $parent) {
 
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    <span>Linear Gradient</span>' +
-      '    <span class="spacer"></span>' +
-      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
-      '</div>' +
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.textgradient" >${t("filter.textgradient")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
 
-      ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
-      '   <div class="form-group">' +
-      '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '      <div class="input-group text-center" style="width:100%" >' +
-      '           <div id="' + this.cssScope + '_angle" />' +
-      '      </div> ' +
-      '       <div class="input-group">' +
-      '          <span class="input-group-addon">#</span>' +
-      '          <input id="' + this.cssScope + '_color1" type="text" value="' + this.startColor + '" class="mousetrap-pause color"/>' +
-      '       </div>' +
-      '       <div class="input-group">' +
-      '          <span class="input-group-addon">#</span>' +
-      '          <input id="' + this.cssScope + '_color2" type="text" value="' + this.endColor + '" class="mousetrap-pause color"/>' +
-      '       </div>' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group">
+            <div class="input-group" ></div>
+              <div class="input-group text-center" style="width:100%" >
+                 <div id="${this.cssScope}_angle" />
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color1" type="text" value="${this.startColor}" class="mousetrap-pause color"/>
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color2" type="text" value="${this.endColor}" class="mousetrap-pause color"/>
+              </div>
+          </div>
+        </div>
+      </div>`)
 
     $('#' + this.cssScope + '_angle').anglepicker({
       start: (e, ui) => {

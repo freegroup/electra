@@ -8,20 +8,20 @@ export default shape_designer.filter.BlurFilter = class BlurFilter extends Filte
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    <span>Blur</span>' +
-      '    <span class="spacer"></span>' +
-      '    <span id="button_remove_' + this.cssScope + '">&#8855;/span>' +
-      '</div>' +
+    $parent.append(`<div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.blur" >${t("filter.blur")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;/span>
+      </div>
 
-      ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
-      '   <div class="form-group">' +
-      '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '       <input id="filter_blur" type="text" value="' + figure.getBlur() + '"  name="filter_blur" class="mousetrap-pause" />' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+        <div class="form-group">
+          <div class="input-group" ></div>
+          <input id="filter_blur" type="text" value="${figure.getBlur()}"  name="filter_blur" class="mousetrap-pause" />
+        </div>
+       </div>
+      </div>`)
 
     $("#filter_blur").TouchSpin({
       min: 1,
@@ -31,7 +31,6 @@ export default shape_designer.filter.BlurFilter = class BlurFilter extends Filte
     })
 
     $("#filter_blur").on("change", () => { 
-      console.log("set blur")
       figure.setBlur(parseInt($("#filter_blur").val()))
     })
 
@@ -51,7 +50,6 @@ export default shape_designer.filter.BlurFilter = class BlurFilter extends Filte
   }
 
   apply(figure, attributes) {
-    console.log("apply")
     figure.shape.blur(Math.max(1,figure.blur))
   }
 

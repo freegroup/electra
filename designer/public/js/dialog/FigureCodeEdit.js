@@ -14,8 +14,8 @@ export default class FigureCodeEdit {
             </pre>
               <div class="tinyFlyoverMenu codeOverlay">
                 <button id="test_run"    class="electra-button">&#9654;</button>
-                <button id="test_commit" class="electra-button">Save</button>
-                <button id="test_cancel" class='electra-button'>Close</button>
+                <button data-i18n="common:button.save" id="test_commit" class="electra-button">${t("common:button.save")}</button>
+                <button data-i18n="common:button.close" id="test_cancel" class='electra-button'>${t("common:button.close")}</button>
               </div>
           </div>
             `

@@ -13,7 +13,7 @@ class Dialog {
             <div class="modal-dialog ">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="media-heading">Save Component </h4>
+                        <h4 data-i18n="dialog.save_component" class="media-heading">${t("dialog.save_component")}</h4>
                     </div>
                     <div class="modal-body">
                         <div class="media">
@@ -22,19 +22,19 @@ class Dialog {
                             </div>
                             <div class="media-body">
                               <div class="controlWithHeader">
-                                  <label>Library</label>
+                                  <label data-i18n="label.folder">${t("label.folder")}</label>
                                   <input type="text" class="directoryName" value="">
                               </div>
                               <div class="controlWithHeader">
-                                <label>Name</label>
+                                <label data-i18n="label.name">${t("label.name")}</label>
                                 <input type="text"  class="fileName" autofocus value="">
                               </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="electra-button" data-dismiss="modal">Cancel</button>
-                        <button class="electra-button electra-primary okButton"><span>Save</span></button>
+                        <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">${t("common:button.cancel")}</button>
+                        <button data-i18n="common:button.save" class="electra-button electra-primary okButton">${t("common:button.save")}</button>
                     </div>
                 </div>
             </div>

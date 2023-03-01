@@ -3305,7 +3305,7 @@ class Toolbar {
       $('.policyLineToolPolicy').click();
       return false;
     });
-    this.unionButton = $('<div class="image-button disabled" id="toolUnion" data-toggle="tooltip" title="Polygon Union <span class=\'highlight\'> [ U ]</span>" ><img class="svg" src="./images/toolbar_geo_union.svg"/><div>Union</div></div>');
+    this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="./images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`);
     buttonGroup.append(this.unionButton);
     this.html.delegate("#toolUnion:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll();
@@ -3322,7 +3322,7 @@ class Toolbar {
       this.unionButton.click();
       return false;
     });
-    this.differenceButton = $('<div class="image-button disabled" id="toolDifference" data-toggle="tooltip"  title="Polygon Difference <span class=\'highlight\'> [ D ]</span>" ><img class="svg" src="./images/toolbar_geo_subtract.svg"/><div>Subtract</div></div>');
+    this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="./images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`);
     buttonGroup.append(this.differenceButton);
     this.html.delegate("#toolDifference:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll();
@@ -3339,7 +3339,7 @@ class Toolbar {
       this.differenceButton.click();
       return false;
     });
-    this.intersectionButton = $('<div class="image-button disabled" id="toolIntersection" data-toggle="tooltip" title="Polygon Intersection <span class=\'highlight\'> [ I ]</span>" ><img class="svg" src="./images/toolbar_geo_intersect.svg"/><div>Intersect</div></div>');
+    this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="./images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`);
     buttonGroup.append(this.intersectionButton);
     this.html.delegate("#toolIntersection:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll();
@@ -3360,7 +3360,7 @@ class Toolbar {
     this.html.append(buttonGroup);
     buttonGroup = $('<div class="group"></div>');
     this.html.append(buttonGroup);
-    this.testButton = $('<div class="image-button" id="editTest" data-toggle="tooltip" title="Test your shape"><img class="svg" src="./images/toolbar_element_test.svg"/><div>Test</div></div>');
+    this.testButton = $(`<div class="image-button" id="editTest"><img class="svg" src="./images/toolbar_element_test.svg"/><div data-i18n="common:toolbar.test">${t("common:toolbar.test")}</div></div>`);
     buttonGroup.append(this.testButton);
     this.testButton.on("click", () => {
       // if any error happens during the shape code create/execute -> goto the the JS editor
@@ -3372,26 +3372,15 @@ class Toolbar {
         (0, _toast.default)("Your code contains errors. Unable to run test environment");
       }
     });
-    this.codeButton = $('<div class="image-button" id="editCode" data-toggle="tooltip" title="Edit JavaScript code</span>"><img class="svg" src="./images/toolbar_element_js.svg"/><div>Code</div></div>');
+    this.codeButton = $(`<div class="image-button" id="editCode"><img class="svg" src="./images/toolbar_element_js.svg"/><div data-i18n="common:toolbar.code">${t("common:toolbar.code")}</div></div>`);
     buttonGroup.append(this.codeButton);
     this.codeButton.on("click", () => {
       new _FigureCodeEdit.default().show();
     });
-    this.markdownButton = $('<div class="image-button" id="editDoc" data-toggle="tooltip" title="Write documentation for your shape</span>"><img class="svg" src="./images/toolbar_element_doc.svg"/><div>Doku</div></div>');
+    this.markdownButton = $(`<div class="image-button" id="editDoc"><img class="svg" src="./images/toolbar_element_doc.svg"/><div data-i18n="common:toolbar.docu">${t("common:toolbar.docu")}</div></div>`);
     buttonGroup.append(this.markdownButton);
     $(document).on("click", "#editDoc", () => {
       new _FigureMarkdownEdit.default().show();
-    }); // enable the tooltip for all buttons
-    //
-
-    $('*[data-toggle="tooltip"]').tooltip({
-      placement: "bottom",
-      container: "body",
-      delay: {
-        show: 1000,
-        hide: 10
-      },
-      html: true
     });
   }
   /**
@@ -3886,8 +3875,8 @@ class FigureCodeEdit {
             </pre>
               <div class="tinyFlyoverMenu codeOverlay">
                 <button id="test_run"    class="electra-button">&#9654;</button>
-                <button id="test_commit" class="electra-button">Save</button>
-                <button id="test_cancel" class='electra-button'>Close</button>
+                <button data-i18n="common:button.save" id="test_commit" class="electra-button">${t("common:button.save")}</button>
+                <button data-i18n="common:button.close" id="test_cancel" class='electra-button'>${t("common:button.close")}</button>
               </div>
           </div>
             `);
@@ -4030,8 +4019,8 @@ class FigureMarkdownEdit {
              <span class="right">HTML Preview</span>
           </div>
           <div class="tinyFlyoverMenu">
-            <button id="test_commit" class="electra-button">Save</button>
-            <button id="test_cancel" class='electra-button'>Close</button>
+            <button data-i18n="common:button.save" id="test_commit" class="electra-button">${t("common:button.save")}</button>
+            <button data-i18n="common:button.close" id="test_cancel" class='electra-button'>${t("common:button.close")}</button>
           </div>
       <div>
       `); // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfügen
@@ -4251,9 +4240,9 @@ class FigureTest {
         <div class="overlay-scale" id="testDialog">
           <div id="testCanvas">
           </div>
-          <div  class="testInfo" >Test page for your designed and coded draw2d shape.</div>
+          <div data-i18n="dialog.test_info" class="testInfo" >${t("dialog.test_info")}</div>
           <div class="tinyFlyoverMenu">
-            <button id="test_close" class="electra-button">Close</button>
+            <button data-i18n="common:button.close" id="test_cancel" class='electra-button'>${t("common:button.close")}</button>
           </div>
         <div>
         `); // fadeTo MUSS leider sein. Man kann mit raphael keine paper.text elemente einfügen
@@ -4324,7 +4313,7 @@ class FigureTest {
         }, 400);
       };
 
-      $(".tinyFlyoverMenu").on("click", "#test_close", removeDialog);
+      $(".tinyFlyoverMenu").on("click", "#test_cancel", removeDialog);
       splash.addClass("open");
       test.onStart(this.simulationContext);
       this.simulate = true;
@@ -4395,7 +4384,7 @@ class Dialog {
             <div class="modal-dialog ">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="media-heading">Save Component </h4>
+                        <h4 data-i18n="dialog.save_component" class="media-heading">${t("dialog.save_component")}</h4>
                     </div>
                     <div class="modal-body">
                         <div class="media">
@@ -4404,19 +4393,19 @@ class Dialog {
                             </div>
                             <div class="media-body">
                               <div class="controlWithHeader">
-                                  <label>Library</label>
+                                  <label data-i18n="label.folder">${t("label.folder")}</label>
                                   <input type="text" class="directoryName" value="">
                               </div>
                               <div class="controlWithHeader">
-                                <label>Name</label>
+                                <label data-i18n="label.name">${t("label.name")}</label>
                                 <input type="text"  class="fileName" autofocus value="">
                               </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="electra-button" data-dismiss="modal">Cancel</button>
-                        <button class="electra-button electra-primary okButton"><span>Save</span></button>
+                        <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">${t("common:button.cancel")}</button>
+                        <button data-i18n="common:button.save" class="electra-button electra-primary okButton">${t("common:button.save")}</button>
                     </div>
                 </div>
             </div>
@@ -6027,8 +6016,20 @@ var _default = shape_designer.filter.BlurFilter = class BlurFilter extends _Filt
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Blur</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;/span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '       <input id="filter_blur" type="text" value="' + figure.getBlur() + '"  name="filter_blur" class="mousetrap-pause" />' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`<div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.blur" >${t("filter.blur")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;/span>
+      </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+        <div class="form-group">
+          <div class="input-group" ></div>
+          <input id="filter_blur" type="text" value="${figure.getBlur()}"  name="filter_blur" class="mousetrap-pause" />
+        </div>
+       </div>
+      </div>`);
     $("#filter_blur").TouchSpin({
       min: 1,
       max: 5,
@@ -6036,7 +6037,6 @@ var _default = shape_designer.filter.BlurFilter = class BlurFilter extends _Filt
       step: 1
     });
     $("#filter_blur").on("change", () => {
-      console.log("set blur");
       figure.setBlur(parseInt($("#filter_blur").val()));
     });
     $("#button_remove_" + this.cssScope).on("click", () => {
@@ -6053,7 +6053,6 @@ var _default = shape_designer.filter.BlurFilter = class BlurFilter extends _Filt
   }
 
   apply(figure, attributes) {
-    console.log("apply");
     figure.shape.blur(Math.max(1, figure.blur));
   }
 
@@ -6087,19 +6086,19 @@ var _default = shape_designer.filter.FanoutFilter = class FanoutFilter extends _
   }
 
   insertPane(figure, $parent) {
-    $parent.append(` 
+    $parent.append(`
       <div id="${this.containerId}" class="panel panel-default">
-       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
-           <span>Maximal fan out</span>
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+           <span data-i18n="filter.fanout" ${t("filter.fanout")}</span>
            <span class="spacer"></span>
-           </div>
+        </div>
 
-       <div class="panel-body collapse in" id="${this.cssScope}_panel">
-         <div class="form-group">
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group">
             <div class="input-group" ></div>
-             <input id="filter_${this.cssScope}_fanout" type="text" value="${figure.getMaxFanOut()}" name="filter_${this.cssScope}_fanout" class="mousetrap-pause" />' +
-         </div>
-       </div>
+            <input id="filter_${this.cssScope}_fanout" type="text" value="${figure.getMaxFanOut()}" name="filter_${this.cssScope}_fanout" class="mousetrap-pause" />' +
+          </div>
+        </div>
       </div>
       `);
     inlineSVG.init({
@@ -6155,8 +6154,24 @@ var _default = shape_designer.filter.FillColorFilter = class FillColorFilter ext
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Color Fill</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + ' </div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause color"/>' + '       </div>' + '    </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.fillcolor" >${t("filter.fillcolor")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+       </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+            <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause color"/>
+             </div>
+          </div>
+       </div>
+      </div>`);
     this.colorPicker = new _jscolor.default.color(document.getElementById('filter_color_fill'), {});
     this.colorPicker.fromString(figure.getBackgroundColor().hash());
 
@@ -6262,8 +6277,24 @@ var _default = shape_designer.filter.FontColorFilter = class FontColorFilter ext
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Font Color</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + ' </div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause color"/>' + '       </div>' + '    </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.fontcolor" >${t("filter.fontcolor")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+       </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+            <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="filter_color_fill" type="text" value="" name="filter_color_fill" class="mousetrap-pause color"/>
+             </div>
+          </div>
+       </div>
+      </div>`);
     let picker = this.colorPicker = new _jscolor.default.color(document.getElementById('filter_color_fill'), {});
     this.colorPicker.fromString(figure.getFontColor().hash());
     this.colorPicker.onImmediateChange = $.proxy(function () {
@@ -6322,8 +6353,21 @@ var _default = shape_designer.filter.FontSizeFilter = class FontSizeFilter exten
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Font Size</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '       <input id="filter_fontsize" type="text" value="' + figure.getFontSize() + '" name="filter_fontsize" class="mousetrap-pause " />' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.fontsize" >${t("filter.fontsize")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+      </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_fontsize" type="text" value="${figure.getFontSize()}" name="filter_fontsize" class="mousetrap-pause " />
+         </div>
+       </div>
+      </div>`);
     $("#filter_fontsize").TouchSpin({
       min: 4,
       max: 300,
@@ -6393,8 +6437,31 @@ var _default = shape_designer.filter.LinearGradientFilter = class LinearGradient
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Linear Gradient</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group text-center" style="width:100%" >' + '           <div id="' + this.cssScope + '_angle" />' + '      </div> ' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="' + this.cssScope + '_color1" type="text" value="' + this.startColor + '" class="mousetrap-pause color"/>' + '       </div>' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="' + this.cssScope + '_color2" type="text" value="' + this.endColor + '" class="mousetrap-pause color"/>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.gradient" >${t("filter.gradient")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group">
+            <div class="input-group" ></div> 
+            <div class="input-group text-center" style="width:100%" >
+                 <div id="${this.cssScope}_angle" />
+            </div>
+             <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color1" type="text" value="${this.startColor}" class="mousetrap-pause color"/>
+             </div>
+             <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color2" type="text" value="${this.endColor}" class="mousetrap-pause color"/>
+             </div>
+          </div>
+        </div>
+      </div>`);
     $('#' + this.cssScope + '_angle').anglepicker({
       start: function (e, ui) {},
       change: (e, ui) => {
@@ -6496,8 +6563,22 @@ var _default = shape_designer.filter.OpacityFilter = class OpacityFilter extends
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Opacity</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group">' + '         <input class="mousetrap-pause" id="filter_opacity" type="text" value="' + parseInt(figure.getAlpha() * 100) + '" />' + '      </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.opacity" >${t("filter.opacity")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group">
+            <div class="input-group" ></div> 
+            <div class="input-group">
+              <input class="mousetrap-pause" id="filter_opacity" type="text" value="${parseInt(figure.getAlpha() * 100)}" />
+            </div>
+          </div>
+        </div>
+      </div>`);
     $("#filter_opacity").TouchSpin({
       min: 0,
       max: 100,
@@ -6558,8 +6639,25 @@ var _default = shape_designer.filter.OutlineStrokeFilter = class OutlineStrokeFi
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Outline Stroke</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '       <input id="filter_outlinestroke" type="text" value="' + figure.getOutlineStroke() + '" name="filter_outlinestroke" class="mousetrap-pause" />' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="filter_outlinestroke_color" type="text" value="" name="outlinestroke-color" class="mousetrap-pause color"/>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.stroke" >${t("filter.stroke")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_outlinestroke" type="text" value="${figure.getOutlineStroke()}" name="filter_outlinestroke" class="mousetrap-pause" />
+             <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="filter_outlinestroke_color" type="text" value="" name="outlinestroke-color" class="mousetrap-pause color"/>
+             </div>
+         </div>
+       </div>
+      </div>`);
     $("input[name='filter_outlinestroke']").TouchSpin({
       min: 0,
       max: 50,
@@ -6632,8 +6730,50 @@ var _default = shape_designer.filter.PortDirectionFilter = class PortDirectionFi
     var _this = this;
 
     var dir = figure.getConnectionDirection();
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '     <span>Connection Direction</span>' + '    <span class="spacer"></span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group portDirectionOption">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '<label>' + '  <input ' + (dir === 0 ? ' checked="checked"' : '') + ' type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-dir="0" />' + '  <span  title="up" class="glyphicon glyphicon-arrow-up"></span>' + '</label>' + '<br>' + '<label>' + '  <input ' + (dir === 3 ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-dir="3" />' + '  <span  title="left" class="glyphicon glyphicon-arrow-left"></span>' + '</label>' + '<label>' + '  <input ' + (dir === null ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-dir="null" />' + '  <span title="automatic" class="glyphicon glyphicon-screenshot"></span>' + '</label>' + '<label>' + '  <input ' + (dir === 1 ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-dir="1" />' + '  <span title="right"  class="glyphicon glyphicon-arrow-right"></span>' + '</label>' + '<br>' + '<label>' + '  <input ' + (dir === 2 ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-dir="2" />' + '  <span  title="down" class="glyphicon glyphicon-arrow-down"></span>' + '</label>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+       <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+           <span data-i18n="filter.direction" >${t("filter.direction")}</span>
+          <span class="spacer"></span>
+      </div>
+
+       <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group portDirectionOption">
+            <div class="input-group" ></div>
+
+              <label>
+                <input ${dir === 0 ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-dir="0" />
+                <span  title="up" class="glyphicon glyphicon-arrow-up"></span>
+              </label>
+
+              <br>
+
+              <label>
+                <input ${dir === 3 ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-dir="3" />
+                <span  title="left" class="glyphicon glyphicon-arrow-left"></span>
+              </label>
+
+              <label>
+                <input ${dir === null ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-dir="null" />
+                <span title="automatic" class="glyphicon glyphicon-screenshot"></span>
+              </label>
+
+              <label>
+                <input ${dir === 1 ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-dir="1" />
+                <span title="right"  class="glyphicon glyphicon-arrow-right"></span>
+              </label>
+
+              <br>
+
+              <label>
+                <input ${dir === 2 ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-dir="2" />
+                <span  title="down" class="glyphicon glyphicon-arrow-down"></span>
+              </label>
+
+             </div>
+         </div>
+       </div>
+      </div>`);
     inlineSVG.init({
       svgSelector: "#" + this.containerId + " img.svg"
     });
@@ -6679,7 +6819,34 @@ var _default = shape_designer.filter.PortTypeFilter = class PortTypeFilter exten
     let _this = this;
 
     let type = figure.getInputType();
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '     <span>Port Type</span>' + '    <span class="spacer"></span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group portTypeOption">' + '<label>' + '  <input ' + (type == 'Input' ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-type="Input" />' + '  <span  title="down" class="icon ion-log-in">input</span>' + '</label>' + '<br>' + '<label>' + '  <input ' + (type == 'Output' ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-type="Output" />' + '  <span  title="down" class="icon ion-log-out">output</span>' + '</label>' + '<br>' + '<label>' + '  <input ' + (type == 'Hybrid' ? ' checked="checked"' : '') + 'type="radio" value="" name="' + this.cssScope + '_label" name="' + this.cssScope + '_label" data-type="Hybrid" />' + '  <span  title="down" class="icon ion-ios-circle-outline">unspecified</span>' + '</label>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.porttype" >${t("filter.porttype")}</span>
+          <span class="spacer"></span>
+        </div>
+
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group portTypeOption">
+            <label>
+              <input ${type == 'Input' ? 'checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-type="Input" />
+              <span  title="down" class="icon ion-log-in">input</span>
+            </label>
+            <br>
+            <label>
+              <input ${type == 'Output' ? ' checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-type="Output" />
+              <span  title="down" class="icon ion-log-out">output</span>
+            </label>
+            <br>
+            <label>
+              <input ${type == 'Hybrid' ? ' checked="checked"' : ''} type="radio" value="" name="${this.cssScope}_label" name="${this.cssScope}_label" data-type="Hybrid" />
+              <span  title="down" class="icon ion-ios-circle-outline">unspecified</span>
+            </label>
+          </div>
+        </div>
+
+      </div>`);
     inlineSVG.init({
       svgSelector: "#" + this.containerId + " img.svg"
     });
@@ -6722,8 +6889,23 @@ var _default = shape_designer.filter.PositionFilter = class PositionFilter exten
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">' + '     <span>Position</span>' + '    <span class="spacer"></span>' + '</div>' + ' <div class="panel-body  collapse in" id="position_width_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '       <input id="filter_position_x" type="text" value="' + parseFloat(figure.getPosition().x) + '" name="filter_position_x" class="mousetrap-pause" />' + '       <input id="filter_position_y" type="text" value="' + parseFloat(figure.getPosition().y) + '" name="filter_position_y" class="mousetrap-pause" />' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">
+           <span data-i18n="filter.position" >${t("filter.position")}</span>
+          <span class="spacer"></span>
+        </div>
+
+        <div class="panel-body collapse in" id="position_width_panel">
+          <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_position_x" type="text" value="${parseFloat(figure.getPosition().x)}" name="filter_position_x" class="mousetrap-pause" />
+             <input id="filter_position_y" type="text" value="${parseFloat(figure.getPosition().y)}" name="filter_position_y" class="mousetrap-pause" />
+          </div>
+        </div>
+
+      </div>`);
     inlineSVG.init({
       svgSelector: "#" + this.containerId + " img.svg"
     });
@@ -6809,8 +6991,22 @@ var _default = shape_designer.filter.RadiusFilter = class RadiusFilter extends _
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Corner Radius</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group">' + '         <input class="mousetrap-pause" id="filter_radius" type="text" value="' + figure.getRadius() + '" />' + '      </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.radius" >${t("filter.radius")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+            <div class="input-group">
+               <input class="mousetrap-pause" id="filter_radius" type="text" value="${figure.getRadius()}" />
+            </div>
+         </div>
+        </div>
+      </div>`);
     $("#filter_radius").TouchSpin({
       min: 0,
       max: 200,
@@ -6867,8 +7063,20 @@ var _default = shape_designer.filter.SizeFilter = class SizeFilter extends _Filt
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">' + '     <span>Size</span>' + '    <span class="spacer"></span>' + ' </div>' + ' <div class="panel-body  collapse in" id="size_width_panel">' + '   <div class="form-group">' + '       <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '       <input id="filter_width"  type="text" value="' + figure.getWidth() + '"  name="filter_width"  class="mousetrap-pause" />' + '       <input id="filter_height" type="text" value="' + figure.getHeight() + '" name="filter_height" class="mousetrap-pause" />' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">
+          <span data-i18n="filter.size" >${t("filter.size")}</span>
+          <span class="spacer"></span>
+        </div>
+        <div class="panel-body  collapse in" id="size_width_panel">
+          <div class="form-group">
+             <div class="input-group" ></div>
+             <input id="filter_width"  type="text" value="${figure.getWidth()}"  name="filter_width"  class="mousetrap-pause" />
+             <input id="filter_height" type="text" value="${figure.getHeight()}" name="filter_height" class="mousetrap-pause" />
+          </div>
+        </div>
+      </div>`);
     inlineSVG.init({
       svgSelector: "#" + this.containerId + " img.svg"
     });
@@ -6878,7 +7086,7 @@ var _default = shape_designer.filter.SizeFilter = class SizeFilter extends _Filt
       step: 1,
       maxboostedstep: 10,
       mousewheel: false,
-      postfix: 'width'
+      postfix: t('filter.width')
     });
     $("#filter_height").TouchSpin({
       min: 0,
@@ -6886,7 +7094,7 @@ var _default = shape_designer.filter.SizeFilter = class SizeFilter extends _Filt
       step: 1,
       maxboostedstep: 10,
       mousewheel: false,
-      postfix: 'height'
+      postfix: t('filter.height')
     });
     $("input[name='filter_width']").on("change", () => {
       try {
@@ -6951,8 +7159,25 @@ var _default = shape_designer.filter.StrokeFilter = class StrokeFilter extends _
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Stroke</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div>' + // required to ensure the correct width of the siblings
-    '       <input id="filter_' + this.cssScope + '_width" type="text" value="' + figure.getStroke() + '" class="mousetrap-pause" />' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="filter_' + this.cssScope + '_color" type="text" value="" class="mousetrap-pause color"/>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.stroke" >${t("filter.stroke")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_${this.cssScope}_width" type="text" value="${figure.getStroke()}" class="mousetrap-pause" />
+             <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="filter_${this.cssScope}_color" type="text" value="" class="mousetrap-pause color"/>
+             </div>
+         </div>
+        </div>
+      </div>`);
     let filterWidth = $("#filter_" + this.cssScope + "_width");
     let filterColor = $("#filter_" + this.cssScope + "_color");
     filterWidth.TouchSpin({
@@ -7032,8 +7257,33 @@ var _default = shape_designer.filter.TextLinearGradientFilter = class TextLinear
   }
 
   insertPane(figure, $parent) {
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' + ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' + '    <span>Linear Gradient</span>' + '    <span class="spacer"></span>' + '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' + '</div>' + ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' + '   <div class="form-group">' + '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-    '      <div class="input-group text-center" style="width:100%" >' + '           <div id="' + this.cssScope + '_angle" />' + '      </div> ' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="' + this.cssScope + '_color1" type="text" value="' + this.startColor + '" class="mousetrap-pause color"/>' + '       </div>' + '       <div class="input-group">' + '          <span class="input-group-addon">#</span>' + '          <input id="' + this.cssScope + '_color2" type="text" value="' + this.endColor + '" class="mousetrap-pause color"/>' + '       </div>' + '   </div>' + ' </div>' + '</div>');
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.textgradient" >${t("filter.textgradient")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+          <div class="form-group">
+            <div class="input-group" ></div>
+              <div class="input-group text-center" style="width:100%" >
+                 <div id="${this.cssScope}_angle" />
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color1" type="text" value="${this.startColor}" class="mousetrap-pause color"/>
+              </div>
+
+              <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="${this.cssScope}_color2" type="text" value="${this.endColor}" class="mousetrap-pause color"/>
+              </div>
+          </div>
+        </div>
+      </div>`);
     $('#' + this.cssScope + '_angle').anglepicker({
       start: (e, ui) => {},
       change: (e, ui) => {

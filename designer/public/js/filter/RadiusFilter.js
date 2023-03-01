@@ -8,21 +8,22 @@ export default shape_designer.filter.RadiusFilter = class RadiusFilter extends F
 
   insertPane(figure, $parent) {
 
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    <span>Corner Radius</span>' +
-      '    <span class="spacer"></span>' +
-      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
-      '</div>' +
-      ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
-      '   <div class="form-group">' +
-      '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '      <div class="input-group">' +
-      '         <input class="mousetrap-pause" id="filter_radius" type="text" value="' + figure.getRadius() + '" />' +
-      '      </div>' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.radius" >${t("filter.radius")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+            <div class="input-group">
+               <input class="mousetrap-pause" id="filter_radius" type="text" value="${figure.getRadius()}" />
+            </div>
+         </div>
+        </div>
+      </div>`)
 
     $("#filter_radius").TouchSpin({
       min: 0,

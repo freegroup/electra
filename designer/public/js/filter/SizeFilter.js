@@ -8,19 +8,20 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
 
   insertPane(figure, $parent) {
 
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">' +
-      '     <span>Size</span>' +
-      '    <span class="spacer"></span>' +
-      ' </div>' +
-      ' <div class="panel-body  collapse in" id="size_width_panel">' +
-      '   <div class="form-group">' +
-      '       <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '       <input id="filter_width"  type="text" value="' + figure.getWidth() + '"  name="filter_width"  class="mousetrap-pause" />' +
-      '       <input id="filter_height" type="text" value="' + figure.getHeight() + '" name="filter_height" class="mousetrap-pause" />' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#size_width_panel">
+          <span data-i18n="filter.size" >${t("filter.size")}</span>
+          <span class="spacer"></span>
+        </div>
+        <div class="panel-body  collapse in" id="size_width_panel">
+          <div class="form-group">
+             <div class="input-group" ></div>
+             <input id="filter_width"  type="text" value="${figure.getWidth()}"  name="filter_width"  class="mousetrap-pause" />
+             <input id="filter_height" type="text" value="${figure.getHeight()}" name="filter_height" class="mousetrap-pause" />
+          </div>
+        </div>
+      </div>`)
     inlineSVG.init({svgSelector:"#"+this.containerId + " img.svg"})
 
     $("#filter_width").TouchSpin({
@@ -29,7 +30,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
       step: 1,
       maxboostedstep: 10,
       mousewheel: false,
-      postfix: 'width'
+      postfix: t('filter.width')
     })
 
     $("#filter_height").TouchSpin({
@@ -38,7 +39,7 @@ export default shape_designer.filter.SizeFilter = class SizeFilter extends Filte
       step: 1,
       maxboostedstep: 10,
       mousewheel: false,
-      postfix: 'height'
+      postfix: t('filter.height')
     })
 
     $("input[name='filter_width']").on("change", () => {

@@ -172,7 +172,7 @@ export default class Toolbar {
       return false
     })
 
-    this.unionButton = $('<div class="image-button disabled" id="toolUnion" data-toggle="tooltip" title="Polygon Union <span class=\'highlight\'> [ U ]</span>" ><img class="svg" src="./images/toolbar_geo_union.svg"/><div>Union</div></div>')
+    this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="./images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`)
     buttonGroup.append(this.unionButton)
     this.html.delegate("#toolUnion:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -188,7 +188,7 @@ export default class Toolbar {
       return false
     })
 
-    this.differenceButton = $('<div class="image-button disabled" id="toolDifference" data-toggle="tooltip"  title="Polygon Difference <span class=\'highlight\'> [ D ]</span>" ><img class="svg" src="./images/toolbar_geo_subtract.svg"/><div>Subtract</div></div>')
+    this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="./images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`)
     buttonGroup.append(this.differenceButton)
     this.html.delegate("#toolDifference:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -204,7 +204,7 @@ export default class Toolbar {
       return false
     })
 
-    this.intersectionButton = $('<div class="image-button disabled" id="toolIntersection" data-toggle="tooltip" title="Polygon Intersection <span class=\'highlight\'> [ I ]</span>" ><img class="svg" src="./images/toolbar_geo_intersect.svg"/><div>Intersect</div></div>')
+    this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="./images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`)
     buttonGroup.append(this.intersectionButton)
     this.html.delegate("#toolIntersection:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
@@ -225,7 +225,7 @@ export default class Toolbar {
 
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
-    this.testButton = $('<div class="image-button" id="editTest" data-toggle="tooltip" title="Test your shape"><img class="svg" src="./images/toolbar_element_test.svg"/><div>Test</div></div>')
+    this.testButton = $(`<div class="image-button" id="editTest"><img class="svg" src="./images/toolbar_element_test.svg"/><div data-i18n="common:toolbar.test">${t("common:toolbar.test")}</div></div>`)
     buttonGroup.append(this.testButton)
     this.testButton.on("click", () => {
       // if any error happens during the shape code create/execute -> goto the the JS editor
@@ -239,25 +239,16 @@ export default class Toolbar {
       }
     })
 
-    this.codeButton = $('<div class="image-button" id="editCode" data-toggle="tooltip" title="Edit JavaScript code</span>"><img class="svg" src="./images/toolbar_element_js.svg"/><div>Code</div></div>')
+    this.codeButton = $(`<div class="image-button" id="editCode"><img class="svg" src="./images/toolbar_element_js.svg"/><div data-i18n="common:toolbar.code">${t("common:toolbar.code")}</div></div>`)
     buttonGroup.append(this.codeButton)
     this.codeButton.on("click", () => {
       new FigureCodeEdit().show()
     })
 
-    this.markdownButton = $('<div class="image-button" id="editDoc" data-toggle="tooltip" title="Write documentation for your shape</span>"><img class="svg" src="./images/toolbar_element_doc.svg"/><div>Doku</div></div>')
+    this.markdownButton = $(`<div class="image-button" id="editDoc"><img class="svg" src="./images/toolbar_element_doc.svg"/><div data-i18n="common:toolbar.docu">${t("common:toolbar.docu")}</div></div>`)
     buttonGroup.append(this.markdownButton)
     $(document).on("click", "#editDoc", () => {
       new FigureMarkdownEdit().show()
-    })
-
-    // enable the tooltip for all buttons
-    //
-    $('*[data-toggle="tooltip"]').tooltip({
-      placement: "bottom",
-      container: "body",
-      delay: {show: 1000, hide: 10},
-      html: true
     })
   }
 

@@ -11,24 +11,25 @@ export default shape_designer.filter.StrokeFilter = class StrokeFilter extends F
   insertPane(figure, $parent) {
 
 
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#' + this.cssScope + '_panel">' +
-      '    <span>Stroke</span>' +
-      '    <span class="spacer"></span>' +
-      '    <span id="button_remove_' + this.cssScope + '">&#8855;</span>' +
-      '</div>' +
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#${this.cssScope}_panel">
+          <span data-i18n="filter.stroke" >${t("filter.stroke")}</span>
+          <span class="spacer"></span>
+          <span id="button_remove_${this.cssScope}">&#8855;</span>
+        </div>
 
-      ' <div class="panel-body collapse in" id="' + this.cssScope + '_panel">' +
-      '   <div class="form-group">' +
-      '      <div class="input-group" ></div>' + // required to ensure the correct width of the siblings
-      '       <input id="filter_' + this.cssScope + '_width" type="text" value="' + figure.getStroke() + '" class="mousetrap-pause" />' +
-      '       <div class="input-group">' +
-      '          <span class="input-group-addon">#</span>' +
-      '          <input id="filter_' + this.cssScope + '_color" type="text" value="" class="mousetrap-pause color"/>' +
-      '       </div>' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+        <div class="panel-body collapse in" id="${this.cssScope}_panel">
+         <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_${this.cssScope}_width" type="text" value="${figure.getStroke()}" class="mousetrap-pause" />
+             <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="filter_${this.cssScope}_color" type="text" value="" class="mousetrap-pause color"/>
+             </div>
+         </div>
+        </div>
+      </div>`)
 
     let filterWidth = $("#filter_" + this.cssScope + "_width")
     let filterColor = $("#filter_" + this.cssScope + "_color")

@@ -8,19 +8,23 @@ export default shape_designer.filter.PositionFilter = class PositionFilter exten
 
   insertPane(figure, $parent) {
 
-    $parent.append('<div id="' + this.containerId + '" class="panel panel-default">' +
-      ' <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">' +
-      '     <span>Position</span>' +
-      '    <span class="spacer"></span>' +
-      '</div>' +
-      ' <div class="panel-body  collapse in" id="position_width_panel">' +
-      '   <div class="form-group">' +
-      '      <div class="input-group" ></div> ' + // required to ensure the correct width of the siblings
-      '       <input id="filter_position_x" type="text" value="' + parseFloat(figure.getPosition().x) + '" name="filter_position_x" class="mousetrap-pause" />' +
-      '       <input id="filter_position_y" type="text" value="' + parseFloat(figure.getPosition().y) + '" name="filter_position_y" class="mousetrap-pause" />' +
-      '   </div>' +
-      ' </div>' +
-      '</div>')
+    $parent.append(`
+      <div id="${this.containerId}" class="panel panel-default">
+
+        <div class="panel-heading filter-heading" data-toggle="collapse" data-target="#position_width_panel">
+           <span data-i18n="filter.position" >${t("filter.position")}</span>
+          <span class="spacer"></span>
+        </div>
+
+        <div class="panel-body collapse in" id="position_width_panel">
+          <div class="form-group">
+            <div class="input-group" ></div>
+             <input id="filter_position_x" type="text" value="${parseFloat(figure.getPosition().x)}" name="filter_position_x" class="mousetrap-pause" />
+             <input id="filter_position_y" type="text" value="${parseFloat(figure.getPosition().y)}" name="filter_position_y" class="mousetrap-pause" />
+          </div>
+        </div>
+
+      </div>`)
     inlineSVG.init({svgSelector:"#"+this.containerId + " img.svg"})
 
     $("#filter_position_x").TouchSpin({

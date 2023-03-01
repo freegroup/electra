@@ -28,9 +28,9 @@ export default class FigureTest {
         <div class="overlay-scale" id="testDialog">
           <div id="testCanvas">
           </div>
-          <div  class="testInfo" >Test page for your designed and coded draw2d shape.</div>
+          <div data-i18n="dialog.test_info" class="testInfo" >${t("dialog.test_info")}</div>
           <div class="tinyFlyoverMenu">
-            <button id="test_close" class="electra-button">Close</button>
+            <button data-i18n="common:button.close" id="test_cancel" class='electra-button'>${t("common:button.close")}</button>
           </div>
         <div>
         `)
@@ -106,7 +106,7 @@ export default class FigureTest {
         }, 400)
       }
 
-      $(".tinyFlyoverMenu").on("click", "#test_close", removeDialog)
+      $(".tinyFlyoverMenu").on("click", "#test_cancel", removeDialog)
       splash.addClass("open")
 
       test.onStart(this.simulationContext)
