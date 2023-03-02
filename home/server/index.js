@@ -23,7 +23,11 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 // Create Express Server
 const app = express();
 
+// Does not work....different file path resolution
+// app.use(['/','/home'], express.static(scriptPath+'/../public'));
+
 app.use('/home', express.static(scriptPath+'/../public'));
+app.use('/', express.static(scriptPath+'/../public'));
 
 // Start Server
 // "localhost" => Service ist nicht von ausserhalb aufrufbar.

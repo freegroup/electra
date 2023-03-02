@@ -93,10 +93,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sessionMiddleware);
 
-app.get('/', function(req, res) {
-    res.redirect('/home');
-});
-
 
 // redirect to a non-www domain
 // https://www.electra.academy => https://electra.academy
@@ -113,6 +109,7 @@ app.get ('/*', function (req, res, next){
 // Required for the ACME-Challenge of LetsEncrypt
 //
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
+
 
 app.use('/home', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
@@ -236,6 +233,14 @@ app.use('/oauth/callback/:componentUri', async function(req, res) {
     req.session.givenName = payload.given_name;
     return res.redirect(`${req.protocol}://${req.headers.host}/${req.params.componentUri}/`);
 });
+
+
+app.use('/', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_HOME,
+    changeOrigin: true,
+    pathRewrite: {},
+    onProxyReq: onProxyReq
+}));
 
 //then, after all proxys
 app.use(bodyParser.json());

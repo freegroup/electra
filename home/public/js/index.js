@@ -34,6 +34,9 @@ $(window).scroll(get);
 
 $(window).load(function () {
 
+  // set the global socket object
+  socket = io( { path: '/socket.io'})
+
   // export all required classes for deserialize JSON with "eval"
   // "eval" code didn't sees imported class or code
   //
@@ -51,13 +54,16 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
-    return axios.get("../permissions")})
+    return axios.get("../permissions")
+  })
   .then( (response) => {
     let permissions = response.data
-      app = require("./Application").default
-      app.init(permissions)
-      inlineSVG.init()
-    })
+    app = require("./Application").default
+    return app.init(permissions)
+  })
+  .then( (app) => {
+    $('body').localize();
+    inlineSVG.init()
+  })
 });
   

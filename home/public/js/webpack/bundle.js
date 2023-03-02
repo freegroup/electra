@@ -506,11 +506,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class Application {
   constructor() {}
   init(permissions) {
-    this.userinfo = new _Userinfo.default(permissions);
-    this.appSwitch = new _AppSwitch.default(permissions);
-    this.lngSwitch = new _LngSwitch.default(permissions);
-    $(".launchArea .electra-button").one("mouseover", function () {
-      _partyJs.default.confetti(this);
+    return new Promise((resolve, reject) => {
+      this.userinfo = new _Userinfo.default(permissions);
+      this.appSwitch = new _AppSwitch.default(permissions);
+      this.lngSwitch = new _LngSwitch.default(permissions);
+      $(".launchArea .electra-button").one("mouseover", function () {
+        _partyJs.default.confetti(this);
+      });
+      resolve(this);
     });
   }
 }
@@ -11272,6 +11275,11 @@ function get() {
 get();
 $(window).scroll(get);
 $(window).load(function () {
+  // set the global socket object
+  socket = io({
+    path: '/socket.io'
+  });
+
   // export all required classes for deserialize JSON with "eval"
   // "eval" code didn't sees imported class or code
   //
@@ -11289,12 +11297,13 @@ $(window).load(function () {
     _jqueryI18next.default.init(_i18next.default, $, {
       useOptionsAttr: true
     });
-    $('body').localize();
     return _axios.default.get("../permissions");
   }).then(response => {
     let permissions = response.data;
     app = (__webpack_require__(/*! ./Application */ "./public/js/Application.js")["default"]);
-    app.init(permissions);
+    return app.init(permissions);
+  }).then(app => {
+    $('body').localize();
     _inlineSVG.default.init();
   });
 });
