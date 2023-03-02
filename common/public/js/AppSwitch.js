@@ -1,3 +1,7 @@
+import cookieBar from "./cookiebar"
+
+let bar = cookieBar.default
+
 export default class AppSwitch {
 
   constructor(permissions){
@@ -83,6 +87,8 @@ export default class AppSwitch {
     } else {
       $(".applicationSwitchUser").remove()
     }
+
+    new cookieBar()
   }
 
 }
