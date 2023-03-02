@@ -49,7 +49,7 @@ body.light {
   }
 
   .content {
-    background-color: #FFFFFF;
+    background-color: rgb(var(--pane-bg-color));
   }
 
   #canvas_config {
@@ -64,13 +64,13 @@ body.light {
 
   #codeDialog {
     .codeContainer {
-      background-color: white;
+      background-color: rgb(var(--pane-bg-color));
     }
   }
 
   #FigureMarkdownEdit {
     .header {
-      background-color: white;
+      background-color: rgb(var(--pane-bg-color));
 
       .left {
         color: rgb(var(--tint-color));
@@ -88,11 +88,11 @@ body.light {
     .testInfo {
       color: black;
       border-color: lightgray;
-      background-color: white;
+      background-color: rgb(var(--pane-bg-color));
     }
 
     #testCanvas {
-      background-color: white;
+      background-color: rgb(var(--pane-bg-color));
     }
 
   }
@@ -175,7 +175,7 @@ body.light {
 
     .input-group-addon {
       color: rgba(0, 0, 0, 0.3);
-      background-color: white;
+      background-color: rgb(var(--pane-bg-color));
     }
 
     .panel-default {
@@ -214,7 +214,7 @@ body.light {
     .panetitle {
       border-bottom-color: rgb(var(--border-color));
       color:rgb(var(--tint-color));
-      box-shadow: 0 4px 2px -2px rgba(31, 73, 125, 0.3);
+      box-shadow: var(--box-shadow-0);
     }
 
     #layer_elements {
@@ -253,7 +253,7 @@ body.light {
 
 
   #figureConfigDialog {
-    background-color: white;
+    background-color: rgb(var(--pane-bg-color));
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-left-color: rgb(var(--tint-color));
 
@@ -306,29 +306,15 @@ body.light {
   }
 
   .welcomeMessage {
-    background-color: white;
-    background-image: url(../images/background.png);
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: 100% 50%;
-
-    img {
-      background-color: white;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    }
+    background-color: rgb(var(--workplace-bg-color));
 
     .teaser {
-      background-color: white;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      background-color: rgb(var(--pane-bg-color));
+      box-shadow: var(--box-shadow-1);
 
       h2 {
         color: rgb(var(--tint-color));
       }
-    }
-
-    button {
-      background-color: rgb(var(--tint-color));
-      color: white;
     }
   }
 }

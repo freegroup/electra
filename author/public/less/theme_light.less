@@ -1,7 +1,8 @@
 
 body.light {
     --toolbar-bg-color: 254, 233, 233 ;
-
+    --workplace-bg-color: 255, 249, 249;
+    
     .tooltip-inner {
         color: #b0b0b0 !important;
     }
@@ -18,22 +19,15 @@ body.light {
     }
 
     .welcomeMessage {
-        background: url(../images/background.png) no-repeat;
-        background-position: center top;
-        background-size: 100% 50%;
-
-        img {
-            background-color: white;
-            box-shadow: var(--box-shadow-1);
-        }
-
+        background-color: rgb(var(--workplace-bg-color));
+    
         .teaser {
-            background-color: white;
-            box-shadow: var(--box-shadow-1);
-
-            h2 {
-                color: rgb(var(--tint-color)) ;
-            }
+          background-color: rgb(var(--pane-bg-color));
+          box-shadow: var(--box-shadow-1);
+    
+          h2 {
+            color: rgb(var(--tint-color));
+          }
         }
     }
 
