@@ -46,7 +46,7 @@ $(window).load(function () {
     fallbackLng: "en",
     ns: ['common', 'home'],
     defaultNS: 'home',
-    debug: true,
+    debug: false,
     backend: {
       // for all available options read the backend's repository readme file
       loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
