@@ -12,11 +12,11 @@ class Dialog {
             <div class="modal-dialog ">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="media-heading">Share with Others</h4>
+                  <h4 data-i18n="dialog.share" class="media-heading">Share with Others</h4>
                 </div>
                 <div class="modal-body">
                   <div class="controlWithHeader">
-                        <label class="promptValueLabel">Public Link</label>
+                        <label data-i18n="common:label.public_link" class="promptValueLabel">Public Link</label>
                         <div class="inputWithButton">
                           <input id="sharedLinkInput" type="text" class="" value="" > 
                           <button class="clipboardButton" style="float:right"><img src="../common/images/clipboard.svg"></button>
@@ -24,7 +24,7 @@ class Dialog {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="electra-button" data-dismiss="modal">Close</button>
+                  <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
