@@ -1,11 +1,5 @@
-/*!
- * Simple JS plugin for generating a basic cookie consent notice easily
- *
- * Copyright (c) 2022 @louisho5
- * Under the MIT license.
- *
- * @version 1.0.0
- */
+import party from "party-js";
+
 class CookieBar {
 
     constructor(options) {
@@ -14,11 +8,10 @@ class CookieBar {
 
         // Set options to default value when not set manually
 
-        this.options.selector ??= 'body';
-        this.options.message ??= 'By using our site you agree to our use of cookies to give you the best experience on our website.';
-        this.options.button ??= 'GOT IT';
-        this.options.theme ??= '#666';
-        this.options.expire ??= 24;
+        this.options.selector ??= 'body'
+        this.options.message ??= t("common:message.cookie")
+        this.options.button ??= t("common:button.got_it")
+        this.options.expire ??= 24
 
         var ccbar = $(this.options.selector);
 
@@ -27,13 +20,14 @@ class CookieBar {
         if (this.getCookie("cc-bar-cookies") != "accepted") {
             ccbar.append(`
             <div class="cookiebar" >
-                <h1>${this.options.message}</h1>
-                <button class="electra-button">${this.options.button}</button>
+                <h1 data-i18n="[html]common:message.cookie" >${this.options.message}</h1>
+                <button data-i18n="common:button.got_it" class="electra-button">${this.options.button}</button>
             </div>`);
             // Update cookies when clicked button
             let cookiebar = $(".cookiebar")            
             let button = $(".cookiebar button")
             button.on('click', (e)=> {
+                party.confetti(button[0])
                 this.setCookie("cc-bar-cookies", "accepted", this.options.expire)
                 cookiebar.hide('slow', () => cookiebar.remove())
             });        

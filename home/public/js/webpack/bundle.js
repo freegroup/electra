@@ -250,7 +250,7 @@ exports["default"] = Userinfo;
 /*!****************************************!*\
   !*** ../common/public/js/cookiebar.js ***!
   \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -259,14 +259,8 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
-/*!
- * Simple JS plugin for generating a basic cookie consent notice easily
- *
- * Copyright (c) 2022 @louisho5
- * Under the MIT license.
- *
- * @version 1.0.0
- */
+var _partyJs = _interopRequireDefault(__webpack_require__(/*! party-js */ "./node_modules/party-js/lib/index.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class CookieBar {
   constructor(options) {
     console.log("bar...");
@@ -275,9 +269,8 @@ class CookieBar {
     // Set options to default value when not set manually
 
     this.options.selector ??= 'body';
-    this.options.message ??= 'By using our site you agree to our use of cookies to give you the best experience on our website.';
-    this.options.button ??= 'GOT IT';
-    this.options.theme ??= '#666';
+    this.options.message ??= t("common:message.cookie");
+    this.options.button ??= t("common:button.got_it");
     this.options.expire ??= 24;
     var ccbar = $(this.options.selector);
 
@@ -286,13 +279,14 @@ class CookieBar {
     if (this.getCookie("cc-bar-cookies") != "accepted") {
       ccbar.append(`
             <div class="cookiebar" >
-                <h1>${this.options.message}</h1>
-                <button class="electra-button">${this.options.button}</button>
+                <h1 data-i18n="[html]common:message.cookie" >${this.options.message}</h1>
+                <button data-i18n="common:button.got_it" class="electra-button">${this.options.button}</button>
             </div>`);
       // Update cookies when clicked button
       let cookiebar = $(".cookiebar");
       let button = $(".cookiebar button");
       button.on('click', e => {
+        _partyJs.default.confetti(button[0]);
         this.setCookie("cc-bar-cookies", "accepted", this.options.expire);
         cookiebar.hide('slow', () => cookiebar.remove());
       });
