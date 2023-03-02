@@ -1,0 +1,109 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+  <title>Legal</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <link rel="icon" type="image/png"    href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_48x48.png" sizes="48x48">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png"    href="../common/images/favicon_16x16.png" sizes="16x16">
+
+  <link href="../common/css/katex.min.css" rel="stylesheet" >
+  <link href='../common/css//roboto.css' rel='stylesheet' type='text/css'>
+  <link href="../common/css/loader.css" rel='stylesheet' type='text/css'/>
+
+  <script src="../common/js/jquery/jquery.js"></script>
+  <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+
+
+  <script type="text/javascript">
+    var app = null
+    var socket = null
+  </script>
+</head>
+
+<body id="container" class="light">
+
+  <div id="layout">
+  
+    <div class="appbar">
+      <img class="icon svg" src="../common/images/favicon_64x64.svg"/>
+      <div class="title">
+          <h1>Electra.Academy</h1>
+          <h2>Legal</h2>
+      </div>
+      <div class="slogan" data-i18n="common:header.slogan"></div>
+
+      <div class="spacer"></div>
+  
+      <span class="group applicationSwitch">
+        <label class="dropdown userinfo_toggler" >
+          <span class="image-button" data-toggle="dropdown">
+            <img  src="../common/images/toolbar_user.svg"/>
+          </span>
+          <div class="dropdown-menu" role="menu" >
+          </div>
+        </label>
+      </span>
+
+    </div>
+
+    <div class="workspace">
+      <div class="toolbar">
+       <div id="componentFilter">
+          <input type="radio" id="show-terms" name="x" checked/>
+          <label data-i18n="label.termsofuse" for="show-terms""></label>
+
+          <input type="radio" id="show-privacy" name="x" />
+          <label data-i18n="label.dataprotection" for="show-privacy"></label>
+        </div>
+
+      </div>
+
+      <div class="content">
+
+        <div class="welcomeMessage">
+          <div class="left">
+            <div class="teaser">
+              <h2 data-i18n="app.title"></h2>
+              <p data-i18n="app.slogan"></p>
+            </div>
+          </div>
+          
+          <div class="right">
+          </div>
+
+        </div>
+        
+        <div class="searchResult" id="markdownContainer">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="loader">
+    <div class="title" data-i18n="[html]app.loading"></div>
+    <div class="gooey">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+  
+</body>
+
+<script src="../socket.io/socket.io.js"></script>
+<script src="https://accounts.google.com/gsi/client" defer></script>
+
+<script src="./js/webpack/bundle.js"></script>
+
+</html>

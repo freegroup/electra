@@ -40,6 +40,12 @@
     become_user: electra
     community.general.npm:
       path: /home/electra/server/author
+    
+  - name: Install packages in /legal
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/legal
 
   - name: Install packages in /brains
     become: true
@@ -120,6 +126,13 @@
     args:
       chdir: /home/electra/server/gallery
 
+  - name: Build /legal
+    become: true
+    become_user: electra
+    command: npm run build
+    args:
+      chdir: /home/electra/server/legal
+
   - name: Build /home
     become: true
     become_user: electra
@@ -174,7 +187,7 @@
       group: ssl_group
       mode: '0600'
 
-  - name: Run the application via PM2 edosystem configuration
+  - name: Run the application via PM2 ecosystem configuration
     become: true
     become_user: electra
     command: pm2 restart ./ecosystem.config.js

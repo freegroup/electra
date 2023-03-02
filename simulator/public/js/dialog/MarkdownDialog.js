@@ -18,7 +18,7 @@ class Dialog {
     let markdownName = shapeName.replace(/\.shape$/, ".md")
     let contentUrl = conf.shapes[scope].file(markdownName)
     $.get(contentUrl,  (content) => {
-      $('#markdownDialog .markdownRendering').html(md.render(content))
+      $('#markdownDialog .sectionContent').html(md.render(content))
       $('#markdownDialog .media-heading').html(displayName)
       $('#markdownDialog').modal('show')
     })

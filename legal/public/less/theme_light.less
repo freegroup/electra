@@ -1,0 +1,91 @@
+
+body.light {
+    --toolbar-bg-color: 223, 61, 138 ;
+
+    .toolbar {
+        background-color: rgba(var(--toolbar-bg-color), 0.4);
+        #componentFilter{
+            border: 1px solid #666;
+            label{
+                border-right: 1px solid #ccc;
+                background-color: white;
+            }
+            label:hover{
+                background: #eee;
+            }
+            input:checked + label{
+                background:rgb(var(--tint-color));
+                color: white;
+            }
+        }
+        
+    }
+
+    .content {
+        background-color: rgb(var(--workplace-bg-color));
+        .welcomeMessage {
+            .teaser {
+                background-color: rgb(var(--pane-bg-color));
+
+                h2 {
+                    color: rgb(var(--tint-color)) ;
+                }
+            }
+            .description{
+                background-color: rgb(var(--pane-bg-color));
+            
+            }
+        }
+        .searchResult {
+            background-color: rgb(var(--pane-bg-color));
+        }
+    }
+
+    .tile {
+        box-shadow: var(--box-shadow-0);
+
+        &.displayMode,
+        &.editMode {
+            background-color: rgb(var(--pane-bg-color));
+        }
+
+        .details {
+            background-color: white;
+            border-left: 1px solid #e9e9e9;
+
+            .headline{
+
+                border-bottom: 1px solid rgb(var(--tint-color));
+                .displayName{
+                    color: rgb(var(--tint-color));
+                }
+                .icons {
+                    div{
+                        &:hover{
+                            color: rgb(var(--tint-color));
+                        }
+                    }
+                }
+    
+            }
+            .tags{
+                .tag{
+                    background-color: lightgray;
+                }
+            }
+            .description{
+   
+                table {
+                    border: 1px solid #AAA;
+                    th{
+                        background-color: rgba(0,0,0,0.05);
+                    }
+                    td, th {
+                        border: 1px solid #DDD;
+                    }
+                }
+                
+            }
+        }
+    }
+}

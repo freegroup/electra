@@ -78,7 +78,7 @@ export default class Editor extends GenericEditor{
   }
 
   append(whereToAppend, content){
-    whereToAppend.append(`<div class="sectionContent markdownRendering" data-type="${this.type}">${content}</div>`)
+    whereToAppend.append(`<div class="sectionContent" data-type="${this.type}">${content}</div>`)
   }
 
   defaultContent(){

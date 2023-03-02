@@ -21,7 +21,7 @@ export default class AuthorPage {
         $(this.containerId).html("")
         let pages = response.data.pages
         pages.forEach( (page, index) => {
-          let container = $("<div class='authorPage'></div>")
+          let container = $("<div class='authorPage section'></div>")
           $(this.containerId).append(container)
           let sections = page.sections
           sections.forEach( (section) => {
@@ -29,6 +29,9 @@ export default class AuthorPage {
               case "brain":
                 this.renderBrain(container, section)
                 break
+              case "wysiwyg":
+                  this.renderMarkdown(container, section)
+                  break
               case "markdown":
                 this.renderMarkdown(container, section)
                 break
@@ -45,11 +48,11 @@ export default class AuthorPage {
 
   renderMarkdown(container, section){
     let markdown = md.render(section.content)
-    container.append(`<div class="markdownRendering">${markdown}</div>`)
+    container.append(`<div class="sectionContent" data-type="wysiwyg">${markdown}</div>`)
   }
 
   renderBrain(container, section){
-    container.append(`<div class="imageRendering"><img src="${section.content.image}"></div>` )
+    container.append(`<div class="imageRendering" data-type="image"><img src="${section.content.image}"></div>` )
   }
 }
 

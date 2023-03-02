@@ -42,6 +42,7 @@ const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable POR
 const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
+const PORT_LEGAL = process.env.PORT_LEGAL || die("missing env variable PORT_LEGAL");
 const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
 const PORT_GAMIFICATION = process.env.PORT_GAMIFICATION || die("missing env variable PORT_GAMIFICATION");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
@@ -113,6 +114,13 @@ app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.we
 
 app.use('/home', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
+    changeOrigin: true,
+    pathRewrite: {},
+    onProxyReq: onProxyReq
+}));
+
+app.use('/legal', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_LEGAL,
     changeOrigin: true,
     pathRewrite: {},
     onProxyReq: onProxyReq

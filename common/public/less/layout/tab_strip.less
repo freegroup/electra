@@ -4,6 +4,29 @@
     width: @tabSize;
     padding-top: @tabSize;
     overflow:hidden;
+    display: flex;
+    flex-direction: column;
+
+    li {
+      float: none;
+      margin: 0;
+
+      a {
+        margin-right: 0;
+        border: 0;
+      }
+    }
+
+    >.active>a, 
+    >.active>a:hover, 
+    >.active>a:focus {
+      border:0;
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+  
     &:after {
         transform: rotate(-90deg) translate(-90px, -70px);
         font-size: 55px;
@@ -19,4 +42,4 @@
       padding: 4px;
     }
 
-  }
+}

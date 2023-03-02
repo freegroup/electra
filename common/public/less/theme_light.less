@@ -209,7 +209,8 @@ body.light {
             color: rgb(var(--lefttab-font-color));
         }
 
-        li {
+        >li,
+        >div {
             &.active {
                 a{
                     &:hover {
@@ -445,43 +446,80 @@ body.light {
         }
     }
 
-    .markdownRendering {
-        table {
-            color: #666;
-            text-shadow: 1px 1px 0px #fff;
-            background: #eaebec;
-            border-color: rgb(var(--border-color));
-            box-shadow: var(--box-shadow-1);
+    /** don't place ".section" in the sub-tree of ".sections" . The ".section" is 
+        used in other page elements like pdf, dialog, single page, ...
+    **/ 
+    .section {
+        border-color: transparent;
+        &.error {
+            border-color:rgb(var(--tint-color)) ;
         }
+        .sectionContent {
+            &[data-type='flashcard'],
+            &[data-type='wysiwyg'],
+            &[data-type='markdown'],
+            &[data-type='cloze'] {
+                h1 ,
+                h2 ,
+                h3 {
+                    color: rgb(var(--tint-color)) ;
+                }
+                h1{
+                    border-bottom-color: rgb(var(--tint-color)) ;
+                }
+                .cloze {
+                    background-color: lightgray;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    border-radius: @borderRadiusSmall;
+                    border-bottom: 1px dotted gray;
+                }
+                a {
+                    color: inherit;
+                    text-decoration: none;
+                    background:
+                    linear-gradient(
+                        to right,
+                        rgb(var(--toolbar-bg-color)),
+                        rgb(var(--toolbar-bg-color))
+                    ),
+                    linear-gradient(
+                        to right,
+                        rgb(var(--tint-color)),
+                        rgba(255, 0, 180, 1),
+                        rgba(0, 100, 200, 1)
+                    );
+                    background-size: 100% 1px, 0 1px;
+                    background-position: 100% 100%, 0 100%;
+                    background-repeat: no-repeat;
+                    transition: background-size 200ms;
+                }    
+                a:hover {
+                    background-size: 0 1px, 100% 1px;
+                }
+            }
 
-        table th {
-            border-top-color: rgb(var(--border-color));
-            border-bottom-color: rgb(var(--border-color));
-        }
+            /** learning content gets a special annotation on the left **/
+            &[data-type="flashcard"] {
+                .sectionMenuFlip {
+                    background-color: rgba(var(--tint-color), 0.2) ;
+                    border: 1px solid white;
+                }
+            }
 
-        table tr td {
-            border-top-color: #ffffff;
-            border-bottom-color: rgb(var(--border-color));
-            border-left-color: rgb(var(--border-color));
-        }
-
-        tbody tr:nth-child(odd) {
-            background: #fafafa;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #f3f3f3;
-        }
-
-        .info {
-            border-color: rgb(var(--border-color));
-            background-color: #81c7e1;
-            color: white;
-
-            p {}
+            .placeholderContainer{
+                border-color:rgb(var(--border-color));
+                .placeholderText{
+                h1{
+                    color: rgb(var(--text-color));
+                }
+                h2{
+                    color: rgb(var(--text-color));
+                }
+                }
+            }
         }
     }
-
     .toolbar {
         background-color: #B2E2F2;
     }

@@ -19,7 +19,7 @@ export default class FigureMarkdownEdit {
     let splash = $(`
       <div id="FigureMarkdownEdit" class="overlay-scale">
           <pre class="source full-height">${markdown}</pre>
-          <div class="full-height markdownRendering">
+          <div class="full-height section">
           </div>
           <div class="header">
              <span class="left">Markdown Editor (<a target="_blank" href="https://en.wikipedia.org/wiki/Markdown">markdown syntax </a>)</span>
@@ -58,7 +58,7 @@ export default class FigureMarkdownEdit {
       splash.addClass("open")
     }, 100)
 
-    this.$preview = $("#FigureMarkdownEdit .markdownRendering")
+    this.$preview = $("#FigureMarkdownEdit .section")
     this.$source = $('#FigureMarkdownEdit .source')
 
     let editor = ace.edit(this.$source[0]),session = editor.getSession()

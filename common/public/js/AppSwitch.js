@@ -43,17 +43,12 @@ export default class AppSwitch {
                         <div>Channel</div>
                       </label>
 
-                      <label class="applicationSwitchUser image-button" >
-                        <img src="../common/images/app_user.svg"/>
-                        <div>User</div>
-                        <div>Management</div>
+                      <label class="applicationSwitchLegal image-button" >
+                        <img src="../common/images/app_legal.svg"/>
+                        <div>Terms of Use</div>
+                        <div>Privacy</div>
                       </label>
-                      
-                      <label class="applicationSwitchGroups image-button" >
-                        <img src="../common/images/app_groups.svg"/>
-                        <div>My Groups</div>
-                        <div>&nbsp;</div>
-                      </label>
+
                 </div>   
          </span>
     `)
@@ -61,6 +56,9 @@ export default class AppSwitch {
 
     $(".applicationSwitchYoutube").off("click").on("click", () => {
       window.open("https://www.youtube.com/@electra.academy", "youtube")
+    })
+    $(".applicationSwitchLegal").off("click").on("click", () => {
+      window.open("../legal", "legal")
     })
     $(".applicationSwitchGallery").off("click").on("click", () => {
       window.open("../gallery", "gallery")
@@ -84,14 +82,6 @@ export default class AppSwitch {
       })
     } else {
       $(".applicationSwitchUser").remove()
-    }
-
-    if (permissions.featureset.records === true) {
-      $(document).on("click", ".applicationSwitchGroups", () => {
-        window.open("../groups", "groups")
-      })
-    } else {
-      $(".applicationSwitchGroups").remove()
     }
   }
 

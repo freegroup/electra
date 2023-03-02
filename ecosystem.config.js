@@ -1,6 +1,12 @@
 module.exports = {
     apps : [
           {
+            name   : "legal",
+            cwd : "./legal",
+            script: "node",
+            args: "./server/index",
+          },          
+          {
             name   : "author",
             cwd : "./author",
             script: "node",

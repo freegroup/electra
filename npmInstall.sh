@@ -4,6 +4,10 @@ set -x
 (cd ./author && npm install )  
 (cd ./author && npm run build )
 
+(cd ./legal && rm -rf ./node-modules )  
+(cd ./legal && npm install )  
+(cd ./legal && npm run build )
+
 (cd ./brains && rm -rf ./node-modules )  
 (cd ./brains && npm install )
 
