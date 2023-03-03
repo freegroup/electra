@@ -29,6 +29,10 @@ module.exports = {
 
         // TODO: migrate to REST service API
         app.get('/shapes/index.js', nocache, userHash, (req, res) => {
+            // the multistream do not set the correct mime type of the response....fix this.
+            //
+            res.setHeader('content-type', 'text/javascript')
+            
             // create a array of file which can be concatenated and stream in a single response
             //
             let streams = [
