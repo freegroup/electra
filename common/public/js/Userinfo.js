@@ -8,6 +8,19 @@ export default class Userinfo {
       $(".userinfo_toggler").remove()
     }
     else {
+      // inject google analytics
+      //
+      $("head").append(` 
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-LNVJQE5N3Z');
+        </script>
+      `)
       // https://console.cloud.google.com/apis/credentials
       google.accounts.id.initialize({
         client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
