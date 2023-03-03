@@ -32,7 +32,7 @@ module.exports = {
             // the multistream do not set the correct mime type of the response....fix this.
             //
             res.setHeader('content-type', 'text/javascript')
-            
+
             // create a array of file which can be concatenated and stream in a single response
             //
             let streams = [
@@ -53,6 +53,10 @@ module.exports = {
         }),
 
         app.get('/shapes/index.json', nocache, userHash, (req, res) => {
+            // the multistream do not set the correct mime type of the response....fix this.
+            //
+            res.setHeader('content-type', 'application/json')
+ 
             // All JSON Files which can be concatenated and returned in a single JSON-Array
             //
             let readFiles =  [
