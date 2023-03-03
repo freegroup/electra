@@ -2,34 +2,24 @@ import party from "party-js";
 
 class CookieBar {
 
-    constructor(options) {
-        console.log("bar...")
-        this.options = options ?? {}
-
-        // Set options to default value when not set manually
-
-        this.options.selector ??= 'body'
-        this.options.message ??= t("common:message.cookie")
-        this.options.button ??= t("common:button.got_it")
-        this.options.expire ??= 24
-
-        var ccbar = $(this.options.selector);
+    constructor() {
+        var ccbar = $("body");
 
         // Check if cookie has been accepted
 
-        if (this.getCookie("cc-bar-cookies") != "accepted") {
+        if (this.getCookie("electra-cookie") != "got-it") {
             ccbar.append(`
             <div class="cookiebar" >
                 <img src="../common/images/cookie.svg">
-                <h1 data-i18n="[html]common:message.cookie" >${this.options.message}</h1>
-                <button data-i18n="common:button.got_it" class="electra-button">${this.options.button}</button>
+                <h1 data-i18n="[html]common:message.cookie" >${t("common:message.cookie")}</h1>
+                <button data-i18n="common:button.got_it" class="electra-button">${t("common:button.got_it")}</button>
             </div>`);
             // Update cookies when clicked button
             let cookiebar = $(".cookiebar")            
             let button = $(".cookiebar button")
             button.on('click', (e)=> {
                 party.confetti(button[0])
-                this.setCookie("cc-bar-cookies", "accepted", this.options.expire)
+                this.setCookie("electra-cookie", "got-it", 24)
                 cookiebar.hide('slow', () => cookiebar.remove())
             });        
         }

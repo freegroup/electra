@@ -5,6 +5,8 @@ const dotenv = require('dotenv')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session')
+const helmet = require("helmet");
+
 const {OAuth2Client} = require('google-auth-library');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -29,6 +31,20 @@ function die(msg){
 // Create Express Server
 const app = express();
 
+//app.use(helmet.contentSecurityPolicy());
+app.use(helmet.crossOriginEmbedderPolicy());
+app.use(helmet.crossOriginOpenerPolicy());
+app.use(helmet.crossOriginResourcePolicy());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.frameguard());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.hsts());
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.originAgentCluster());
+app.use(helmet.permittedCrossDomainPolicies());
+app.use(helmet.referrerPolicy());
+app.use(helmet.xssFilter());
 
 // Configuration
 const PORT = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
