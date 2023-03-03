@@ -187,6 +187,13 @@
       group: ssl_group
       mode: '0600'
 
+  - name: Delete all running processes via PM2
+    become: true
+    become_user: electra
+    command: pm2 delete all
+    args:
+      chdir: /home/electra/server/
+
   - name: Run the application via PM2 ecosystem configuration
     become: true
     become_user: electra

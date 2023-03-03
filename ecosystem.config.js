@@ -68,6 +68,7 @@ module.exports = {
             cwd : "./ingress",
             script: "node",
             args: "./server/index",
+            exec_mode : "cluster",
             env: { "NODE_ENV": "production"}
           },          
           {
