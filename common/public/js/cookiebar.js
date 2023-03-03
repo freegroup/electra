@@ -20,6 +20,7 @@ class CookieBar {
         if (this.getCookie("cc-bar-cookies") != "accepted") {
             ccbar.append(`
             <div class="cookiebar" >
+                <img src="../common/images/cookie.svg">
                 <h1 data-i18n="[html]common:message.cookie" >${this.options.message}</h1>
                 <button data-i18n="common:button.got_it" class="electra-button">${this.options.button}</button>
             </div>`);
