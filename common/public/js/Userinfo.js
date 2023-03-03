@@ -36,7 +36,7 @@ export default class Userinfo {
           $(".userinfo_toggler img").attr("src",icon)
           $(".userinfo_toggler .dropdown-menu").html(` 
               <div class="userContainer">
-                <img src="${icon}"/>
+                <img crossorigin="anonymous" src="${icon}"/>
                 <div>${this.user.displayName}</div>
                 <div>${role}</div>
               </div>
