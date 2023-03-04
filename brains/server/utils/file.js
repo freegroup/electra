@@ -240,30 +240,25 @@ module.exports = {
     let toAbsolutePath = path.join(toDir, toFilePath)
 
     if (fromAbsolutePath !== sanitize(fromAbsolutePath)) {
-      res?.status(403).send('Invalid file name')
       throw new Error(`sanitized from filepath '${fromAbsolutePath}' is different than the original file`)
     }
 
     // "from" must be exists
     if (!fs.existsSync(fromAbsolutePath)) {
-      res?.status(403).send('Invalid file name')
       throw new Error(`original file '${fromAbsolutePath}' not found`)
     }
 
     // check that the normalize path is the same the concatenated. It is possible the these are not the same
     // if the "from" contains dots like "/dir1/dir2/../../". It is a file path attack via API calls
     if (fromAbsolutePath !== path.normalize(fromAbsolutePath)) {
-      res?.status(403).send('Invalid file name')
       throw new Error(`normalized path of '${fromAbsolutePath}' is not equals to original filepath`)
     }
 
     if (toAbsolutePath !== path.normalize(toAbsolutePath)) {
-      res?.status(403).send('Invalid file name')
       throw new Error(`normalized path of '${toAbsolutePath}' is not equals to original filepath`)
     }
 
     if (fs.existsSync(toAbsolutePath)) {
-      res?.status(403).send('File already exists')
       throw new Error(`Targe file '${toAbsolutePath}' already exists`)
     }
 

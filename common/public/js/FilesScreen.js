@@ -121,7 +121,7 @@ export default class Files {
 
     $(document)
       .on("click", "#userFiles .fileOperationsFolderAdd", (event) => {
-        let folder = $(event.target).data("folder") || ""
+        let folder = $(event.target).data("folder") ?? ""
         inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "user")
@@ -129,7 +129,7 @@ export default class Files {
         })
       })
       .on("click", "#globalFiles .fileOperationsFolderAdd", (event) => {
-        let folder = $(event.target).data("folder") || ""
+        let folder = $(event.target).data("folder") ?? ""
         inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "global")
@@ -137,12 +137,12 @@ export default class Files {
         })
       })
       .on("click", "#userFiles .fileOperationsDocumentAdd", (event) => {
-        let folder = $(event.target).data("folder") || ""
+        let folder = $(event.target).data("folder") ?? ""
         this.app.fileNew(folder+conf.fileNew, "user")
         this.app.fileSave()
       })
       .on("click", "#globalFiles .fileOperationsDocumentAdd", (event) => {
-        let folder = $(event.target).data("folder") || ""
+        let folder = $(event.target).data("folder") ?? ""
         this.app.fileNew(folder+conf.fileNew, "global")
         this.app.fileSave()
       })

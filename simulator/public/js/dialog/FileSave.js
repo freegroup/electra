@@ -18,13 +18,13 @@ class Dialog {
           <div class="modal-dialog ">
             <div class="modal-content">
               <div class="modal-header">
-                <h4 class="media-heading">${t("dialog.save")}</h4>
+                <h4 data-i18n="dialog.save" class="media-heading">${t("dialog.save")}</h4>
               </div>
               <div class="modal-body">
 
                 <div class="media">
                   <div class="media-left">
-                    <img class="filePreview" src="../common/images/files_simulator.svg">
+                    <img class="filePreview" src="../common/images/toolbar_save.svg">
                   </div>
                   <div class="media-body">
                     <div class="controlWithHeader">
@@ -36,8 +36,8 @@ class Dialog {
 
               </div>
               <div class="modal-footer">
-                <button class="electra-button" data-dismiss="modal">${t("common:button.cancel")}</button>
-                <button class="electra-button electra-primary okButton">${t("common:button.save")}</button>
+                <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">${t("common:button.cancel")}</button>
+                <button data-i18n="common:btton.save"    class="electra-button electra-primary okButton">${t("common:button.save")}</button>
               </div>
             </div>
           </div>
@@ -51,9 +51,7 @@ class Dialog {
     Mousetrap.pause()
     $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name,conf.fileSuffix))
 
-    $('#fileSaveDialog').off('shown.bs.modal').on('shown.bs.modal', (event) => {
-      $(event.currentTarget).find('input:first').focus()
-    })
+    $('#fileSaveDialog').one('shown.bs.modal', (event) => { $(event.currentTarget).find('input:first').focus() })
     $("#fileSaveDialog").modal("show")
 
     //
@@ -84,7 +82,7 @@ class Dialog {
     canvas.setCurrentSelection(null)
     writer.marshal(canvas, json => {
       storage.saveFile(json, currentFile.name, currentFile.scope)
-        .then(function (response) {
+        .then((response) =>{
           let data = response.data
           currentFile.name = data.filePath
 
@@ -92,7 +90,7 @@ class Dialog {
             id: 'editor',
             scope: currentFile.scope,
             file: currentFile.name
-          }, conf.appName+' | ' + name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
+          }, conf.appName+' | ' + currentFile.name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
 
           if(callback) {
             callback(response)

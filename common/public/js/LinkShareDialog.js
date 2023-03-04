@@ -38,23 +38,18 @@ class Dialog {
 
       let url = window.location.href.split('?')[0] + '?shared=' + file
       $("#sharedLinkInput").val(url)
-
-      $('#linkShareDialog').on('shown.bs.modal', (event) => {
-        $(event.currentTarget).find('input:first').focus()
-      })
       $("#linkShareDialog").modal("show")
 
       $("#linkShareDialog .clipboardButton").on("click", () => {
-        let copyText = document.getElementById("sharedLinkInput")
-        copyText.select()
-        copyText.setSelectionRange(0, 99999)
-        document.execCommand("copy")
+        let blob = new Blob([$("#sharedLinkInput").val()], {type: 'text/plain'});
+        let item = new ClipboardItem({'text/plain': blob });
+        navigator.clipboard.write([item ])
         $('#linkShareDialog').modal('hide')
-        toast("Link copied")
+        toast(t("common:message.link_copied"))
       })
   }
 }
 
+const dialog = new Dialog()
 
-let dialog = new Dialog()
 export default dialog

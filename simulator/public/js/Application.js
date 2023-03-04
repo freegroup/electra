@@ -1,4 +1,5 @@
 import Userinfo from "../../common/js/Userinfo"
+import confirmDialog from "../../common/js/ConfirmDialog"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
@@ -8,6 +9,7 @@ import View from "./View"
 import Files from "../../common/js/FilesScreen"
 import conf from "./Configuration"
 import reader from "./io/Reader"
+import fileCreate from "./dialog/FileCreate"
 import fileSave from "./dialog/FileSave"
 import progress from "./dialog/Progress"
 import shareDialog from "../../common/js/LinkShareDialog";
@@ -42,6 +44,8 @@ class Application {
       // Show the user an alert if there are unsaved changes
       //
       window.onbeforeunload = ()=> {
+        // string content is not relevatn anymore
+        // https://chromestatus.com/feature/5349061406228480
         return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
       }
   
@@ -49,11 +53,11 @@ class Application {
   
   
       if(permissions.brains.update || permissions.brains.create) {
-        $("#editorFileSave").on("click", () => {
-          this.fileSave()
-        })
+        $("#editorFileCreate").on("click",  () => { this.fileCreateNew() })
+        $("#editorFileSave").on("click",    () => { this.fileSave() })
       }
       else{
+        $("#editorFileNew").remove()
         $("#editorFileSave").remove()
       }
   
@@ -149,27 +153,6 @@ class Application {
       })
   }
 
-  getParam(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-    let regexS = "[\\?&]" + name + "=([^&#]*)"
-    let regex = new RegExp(regexS)
-    let results = regex.exec(window.location.href)
-    // the param isn't part of the normal URL pattern...
-    //
-    if (results === null) {
-      // maybe it is part in the hash.
-      //
-      regexS = "[\\#]" + name + "=([^&#]*)"
-      regex = new RegExp(regexS)
-      results = regex.exec(window.location.hash)
-      if (results === null) {
-        return null
-      }
-    }
-    return results[1]
-  }
-
-
   fileShare() {
     let filePath = this.currentFile.name
     let scope = this.currentFile.scope
@@ -180,10 +163,32 @@ class Application {
       })
   }
 
+  fileCreateNew(){
+    return new Promise((resolve, reject)=>{
+      if (this.hasUnsavedChanges === true){
+         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
+      }
+      return resolve()
+    })
+    .then(()=>{
+      this.fileNew()
+      return fileCreate.show(this.currentFile)
+    })
+    .then(()=>{
+      this.hasUnsavedChanges = false
+      toast(t("common:message.created"))
+      $("#editorFileSave div").removeClass("highlight")
+      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+    })
+    .catch( ()=>{
+      // ignore
+    })
+  }
+
   fileSave(){
     let callback = () => {
       this.hasUnsavedChanges = false
-      toast("Saved")
+      toast(t("common:message.saved"))
       $("#editorFileSave div").removeClass("highlight")
       this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
     }
@@ -195,10 +200,13 @@ class Application {
     }
 
     if (this.permissions.brains.create && this.permissions.brains.update) {
-      // allow the user to enter a file name....
+      // allow the user to enter/change a file name....
+      //
       fileSave.show(this.currentFile, this.view, callback)
     } else if (this.permissions.brains.create) {
       // just save the file with a generated filename. It is a codepen-like modus
+      // The callback of the REST-save function contains the new generated filename
+      //
       fileSave.save(this.currentFile, this.view, callback)
     }
   }
@@ -225,6 +233,27 @@ class Application {
       this.hasUnsavedChanges = true
     }
   }
+
+  getParam(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
+    let regexS = "[\\?&]" + name + "=([^&#]*)"
+    let regex = new RegExp(regexS)
+    let results = regex.exec(window.location.href)
+    // the param isn't part of the normal URL pattern...
+    //
+    if (results === null) {
+      // maybe it is part in the hash.
+      //
+      regexS = "[\\#]" + name + "=([^&#]*)"
+      regex = new RegExp(regexS)
+      results = regex.exec(window.location.hash)
+      if (results === null) {
+        return null
+      }
+    }
+    return results[1]
+  }
+
 }
 
 let app = new Application()
