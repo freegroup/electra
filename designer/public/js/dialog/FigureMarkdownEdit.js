@@ -13,7 +13,6 @@ export default class FigureMarkdownEdit {
   show() {
     Mousetrap.pause()
   
-
     let markdown = app.getConfiguration("markdown")
     markdown = markdown ? markdown : "# Header \n## Subheader \nbe nice and write a help file for your new \ncreated ***Brainbox*** shape. \n\n  - point 1\n  - point 2\n  - point 3"
     let splash = $(`

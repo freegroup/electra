@@ -24,7 +24,7 @@ class Dialog {
               
                 <div class="media">
                   <div class="media-left">
-                    <img class="filePreview" src="../common/images/toolbar_new_simulator.svg">
+                    <img class="filePreview" src="../common/images/toolbar_new_file.svg">
                   </div>
                   <div class="media-body">
                     <div class="controlWithHeader">
@@ -47,7 +47,7 @@ class Dialog {
 
   /**
    */
-  show(currentFile, canvas) {
+  show(currentFile) {
     return new Promise (( resolve, reject) => {
       let promiseAlreadyHandled = false
       Mousetrap.pause()
@@ -99,6 +99,7 @@ class Dialog {
         scope: currentFile.scope,
         file: currentFile.name
       }, conf.appName+' | ' + currentFile.name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
+      return data
     })
   }
 }

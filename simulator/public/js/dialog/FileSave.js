@@ -82,7 +82,7 @@ class Dialog {
     })
   }
 
-  save(currentFile, canvas, callback){
+  save(currentFile, canvas){
     canvas.setCurrentSelection(null)
     writer.marshal(canvas)
     .then( json => {
