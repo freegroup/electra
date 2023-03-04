@@ -7,7 +7,7 @@ class Dialog {
   constructor(){
   }
 
-  show(figure, pos) {
+  show(figure) {
     Mousetrap.pause()
     currentFigure = figure
 
@@ -54,13 +54,17 @@ class Dialog {
     $("#figureConfigDialog .modal-body").html(output)
     $('#figureConfigDialog').modal('show')
 
+    $("#fileSaveDialog").one("hide.bs.modal", ()=>{
+      Mousetrap.unpause()
+    })
+
     $("#figureConfigDialog .okBtn").off("click").on("click", () => {
-        this.hide()
+        this.close()
     })
 
     $("#figureConfigDialog input").keypress((e) => {
       if (e.which == 13) {
-        this.hide()
+        this.close()
       }
     })
 
@@ -110,10 +114,9 @@ class Dialog {
     })
   }
 
-  hide() {
-    Mousetrap.unpause()
+  close() {
     if (currentFigure !== null) {
-      $("#figureConfigDialog textarea.figureAttribute, #figureConfigDialog input.figureAttribute, #figureConfigDialog select.figureAttribute").each(function (i, element) {
+      $("#figureConfigDialog textarea.figureAttribute, #figureConfigDialog input.figureAttribute, #figureConfigDialog select.figureAttribute").each((i, element) =>{
         element = $(element)
         let value = element.val()
         let name = element.data("name")

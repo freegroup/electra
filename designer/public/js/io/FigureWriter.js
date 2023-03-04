@@ -22,8 +22,8 @@ export default shape_designer.FigureWriter = draw2d.io.Writer.extend({
    * @param {Function} resultCallback the method to call on success. The first argument is the result object, the second the base64 representation of the file content
    */
   marshal: function (canvas, className, resultCallback) {
-    let baseClass = shape_designer.app.getConfiguration("baseClass")
-    let customCode =  shape_designer.app.getConfiguration("code")
+    let baseClass = app.getConfiguration("baseClass")
+    let customCode =  app.getConfiguration("code")
     customCode = customCode.replace(/testShape/g, className);
 
     let figures = canvas.getExtFigures()

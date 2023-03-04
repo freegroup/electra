@@ -9,24 +9,26 @@ let Writer = draw2d.io.json.Writer.extend({
         this._super()
     },
 
-    marshal:function(canvas, callback)
+    marshal:function(canvas)
     {
-      new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
-        let writer = new draw2d.io.json.Writer()
-        writer.marshal(canvas, json => {
-          let data = {
-            draw2d: json,
-            image: imageDataUrl,
-            view: {
-              timerBase:canvas.timerBase,
-              probeWindow: canvas.probeWindow.visible
+      return new Promise( (resolve, reject)=> {
+        new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
+          let writer = new draw2d.io.json.Writer()
+          writer.marshal(canvas, json => {
+            let data = {
+              draw2d: json,
+              image: imageDataUrl,
+              view: {
+                timerBase:canvas.timerBase,
+                probeWindow: canvas.probeWindow.visible
+              }
             }
-          }
-          callback(data)
-        })
-      }, canvas.getBoundingBox().scale(10, 10))
+            resolve(data)
+          })
+        }, canvas.getBoundingBox().scale(10, 10))
+      })
     }
 })
 
-let writer = new Writer()
+const writer = new Writer()
 export default writer

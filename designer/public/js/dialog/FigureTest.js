@@ -15,7 +15,7 @@ export default class FigureTest {
 
     let writer = new FigureWriter()
     let testShape = null
-    writer.marshal(shape_designer.app.view, "testShape", (js) => {
+    writer.marshal(app.view, "testShape", (js) => {
       try {
         js = /*$("#decoratedport-template").text().trim() +*/ js
         testShape = eval(js)

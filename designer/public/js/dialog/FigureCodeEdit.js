@@ -6,7 +6,7 @@ export default class FigureCodeEdit {
 
   show() {
     Mousetrap.pause()
-    let code = shape_designer.app.getConfiguration("code")
+    let code = app.getConfiguration("code")
 
     let splash = $(`
           <div id="codeDialog">
@@ -89,7 +89,7 @@ export default class FigureCodeEdit {
 
     $(".tinyFlyoverMenu").on("click", "#test_commit", () => {
       let code = editor.getValue()
-      shape_designer.app.setConfiguration({code: code})
+      app.setConfiguration({code: code})
       Mousetrap.unpause()
       splash.fadeOut(function () {
         splash.remove()
@@ -105,7 +105,7 @@ export default class FigureCodeEdit {
 
     $(".tinyFlyoverMenu").on("click", "#test_run", () => {
       let code = editor.getValue()
-      shape_designer.app.setConfiguration({code: code})
+      app.setConfiguration({code: code})
       new FigureTest().show()
     })
   }

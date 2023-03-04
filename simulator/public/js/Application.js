@@ -186,29 +186,35 @@ class Application {
   }
 
   fileSave(){
-    let callback = () => {
+    return new Promise( (resolve, reject)=>{
+      // if the user didn't has the access to write "global" files, the scope of the file is changed
+      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
+      //
+      if(this.permissions.brains.global.update===false){
+        this.currentFile.scope = "user"
+      }
+
+      if (this.permissions.brains.create && this.permissions.brains.update) {
+        // allow the user to enter/change a file name....
+        //
+        return fileSave.show(this.currentFile, this.view).then(resolve, reject)
+      } else if (this.permissions.brains.create) {
+        // just save the file with a generated filename. It is a codepen-like modus
+        // The callback of the REST-save function contains the new generated filename
+        //
+        return fileSave.save(this.currentFile, this.view).then(resolve, reject)
+      }
+      return reject()
+    })
+    .then( ()=>{
       this.hasUnsavedChanges = false
       toast(t("common:message.saved"))
       $("#editorFileSave div").removeClass("highlight")
       this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
-    }
-    // if the user didn't has the access to write "global" files, the scope of the file is changed
-    // // from "global" to "user". In fact the user creates a copy in his/her own repository.
-    //
-    if(this.permissions.brains.global.update ===false){
-      this.currentFile.scope = "user"
-    }
-
-    if (this.permissions.brains.create && this.permissions.brains.update) {
-      // allow the user to enter/change a file name....
-      //
-      fileSave.show(this.currentFile, this.view, callback)
-    } else if (this.permissions.brains.create) {
-      // just save the file with a generated filename. It is a codepen-like modus
-      // The callback of the REST-save function contains the new generated filename
-      //
-      fileSave.save(this.currentFile, this.view, callback)
-    }
+    })
+    .catch( err => {
+      console.log(err)
+    })
   }
 
   fileNew(name, scope) {

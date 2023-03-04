@@ -81,7 +81,6 @@ $(window).load(function () {
     return app.init(response.data)
   })
   .then( app => {
-    shape_designer.app = app
     $('body').localize()
     $(".loader").fadeOut(500, function() {  $(this).remove(); })  
   })

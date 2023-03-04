@@ -894,25 +894,25 @@ class Files {
       }
     });
     $(document).on("click", "#userFiles .fileOperationsFolderAdd", event => {
-      let folder = $(event.target).data("folder") || "";
+      let folder = $(event.target).data("folder") ?? "";
 
       _InputPrompt.default.show(t("dialog.add_folder"), t("label.name")).then(value => {
         storage.createFolder(folder + value, "user");
         this.initPane("user", "#userFiles", conf.backend.user, permissions, folder);
       });
     }).on("click", "#globalFiles .fileOperationsFolderAdd", event => {
-      let folder = $(event.target).data("folder") || "";
+      let folder = $(event.target).data("folder") ?? "";
 
       _InputPrompt.default.show(t("dialog.add_folder"), t("label.name")).then(value => {
         storage.createFolder(folder + value, "global");
         this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, folder);
       });
     }).on("click", "#userFiles .fileOperationsDocumentAdd", event => {
-      let folder = $(event.target).data("folder") || "";
+      let folder = $(event.target).data("folder") ?? "";
       this.app.fileNew(folder + conf.fileNew, "user");
       this.app.fileSave();
     }).on("click", "#globalFiles .fileOperationsDocumentAdd", event => {
-      let folder = $(event.target).data("folder") || "";
+      let folder = $(event.target).data("folder") ?? "";
       this.app.fileNew(folder + conf.fileNew, "global");
       this.app.fileSave();
     });
@@ -1200,7 +1200,7 @@ class Dialog {
                 </div>
                 <div class="modal-footer">
                   <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal"></button>
-                  <button data-i18n="common:button.save" class="electra-button electra-primary okButton"></button>
+                  <button data-i18n="common:button.save"   class="electra-button electra-primary okButton"></button>
                 </div>
               </div>
             </div>
@@ -1213,14 +1213,23 @@ class Dialog {
 
   show(title, label, defaultValue = "") {
     return new Promise((resolve, reject) => {
+      let promiseAlreadyHandled = false;
+      Mousetrap.pause();
       $("#inputPromptDialog .media-heading").html(title);
       $("#inputPromptDialog .promptValueLabel").html(label);
       $('#inputPromptDialog .inputPromptValue').val(defaultValue);
-      $('#inputPromptDialog').on('shown.bs.modal', event => {
+      $('#inputPromptDialog').one('shown.bs.modal', event => {
         $(event.currentTarget).find('input:first').focus();
       });
+      $("#fileCreateDialog").one("hide.bs.modal", () => {
+        Mousetrap.unpause(); // hide event comes even if the dialog is closed with the "ok" button or "ESC". Catch this
+
+        if (!promiseAlreadyHandled) {
+          promiseAlreadyHandled = true;
+          reject(false);
+        }
+      });
       $("#inputPromptDialog").modal("show");
-      Mousetrap.pause();
       $('#inputPromptDialog .inputPromptValue').on('keypress', function (e) {
         let key = e.charCode || e.keyCode || 0;
 
@@ -1231,10 +1240,9 @@ class Dialog {
       //
 
       $("#inputPromptDialog .okButton").off('click').on("click", () => {
-        Mousetrap.unpause();
+        promiseAlreadyHandled = true;
         $('#inputPromptDialog').modal('hide');
-        let value = $("#inputPromptDialog .inputPromptValue").val();
-        resolve(value);
+        resolve($("#inputPromptDialog .inputPromptValue").val());
       });
     });
   }
@@ -2053,7 +2061,7 @@ class Userinfo {
         $(".userinfo_toggler img").attr("src", icon);
         $(".userinfo_toggler .dropdown-menu").html(` 
               <div class="userContainer">
-                <img src="${icon}"/>
+                <img crossorigin="anonymous" src="${icon}"/>
                 <div>${this.user.displayName}</div>
                 <div>${role}</div>
               </div>
@@ -3965,7 +3973,7 @@ class FigureCodeEdit {
 
   show() {
     Mousetrap.pause();
-    let code = shape_designer.app.getConfiguration("code");
+    let code = app.getConfiguration("code");
     let splash = $(`
           <div id="codeDialog">
             <pre class="codeContainer">
@@ -4044,7 +4052,7 @@ class FigureCodeEdit {
     range2.end.$insertRight = true;
     $(".tinyFlyoverMenu").on("click", "#test_commit", () => {
       let code = editor.getValue();
-      shape_designer.app.setConfiguration({
+      app.setConfiguration({
         code: code
       });
       Mousetrap.unpause();
@@ -4060,7 +4068,7 @@ class FigureCodeEdit {
     });
     $(".tinyFlyoverMenu").on("click", "#test_run", () => {
       let code = editor.getValue();
-      shape_designer.app.setConfiguration({
+      app.setConfiguration({
         code: code
       });
       new _FigureTest.default().show();
@@ -4104,7 +4112,7 @@ class FigureMarkdownEdit {
 
   show() {
     Mousetrap.pause();
-    let markdown = shape_designer.app.getConfiguration("markdown");
+    let markdown = app.getConfiguration("markdown");
     markdown = markdown ? markdown : "# Header \n## Subheader \nbe nice and write a help file for your new \ncreated ***Brainbox*** shape. \n\n  - point 1\n  - point 2\n  - point 3";
     let splash = $(`
       <div id="FigureMarkdownEdit" class="overlay-scale">
@@ -4127,7 +4135,7 @@ class FigureMarkdownEdit {
     $("body").append(splash);
     $(".tinyFlyoverMenu").on("click", "#test_commit", () => {
       Mousetrap.unpause();
-      shape_designer.app.setConfiguration({
+      app.setConfiguration({
         markdown: this.editor.getValue()
       });
       splash.removeClass("open");
@@ -4322,7 +4330,7 @@ class FigureTest {
     this.simulationContext = {};
     let writer = new _FigureWriter.default();
     let testShape = null;
-    writer.marshal(shape_designer.app.view, "testShape", js => {
+    writer.marshal(app.view, "testShape", js => {
       try {
         js =
         /*$("#decoratedport-template").text().trim() +*/
@@ -7488,8 +7496,8 @@ var _default = shape_designer.FigureWriter = draw2d.io.Writer.extend({
    * @param {Function} resultCallback the method to call on success. The first argument is the result object, the second the base64 representation of the file content
    */
   marshal: function (canvas, className, resultCallback) {
-    let baseClass = shape_designer.app.getConfiguration("baseClass");
-    let customCode = shape_designer.app.getConfiguration("code");
+    let baseClass = app.getConfiguration("baseClass");
+    let customCode = app.getConfiguration("code");
     customCode = customCode.replace(/testShape/g, className);
     let figures = canvas.getExtFigures();
     let b = canvas.getBoundingBox();
@@ -70955,7 +70963,6 @@ $(window).load(function () {
     app = (__webpack_require__(/*! ./Application */ "./public/js/Application.js")["default"]);
     return app.init(response.data);
   }).then(app => {
-    shape_designer.app = app;
     $('body').localize();
     $(".loader").fadeOut(500, function () {
       $(this).remove();

@@ -14,7 +14,7 @@ export default class FigureMarkdownEdit {
     Mousetrap.pause()
   
 
-    let markdown = shape_designer.app.getConfiguration("markdown")
+    let markdown = app.getConfiguration("markdown")
     markdown = markdown ? markdown : "# Header \n## Subheader \nbe nice and write a help file for your new \ncreated ***Brainbox*** shape. \n\n  - point 1\n  - point 2\n  - point 3"
     let splash = $(`
       <div id="FigureMarkdownEdit" class="overlay-scale">
@@ -39,7 +39,7 @@ export default class FigureMarkdownEdit {
 
     $(".tinyFlyoverMenu").on("click", "#test_commit", () => {
       Mousetrap.unpause()
-      shape_designer.app.setConfiguration({markdown: this.editor.getValue()})
+      app.setConfiguration({markdown: this.editor.getValue()})
       splash.removeClass("open")
       setTimeout( () => {
         splash.remove()

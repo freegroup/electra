@@ -302,15 +302,14 @@ var {{{className}}} = CircuitFigure.extend({
 
 </body>
 
-<link href="../common/css/katex.min.css" rel="stylesheet" >
-<link href='../common/css//roboto.css' rel='stylesheet' type='text/css'>
+<link href="../common/css/katex.min.css"                    rel="stylesheet" type='text/css'>
+<link href='../common/css//roboto.css'                      rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 <link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
 
 <!-- Load TensorFlow.js. This is required to use coco-ssd model. -->
-<script src="//cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
-<!-- Load the coco-ssd model. -->
-<script src="//cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+<script src="../common/js/tfjs/tf.js" defer ></script>
+<script src="../common/js/tfjs/coco-ssd.js" defer></script>
 
 
 <!-- "include" files in a world of ES6 is not perfect. Unfortunately draw2d.js isn't complete

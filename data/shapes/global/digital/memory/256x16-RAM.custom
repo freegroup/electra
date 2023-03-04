@@ -86,7 +86,7 @@ digital_memory_256x16_RAM = digital_memory_256x16_RAM.extend({
         return [
         {
             name:"ram",
-            label:`${this.addressLength}x${this.wordLength} Bit RAM`,
+            label:`${Math.pow(2,this.addressLength)}x${this.wordLength} Bit RAM`,
             property:{
                 type: "longtext"
             }
