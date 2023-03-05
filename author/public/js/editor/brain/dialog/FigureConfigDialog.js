@@ -65,7 +65,7 @@ class Dialog {
   hide() {
     Mousetrap.unpause()
     if (currentFigure !== null) {
-      $("#figureConfigDialog textarea, #figureConfigDialog input, #figureConfigDialog select").each(function (i, element) {
+      $("#figureConfigDialog textarea, #figureConfigDialog input, #figureConfigDialog select").each((i, element)=> {
         element = $(element)
         let value = element.val()
         let name = element.data("name")

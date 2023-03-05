@@ -12,16 +12,16 @@ export default class Editor extends GenericEditor{
     <div class="placeholderContainer">
       <div class="placeholderText">  
         <img src="../common/images/pencil.svg">
-        <h1>Welcome to our page!</h1>
-        <h2>Start by adding your first content to make it feel more alive in here!</h2>
+        <h1 data-i18n="editor.empty.header">${t("editor.empty.header")}</h1>
+        <h2 data-i18n="editor.empty.description">${t("editor.empty.description")}</h2>
       </div>
       <div class="placeholderButtons">
-        <button data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >&#8853; Text</button>
-        <button data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >&#8853; Cloze</button>
-        <button data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >&#8853; FlashCard</button>
-        <button data-index="0" data-type="timing"    class='sectionMenuInsertSection electra-button' >&#8853; Timing</button>
-        <button data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >&#8853; Diagram</button>
-        <button data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >&#8853; Picture</button>
+        <button data-i18n="button.add_text"      data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >${t("button.add_text")}</button>
+        <button data-i18n="button.add_cloze"     data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >${t("button.add_cloze")}</button>
+        <button data-i18n="button.add_flashcard" data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >${t("button.add_flashcard")}</button>
+        <button data-i18n="button.add_timing"    data-index="0" data-type="timing"    class='sectionMenuInsertSection electra-button' >${t("button.add_timing")}</button>
+        <button data-i18n="button.add_brain"     data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >${t("button.add_brain")}</button>
+        <button data-i18n="button.add_image"     data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>
       </div>
     </div>
     `

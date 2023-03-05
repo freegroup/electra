@@ -7,7 +7,7 @@ import AppSwitch from "../../common/js/AppSwitch"
 import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
 
-import Toolbar from "./toolbar"
+import Toolbar from "./Toolbar"
 import View from "./view"
 import fileSave from "./dialog/FileSave"
 import fileCreate from "./dialog/FileCreate"

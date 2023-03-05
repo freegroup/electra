@@ -149,12 +149,15 @@ export default class Toolbar {
       $("#editUndo, #editRedo").show()
       this.pdfButton.show()
       this.saveButton.show()
+      this.createFileButton.show()
       this.copyButton.show()
     }
     else{
       $("#editUndo, #editRedo").hide()
       this.pdfButton.hide()
       this.saveButton.hide()
+      this.createFileButton.hide()
+      this.copyButton.hide()
     }
   }
 }

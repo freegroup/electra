@@ -21,9 +21,7 @@ export default class Editor extends GenericEditor{
                       <div class="overlay"></div>
                     </div>
                   </div>
-                  <div class="drop-message">
-                    Drag & Drop image or click to upload
-                  </div>
+                  <div data-i18n="editor.image.dragdrop" class="drop-message">${t("editor.image.dragdrop")}</div>
               </div>
                 `)
                 console.log("ddd")

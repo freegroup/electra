@@ -4,6 +4,7 @@ import AuthorPage from "../../common/js/AuthorPage"
 import AppSwitch from "../../common/js/AppSwitch"
 import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
+import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import View from "./View"
@@ -15,26 +16,8 @@ import conf from "./Configuration"
 import fileSave from "./dialog/FileSave"
 import inlineSVG from "../../common/js/inlineSVG"
 
-let storage = require('../../common/js/BackendStorage').default(conf)
-
-/**
- * wait asyn that an DOM element is present
- * Usage: checkElement("<selector>").then(function(){alert("element found")})
- *
- * @returns {Promise<any>}
- */
-function rafAsync() {
-  return new Promise(resolve => {
-    requestAnimationFrame(resolve); //faster than set time out
-  });
-}
-function checkElement(selector) {
-  if (document.querySelector(selector) === null) {
-    return rafAsync().then(() => checkElement(selector));
-  } else {
-    return Promise.resolve(true);
-  }
-}
+import storageFactory from '../../common/js/BackendStorage'
+let storage = storageFactory(conf)
 
 
 class Application {
@@ -63,10 +46,10 @@ class Application {
       }
   
       $( "body" )
-        .delegate( ".mousetrap-pause", "focus", function() {
+        .on( ".mousetrap-pause", "focus", () => {
           Mousetrap.pause()
         })
-        .delegate(".mousetrap-pause", "blur", function (){
+        .on(".mousetrap-pause", "blur",  () => {
           Mousetrap.unpause()
         });
   
@@ -75,7 +58,6 @@ class Application {
       //
       this.documentConfiguration = { ...this.documentConfigurationTempl}
   
-      this.storage = storage
       this.view = new View(this, "canvas", permissions)
       this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
       this.layer = new Layer(this, "layer_elements", this.view, permissions)
@@ -123,7 +105,7 @@ class Application {
       if(tutorial) {
         this.checkForTutorialMode()
       }
-      inlineSVG.init({}, () => resolve(this))
+      resolve(this)
     })
   }
 
@@ -224,7 +206,7 @@ class Application {
     this.view.reset()
     $("#leftTabStrip .editor").click()
 
-    return this.storage.loadUrl(url)
+    return storage.loadUrl(url)
       .then((content) => {
         if (typeof content === "string"){
           content = JSON.parse(content)
@@ -262,7 +244,7 @@ class Application {
 
   fileSave() {
     this.setConfiguration()
-    fileSave.show(this.currentFile, this.storage,this.view)
+    fileSave.show(this.currentFile, storage,this.view)
       .then( (filePath) => {
         this.hasUnsavedChanges = false
         toast(t("common:message.saved"))

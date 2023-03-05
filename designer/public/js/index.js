@@ -81,7 +81,9 @@ $(window).load(function () {
     return app.init(response.data)
   })
   .then( app => {
-    $('body').localize()
-    $(".loader").fadeOut(500, function() {  $(this).remove(); })  
+    $('body').localize(); 
+    inlineSVG.init({}, ()=>{
+      $(".loader").fadeOut(500, function() { $(this).remove(); })
+    })
   })
 })

@@ -83,8 +83,7 @@ export default class Editor extends GenericEditor{
       front : {
         id: shortid.generate(),
         type: "placeholder",
-        content: 
-        `frontside`
+        content: `frontside`
       },
       back: {
         id: shortid.generate(),

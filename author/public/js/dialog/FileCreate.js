@@ -66,8 +66,6 @@ class Dialog {
         }
       })
 
-      $("#fileCreateDialog").modal("show")
-
       // we need off/on instead of "one". Because it is not clear if the user presses "ok" or just hit "ESC"
       $("#fileCreateDialog .okButton").off("click").on("click", () => {
         promiseAlreadyHandled = true
@@ -87,6 +85,8 @@ class Dialog {
           })
           .then(resolve, reject)
       })
+
+      $("#fileCreateDialog").modal("show")
     })
   }
 
