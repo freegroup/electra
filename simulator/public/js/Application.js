@@ -172,7 +172,6 @@ class Application {
     })
   }
 
-
   fileCreateNew(){
     return new Promise((resolve, reject)=>{
       if (this.hasUnsavedChanges === true){

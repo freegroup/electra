@@ -29,7 +29,7 @@ export default class Toolbar {
     // Register a Selection listener for the state handling
     // of the Delete Button
     //
-    view.on("select", this.onSelectionChanged.bind(this))
+    view.on("select",   this.onSelectionChanged.bind(this))
     view.on("unselect", this.onSelectionChanged.bind(this))
 
     this.fileName = null
@@ -42,14 +42,8 @@ export default class Toolbar {
        permissions.shapes.update        || permissions.shapes.create) {
       this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`)
       buttonGroup.append(this.saveButton)
-      this.saveButton.on("click", () => {
-        this.saveButton.tooltip("hide")
-        app.fileSave()
-      })
-      Mousetrap.bindGlobal("ctrl+s", (event) => {
-        this.saveButton.click()
-        return false
-      })
+      this.saveButton.on("click",    () => { app.fileSave() })
+      Mousetrap.bindGlobal("ctrl+s", () => { app.fileSave();return false})
     }
 
     // Inject the UNDO Button and the callbacks
@@ -58,34 +52,24 @@ export default class Toolbar {
     this.html.append(buttonGroup)
     this.undoButton = $(`<div class="image-button" id="editUndo"><img class="icon disabled svg"  src="../common/images/toolbar_undo.svg"/><div data-i18n="common:toolbar.undo">${t("common:toolbar.undo")}</div></div>`)
     buttonGroup.append(this.undoButton)
-    this.html .delegate("#editUndo:not(.disabled)", "click", () => {
-      this.view.getCommandStack().undo()
-    })
-    Mousetrap.bindGlobal("ctrl+z", () => {
-      this.undoButton.click()
-      return false
-    })
+    this.html.on("#editUndo:not(.disabled)", "click", () => {this.view.getCommandStack().undo()})
+    Mousetrap.bindGlobal("ctrl+z",                    () => { this.view.getCommandStack().undo();return false})
 
 
     // Inject the REDO Button and the callback
     //
     this.redoButton = $(`<div class="image-button" id="editRedo"><img  class="icon disabled svg" src="../common/images/toolbar_redo.svg"/><div data-i18n="common:toolbar.redo">${t("common:toolbar.redo")}</div></div>`)
     buttonGroup.append(this.redoButton)
-    this.html .delegate("#editRedo:not(.disabled)", "click", () => {
-      this.view.getCommandStack().redo()
-    })
-    Mousetrap.bindGlobal("ctrl+y", () => {
-      this.redoButton.click()
-      return false
-    })
+    this.html.on("#editRedo:not(.disabled)", "click", () => {this.view.getCommandStack().redo()})
+    Mousetrap.bindGlobal("ctrl+y", () => {this.view.getCommandStack().redo(); return false})
 
     // Inject the DELETE Button
     //
     this.deleteButton = $(`<div class="image-button" id="editDelete"><img class="icon disabled svg" src="../common/images/toolbar_delete.svg"/><div data-i18n="common:toolbar.delete">${t("common:toolbar.delete")}</div></div>`)
     buttonGroup.append(this.deleteButton)
-    this.html.delegate("#editDelete:not(.disabled)", "click", function () {
+    this.html.on("#editDelete:not(.disabled)", "click", () =>{
       view.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape)
-      view.getSelection().each(function (index, figure) {
+      view.getSelection().each((index, figure) =>{
         let cmd = figure.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.DELETE))
         if (cmd !== null) {
           view.getCommandStack().execute(cmd)
@@ -105,13 +89,8 @@ export default class Toolbar {
 
     this.selectButton = $(`<div class="image-button" id="editSelect"><img class="svg" src="../common/images/toolbar_select.svg"/><div data-i18n="common:toolbar.select">${t("common:toolbar.select")}</div></div>`)
     buttonGroup.append(this.selectButton)
-    this.selectButton.on("click", () => {
-      this.view.installEditPolicy(new SelectionToolPolicy())
-    })
-    Mousetrap.bindGlobal("space", () => {
-      this.selectButton.click()
-      return false
-    })
+    this.selectButton.on("click", () => {this.view.installEditPolicy(new SelectionToolPolicy()) })
+    Mousetrap.bindGlobal("space", () => {this.view.installEditPolicy(new SelectionToolPolicy()) ;return false})
 
     this.shapeButton = $(`
       <div id="tool_shape" class="dropdown" >
@@ -131,24 +110,23 @@ export default class Toolbar {
     buttonGroup.append(this.shapeButton)
 
     $(".policyRectangleToolPolicy").on("click", () => {
-      let p = new RectangleToolPolicy()
-       this.view.installEditPolicy(p)
+       this.view.installEditPolicy(new RectangleToolPolicy())
     })
+
     $(".policyCircleToolPolicy").on("click", () => {
-      let p = new CircleToolPolicy()
-      this.view.installEditPolicy(p)
+      this.view.installEditPolicy(new CircleToolPolicy())
     })
+
     $(".policyLineToolPolicy").on("click", () => {
-      let p = new LineToolPolicy()
-      this.view.installEditPolicy(p)
+      this.view.installEditPolicy(new LineToolPolicy())
     })
+
     $(".policyTextToolPolicy").on("click", () => {
-      let p = new TextToolPolicy()
-      this.view.installEditPolicy(p)
+      this.view.installEditPolicy(new TextToolPolicy())
     })
+
     $(".policyPortToolPolicy").on("click", () => {
-      let p = new PortToolPolicy()
-      this.view.installEditPolicy(p)
+      this.view.installEditPolicy( new PortToolPolicy())
     })
 
     Mousetrap.bindGlobal(["R", "r"], () => {
@@ -174,7 +152,7 @@ export default class Toolbar {
 
     this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="../common/images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`)
     buttonGroup.append(this.unionButton)
-    this.html.delegate("#toolUnion:not(.disabled)", "click", () => {
+    this.html.on("#toolUnion:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
       let p = new GeoUnionToolPolicy()
       p.executed = () => {
@@ -190,7 +168,7 @@ export default class Toolbar {
 
     this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="../common/images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`)
     buttonGroup.append(this.differenceButton)
-    this.html.delegate("#toolDifference:not(.disabled)", "click", () => {
+    this.html.on("#toolDifference:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
       let p = new GeoDifferenceToolPolicy()
       p.executed = () => {
@@ -206,7 +184,7 @@ export default class Toolbar {
 
     this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="../common/images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`)
     buttonGroup.append(this.intersectionButton)
-    this.html.delegate("#toolIntersection:not(.disabled)", "click", () => {
+    this.html.on("#toolIntersection:not(.disabled)", "click", () => {
       let selection = this.view.getSelection().getAll()
       let p = new GeoIntersectionToolPolicy()
       p.executed = () => {
@@ -293,6 +271,14 @@ export default class Toolbar {
    * @param {draw2d.command.CommandStackEvent} event
    **/
   stackChanged(event) {
+    if (event.isPreChangeEvent()) {
+      return // silently
+    }
+    if (event.getStack().canUndo()){
+      $("#editorFileSave div").addClass("highlight")
+      app.hasUnsavedChanges = true
+    }
+
     $("#editUndo").addClass("disabled")
     $("#editRedo").addClass("disabled")
 

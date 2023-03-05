@@ -14,7 +14,6 @@ import FilterPane from "./FilterPane"
 import SelectionToolPolicy from './policy/SelectionToolPolicy'
 import conf from "./Configuration"
 import fileSave from "./dialog/FileSave"
-import inlineSVG from "../../common/js/inlineSVG"
 
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
@@ -33,7 +32,7 @@ class Application {
     return new Promise( (resolve, reject) => {
       this.permissions = permissions
       this.hasUnsavedChanges = false
-      this.currentFile = { name: conf.fileNew + conf.fileSuffix, scope: "user"}
+      this.currentFile = null
       this.documentConfigurationTempl = {
         baseClass: "draw2d.SetFigure",
         code: $("#shape-edit-template").text().trim()
@@ -71,7 +70,7 @@ class Application {
       this.indexPane.render()
       this.view.installEditPolicy(new SelectionToolPolicy())
   
-      this.view.getCommandStack().addEventListener(this)
+     // this.view.getCommandStack().addEventListener(this)
   
       // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
@@ -232,12 +231,7 @@ class Application {
     $("#leftTabStrip .editor").click()
     this.view.reset()
     this.documentConfiguration = {...this.documentConfigurationTempl}
-    if (name) {
-      this.currentFile = { name, scope }
-    } else {
-      // currently there is no support for "user" defined shapes. scope should be always "global"
-      this.currentFile = { name: conf.fileNew , scope:"global"}
-    }
+    this.currentFile = { name: name??conf.fileNew , scope: scope??"user"}
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
   }
@@ -297,6 +291,17 @@ class Application {
     }
   }
 
+
+  hasModifyPermissionForCurrentFile(){
+    let scope = this.currentFile.scope
+    return (
+      this.currentFile !== null
+      &&
+      (    (scope === "global" && (this.permissions.sheets.global.update || this.permissions.sheets.global.create))
+        || (scope === "user"   && (this.permissions.sheets.update        || this.permissions.sheets.create       ))
+      )
+    )
+  }
 }
 
 
