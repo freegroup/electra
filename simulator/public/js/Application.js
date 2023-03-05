@@ -1,5 +1,4 @@
 import Userinfo from "../../common/js/Userinfo"
-import confirmDialog from "../../common/js/ConfirmDialog"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
@@ -12,7 +11,8 @@ import reader from "./io/Reader"
 import fileCreate from "./dialog/FileCreate"
 import fileSave from "./dialog/FileSave"
 import progress from "./dialog/Progress"
-import shareDialog from "../../common/js/LinkShareDialog";
+import shareDialog from "../../common/js/ShareDialog";
+import confirmDialog from "../../common/js/ConfirmDialog"
 import AuthorPage from "../../common/js/AuthorPage";
 import AppSwitch from "../../common/js/AppSwitch";
 import LngSwitch from "../../common/js/LngSwitch"
@@ -57,7 +57,7 @@ class Application {
         $("#editorFileSave").on("click",    () => { this.fileSave() })
       }
       else{
-        $("#editorFileNew").remove()
+        $("#editorFileCreate").remove()
         $("#editorFileSave").remove()
       }
   
@@ -65,7 +65,6 @@ class Application {
       this.shareButton = $("#editorFileShare")
       if(permissions.featureset.share) {
         this.shareButton.on("click", () => {
-          this.shareButton.tooltip("hide")
           app.fileShare()
         })
       }
@@ -156,12 +155,23 @@ class Application {
   fileShare() {
     let filePath = this.currentFile.name
     let scope = this.currentFile.scope
-    storage.shareFile(filePath,scope)
-      .then(( response) => {
-        let file = response.data.filePath
-        shareDialog.show(file)
-      })
+    return new Promise( (resolve, reject)=>{
+      if (this.hasUnsavedChanges) {
+        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
+      }
+      resolve()
+    })
+    .then( ()=>{
+      return storage.shareFile(filePath,scope)
+    })
+    .then((response) => {
+      return shareDialog.show(response.data.filePath)
+    })
+    .catch (error => {
+      console.log(error)
+    })
   }
+
 
   fileCreateNew(){
     return new Promise((resolve, reject)=>{
@@ -222,11 +232,8 @@ class Application {
 
     this.view.clear()
 
-    if (name) {
-      this.currentFile = { name, scope }
-    } else {
-      this.currentFile = { name: "MyNewBrain" , scope:"user"}
-    }
+    this.currentFile = { name: name??"MyNewCircuit", scope: scope??"user" }
+
     this.view.centerDocument()
   }
 

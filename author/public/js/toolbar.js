@@ -1,6 +1,6 @@
 import commandStack from "./commands/CommandStack"
 
-import conf from "./configuration"
+import conf from "./Configuration"
 let storage = require('../../common/js/BackendStorage').default(conf)
 
 import exportModePrompt from "./dialog/SelectExportMode"
@@ -15,15 +15,18 @@ export default class Toolbar {
 
     commandStack.off(this).on("change", this)
 
+    this.createFileButton = $("#editorFileCreate")
+    this.createFileButton.off("click").on("click", () => {
+      app.fileCreateNew()
+    })
+
     this.saveButton = $("#editorFileSave")
     this.saveButton.off("click").on("click", () => {
-      this.saveButton.tooltip("hide")
       app.fileSave()
     })
 
     this.copyButton = $("#editorPageCopy")
     this.copyButton.off("click").on("click", () => {
-      this.copyButton.tooltip("hide")
       // deepcopy of the current selected section
       //
       let clipboardPage =  {
@@ -47,17 +50,15 @@ export default class Toolbar {
     })
 
     this.shareButton = $("#editorFileShare")
-    this.shareButton.off("click").on("click", () => {
-      this.shareButton.tooltip("hide")
-      if (this.app.hasUnsavedChanges) {
-        // File must be saved before sharing
-        app.fileSave(t("message.save_before_share")).then(() => {
-          app.fileShare()
-        })
-      } else {
+    if(permissions.featureset.share) {
+      this.shareButton.off("click").on("click", () => {
         app.fileShare()
-      }
-    })
+      })
+    }
+    else{
+      this.shareButton.remove()
+    }
+
 
     this.pdfButton = $("#editorFileToPDF")
     if (permissions.sheets.pdf || permissions.sheets.global.pdf) {
@@ -67,15 +68,6 @@ export default class Toolbar {
     } else {
       this.pdfButton.hide()
     }
-
-    // enable the tooltip for all buttons
-    //
-    $('*[data-toggle="tooltip"]').tooltip({
-      placement: "bottom",
-      container: "body",
-      delay: {show: 1000, hide: 10},
-      html: true
-    })
 
     // must delegate event from parent DOM because of the dynamic property of the CSS selector
     $(".toolbar")

@@ -1,5 +1,7 @@
-import conf from "./../configuration"
+import conf from "../Configuration"
 import fs from "path-browserify"
+import storageFactory from '../../../common/js/BackendStorage'
+let storage = storageFactory(conf)
 
 class Dialog {
 
@@ -13,17 +15,17 @@ class Dialog {
             <div class="modal-dialog ">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="media-heading">Save Document</h4>
+                        <h4 data-i18n="dialog.save" class="media-heading">Save Document</h4>
                         <div class="description"></div>
                     </div>
                     <div class="modal-body">
                       <div class="media">
                         <div class="media-left">
-                          <img class="filePreview" src="../common/images/files_author.svg">
+                          <img class="filePreview" src="../common/images/toolbar_save.svg">
                         </div>
                         <div class="media-body">
                           <div class="controlWithHeader">
-                            <label>Name</label>
+                            <label data-i18n="common:label.name" >Name</label>
                             <input type="text"  class="fileName" autofocus value="">
                           </div>
                         </div>
@@ -31,8 +33,8 @@ class Dialog {
 
                     </div>
                     <div class="modal-footer">
-                        <button class="electra-button" data-dismiss="modal">Cancel</button>
-                        <button class="electra-button electra-primary okButton"><span>Save</span></button>
+                        <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">Cancel</button>
+                        <button data-i18n="common:button.save"   class="electra-button electra-primary okButton"><span>Save</span></button>
                     </div>
                 </div>
             </div>
@@ -50,16 +52,26 @@ class Dialog {
    *
    * @since 4.0.0
    */
-  show(currentFile, storage, document, description="") {
+  show(currentFile, document, description="") {
     return new Promise( (resolve, reject) => {
+      let promiseAlreadyHandled = false
+      Mousetrap.pause()
       $("#fileSaveDialog .description").html(description)
       $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name, conf.fileSuffix))
 
-      $('#fileSaveDialog').on('shown.bs.modal', (event) => {
+      $('#fileSaveDialog').one('shown.bs.modal', (event) => {
         $(event.currentTarget).find('input:first').focus()
       })
+
+      $("#fileSaveDialog").one("hide.bs.modal", ()=>{
+        Mousetrap.unpause()
+        // hide event comes even if the dialog is closed with the "ok" button or "ESC". Catch this
+        if (!promiseAlreadyHandled) {
+          reject(false)
+        }
+      })
+
       $("#fileSaveDialog").modal("show")
-      Mousetrap.pause()
 
       $('#fileSaveDialog .fileName').on('keypress', function (e) {
         let key = e.charCode || e.keyCode || 0;
@@ -71,23 +83,17 @@ class Dialog {
       // Save Button
       //
       $("#fileSaveDialog .okButton").off('click').on("click", () => {
-        Mousetrap.unpause()
         let name = $("#fileSaveDialog .fileName").val()
         name = fs.basename(name,conf.fileSuffix) // remove any directories
         currentFile.name = fs.join(fs.dirname(currentFile.name), name + conf.fileSuffix)
-        this.save(currentFile, storage, document)
-          .then( () => {
-            $('#fileSaveDialog').modal('hide')
-            resolve()
-          })
-          .catch( ()=>{
-            reject()
-          })
+        promiseAlreadyHandled = true
+        $('#fileSaveDialog').modal('hide')
+        this.save(currentFile, document).then(resolve, reject )
       })
     })
   }
 
-  save(currentFile, storage, document){
+  save(currentFile, document){
     return storage.saveFile(document.toJSON(), currentFile.name, currentFile.scope)
       .then(( response) => {
         let data = response.data
@@ -96,7 +102,7 @@ class Dialog {
           id: 'editor',
           scope: currentFile.scope,
           file: currentFile.name
-        }, conf.appName+' | ' + name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
+        }, conf.appName+' | ' + currentFile.name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
       });
   }
 }

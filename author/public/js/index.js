@@ -86,7 +86,7 @@ $(window).load(function () {
     var s = document.createElement("script")
     s.setAttribute("src",conf.shapes.jsUrl)
     s.onload = function(){
-      app = require("./application").default
+      app = require("./Application").default
       app.init(permissions)
       inlineSVG.init()
       $('body').localize()

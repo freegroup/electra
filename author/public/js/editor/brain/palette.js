@@ -1,4 +1,4 @@
-import conf from "../../configuration"
+import conf from "../../Configuration"
 import Hogan from "hogan.js";
 import TreeView from "js-treeview";
 

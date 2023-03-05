@@ -1,7 +1,7 @@
 import ConnectionRouter from "./ConnectionRouter"
 import DropInterceptorPolicy from "./DropInterceptorPolicy"
 import EditEditPolicy from "./EditEditPolicy"
-import conf from "../../configuration"
+import conf from "../../Configuration"
 import Connection from "./figures/Connection"
 import SimulationEditPolicy from "./SimulationEditPolicy"
 

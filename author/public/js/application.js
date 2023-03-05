@@ -1,4 +1,5 @@
-import shareDialog from "../../common/js/LinkShareDialog"
+import shareDialog from "../../common/js/ShareDialog"
+import confirmDialog from "../../common/js/ConfirmDialog"
 import AuthorPage from "../../common/js/AuthorPage"
 import Files from "../../common/js/FilesScreen"
 import Userinfo from "../../common/js/Userinfo"
@@ -9,11 +10,13 @@ import toast from "../../common/js/toast"
 import Toolbar from "./toolbar"
 import View from "./view"
 import fileSave from "./dialog/FileSave"
-import conf from "./configuration"
+import fileCreate from "./dialog/FileCreate"
+import conf from "./Configuration"
 import Document from "./model/document"
 import commandStack from "./commands/CommandStack"
 
-let storage = require('../../common/js/BackendStorage').default(conf)
+import storageFactory from '../../common/js/BackendStorage'
+let storage = storageFactory(conf)
 
 class Application {
   /**
@@ -33,7 +36,6 @@ class Application {
     this.permissions = permissions
     this.document = null
     this.currentFile = { name:"NewDocument"+conf.fileSuffix, scope:"user"}
-    this.storage = storage
     this.view = new View(this, "#editor .content", permissions)
     this.filePane = new Files(this, conf, permissions.sheets)
     this.indexPane = new AuthorPage("#home", "/readme/en/author/README.sheet")
@@ -112,10 +114,10 @@ class Application {
       this.view.onCommitEdit()
       if (this.permissions.sheets.create && this.permissions.sheets.update) {
         // allow the user to enter/change the file name....
-        fileSave.show(this.currentFile, this.storage, this.document, description).then(resolve).catch(reject)
+        fileSave.show(this.currentFile, this.document, description).then(resolve, reject)
       } else if (this.permissions.sheets.create) {
         // just save the file with a generated filename. It is a codepen-like modus
-        fileSave.save(this.currentFile, this.storage, this.document, description).then(resolve).catch(reject)
+        fileSave.save(this.currentFile, this.document, description).then(resolve, reject)
       }
       else{
         return reject()
@@ -129,19 +131,52 @@ class Application {
   }
 
 
+  fileCreateNew(){
+    return new Promise((resolve, reject)=>{
+      if (this.hasUnsavedChanges === true){
+         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
+      }
+      return resolve()
+    })
+    .then(()=>{
+      this.fileNew()
+      return fileCreate.show(this.currentFile, this.document)
+    })
+    .then(()=>{
+      this.hasUnsavedChanges = false
+      toast(t("common:message.created"))
+      $("#editorFileSave div").removeClass("highlight")
+      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+    })
+    .catch( (error)=>{
+      console.log(error)
+    })
+  }
+
+
   fileShare() {
     let filePath = this.currentFile.name
     let scope = this.currentFile.scope
-    storage.shareFile(filePath,scope)
-      .then(( response) => {
-        let file = response.data.filePath
-        shareDialog.show(file)
-      })
+    return new Promise( (resolve, reject)=>{
+      if (this.hasUnsavedChanges) {
+        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
+      }
+      resolve()
+    })
+    .then( ()=>{
+      return storage.shareFile(filePath,scope)
+    })
+    .then((response) => {
+      return shareDialog.show(response.data.filePath)
+    })
+    .catch (error => {
+      console.log(error)
+    })
   }
 
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
-    this.currentFile = { name, scope }
+    this.currentFile = { name: name??"MyNewDocument", scope: scope??"user" }
     this.setDocument(new Document(), 0)
     commandStack.markSaveLocation()
   }
@@ -149,7 +184,7 @@ class Application {
   load(name, scope){
     let url = conf.backend[scope].get(name)
     $("#leftTabStrip .editor").click()
-    return this.storage.loadUrl(url)
+    return storage.loadUrl(url)
       .then((content) => {
         this.currentFile = { name, scope}
         this.setDocument(new Document(content),0)

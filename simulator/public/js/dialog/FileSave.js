@@ -64,11 +64,10 @@ class Dialog {
       })
 
       $("#fileSaveDialog .okButton").off("click").on("click", () => {
-        Mousetrap.unpause()
         let name = $("#fileSaveDialog .fileName").val()
         name = fs.basename(name, conf.fileSuffix) // remove any directories
         currentFile.name = fs.join(fs.dirname(currentFile.name), name + conf.fileSuffix)
-        promiseAlreadyHandled = true;
+        promiseAlreadyHandled = true
         $('#fileSaveDialog').modal('hide')
         this.save(currentFile, canvas).then(resolve, reject)
       })
