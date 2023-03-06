@@ -12,7 +12,6 @@ import fileSave from "./dialog/FileSave"
 import progress from "./dialog/Progress"
 import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
-import AuthorPage from "../../common/js/AuthorPage"
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
@@ -30,7 +29,6 @@ class Application extends GenericApplication{
       this.palette = new Palette(permissions)
       this.view = new View("draw2dCanvas", permissions)
 
-  
       this.view.getCommandStack().addEventListener(this)
   
       if(permissions.brains.update || permissions.brains.create) {
@@ -52,7 +50,6 @@ class Application extends GenericApplication{
       else{
         this.shareButton.remove()
       }
-  
   
       // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
