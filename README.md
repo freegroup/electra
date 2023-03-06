@@ -1,5 +1,5 @@
-# Circuits are better animated.
-Create, simulate, share, and explore electronic circuits!
+# Electra.Academy
+Circuits are better animated. Create, simulate, share, and explore electronic circuits!
 
 
 ## See It in Action
