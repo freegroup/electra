@@ -45,6 +45,21 @@ export default class Application extends AppFrame{
         welcomeMessage.hide()
     }
 
+    showLoginHint(){
+        new Anno([
+            {
+              target: '.userinfo_toggler',
+              content: t("common:message.authenticate_before_save"),
+               position: {
+                top: '4em',
+                right: '1em'
+              },
+              arrowPosition: 'center-top',
+              buttons : []
+            }
+          ]).show()
+    }
+
     hasModifyPermissionForCurrentFile () {
         let scope = this.currentFile?.scope
         return (

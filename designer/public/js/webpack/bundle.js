@@ -185,6 +185,19 @@ class Application extends _ApplicationFrame.default {
     _WelcomeMessage.default.hide();
   }
 
+  showLoginHint() {
+    new Anno([{
+      target: '.userinfo_toggler',
+      content: t("common:message.authenticate_before_save"),
+      position: {
+        top: '4em',
+        right: '1em'
+      },
+      arrowPosition: 'center-top',
+      buttons: []
+    }]).show();
+  }
+
   hasModifyPermissionForCurrentFile() {
     let scope = this.currentFile?.scope;
     return this.currentFile !== null && (scope === "global" && (this.permissions[this.objectType].global.update || this.permissions[this.objectType].global.create) || scope === "user" && (this.permissions[this.objectType].update || this.permissions[this.objectType].create));
@@ -2953,7 +2966,12 @@ class Application extends _Application.default {
       return resolve();
     }).then(() => {
       this.fileNew();
-      return _FileCreate.default.show(this.currentFile);
+
+      if (this.permissions[this.objectType].create && this.permissions[this.objectType].update) {
+        return _FileCreate.default.show(this.currentFile);
+      }
+
+      return this.showLoginHint();
     }).then(() => {
       this.hasUnsavedChanges = false;
       (0, _toast.default)(t("common:message.created"));

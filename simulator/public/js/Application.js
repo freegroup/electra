@@ -31,7 +31,7 @@ class Application extends GenericApplication{
 
       this.view.getCommandStack().addEventListener(this)
   
-      if(permissions.brains.update || permissions.brains.create) {
+      if(permissions[this.objectType].update || permissions[this.objectType].create) {
         $("#editorFileCreate").on("click",  () => { this.fileCreateNew() })
         $("#editorFileSave").on("click",    () => { this.fileSave() })
       }
@@ -39,7 +39,6 @@ class Application extends GenericApplication{
         $("#editorFileCreate").remove()
         $("#editorFileSave").remove()
       }
-  
   
       this.shareButton = $("#editorFileShare")
       if(permissions.featureset.share) {
@@ -130,10 +129,7 @@ class Application extends GenericApplication{
     let filePath = this.currentFile.name
     let scope = this.currentFile.scope
     return new Promise( (resolve, reject)=>{
-      if (this.hasUnsavedChanges) {
-        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
-      }
-      resolve()
+      return app.fileSave(t("message.save_before_share")).then(resolve, reject)
     })
     .then( ()=>{
       return storage.shareFile(filePath,scope)
@@ -155,16 +151,20 @@ class Application extends GenericApplication{
     })
     .then(()=>{
       this.fileNew()
-      return fileCreate.show(this.currentFile)
+      if(this.permissions[this.objectType ].create && this.permissions[this.objectType ].update){
+        return fileCreate.show(this.currentFile)
+      }
+      return this.showLoginHint()
     })
     .then(()=>{
       this.hasUnsavedChanges = false
       toast(t("common:message.created"))
       $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
     })
-    .catch( ()=>{
-      // ignore
+    .catch( (error)=>{
+      console.log(error)
+
     })
   }
 
@@ -173,15 +173,15 @@ class Application extends GenericApplication{
       // if the user didn't has the access to write "global" files, the scope of the file is changed
       // // from "global" to "user". In fact the user creates a copy in his/her own repository.
       //
-      if(this.permissions.brains.global.update===false){
+      if(this.permissions[this.objectType ].global.update===false){
         this.currentFile.scope = "user"
       }
 
-      if (this.permissions.brains.create && this.permissions.brains.update) {
+      if (this.permissions[this.objectType ].create && this.permissions[this.objectType ].update) {
         // allow the user to enter/change a file name....
         //
         return fileSave.show(this.currentFile, this.view).then(resolve, reject)
-      } else if (this.permissions.brains.create) {
+      } else if (this.permissions[this.objectType ].create) {
         // just save the file with a generated filename. It is a codepen-like modus
         // The callback of the REST-save function contains the new generated filename
         //
@@ -193,7 +193,7 @@ class Application extends GenericApplication{
       this.hasUnsavedChanges = false
       toast(t("common:message.saved"))
       $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+      this.filePane.refresh(conf, this.permissions[this.objectType ], this.currentFile)
     })
     .catch( err => {
       console.log(err)

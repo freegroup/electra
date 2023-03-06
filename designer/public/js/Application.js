@@ -166,7 +166,10 @@ class Application extends GenericApplication {
     })
     .then(()=>{
       this.fileNew()
-      return fileCreate.show(this.currentFile)
+      if(this.permissions[this.objectType ].create && this.permissions[this.objectType ].update){
+        return fileCreate.show(this.currentFile)
+      }
+      return this.showLoginHint()
     })
     .then(()=>{
       this.hasUnsavedChanges = false
