@@ -1,3 +1,4 @@
+import GenericApplication from "../../common/js/Application"
 import Userinfo from "../../common/js/Userinfo"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
@@ -20,16 +21,16 @@ import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
 
-class Application {
+class Application extends GenericApplication{
 
   constructor() {
+    super("brains")
   }
 
   init(permissions) {
+    super.init(permissions)
     return new Promise( (resolve, reject)=>{
-      this.currentFile = { name:"NewDocument"+conf.fileSuffix, scope:"user"}
-      this.permissions = permissions
-      this.hasUnsavedChanges = false
+
       this.palette = new Palette(permissions)
       this.view = new View("draw2dCanvas", permissions)
       this.filePane = new Files(this, conf, permissions.brains)
@@ -41,16 +42,7 @@ class Application {
   
       this.indexPane.render()
   
-      // Show the user an alert if there are unsaved changes
-      //
-      window.onbeforeunload = ()=> {
-        // string content is not relevatn anymore
-        // https://chromestatus.com/feature/5349061406228480
-        return this.hasUnsavedChanges?  "The changes you made will be lost if you navigate away from this page": undefined;
-      }
-  
       this.view.getCommandStack().addEventListener(this)
-  
   
       if(permissions.brains.update || permissions.brains.create) {
         $("#editorFileCreate").on("click",  () => { this.fileCreateNew() })
@@ -98,14 +90,6 @@ class Application {
         this.fileNew()
       }
   
-      // listen on the history object to load files
-      //
-      window.addEventListener('popstate', (event) => {
-        if (event.state && event.state.id === 'editor') {
-          let scope = event.state.scope
-          this.load(event.state.file, scope)
-        }
-      })
       resolve(this)
     })
   }
@@ -228,44 +212,10 @@ class Application {
 
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
-
     this.view.clear()
-
     this.currentFile = { name: name??"MyNewCircuit", scope: scope??"user" }
-
     this.view.centerDocument()
   }
-
-  stackChanged(event) {
-    if (event.isPreChangeEvent()) {
-      return // silently
-    }
-    if (event.getStack().canUndo()){
-      $("#editorFileSave div").addClass("highlight")
-      this.hasUnsavedChanges = true
-    }
-  }
-
-  getParam(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-    let regexS = "[\\?&]" + name + "=([^&#]*)"
-    let regex = new RegExp(regexS)
-    let results = regex.exec(window.location.href)
-    // the param isn't part of the normal URL pattern...
-    //
-    if (results === null) {
-      // maybe it is part in the hash.
-      //
-      regexS = "[\\#]" + name + "=([^&#]*)"
-      regex = new RegExp(regexS)
-      results = regex.exec(window.location.hash)
-      if (results === null) {
-        return null
-      }
-    }
-    return results[1]
-  }
-
 }
 
 let app = new Application()

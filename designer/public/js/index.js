@@ -74,7 +74,6 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
     return axios.get("../permissions")})
   .then( (response) => {
     app = require("./Application").default
@@ -85,5 +84,8 @@ $(window).load(function () {
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })
+  })
+  .catch( error =>{
+    console.log(error)
   })
 })

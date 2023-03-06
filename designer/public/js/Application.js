@@ -1,3 +1,4 @@
+import GenericApplication from "../../common/js/Application"
 import Files from "../../common/js/FilesScreen"
 import Userinfo from "../../common/js/Userinfo"
 import AuthorPage from "../../common/js/AuthorPage"
@@ -19,31 +20,26 @@ import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
 
-class Application {
+class Application extends GenericApplication {
   /**
    * @constructor
    *
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
   constructor() {
+    super("shapes")
   }
 
   init(permissions){
+    super.init(permissions)
     return new Promise( (resolve, reject) => {
-      this.permissions = permissions
-      this.hasUnsavedChanges = false
-      this.currentFile = null
+
       this.documentConfigurationTempl = {
         baseClass: "draw2d.SetFigure",
         code: $("#shape-edit-template").text().trim()
       }
   
-      // Show the user an alert if there are unsaved changes
-      //
-      window.onbeforeunload = ()=> {
-        return this.hasUnsavedChanges?   t("common:message.changes_get_lost"): undefined;
-      }
-  
+
       $( "body" )
         .on( ".mousetrap-pause", "focus", () => {
           Mousetrap.pause()
@@ -70,7 +66,7 @@ class Application {
       this.indexPane.render()
       this.view.installEditPolicy(new SelectionToolPolicy())
   
-     // this.view.getCommandStack().addEventListener(this)
+      this.view.getCommandStack().addEventListener(this)
   
       // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
@@ -86,16 +82,6 @@ class Application {
       else {
         this.view.showWelcomeMessage()
       }
-  
-      // listen on the history object to load files
-      //
-      window.addEventListener('popstate', (event) => {
-        if (event.state && event.state.id === 'editor') {
-          let scope = event.state.scope
-          let url = conf.backend[scope].get(event.state.file)
-          this.load(url, scope)
-        }
-      })
   
       // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
@@ -179,27 +165,6 @@ class Application {
   }
 
 
-  getParam(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-    let regexS = "[\\?&]" + name + "=([^&#]*)"
-    let regex = new RegExp(regexS)
-    let results = regex.exec(window.location.href)
-    // the param isn't part of the normal URL pattern...
-    //
-    if (results === null) {
-      // maybe it is part in the hash.
-      //
-      regexS = "[\\#]" + name + "=([^&#]*)"
-      regex = new RegExp(regexS)
-      results = regex.exec(window.location.hash)
-      if (results === null) {
-        return null
-      }
-    }
-    return results[1]
-  }
-
-
   load(name, scope){
     let url = conf.backend[scope].get(name)
     this.view.reset()
@@ -207,19 +172,15 @@ class Application {
 
     return storage.loadUrl(url)
       .then((content) => {
-        if (typeof content === "string"){
-          content = JSON.parse(content)
-        }
         this.view.reset()
         let reader = new draw2d.io.json.Reader()
-        reader.unmarshal(this.view, content.draw2d || content)
+        reader.unmarshal(this.view, content.draw2d ?? content)
         this.getConfiguration()
         this.view.getCommandStack().markSaveLocation()
         this.view.centerDocument()
         this.hasUnsavedChanges = false
         $("#editorFileSave div").removeClass("highlight")
         this.currentFile = { name, scope}
-
         return content
       })
       .catch( error => {
@@ -280,28 +241,6 @@ class Application {
     }
   }
 
-
-  stackChanged(event) {
-    if (event.isPreChangeEvent()) {
-      return // silently
-    }
-    if (event.getStack().canUndo()){
-      $("#editorFileSave div").addClass("highlight")
-      this.hasUnsavedChanges = true
-    }
-  }
-
-
-  hasModifyPermissionForCurrentFile(){
-    let scope = this.currentFile.scope
-    return (
-      this.currentFile !== null
-      &&
-      (    (scope === "global" && (this.permissions.sheets.global.update || this.permissions.sheets.global.create))
-        || (scope === "user"   && (this.permissions.sheets.update        || this.permissions.sheets.create       ))
-      )
-    )
-  }
 }
 
 

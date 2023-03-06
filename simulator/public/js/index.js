@@ -57,9 +57,7 @@ import conf from './Configuration'
 
 $(window).load(function () {
   document.title = conf.appName
-
   socket = io( { path: '/socket.io'})
-  let permissions = null
 
   i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
     fallbackLng: "en",
@@ -73,20 +71,23 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    return axios.get("../permissions")})
-  .then( (response) => {
-    permissions = response.data
-
+  })
+  .then( () => {
     // export all required classes for deserialize JSON with "eval"
     // "eval" code didn't sees imported class or code
     //
     let global = require("./global")
     for (let k in global.default) window[k] = global.default[k]
+    
     return loadScript(conf.shapes.jsUrl)
   })
   .then( ()=>{
+    return axios.get("../permissions")
+  })
+  .then( (response)=>{
+    // set the global scope for the "app" object
     app = require("./Application").default
-    return app.init(permissions)
+    return app.init(response.data)
   })
   .then( ()=>{
     require("./hardware").default.init(socket)
@@ -94,7 +95,10 @@ $(window).load(function () {
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })
-  });
+  })
+  .catch( error =>{
+    console.log(error)
+  })
 
 
   Split(['#paletteHeader', '#paletteElementsScroll'], {

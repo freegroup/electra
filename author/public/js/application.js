@@ -1,3 +1,4 @@
+import GenericApplication from "../../common/js/Application"
 import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
 import AuthorPage from "../../common/js/AuthorPage"
@@ -18,24 +19,23 @@ import commandStack from "./commands/CommandStack"
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
-class Application {
+class Application extends GenericApplication{
   /**
    * @constructor
    *
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
   constructor() {
+    super("sheets")
   }
 
   init(permissions) {
+    super.init(permissions)
     $("body")
       .on( "focus", ".mousetrap-pause", Mousetrap.pause)
       .on( "blur", ".mousetrap-pause",  Mousetrap.unpause)
 
-    this.hasUnsavedChanges = false
-    this.permissions = permissions
     this.document = null
-    this.currentFile = { name:"NewDocument"+conf.fileSuffix, scope:"user"}
     this.view = new View(this, "#editor .content", permissions)
     this.filePane = new Files(this, conf, permissions.sheets)
     this.indexPane = new AuthorPage("#home", "/readme/en/author/README.sheet")
@@ -47,12 +47,6 @@ class Application {
     commandStack.on("change", this)
 
     this.indexPane.render()
-
-    // Show the user an alert if there are unsaved changes
-    //
-    window.onbeforeunload = ()=> {
-      return this.hasUnsavedChanges? t("common:message.changes_get_lost"): undefined;
-    }
 
     let user = this.getParam("user")
     let global = this.getParam("global")
@@ -69,37 +63,7 @@ class Application {
     else if (shared) {
       this.load(shared, "shared")
     }
-
-    // listen on the history object to load files
-    //
-    window.addEventListener('popstate', (event) => {
-      if (event.state && event.state.id === 'editor') {
-        // Render new content for the homepage
-        this.load(event.state.file, event.state.scope)
-      }
-    })
   }
-
-  getParam(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-    let regexS = "[\\?&]" + name + "=([^&#]*)"
-    let regex = new RegExp(regexS)
-    let results = regex.exec(window.location.href)
-    // the param isn't part of the normal URL pattern...
-    //
-    if (results === null) {
-      // maybe it is part in the hash.
-      //
-      regexS = "[\\#]" + name + "=([^&#]*)"
-      regex = new RegExp(regexS)
-      results = regex.exec(window.location.hash)
-      if (results === null) {
-        return null
-      }
-    }
-    return results[1]
-  }
-
 
   fileSave(description="") {
     return new Promise((resolve, reject) => { 
@@ -204,26 +168,6 @@ class Application {
 
   getDocument(){
     return this.document
-  }
-
-  stackChanged(event) {
-    if (event.getStack().canUndo()){
-      $("#editorFileSave div").addClass("highlight")
-      this.hasUnsavedChanges = true
-    }
-  }
-
-  hasModifyPermissionForCurrentFile(){
-    let scope = this.currentFile.scope
-    let document = this.getDocument()
-
-    return (
-      document !== null
-      &&
-      (    (scope === "global" && (this.permissions.sheets.global.update || this.permissions.sheets.global.create))
-        || (scope === "user"   && (this.permissions.sheets.update        || this.permissions.sheets.create       ))
-      )
-    )
   }
 }
 

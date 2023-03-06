@@ -6,6 +6,8 @@ import Backend from 'i18next-http-backend';
 import jqueryI18next from "jquery-i18next"
 import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 
+import loadScript from "../../common/js/loadScript"
+
 import "../less/index.less"
 import conf from "./configuration"
 
@@ -71,29 +73,27 @@ $(window).load(function () {
       loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
     }
   })
+  .then( () => {
+    let global = require("./global")
+    for (let k in global.default) window[k] = global.default[k];
+    return loadScript(conf.shapes.jsUrl)
+  })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
     return axios.get("../permissions")
   })
   .then( (response) => {
-    let permissions = response.data
-    let global = require("./global")
-    for (let k in global.default) window[k] = global.default[k];
-
-    // we must load the "shape/index.js" in the global scope.
-    //
-    var s = document.createElement("script")
-    s.setAttribute("src",conf.shapes.jsUrl)
-    s.onload = function(){
-      app = require("./Application").default
-      app.init(permissions)
-      inlineSVG.init()
-      $('body').localize()
-      $(".loader").fadeOut(500, function () {
-       $(this).remove();
-      })
-    }
-    document.head.appendChild(s)
+    // set the global scope for the "app" object
+    app = require("./Application").default
+    return app.init(response.data)
+  })
+  .then( app => {
+    $('body').localize(); 
+    inlineSVG.init({}, ()=>{
+      $(".loader").fadeOut(500, function() { $(this).remove(); })
+    })
+  })
+  .catch( error =>{
+    console.log(error)
   })
 })

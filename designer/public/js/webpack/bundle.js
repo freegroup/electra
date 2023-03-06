@@ -124,6 +124,90 @@ exports["default"] = AppSwitch;
 
 /***/ }),
 
+/***/ "../common/public/js/Application.js":
+/*!******************************************!*\
+  !*** ../common/public/js/Application.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+class Application {
+  constructor(objectType) {
+    this.currentFile = null;
+    this.hasUnsavedChanges = false;
+    this.permissions = null;
+    this.objectType = objectType;
+  }
+
+  init(permissions) {
+    this.permissions = permissions;
+    this.hasUnsavedChanges = false; // Show the user an alert if there are unsaved changes
+    //
+
+    window.onbeforeunload = () => {
+      return this.hasUnsavedChanges ? t("common:message.changes_get_lost") : undefined;
+    }; // listen on the history object to load files
+    //
+
+
+    window.addEventListener('popstate', event => {
+      if (event.state && event.state.id === 'editor') {
+        this.load(event.state.file, event.state.scope);
+      }
+    });
+  }
+
+  hasModifyPermissionForCurrentFile() {
+    let scope = this.currentFile?.scope;
+    return this.currentFile !== null && (scope === "global" && (this.permissions[this.objectType].global.update || this.permissions[this.objectType].global.create) || scope === "user" && (this.permissions[this.objectType].update || this.permissions[this.objectType].create));
+  }
+
+  stackChanged(event) {
+    if (event.isPreChangeEvent()) {
+      return; // silently
+    }
+
+    if (event.getStack().canUndo()) {
+      $("#editorFileSave div").addClass("highlight");
+      this.hasUnsavedChanges = true;
+    }
+  }
+
+  getParam(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    let regexS = "[\\?&]" + name + "=([^&#]*)";
+    let regex = new RegExp(regexS);
+    let results = regex.exec(window.location.href); // the param isn't part of the normal URL pattern...
+    //
+
+    if (results === null) {
+      // maybe it is part in the hash.
+      //
+      regexS = "[\\#]" + name + "=([^&#]*)";
+      regex = new RegExp(regexS);
+      results = regex.exec(window.location.hash);
+
+      if (results === null) {
+        return null;
+      }
+    }
+
+    return results[1];
+  }
+
+}
+
+exports["default"] = Application;
+
+/***/ }),
+
 /***/ "../common/public/js/AuthorPage.js":
 /*!*****************************************!*\
   !*** ../common/public/js/AuthorPage.js ***!
@@ -2513,6 +2597,8 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
+var _Application = _interopRequireDefault(__webpack_require__(/*! ../../common/js/Application */ "../common/public/js/Application.js"));
+
 var _FilesScreen = _interopRequireDefault(__webpack_require__(/*! ../../common/js/FilesScreen */ "../common/public/js/FilesScreen.js"));
 
 var _Userinfo = _interopRequireDefault(__webpack_require__(/*! ../../common/js/Userinfo */ "../common/public/js/Userinfo.js"));
@@ -2549,29 +2635,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 let storage = (0, _BackendStorage.default)(_Configuration.default);
 
-class Application {
+class Application extends _Application.default {
   /**
    * @constructor
    *
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
-  constructor() {}
+  constructor() {
+    super("shapes");
+  }
 
   init(permissions) {
+    super.init(permissions);
     return new Promise((resolve, reject) => {
-      this.permissions = permissions;
-      this.hasUnsavedChanges = false;
-      this.currentFile = null;
       this.documentConfigurationTempl = {
         baseClass: "draw2d.SetFigure",
         code: $("#shape-edit-template").text().trim()
-      }; // Show the user an alert if there are unsaved changes
-      //
-
-      window.onbeforeunload = () => {
-        return this.hasUnsavedChanges ? t("common:message.changes_get_lost") : undefined;
       };
-
       $("body").on(".mousetrap-pause", "focus", () => {
         Mousetrap.pause();
       }).on(".mousetrap-pause", "blur", () => {
@@ -2592,8 +2672,8 @@ class Application {
       this.appSwitch = new _AppSwitch.default(permissions);
       this.lngSwitch = new _LngSwitch.default(permissions);
       this.indexPane.render();
-      this.view.installEditPolicy(new _SelectionToolPolicy.default()); // this.view.getCommandStack().addEventListener(this)
-      // check if the user has added a "file" parameter. In this case we load the shape from
+      this.view.installEditPolicy(new _SelectionToolPolicy.default());
+      this.view.getCommandStack().addEventListener(this); // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
       //
 
@@ -2606,21 +2686,10 @@ class Application {
         this.load(global, "global");
       } else {
         this.view.showWelcomeMessage();
-      } // listen on the history object to load files
-      //
-
-
-      window.addEventListener('popstate', event => {
-        if (event.state && event.state.id === 'editor') {
-          let scope = event.state.scope;
-
-          let url = _Configuration.default.backend[scope].get(event.state.file);
-
-          this.load(url, scope);
-        }
-      }); // check if the user has added a "file" parameter. In this case we load the shape from
+      } // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
       //
+
 
       let tutorial = this.getParam("tutorial");
 
@@ -2695,41 +2764,15 @@ class Application {
     }
   }
 
-  getParam(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    let regexS = "[\\?&]" + name + "=([^&#]*)";
-    let regex = new RegExp(regexS);
-    let results = regex.exec(window.location.href); // the param isn't part of the normal URL pattern...
-    //
-
-    if (results === null) {
-      // maybe it is part in the hash.
-      //
-      regexS = "[\\#]" + name + "=([^&#]*)";
-      regex = new RegExp(regexS);
-      results = regex.exec(window.location.hash);
-
-      if (results === null) {
-        return null;
-      }
-    }
-
-    return results[1];
-  }
-
   load(name, scope) {
     let url = _Configuration.default.backend[scope].get(name);
 
     this.view.reset();
     $("#leftTabStrip .editor").click();
     return storage.loadUrl(url).then(content => {
-      if (typeof content === "string") {
-        content = JSON.parse(content);
-      }
-
       this.view.reset();
       let reader = new draw2d.io.json.Reader();
-      reader.unmarshal(this.view, content.draw2d || content);
+      reader.unmarshal(this.view, content.draw2d ?? content);
       this.getConfiguration();
       this.view.getCommandStack().markSaveLocation();
       this.view.centerDocument();
@@ -2810,22 +2853,6 @@ class Application {
         ...this.documentConfiguration
       });
     }
-  }
-
-  stackChanged(event) {
-    if (event.isPreChangeEvent()) {
-      return; // silently
-    }
-
-    if (event.getStack().canUndo()) {
-      $("#editorFileSave div").addClass("highlight");
-      this.hasUnsavedChanges = true;
-    }
-  }
-
-  hasModifyPermissionForCurrentFile() {
-    let scope = this.currentFile.scope;
-    return this.currentFile !== null && (scope === "global" && (this.permissions.sheets.global.update || this.permissions.sheets.global.create) || scope === "user" && (this.permissions.sheets.update || this.permissions.sheets.create));
   }
 
 }
@@ -70962,7 +70989,6 @@ $(window).load(function () {
       useOptionsAttr: true
     });
 
-    $('body').localize();
     return _axios.default.get("../permissions");
   }).then(response => {
     app = (__webpack_require__(/*! ./Application */ "./public/js/Application.js")["default"]);
@@ -70974,6 +71000,8 @@ $(window).load(function () {
         $(this).remove();
       });
     });
+  }).catch(error => {
+    console.log(error);
   });
 });
 })();
