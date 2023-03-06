@@ -52,7 +52,7 @@ class AppSwitch {
                       </label>
 
                       <label class="applicationSwitchAuthor image-button" >
-                        <img src="../common/images/app_lessons.svg"/>
+                        <img src="../common/images/app_author.svg"/>
                         <div>Lesson</div>
                         <div>Author</div>
                       </label>
@@ -2273,37 +2273,31 @@ class Dialog {
    * @constructor
    *
    */
-  constructor() {
-    this.tmpl = `
-            <div class="welcomeMessage">
-            <div class="left">
-              <div class="teaser">
-                <h2 data-i18n="[html]app.title">Documentation Author</h2>
-                <p  data-i18n="[html]app.slogan">Create exciting educational content using Electra Academy</p>
-              </div>
-              <div class="description">
-                <p data-i18n="[html]app.description">
-                  With <i>Documentation Author</i>, you can easily create and share documents, worksheets, and course 
-                  materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more 
-                  engaging and informative. Sharing your work with others has never been easier. <b>I hope you'll give it a try!</b>
-                </p>
-                <button data-i18n="button.new_document" class="electra-button" id="welcomeNewDocument">New Document</button> 
-                <button data-i18n="button.open_example" class="electra-button" id="welcomeOpenExample">Open Example</button>
-              </div>
-            </div>
-            <div class="right">
-              <img class="svg" src="../common/images/app_lessons.svg">
-            </div>
-          </div>           
-        `;
-  }
+  constructor() {}
   /**
    */
 
 
   show(exampleDocument) {
-    $("#editor .workspace").append(this.tmpl);
-    $('.welcomeMessage').localize();
+    let tmpl = `
+            <div class="welcomeMessage">
+            <div class="left">
+              <div class="teaser">
+                <h2 data-i18n="[html]app.title">${t("app.title")}</h2>
+                <p  data-i18n="[html]app.slogan">${t("app.slogan")}</p>
+              </div>
+              <div class="description">
+                <p data-i18n="[html]app.description">${t("")}</p>
+                <button data-i18n="button.new_document" class="electra-button" id="welcomeNewDocument">${t("button.new_document")}</button> 
+                <button data-i18n="button.open_example" class="electra-button" id="welcomeOpenExample">${t("button.open_example")}</button>
+              </div>
+            </div>
+            <div class="right">
+              <img class="svg" src="${t("app.icon")}">
+            </div>
+          </div>           
+        `;
+    $("#editor .workspace").append(tmpl);
     $("#welcomeNewDocument").on("click", () => {
       app.fileNew("NewDocument", "user");
       this.hide();
@@ -71026,7 +71020,37 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // Resolve name collision between jQuery UI and Twitter Bootstrap
 
 /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
-$.widget.bridge('uibutton', $.ui.button);
+$.widget.bridge('uibutton', $.ui.button); // required to be compatible with jquery.ui
+//
+
+jQuery.uaMatch = function (ua) {
+  ua = ua.toLowerCase();
+  var match = /(chrome)[ \/]([\w.]+)/.exec(ua) || /(webkit)[ \/]([\w.]+)/.exec(ua) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) || /(msie) ([\w.]+)/.exec(ua) || ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [];
+  return {
+    browser: match[1] || "",
+    version: match[2] || "0"
+  };
+};
+
+if (!jQuery.browser) {
+  let matched = jQuery.uaMatch(navigator.userAgent);
+  let browser = {};
+
+  if (matched.browser) {
+    browser[matched.browser] = true;
+    browser.version = matched.version;
+  } // Chrome is Webkit, but Webkit is also Safari.
+
+
+  if (browser.chrome) {
+    browser.webkit = true;
+  } else if (browser.webkit) {
+    browser.safari = true;
+  }
+
+  jQuery.browser = browser;
+}
+
 $(window).load(function () {
   // export all required classes for deserialize JSON with "eval"
   // "eval" code didn't sees imported class or code
