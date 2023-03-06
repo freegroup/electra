@@ -1,6 +1,5 @@
-# electra
+# Circuits are better animated.
+Create, simulate, share, and explore electronic circuits!
 
-install via ansible
-```
-ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yaml
-```
+
+![overview](./electra.png)
