@@ -3077,7 +3077,6 @@ class FilterPane {
       figure.filters.each((i, filter) => {
         filter.insertPane(figure, this.html);
       });
-      console.log("remove");
       $('#add_filter_button').removeClass('disabled');
       $.each(figure.getPotentialFilters(), (i, e) => {
         $("#add_filter_action_menu").append(`<li><a data-i18n="${e.LABEL}" href='#' data-filter='${e.NAME}' >${t(e.LABEL)}</a></li>`);
