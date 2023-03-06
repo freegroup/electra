@@ -1,5 +1,5 @@
 export default {
-  appName: "Gallery",
+  application: "gallery",
 
   shapes: {
     jsonUrl:   "../shapes/index.json",

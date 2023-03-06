@@ -1,15 +1,31 @@
-export default class Application {
+import AppFrame from "./ApplicationFrame"
+import AuthorPage from "./AuthorPage"
+import AppSwitch from "./AppSwitch"
+import LngSwitch from "./LngSwitch"
+import Userinfo from "./Userinfo"
+import Files from "./FilesScreen"
+
+export default class Application extends AppFrame{
 
     constructor(objectType) {
+        super()
         this.currentFile = null
         this.hasUnsavedChanges = false
-        this.permissions = null
         this.objectType = objectType
     }
 
-    init (permissions) {
-        this.permissions = permissions
+    init (permissions, conf) {
+        super.init(permissions)
         this.hasUnsavedChanges = false
+
+        this.userinfo = new Userinfo(permissions)
+        this.appSwitch = new AppSwitch(permissions)
+        this.lngSwitch = new LngSwitch(permissions)
+        this.filePane = new Files(this, conf, permissions[this.objectType])
+        this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`)
+        this.readmePane.render()
+
+
         // Show the user an alert if there are unsaved changes
         //
         window.onbeforeunload = () => {
@@ -31,7 +47,7 @@ export default class Application {
             this.currentFile !== null
             &&
             ((scope === "global" && (this.permissions[this.objectType].global.update || this.permissions[this.objectType].global.create))
-                || (scope === "user" && (this.permissions[this.objectType].update || this.permissions[this.objectType].create))
+          || (scope === "user"   && (this.permissions[this.objectType].update        || this.permissions[this.objectType].create))
             )
         )
     }
@@ -41,29 +57,10 @@ export default class Application {
         if (event.isPreChangeEvent()) {
             return // silently
         }
+        
         if (event.getStack().canUndo()) {
             $("#editorFileSave div").addClass("highlight")
             this.hasUnsavedChanges = true
         }
-    }
-
-    getParam (name) {
-        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-        let regexS = "[\\?&]" + name + "=([^&#]*)"
-        let regex = new RegExp(regexS)
-        let results = regex.exec(window.location.href)
-        // the param isn't part of the normal URL pattern...
-        //
-        if (results === null) {
-            // maybe it is part in the hash.
-            //
-            regexS = "[\\#]" + name + "=([^&#]*)"
-            regex = new RegExp(regexS)
-            results = regex.exec(window.location.hash)
-            if (results === null) {
-                return null
-            }
-        }
-        return results[1]
     }
 }

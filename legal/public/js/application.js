@@ -1,23 +1,20 @@
-import Userinfo from "../../common/js/Userinfo"
-import AppSwitch from "../../common/js/AppSwitch";
-import LngSwitch from "../../common/js/LngSwitch"
+import AppFrame from "../../common/js/ApplicationFrame"
 import AuthorPage from "../../common/js/AuthorPage"
 
+import conf from "./Configuration"
 
 
-class Application {
+class Application  extends AppFrame{
   constructor() {
+    super()
   }
 
   init(permissions) {
-    this.permissions = permissions
+    super.init(permissions, conf)
 
-    this.userinfo = new Userinfo(permissions)
-    this.appSwitch = new AppSwitch(permissions)
     this.termsView = new AuthorPage("#markdownContainer", "readme/en/legal/terms.sheet")
     this.cookieView = new AuthorPage("#markdownContainer", "readme/en/legal/cookie.sheet")
     this.privacyView = new AuthorPage("#markdownContainer", "readme/en/legal/privacy.sheet")
-    this.lngSwitch = new LngSwitch(permissions)
 
     this.termsView.render()
 

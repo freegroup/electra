@@ -1,7 +1,7 @@
 import axios from "axios"
 import party from "party-js"
 import inlineSVG from "../../../common/js/inlineSVG"
-import conf from "../configuration"
+import conf from "../Configuration"
 
 class View {
 

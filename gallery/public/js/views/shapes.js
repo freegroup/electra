@@ -3,7 +3,7 @@ import ToastEditor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
 import party from "party-js"
 
-import conf from "../configuration"
+import conf from "../Configuration"
 let storage = require('../../../common/js/BackendStorage').default(conf.shapes)
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()

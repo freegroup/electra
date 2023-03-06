@@ -2,8 +2,7 @@
 export default {
   fileSuffix: ".brain",
   fileNew: "NewCircuit",
-  appName: "Simulator",
-  loginRedirect: "simulator",
+  application: "simulator",
 
   backend: {
 

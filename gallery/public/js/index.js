@@ -8,13 +8,10 @@ import "../../common/js/polyfill"
 
 import axios from "axios"
 import "../less/index.less"
-import conf from "./configuration"
 import global from "./global"
 
 
 $(window).load(function () {
-  document.title = conf.appName
-
   // set the global socket object
   socket = io( { path: '/socket.io'})
 
@@ -35,14 +32,15 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
     return axios.get("../permissions")})
   .then( (response) => {
     let permissions = response.data
-      app = require("./application").default
-      return app.init(permissions)
+    app = require("./Application").default
+    return app.init(permissions)
   })
   .then( (app) =>{    
+    $('body').localize();
+    document.title = t("app.name")
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function () {$(this).remove()}) 
     })

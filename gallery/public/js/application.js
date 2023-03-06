@@ -1,25 +1,19 @@
-import axios from "axios"
+import AppFrame from "../../common/js/ApplicationFrame"
+import conf from "./Configuration"
 
-import Userinfo from "../../common/js/Userinfo"
-import AppSwitch from "../../common/js/AppSwitch";
-import LngSwitch from "../../common/js/LngSwitch"
-
-import conf from "./configuration"
 import ShapesView from "./views/shapes"
 import SheetsView from "./views/sheets"
 
-class Application {
+class Application extends AppFrame{
   constructor() {
+    super()
   }
 
   init(permissions) {
-    this.permissions = permissions
+    super.init(permissions, conf)
 
-    this.userinfo = new Userinfo(permissions)
-    this.appSwitch = new AppSwitch(permissions)
     this.shapesView = new ShapesView(permissions)
     this.sheetsView = new SheetsView(permissions)
-    this.lngSwitch = new LngSwitch(permissions)
 
     this.currentView = this.sheetsView
 

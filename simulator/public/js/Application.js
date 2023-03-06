@@ -1,22 +1,18 @@
 import GenericApplication from "../../common/js/Application"
-import Userinfo from "../../common/js/Userinfo"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import Palette from "./Palette"
 import View from "./View"
-import Files from "../../common/js/FilesScreen"
 import conf from "./Configuration"
 import reader from "./io/Reader"
 import fileCreate from "./dialog/FileCreate"
 import fileSave from "./dialog/FileSave"
 import progress from "./dialog/Progress"
-import shareDialog from "../../common/js/ShareDialog";
+import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
-import AuthorPage from "../../common/js/AuthorPage";
-import AppSwitch from "../../common/js/AppSwitch";
-import LngSwitch from "../../common/js/LngSwitch"
+import AuthorPage from "../../common/js/AuthorPage"
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
 
@@ -28,19 +24,12 @@ class Application extends GenericApplication{
   }
 
   init(permissions) {
-    super.init(permissions)
+    super.init(permissions, conf)
     return new Promise( (resolve, reject)=>{
 
       this.palette = new Palette(permissions)
       this.view = new View("draw2dCanvas", permissions)
-      this.filePane = new Files(this, conf, permissions.brains)
-  
-      this.userinfo = new Userinfo(permissions)
-      this.indexPane = new AuthorPage("#home", "readme/en/simulator/Readme.sheet")
-      this.appSwitch = new AppSwitch(permissions)
-      this.lngSwitch = new LngSwitch(permissions)
-  
-      this.indexPane.render()
+
   
       this.view.getCommandStack().addEventListener(this)
   

@@ -32,14 +32,13 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    $('body').localize();
     return axios.get("../permissions")})
   .then( (response) => {
-    let permissions = response.data
-      app = require("./application").default
-      return app.init(permissions)
+    app = require("./Application").default
+    return app.init(response.data)
   })
   .then( (app) =>{    
+    $('body').localize();
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function () {$(this).remove()}) 
     })

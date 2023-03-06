@@ -1,11 +1,6 @@
 import GenericApplication from "../../common/js/Application"
 import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
-import AuthorPage from "../../common/js/AuthorPage"
-import Files from "../../common/js/FilesScreen"
-import Userinfo from "../../common/js/Userinfo"
-import AppSwitch from "../../common/js/AppSwitch"
-import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
 
 import Toolbar from "./Toolbar"
@@ -30,23 +25,16 @@ class Application extends GenericApplication{
   }
 
   init(permissions) {
-    super.init(permissions)
+    super.init(permissions, conf)
     $("body")
       .on( "focus", ".mousetrap-pause", Mousetrap.pause)
       .on( "blur", ".mousetrap-pause",  Mousetrap.unpause)
 
     this.document = null
     this.view = new View(this, "#editor .content", permissions)
-    this.filePane = new Files(this, conf, permissions.sheets)
-    this.indexPane = new AuthorPage("#home", "/readme/en/author/README.sheet")
     this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
-    this.userinfo = new Userinfo(permissions)
-    this.appSwitch = new AppSwitch(permissions)
-    this.lngSwitch = new LngSwitch(permissions)
 
     commandStack.on("change", this)
-
-    this.indexPane.render()
 
     let user = this.getParam("user")
     let global = this.getParam("global")

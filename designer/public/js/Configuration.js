@@ -1,7 +1,7 @@
 export default {
   fileSuffix: ".shape",
   fileNew: "NewComponent",
-  appName: "Designer",
+  application: "designer",
   
   backend: {
     user: {

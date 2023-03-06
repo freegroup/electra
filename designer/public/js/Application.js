@@ -1,9 +1,6 @@
 import GenericApplication from "../../common/js/Application"
-import Files from "../../common/js/FilesScreen"
-import Userinfo from "../../common/js/Userinfo"
+
 import AuthorPage from "../../common/js/AuthorPage"
-import AppSwitch from "../../common/js/AppSwitch"
-import LngSwitch from "../../common/js/LngSwitch"
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
@@ -31,7 +28,7 @@ class Application extends GenericApplication {
   }
 
   init(permissions){
-    super.init(permissions)
+    super.init(permissions, conf)
     return new Promise( (resolve, reject) => {
 
       this.documentConfigurationTempl = {
@@ -39,7 +36,6 @@ class Application extends GenericApplication {
         code: $("#shape-edit-template").text().trim()
       }
   
-
       $( "body" )
         .on( ".mousetrap-pause", "focus", () => {
           Mousetrap.pause()
@@ -57,13 +53,7 @@ class Application extends GenericApplication {
       this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
       this.layer = new Layer(this, "layer_elements", this.view, permissions)
       this.filter = new FilterPane(this, "#filter .filter_actions", this.view, permissions)
-      this.userinfo = new Userinfo(permissions)
-      this.filePane = new Files(this, conf, permissions.shapes)
-      this.indexPane = new AuthorPage("#home", "readme/en/designer/Readme.sheet")
-      this.appSwitch = new AppSwitch(permissions)
-      this.lngSwitch = new LngSwitch(permissions)
-  
-      this.indexPane.render()
+
       this.view.installEditPolicy(new SelectionToolPolicy())
   
       this.view.getCommandStack().addEventListener(this)
