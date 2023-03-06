@@ -207,7 +207,7 @@ class Application extends GenericApplication {
     let url = conf.backend[scope].get(name)
     this.view.reset()
     $("#leftTabStrip .editor").click()
-
+    this.hideWelcomeMessage()
     return storage.loadUrl(url)
       .then((content) => {
         this.view.reset()

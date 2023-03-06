@@ -181,7 +181,7 @@ class Application extends _ApplicationFrame.default {
     _WelcomeMessage.default.show(exampleDocument);
   }
 
-  hideWelcomeMEssage() {
+  hideWelcomeMessage() {
     _WelcomeMessage.default.hide();
   }
 
@@ -3011,6 +3011,7 @@ class Application extends _Application.default {
 
     this.view.reset();
     $("#leftTabStrip .editor").click();
+    this.hideWelcomeMessage();
     return storage.loadUrl(url).then(content => {
       this.view.reset();
       let reader = new draw2d.io.json.Reader();

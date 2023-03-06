@@ -143,6 +143,7 @@ class Application extends GenericApplication{
   load(name, scope){
     let url = conf.backend[scope].get(name)
     $("#leftTabStrip .editor").click()
+    this.hideWelcomeMessage()
     return storage.loadUrl(url)
       .then((content) => {
         this.currentFile = { name, scope}

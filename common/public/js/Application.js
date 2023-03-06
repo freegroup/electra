@@ -41,7 +41,7 @@ export default class Application extends AppFrame{
         welcomeMessage.show(exampleDocument)
     }
 
-    hideWelcomeMEssage(){
+    hideWelcomeMessage(){
         welcomeMessage.hide()
     }
 

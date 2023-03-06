@@ -1,6 +1,6 @@
 //app.fileNew();
 app.view.clear()
-app.view.hideWelcomeMessage();
+app.hideWelcomeMessage();
 var reader = new draw2d.io.json.Reader();
 reader.unmarshal(app.view,json);
 
