@@ -1,51 +1,63 @@
 .welcomeMessage{
   position: absolute;
-  left: @leftPaneWidth;
+  left: 0;
   top: 0px;
   bottom: 0px;
   right: 0px;
-  padding: 20px;
   min-height: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  .left{
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: @contentAreaSpacing;
-    .description{
-      font-size: 18px;
-      text-align: left;
-    }
-    .teaser {
-      padding: 23px;
-      border-radius: @borderRadiusSmall;
-      h2 {
-        margin-top: 0;
-        font-weight: 300;
-        font-size: 2vw;
-        text-align: right;
-      }
-      p {
-        text-align: right;
-      }
-    }
-    button{
-      border: 0;
-      border-radius: @borderRadiusSmall;
-    }
-  }
 
-  .right {
-    flex: 1;
-    text-align: center;
-    svg,
-    img{
-      padding: 0px;
-      max-width: 200px;
-      border-radius: @borderRadiusSmall;
+  z-index: 10000;
+
+  .welcomeMessageContent {
+    padding: 20px;
+    position: absolute;
+    left: @leftPaneWidth;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    
+    .left{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: @contentAreaSpacing;
+      .description{
+        font-size: 18px;
+        text-align: left;
+      }
+      .teaser {
+        padding: 23px;
+        border-radius: @borderRadiusSmall;
+        h2 {
+          margin-top: 0;
+          font-weight: 300;
+          font-size: 2vw;
+          text-align: right;
+        }
+        p {
+          text-align: right;
+        }
+      }
+      button{
+        border: 0;
+        border-radius: @borderRadiusSmall;
+      }
+    }
+
+    .right {
+      flex: 1;
+      text-align: center;
+      svg,
+      img{
+        padding: 0px;
+        max-width: 200px;
+        border-radius: @borderRadiusSmall;
+      }
     }
   }
 }

@@ -61,22 +61,16 @@ class Application extends GenericApplication{
       let global = this.getParam("global")
       let shared = this.getParam("shared")
       if (user) {
-        $("#leftTabStrip .editor").click()
         this.load(user, "user")
       }
-      // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
       else if (global) {
-        $("#leftTabStrip .editor").click()
         this.load(global, "global")
       }
       else if (shared) {
-        $("#leftTabStrip .editor").click()
         this.load(shared, "shared")
       }
       else {
-        this.fileNew()
+        this.showWelcomeMessage("guides/intro.brain")
       }
   
       resolve(this)

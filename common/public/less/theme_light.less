@@ -87,15 +87,18 @@ body.light {
     }
 
     .welcomeMessage {
-        background-color: rgb(var(--workplace-bg-color));
+        background-color: rgba(var(--workplace-bg-color), 0.8);
     
-        .teaser {
-          background-color: rgb(var(--pane-bg-color));
-          box-shadow: var(--box-shadow-1);
-    
-          h2 {
-            color: rgb(var(--tint-color));
-          }
+        .welcomeMessageContent {
+            background-color: rgb(var(--workplace-bg-color));
+            .teaser {
+            background-color: rgb(var(--pane-bg-color));
+            box-shadow: var(--box-shadow-1);
+        
+            h2 {
+                color: rgb(var(--tint-color));
+            }
+            }
         }
     }
 

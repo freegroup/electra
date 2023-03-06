@@ -1,8 +1,9 @@
 import GenericApplication from "../../common/js/Application"
 
-import AuthorPage from "../../common/js/AuthorPage"
+
 import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
+import confirmDialog from "../../common/js/ConfirmDialog"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import View from "./View"
@@ -12,6 +13,7 @@ import FilterPane from "./FilterPane"
 import SelectionToolPolicy from './policy/SelectionToolPolicy'
 import conf from "./Configuration"
 import fileSave from "./dialog/FileSave"
+import fileCreate from "./dialog/FileCreate"
 
 import storageFactory from '../../common/js/BackendStorage'
 let storage = storageFactory(conf)
@@ -155,6 +157,49 @@ class Application extends GenericApplication {
   }
 
 
+  fileCreateNew(){
+    return new Promise((resolve, reject)=>{
+      if (this.hasUnsavedChanges === true){
+         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
+      }
+      return resolve()
+    })
+    .then(()=>{
+      this.fileNew()
+      return fileCreate.show(this.currentFile)
+    })
+    .then(()=>{
+      this.hasUnsavedChanges = false
+      toast(t("common:message.created"))
+      $("#editorFileSave div").removeClass("highlight")
+      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+    })
+    .catch( (error)=>{
+      console.log(error)
+    })
+  }
+
+
+  fileNew(name, scope) {
+    $("#leftTabStrip .editor").click()
+    this.view.reset()
+    this.documentConfiguration = {...this.documentConfigurationTempl}
+    this.currentFile = { name: name??conf.fileNew , scope: scope??"user"}
+    this.view.getCommandStack().markSaveLocation()
+    this.view.centerDocument()
+  }
+
+  fileSave() {
+    this.setConfiguration()
+    fileSave.show(this.currentFile, storage,this.view)
+      .then( (filePath) => {
+        this.hasUnsavedChanges = false
+        toast(t("common:message.saved"))
+        $("#editorFileSave div").removeClass("highlight")
+        this.filePane.refresh(conf, this.permissions.shapes, this.currentFile)
+      })
+  }
+
   load(name, scope){
     let url = conf.backend[scope].get(name)
     this.view.reset()
@@ -185,27 +230,6 @@ class Application extends GenericApplication {
         notFoundDialog.show(name)
       })
   }
-
-  fileNew(name, scope) {
-    $("#leftTabStrip .editor").click()
-    this.view.reset()
-    this.documentConfiguration = {...this.documentConfigurationTempl}
-    this.currentFile = { name: name??conf.fileNew , scope: scope??"user"}
-    this.view.getCommandStack().markSaveLocation()
-    this.view.centerDocument()
-  }
-
-  fileSave() {
-    this.setConfiguration()
-    fileSave.show(this.currentFile, storage,this.view)
-      .then( (filePath) => {
-        this.hasUnsavedChanges = false
-        toast(t("common:message.saved"))
-        $("#editorFileSave div").removeClass("highlight")
-        this.filePane.refresh(conf, this.permissions.shapes, this.currentFile)
-      })
-  }
-
 
   getConfiguration(key) {
     let figures = this.view.getExtFigures()

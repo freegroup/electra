@@ -106,31 +106,19 @@
     <div class="tab-pane active" id="editor">
       <div class="workspace">
 
-        <div class="paletteContainer">
-          <div id="paletteHeader">
-            <div data-i18n="pane.editor.components" class="paletteFilterTitle">Components</div>
-            <div id="paletteFilter" class="tree tinyScrollbar"></div>
-          </div>
-          <div id="paletteElementsScroll" class="tinyScrollbar">
-            <div id="paletteElements"></div>
-            <div id="paletteElementsOverlay"></div>
-          </div>
-        </div>
-
         <div class="toolbar">
           <span class="group" id="editorgroup_fileoperations">
             <span class="image-button" id="editorFileCreate" >
               <img src="../common/images/toolbar_new_file.svg" class="svg"/>
               <div data-i18n="common:toolbar.new" >New</div>
             </span>
-
             <span class="image-button" id="editorFileSave" >
               <img src="../common/images/toolbar_save.svg" class="svg"/>
               <div data-i18n="common:toolbar.save" >Save</div>
             </span>
           </span>
 
-           <span class="group">
+          <span class="group">
               <span class="image-button disabled" id="editDelete">
                 <img src="../common/images/toolbar_delete.svg" class="svg"/>
                 <div data-i18n="common:toolbar.delete" >Delete</div>
@@ -167,7 +155,6 @@
               </div>
           </span>
 
-
           <span class="group" id="editorgroup_share">
               <span class="image-button" id="editorFileShare" >
                 <img title="Share Document" src="../common/images/toolbar_share.svg" class="svg"/>
@@ -176,23 +163,24 @@
           </span>
 
           <span class="group simulationBase" style="display: none;">
-              <div class="image-button">
-                <input id="simulationBaseTimer"
-                       type="text"
-                       value="100"
-                       data-slider-min="50"
-                       data-slider-max="500"
-                       data-slider-step="1"
-                       data-slider-value="100"
-                       data-slider-handle="round"
-                       data-slider-tooltip="hide"
-                       data-slider-id="simulationBaseTimerSlider"
-                       data-slider-orientation="horizontal">
-                <div data-i18n="common:toolbar.speed" >Simulation Speed</div>
-              </div>
+            <div class="image-button">
+              <input id="simulationBaseTimer"
+                      type="text"
+                      value="100"
+                      data-slider-min="50"
+                      data-slider-max="500"
+                      data-slider-step="1"
+                      data-slider-value="100"
+                      data-slider-handle="round"
+                      data-slider-tooltip="hide"
+                      data-slider-id="simulationBaseTimerSlider"
+                      data-slider-orientation="horizontal">
+              <div data-i18n="common:toolbar.speed" >Simulation Speed</div>
+            </div>
           </span>
 
           <div class="spacer"></div>
+
           <span class="group">
             <span class="image-button" id="editorFullscreen" >
               <img title="Toggle Fullscreen Mode" src="../common/images/toolbar_fullscreen.svg" class="svg"/>
@@ -207,9 +195,19 @@
               <span class="s3"></span>
             </span>
           </div>
-
-
         </div>
+
+        <div class="paletteContainer">
+          <div id="paletteHeader">
+            <div data-i18n="pane.editor.components" class="paletteFilterTitle">Components</div>
+            <div id="paletteFilter" class="tree tinyScrollbar"></div>
+          </div>
+          <div id="paletteElementsScroll" class="tinyScrollbar">
+            <div id="paletteElements"></div>
+            <div id="paletteElementsOverlay"></div>
+          </div>
+        </div>
+
         <div class="content" id="draw2dCanvasWrapper">
           <div class="canvas" id="draw2dCanvas" oncontextmenu="return false;">
           </div>
