@@ -5,18 +5,13 @@ let md = mdFactory()
 
 export default class AuthorPage {
 
-  constructor(containerId, file, token) {
+  constructor(containerId, file) {
     this.file = file
     this.containerId = containerId
-    this.token = token
   }
 
   render( ) {
-    let additionalParam = ""
-    if(this.token){
-      additionalParam = "&token="+this.token
-    }
-    axios.get(`../sheets/global/get?filePath=${this.file}${additionalParam}`)
+    axios.get(`../sheets/global/get?filePath=${this.file}`)
       .then((response => {
         $(this.containerId).html("")
         let pages = response.data.pages
@@ -43,6 +38,9 @@ export default class AuthorPage {
             container.append("<div style='page-break-before: always;'></div>")
         })
       }))
+      .catch( err => {
+        console.log(err)
+      })
   }
 
 

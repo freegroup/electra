@@ -166,7 +166,8 @@ class CommandStack {
       this.eventListeners.forEach( (listener)=>{
         listener.stackChanged({
           state: state,
-          getStack : () => this
+          getStack : () => this,
+          isPreChangeEvent: () => false // add the "isPreChangeEvent" method to be compatible with the draw2d.js CommandStack event types
         })
       })
     }

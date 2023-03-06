@@ -98,29 +98,39 @@ class Application extends GenericApplication{
           this.hasUnsavedChanges = false
           $("#editorFileSave div").removeClass("highlight")
           this.currentFile = { name, scope}
-  
-          /** shared files do not provide any guided tours */
-          if(scope!=="shared"){
-            // check if a tutorial exists for the named file and load/activate them
-            //
-            storage.loadUrl(url.replace(conf.fileSuffix, ".guide"))
-              .then(guide => {
-                if (typeof guide === "string") {
-                  guide = JSON.parse(guide)
-                }
-                $(guide.screen).click()
-                checkElement("#paletteElementsScroll").then(() => {
-                  new Anno(guide.steps).show()
-                })
-              })
-              .catch(error => {
-                // ignore 404 HTTP error silently
-              })
-          }
+ 
           return content
         })
       })
-      .catch (exc => {
+      .then( ()=>{
+        history.pushState({
+          id: 'editor',
+          scope: scope,
+          file: name
+        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      })
+      .then( ()=>{
+        /** shared files do not provide any guided tours */
+        if(scope!=="shared"){
+          // check if a tutorial exists for the named file and load/activate them
+          //
+          storage.loadUrl(url.replace(conf.fileSuffix, ".guide"))
+            .then(guide => {
+              if (typeof guide === "string") {
+                guide = JSON.parse(guide)
+              }
+              $(guide.screen).click()
+              checkElement("#paletteElementsScroll").then(() => {
+                new Anno(guide.steps).show()
+              })
+            })
+            .catch(error => {
+              // ignore 404 HTTP error silently for "guide" files
+            })
+        }
+      })
+      .catch( error => {
+        console.log(error)
         notFoundDialog.show(name)
       })
   }

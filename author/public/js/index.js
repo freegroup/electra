@@ -9,21 +9,13 @@ import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 import loadScript from "../../common/js/loadScript"
 
 import "../less/index.less"
-import conf from "./configuration"
 
 require('js-treeview/dist/treeview.min.css')
-
 
 
 // Resolve name collision between jQuery UI and Twitter Bootstrap
 /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
 $.widget.bridge('uibutton', $.ui.button)
-
-
-
-// need to be global for the "static" version hosted on gh-pages
-//
-window.conf = conf
 
 
 $(window).load(function () {
@@ -41,8 +33,10 @@ $(window).load(function () {
     }
   })
   .then( () => {
-    let global = require("./global")
-    for (let k in global.default) window[k] = global.default[k];
+    let global = require("./global").default
+    let conf = require("./Configuration").default
+    // export all required classes for deserialize JSON with "eval" (required for draw2d object loading)
+    for (let k in global) window[k] = global[k];
     return loadScript(conf.shapes.jsUrl)
   })
   .then( ()=>{
@@ -57,7 +51,6 @@ $(window).load(function () {
   .then( app => {
     $('body').localize(); 
     document.title = t("app.name")
-
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })

@@ -45,4 +45,4 @@ export default {
       file:  file => `../shapes/global/get?filePath=${file}`
     }
   }
-};
+}

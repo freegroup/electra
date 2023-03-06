@@ -1,12 +1,19 @@
+import AppSwitch from "./AppSwitch"
+import LngSwitch from "./LngSwitch"
+import Userinfo from "./Userinfo"
 
 export default class ApplicationFrame {
 
     constructor() {
+        this.permissions= null
     }
 
-    init (permissions) {
+    init (permissions, conf) {
         this.permissions = permissions
 
+        this.userinfo = new Userinfo(permissions)
+        this.appSwitch = new AppSwitch(permissions)
+        this.lngSwitch = new LngSwitch(permissions)
     }
 
     getParam (name) {

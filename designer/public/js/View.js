@@ -137,35 +137,8 @@ export default draw2d.Canvas.extend({
     })
 
     this.clear()
-    this.hideWelcomeMessage()
   },
 
-
-  showWelcomeMessage(){
-    this.hideWelcomeMessage()
-    let tmpl = $("#welcomeTemplate").html()
-    $("#editor .workspace").append(tmpl)
-
-    $("#welcomeNewDocument").on("click", ()=>{
-      this.app.fileNew("NewDocument","user")
-    })
-
-    $("#welcomeOpenExample").on("click", ()=>{
-      let file = "/digital/gate/IEC60617-12/AND.shape"
-      let scope = "global"
-      this.app.load(file, scope).then(() => {
-        history.pushState({
-          id: 'editor',
-          scope: scope,
-          file: file
-        }, conf.appName+' | ' + file, window.location.href.split('?')[0] + '?'+scope+'=' + file)
-      })
-    })
-  },
-  
-  hideWelcomeMessage() {
-    $("#editor .welcomeMessage").remove()
-  },
 
   /**
    * Override the "add" method of the normal canvas. In the Designer "lines" and normal "figures" are handled

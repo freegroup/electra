@@ -15,8 +15,6 @@ require('js-treeview/dist/treeview.min.css')
 /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
 $.widget.bridge('uibutton', $.ui.button)
 
-import conf from './Configuration'
-
 $(window).load(function () {
 
   socket = io( { path: '/socket.io'})
@@ -31,19 +29,15 @@ $(window).load(function () {
       loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
     }
   })
-  .then( ()=>{
-    jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-  })
   .then( () => {
-    // export all required classes for deserialize JSON with "eval"
-    // "eval" code didn't sees imported class or code
-    //
-    let global = require("./global")
-    for (let k in global.default) window[k] = global.default[k]
-
+    let global = require("./global").default
+    let conf = require("./Configuration").default
+    // export all required classes for deserialize JSON with "eval" (required for draw2d object loading)
+    for (let k in global) window[k] = global[k]
     return loadScript(conf.shapes.jsUrl)
   })
   .then( ()=>{
+    jqueryI18next.init(i18next, $, { useOptionsAttr: true });
     return axios.get("../permissions")
   })
   .then( (response)=>{

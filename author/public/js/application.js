@@ -1,6 +1,7 @@
 import GenericApplication from "../../common/js/Application"
 import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
+import notFoundDialog from "../../common/js/NotFoundDialog"
 import toast from "../../common/js/toast"
 
 import Toolbar from "./Toolbar"
@@ -50,6 +51,9 @@ class Application extends GenericApplication{
     }
     else if (shared) {
       this.load(shared, "shared")
+    }
+    else{
+      this.showWelcomeMessage("/basic/math/binary-addition.sheet")
     }
   }
 
@@ -142,6 +146,17 @@ class Application extends GenericApplication{
         this.setDocument(new Document(content),0)
         commandStack.markSaveLocation()
         return content
+      })
+      .then( ()=>{
+        history.pushState({
+          id: 'editor',
+          scope: scope,
+          file: name
+        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      })
+      .catch( error => {
+        console.log(error)
+        notFoundDialog.show(name)
       })
   }
 

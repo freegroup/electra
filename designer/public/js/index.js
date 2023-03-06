@@ -39,8 +39,10 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    return axios.get("../permissions")})
+    return axios.get("../permissions")
+  })
   .then( (response) => {
+    // set the global scope for the "app" object
     app = require("./Application").default
     return app.init(response.data)
   })

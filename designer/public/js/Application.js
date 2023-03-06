@@ -70,7 +70,7 @@ class Application extends GenericApplication {
         this.load(global, "global")
       }
       else {
-        this.view.showWelcomeMessage()
+        this.showWelcomeMessage("/digital/gate/IEC60617-12/AND.shape")
       }
   
       // check if the user has added a "file" parameter. In this case we load the shape from
@@ -173,7 +173,15 @@ class Application extends GenericApplication {
         this.currentFile = { name, scope}
         return content
       })
+      .then( ()=>{
+        history.pushState({
+          id: 'editor',
+          scope: scope,
+          file: name
+        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      })
       .catch( error => {
+        console.log(error)
         notFoundDialog.show(name)
       })
   }

@@ -1,8 +1,7 @@
 import AppFrame from "./ApplicationFrame"
 import AuthorPage from "./AuthorPage"
-import AppSwitch from "./AppSwitch"
-import LngSwitch from "./LngSwitch"
-import Userinfo from "./Userinfo"
+import welcomeMessage from "./WelcomeMessage"
+
 import Files from "./FilesScreen"
 
 export default class Application extends AppFrame{
@@ -15,12 +14,9 @@ export default class Application extends AppFrame{
     }
 
     init (permissions, conf) {
-        super.init(permissions)
+        super.init(permissions, conf)
         this.hasUnsavedChanges = false
 
-        this.userinfo = new Userinfo(permissions)
-        this.appSwitch = new AppSwitch(permissions)
-        this.lngSwitch = new LngSwitch(permissions)
         this.filePane = new Files(this, conf, permissions[this.objectType])
         this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`)
         this.readmePane.render()
@@ -39,6 +35,14 @@ export default class Application extends AppFrame{
                 this.load(event.state.file, event.state.scope)
             }
         })
+    }
+
+    showWelcomeMessage(exampleDocument){
+        welcomeMessage.show(exampleDocument)
+    }
+
+    hideWelcomeMEssage(){
+        welcomeMessage.hide()
     }
 
     hasModifyPermissionForCurrentFile () {

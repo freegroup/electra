@@ -1,7 +1,7 @@
 export default {
   fileSuffix: ".sheet",
   fileNew: "NewDocument",
-  appName: "Author",
+  application: "author",
 
 
   backend: {

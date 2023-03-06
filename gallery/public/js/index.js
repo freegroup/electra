@@ -32,11 +32,12 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    return axios.get("../permissions")})
+    return axios.get("../permissions")
+  })
   .then( (response) => {
-    let permissions = response.data
+    // set the global scope for the "app" object
     app = require("./Application").default
-    return app.init(permissions)
+    return app.init(response.data)
   })
   .then( (app) =>{    
     $('body').localize();
@@ -44,5 +45,8 @@ $(window).load(function () {
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function () {$(this).remove()}) 
     })
+  })  
+  .catch( err => {
+    console.log(err)
   })
 });

@@ -31,8 +31,6 @@ export default class View {
 
     commandStack.off(this).on("change", this)
 
-    this.showWelcomeMessage()
-
     $(document)
       .on("click", ".content", () => {
         this.onUnselect()
@@ -428,18 +426,6 @@ export default class View {
       })
   }
 
-  showWelcomeMessage(){
-    let tmpl = $("#welcomeTemplate").html()
-    $("#editor .content").html(tmpl)
-
-    $("#welcomeNewDocument").on("click", ()=>{
-      this.app.fileNew("NewDocument","user")
-    })
-
-    $("#welcomeOpenExample").on("click", ()=>{
-      this.app.load("/basic/math/binary-addition.sheet","global")
-    })
-  }
 
   /**
    * @method

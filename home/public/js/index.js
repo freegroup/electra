@@ -57,13 +57,19 @@ $(window).load(function () {
     return axios.get("../permissions")
   })
   .then( (response) => {
-    let permissions = response.data
+    // set the global scope for the "app" object
     app = require("./Application").default
-    return app.init(permissions)
+    return app.init(response.data)
   })
-  .then( (app) => {
-    $('body').localize();
-    inlineSVG.init()
+  .then( app => {
+    $('body').localize(); 
+    document.title = t("app.name")
+    inlineSVG.init({}, ()=>{
+      $(".loader").fadeOut(500, function() { $(this).remove(); })
+    })
+  })
+  .catch( err => {
+    console.log(err)
   })
 });
   
