@@ -37,19 +37,11 @@ class Application extends GenericApplication {
         baseClass: "draw2d.SetFigure",
         code: $("#shape-edit-template").text().trim()
       }
-  
-      $( "body" )
-        .on( ".mousetrap-pause", "focus", () => {
-          Mousetrap.pause()
-        })
-        .on(".mousetrap-pause", "blur",  () => {
-          Mousetrap.unpause()
-        });
-  
+
       // automatic add the configuration to the very first shape
       // in the document as userData
       //
-      this.documentConfiguration = { ...this.documentConfigurationTempl}
+      this.documentConfiguration = {...this.documentConfigurationTempl}
   
       this.view = new View(this, "canvas", permissions)
       this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)

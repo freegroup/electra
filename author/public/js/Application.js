@@ -27,9 +27,6 @@ class Application extends GenericApplication{
 
   init(permissions) {
     super.init(permissions, conf)
-    $("body")
-      .on( "focus", ".mousetrap-pause", Mousetrap.pause)
-      .on( "blur", ".mousetrap-pause",  Mousetrap.unpause)
 
     this.document = null
     this.view = new View(this, "#editor .content", permissions)
@@ -43,9 +40,6 @@ class Application extends GenericApplication{
     if (user) {
       this.load(user, "user")
     }
-    // check if the user has added a "file" parameter. In this case we load the shape from
-    // the draw2d.shape github repository
-    //
     else if (global) {
       this.load(global, "global")
     }

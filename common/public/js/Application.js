@@ -11,6 +11,12 @@ export default class Application extends AppFrame{
         this.currentFile = null
         this.hasUnsavedChanges = false
         this.objectType = objectType
+
+        /*
+        $("body")
+        .on( "focus", ".mousetrap-pause", Mousetrap.pause)
+        .on( "blur",  ".mousetrap-pause", Mousetrap.unpause)
+        */
     }
 
     init (permissions, conf) {
