@@ -26,7 +26,6 @@ export default class View {
     this.html = $(id)
     this.clipboardSection = null
     this.palette = new Palette(app, this, permissions, "#paletteElements")
-
     this.palette.render()
 
     commandStack.off(this).on("change", this)

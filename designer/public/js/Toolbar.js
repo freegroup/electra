@@ -32,8 +32,6 @@ export default class Toolbar {
     view.on("select",   this.onSelectionChanged.bind(this))
     view.on("unselect", this.onSelectionChanged.bind(this))
 
-    this.fileName = null
-
     let buttonGroup = $("<div id='fileOperationGroup' class='group'></div>")
     this.html.append(buttonGroup)
 
@@ -42,8 +40,8 @@ export default class Toolbar {
        permissions[this.app.objectType].update        || permissions[this.app.objectType].create) {
       this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`)
       buttonGroup.append(this.saveButton)
-      this.saveButton.on("click",    () => { app.fileSave() })
-      Mousetrap.bindGlobal("ctrl+s", () => { app.fileSave();return false})
+      this.saveButton.on("click",    () => {this.app.fileSave()})
+      Mousetrap.bindGlobal("ctrl+s", () => {this.app.fileSave();return false})
     }
 
     // Inject the UNDO Button and the callbacks
@@ -53,7 +51,7 @@ export default class Toolbar {
     this.undoButton = $(`<div class="image-button" id="editUndo"><img class="icon disabled svg"  src="../common/images/toolbar_undo.svg"/><div data-i18n="common:toolbar.undo">${t("common:toolbar.undo")}</div></div>`)
     buttonGroup.append(this.undoButton)
     this.html.on("click", "#editUndo:not(.disabled)", () => {this.view.getCommandStack().undo()})
-    Mousetrap.bindGlobal("ctrl+z",                    () => { this.view.getCommandStack().undo();return false})
+    Mousetrap.bindGlobal("ctrl+z",                    () => {this.view.getCommandStack().undo();return false})
 
 
     // Inject the REDO Button and the callback
@@ -61,7 +59,7 @@ export default class Toolbar {
     this.redoButton = $(`<div class="image-button" id="editRedo"><img  class="icon disabled svg" src="../common/images/toolbar_redo.svg"/><div data-i18n="common:toolbar.redo">${t("common:toolbar.redo")}</div></div>`)
     buttonGroup.append(this.redoButton)
     this.html.on("click", "#editRedo:not(.disabled)", () => {this.view.getCommandStack().redo()})
-    Mousetrap.bindGlobal("ctrl+y", () => {this.view.getCommandStack().redo(); return false})
+    Mousetrap.bindGlobal("ctrl+y",                    () => {this.view.getCommandStack().redo(); return false})
 
     // Inject the DELETE Button
     //
@@ -78,10 +76,7 @@ export default class Toolbar {
       // execute all single commands at once.
       view.getCommandStack().commitTransaction()
     })
-    Mousetrap.bindGlobal(["del", "backspace"], () => {
-      this.deleteButton.click()
-      return false
-    })
+    Mousetrap.bindGlobal(["del", "backspace"], () => { this.deleteButton.click(); return false})
 
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)
@@ -160,10 +155,7 @@ export default class Toolbar {
       this.view.installEditPolicy(p)
       p.execute(this.view, selection)
     })
-    Mousetrap.bindGlobal(["U", "u"], () => {
-      this.unionButton.click()
-      return false
-    })
+    Mousetrap.bindGlobal(["U", "u"], () => { this.unionButton.click();return false })
 
     this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="../common/images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`)
     buttonGroup.append(this.differenceButton)
@@ -176,10 +168,7 @@ export default class Toolbar {
       this.view.installEditPolicy(p)
       p.execute(this.view, selection)
     })
-    Mousetrap.bindGlobal(["D", "d"], () => {
-      this.differenceButton.click()
-      return false
-    })
+    Mousetrap.bindGlobal(["D", "d"], () => { this.differenceButton.click();return false })
 
     this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="../common/images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`)
     buttonGroup.append(this.intersectionButton)
@@ -192,10 +181,7 @@ export default class Toolbar {
       this.view.installEditPolicy(p)
       p.execute(this.view, selection)
     })
-    Mousetrap.bindGlobal(["I", "i"], () => {
-      this.intersectionButton.click()
-      return false
-    })
+    Mousetrap.bindGlobal(["I", "i"], () => {this.intersectionButton.click();return false})
 
     buttonGroup = $('<div class="spacer"></div>')
     this.html.append(buttonGroup)
@@ -275,7 +261,7 @@ export default class Toolbar {
     }
     if (event.getStack().canUndo()){
       $("#editorFileSave div").addClass("highlight")
-      app.hasUnsavedChanges = true
+      this.app.hasUnsavedChanges = true
     }
 
     $("#editUndo").addClass("disabled")

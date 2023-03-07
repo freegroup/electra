@@ -9,7 +9,6 @@ import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
 import inputPrompt from "../../common/js/InputPrompt"
 import colors from "../../common/js/Colors"
-import WebUSBHelpDialog from "./dialog/WebUSBHelpDialog"
 import figureConfigDialog from "./dialog/FigureConfigDialog"
 
 import hardware from "./hardware"
@@ -36,7 +35,6 @@ export default draw2d.Canvas.extend({
     this.permissions = permissions
     this.simulate = false
     this.animationFrameFunc = this._calculate.bind(this)
-
     this.timerBase = 10 // ms calculate every 10ms all elements
 
     this.setScrollArea("#draw2dCanvasWrapper")
@@ -88,8 +86,7 @@ export default draw2d.Canvas.extend({
 
     // nice grid decoration for the canvas paint area
     //
-    this.grid = new draw2d.policy.canvas.ShowGridEditPolicy(20)
-
+    //this.grid = new draw2d.policy.canvas.ShowGridEditPolicy(20)
     this.grid = new draw2d.policy.canvas.ShowDotEditPolicy(15)
     // HACK
     this.grid.dotColor.rgba = ()=> "rgba(var(--border-color))"
@@ -100,7 +97,6 @@ export default draw2d.Canvas.extend({
     this.installEditPolicy(new draw2d.policy.canvas.SnapToGeometryEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToCenterEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToInBetweenEditPolicy())
-
     this.installEditPolicy(new EditEditPolicy())
 
     // Enable Copy&Paste for figures
@@ -199,79 +195,8 @@ export default draw2d.Canvas.extend({
       setZoom(this.getZoom() * 0.8)
     })
 
-    $("#statusWebUSB .help-link").on("click", () => new WebUSBHelpDialog().show())
-
     hardware.arduino.on("disconnect", this.hardwareChanged.bind(this))
     hardware.arduino.on("connect", this.hardwareChanged.bind(this))
-
-    let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
-    let isHTTPS = location.protocol === 'https:'
-    let isLocalhost = location.hostname ==="localhost"
-    if (isChrome && (isHTTPS || isLocalhost)) {
-      $('#statusWebUSB').on("click", () => {
-        if (hardware.arduino.connected) {
-          hardware.arduino.disconnect()
-        } else {
-          hardware.arduino.connect()
-        }
-      })
-    } else {
-      $('#statusWebUSB').addClass("disabled")
-    }
-
-    this.deleteSelectionCallback = () => {
-      let selection = this.getSelection()
-      this.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape)
-      selection.each((index, figure) => {
-
-        // Don't delete the connection if the source or target node part of the
-        // selection. In this case the nodes deletes all connections by itself.
-        //
-        if (figure instanceof draw2d.Connection) {
-          if (selection.contains(figure.getSource().getRoot()) || selection.contains(figure.getTarget().getRoot())) {
-            return
-          }
-        }
-
-        let cmd = figure.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.DELETE))
-        if (cmd !== null) {
-          this.getCommandStack().execute(cmd)
-        }
-      })
-      // execute all single commands at once.
-      this.getCommandStack().commitTransaction()
-    }
-
-    $(".toolbar").on("click", "#editDelete:not(.disabled)", this.deleteSelectionCallback)
-    Mousetrap.bindGlobal(['del', 'backspace'], this.deleteSelectionCallback)
-
-    $(".toolbar").on("click", "#editUndo:not(.disabled)", () => {
-      this.getCommandStack().undo()
-    })
-
-    $(".toolbar").on("click","#editRedo:not(.disabled)",  () => {
-      this.getCommandStack().redo()
-    })
-
-    $(".toolbar").on("click","#editorFullscreen:not(.disabled)",  () => {
-      this.toggleFullScreen()
-    })
-
-    $("#simulationStartStop").on("click", () => {
-      this.simulationToggle()
-    })
-
-
-    // Register a Selection listener for the state handling
-    // of the delete Button
-    //
-    this.on("select", (emitter, event) => {
-      $("#editDelete").removeClass("disabled")
-    })
-
-    this.on("unselect", (emitter, event) => {
-      $("#editDelete").addClass("disabled")
-    })
 
     this.on("contextmenu", (emitter, event) => {
       let figure = this.getBestFigure(event.x, event.y)
@@ -369,11 +294,9 @@ export default draw2d.Canvas.extend({
       }
     })
 
-    // hide the figure configuration dialog if the user clicks inside the canvas
+    // close the figure configuration dialog if the user clicks inside the canvas
     //
-    this.on("click", () => {
-      figureConfigDialog.hide()
-    })
+    this.on("click", figureConfigDialog.close )
 
     // only responsible to reload the code and the current document
     // (the palette.js did its own job and refresh palette entry if required)
@@ -382,7 +305,6 @@ export default draw2d.Canvas.extend({
         this.reloadFromCache.bind(this)
       )
     })
-
 
     this.slider = $('#simulationBaseTimer')
       .slider({id: "simulationBaseTimerSlider"})
@@ -426,6 +348,28 @@ export default draw2d.Canvas.extend({
       this.slider.slider("setValue", (((-(timerBase - 11) - 2) * (500 - 100)) / (10 - 2)) + 100)
   },
 
+  deleteSelection: function(){
+    this.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape)
+    let selection = this.getSelection()
+    selection.each((index, figure) => {
+
+      // Don't delete the connection if the source or target node part of the
+      // selection. In this case the nodes deletes all connections by itself.
+      //
+      if (figure instanceof draw2d.Connection) {
+        if (selection.contains(figure.getSource().getRoot()) || selection.contains(figure.getTarget().getRoot())) {
+          return
+        }
+      }
+
+      let cmd = figure.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.DELETE))
+      if (cmd !== null) {
+        this.getCommandStack().execute(cmd)
+      }
+    })
+    // execute all single commands at once.
+    this.getCommandStack().commitTransaction()
+  },
 
   /**
    * @method

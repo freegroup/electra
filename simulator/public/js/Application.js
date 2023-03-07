@@ -3,6 +3,7 @@ import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
+import Toolbar from "./Toolbar"
 import Palette from "./Palette"
 import View from "./View"
 import conf from "./Configuration"
@@ -28,7 +29,7 @@ class Application extends GenericApplication{
 
       this.palette = new Palette(permissions)
       this.view = new View("draw2dCanvas", permissions)
-      this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
+      this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
 
       this.view.getCommandStack().addEventListener(this)
   

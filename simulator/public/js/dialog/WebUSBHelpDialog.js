@@ -1,5 +1,5 @@
 
-export default class WebUSBHelpDialog {
+class Dialog {
 
   constructor() {
   }
@@ -9,3 +9,6 @@ export default class WebUSBHelpDialog {
     $('#webUSBHelpDialog').modal('show')
   }
 }
+
+let dialog = new Dialog()
+export default dialog

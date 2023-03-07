@@ -17,12 +17,12 @@ export default class Toolbar {
 
     this.createFileButton = $("#editorFileCreate")
     this.createFileButton.off("click").on("click", () => {
-      app.fileCreateNew()
+      this.app.fileCreateNew()
     })
 
     this.saveButton = $("#editorFileSave")
     this.saveButton.off("click").on("click", () => {
-      app.fileSave()
+      this.app.fileSave()
     })
 
     this.copyButton = $("#editorPageCopy")
@@ -38,21 +38,21 @@ export default class Toolbar {
       let item = new ClipboardItem({'text/plain': blob });
       navigator.clipboard.write([item ]).then( ()=>{
         $(`#editorPageCopy`).notify(
-          t("message.chapter_to_clipboard"), 
-          { position: "bottom left",
-          gap: 20,
-          showDuration: 40,
-          arrowShow: false,
-          className: 'info',
-          autoHideDelay: 2000,
-        });
+          t("message.chapter_to_clipboard"), { 
+            position: "bottom left",
+            gap: 20,
+            showDuration: 40,
+            arrowShow: false,
+            className: 'info',
+            autoHideDelay: 2000,
+        })
       })
     })
 
     this.shareButton = $("#editorFileShare")
     if(permissions.featureset.share) {
       this.shareButton.off("click").on("click", () => {
-        app.fileShare()
+        thisapp.fileShare()
       })
     }
     else{
@@ -84,7 +84,7 @@ export default class Toolbar {
   }
 
   onPDFExport() {
-    let file = app.currentFile
+    let file = this.app.currentFile
     Promise.resolve()
       .then(() => {
         if( !((file.scope==="global" && this.permissions.sheets.global.update === true) ||
@@ -95,7 +95,7 @@ export default class Toolbar {
       })
       .then(() => {
         if(this.app.hasUnsavedChanges){
-          return app.fileSave(t("message.save_before_pdf"))
+          return this.app.fileSave(t("message.save_before_pdf"))
         }
         return true
       })
