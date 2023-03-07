@@ -52,9 +52,6 @@ class Application extends GenericApplication {
   
       this.view.getCommandStack().addEventListener(this)
   
-      // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
       let user = this.getParam("user")
       let global = this.getParam("global")
       if (user) {
@@ -66,10 +63,7 @@ class Application extends GenericApplication {
       else {
         this.showWelcomeMessage("/digital/gate/IEC60617-12/AND.shape")
       }
-  
-      // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
+ 
       let tutorial = this.getParam("tutorial")
       if(tutorial) {
         this.checkForTutorialMode()
@@ -178,21 +172,37 @@ class Application extends GenericApplication {
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
     this.view.reset()
-    this.documentConfiguration = {...this.documentConfigurationTempl}
     this.currentFile = { name: name??conf.fileNew , scope: scope??"user"}
+    this.documentConfiguration = {...this.documentConfigurationTempl}
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
   }
 
-  fileSave() {
+  fileSave(description="") {
     this.setConfiguration()
-    fileSave.show(this.currentFile, storage,this.view)
-      .then( (filePath) => {
-        this.hasUnsavedChanges = false
-        toast(t("common:message.saved"))
-        $("#editorFileSave div").removeClass("highlight")
-        this.filePane.refresh(conf, this.permissions.shapes, this.currentFile)
-      })
+    return new Promise((resolve, reject) => { 
+      // if the user didn't has the access to write "global" files, the scope of the file is changed
+      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
+      //
+      if(this.permissions[this.objectType].global.update===false){
+        this.currentFile.scope = "user"
+      }
+
+      if (this.permissions[this.objectType ].create && this.permissions[this.objectType].update) {
+        // allow the user to enter/change the file name....
+        return fileSave.show(this.currentFile, this.view, description).then(resolve, reject)
+      }
+      reject(new Error("No permission to save files"))
+    })
+    .then( ()=>{
+      this.hasUnsavedChanges = false
+      toast(t("common:message.saved"))
+      $("#editorFileSave div").removeClass("highlight")
+      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
+    })
+    .catch( err => {
+      console.log(err)
+    })
   }
 
   load(name, scope){

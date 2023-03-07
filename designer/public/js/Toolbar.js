@@ -38,8 +38,8 @@ export default class Toolbar {
     this.html.append(buttonGroup)
 
 
-    if(permissions.shapes.global.update || permissions.shapes.global.create ||
-       permissions.shapes.update        || permissions.shapes.create) {
+    if(permissions[this.app.objectType].global.update || permissions[this.app.objectType].global.create ||
+       permissions[this.app.objectType].update        || permissions[this.app.objectType].create) {
       this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`)
       buttonGroup.append(this.saveButton)
       this.saveButton.on("click",    () => { app.fileSave() })
@@ -82,7 +82,6 @@ export default class Toolbar {
       this.deleteButton.click()
       return false
     })
-
 
     buttonGroup = $('<div class="group"></div>')
     this.html.append(buttonGroup)

@@ -27,56 +27,51 @@ class Application extends GenericApplication{
 
   init(permissions) {
     super.init(permissions, conf)
+    return new Promise( (resolve, reject) => {
 
-    this.document = null
-    this.view = new View(this, "#editor .content", permissions)
-    this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
+      this.document = null
+      this.view = new View(this, "#editor .content", permissions)
+      this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
 
-    commandStack.on("change", this)
+      commandStack.on("change", this)
 
-    let user = this.getParam("user")
-    let global = this.getParam("global")
-    let shared = this.getParam("shared")
-    if (user) {
-      this.load(user, "user")
-    }
-    else if (global) {
-      this.load(global, "global")
-    }
-    else if (shared) {
-      this.load(shared, "shared")
-    }
-    else{
-      this.showWelcomeMessage("/basic/math/binary-addition.sheet")
-    }
-  }
-
-  fileSave(description="") {
-    return new Promise((resolve, reject) => { 
-  
-      // if the user didn't has the access to write "global" files, the scope of the file is changed
-      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
-      //
-      if(this.permissions.sheets.global.update ===false){
-        this.currentFile.scope = "user"
+      let user = this.getParam("user")
+      let global = this.getParam("global")
+      let shared = this.getParam("shared")
+      if (user) {
+        this.load(user, "user")
       }
-  
-      this.view.onCommitEdit()
-      if (this.permissions.sheets.create && this.permissions.sheets.update) {
-        // allow the user to enter/change the file name....
-        fileSave.show(this.currentFile, this.document, description).then(resolve, reject)
-      } else if (this.permissions.sheets.create) {
-        // just save the file with a generated filename. It is a codepen-like modus
-        fileSave.save(this.currentFile, this.document, description).then(resolve, reject)
+      else if (global) {
+        this.load(global, "global")
+      }
+      else if (shared) {
+        this.load(shared, "shared")
       }
       else{
-        return reject()
+        this.showWelcomeMessage("/basic/math/binary-addition.sheet")
       }
-    }).then(()=>{
-      this.hasUnsavedChanges = false
-      toast(t("common:message.saved"))
-      $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions.sheets, this.currentFile)
+      resolve(this)
+    })
+  }
+
+
+  fileShare() {
+    let filePath = this.currentFile.name
+    let scope = this.currentFile.scope
+    return new Promise( (resolve, reject)=>{
+      if (this.hasUnsavedChanges) {
+        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
+      }
+      resolve()
+    })
+    .then( ()=>{
+      return storage.shareFile(filePath,scope)
+    })
+    .then((response) => {
+      return shareDialog.show(response.data.filePath)
+    })
+    .catch (error => {
+      console.log(error)
     })
   }
 
@@ -106,32 +101,39 @@ class Application extends GenericApplication{
     })
   }
 
-
-  fileShare() {
-    let filePath = this.currentFile.name
-    let scope = this.currentFile.scope
-    return new Promise( (resolve, reject)=>{
-      if (this.hasUnsavedChanges) {
-        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
-      }
-      resolve()
-    })
-    .then( ()=>{
-      return storage.shareFile(filePath,scope)
-    })
-    .then((response) => {
-      return shareDialog.show(response.data.filePath)
-    })
-    .catch (error => {
-      console.log(error)
-    })
-  }
-
+  
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
     this.currentFile = { name: name??"MyNewDocument", scope: scope??"user" }
     this.setDocument(new Document(), 0)
     commandStack.markSaveLocation()
+  }
+
+  fileSave(description="") {
+    this.view.onCommitEdit()
+    return new Promise((resolve, reject) => { 
+      // if the user didn't has the access to write "global" files, the scope of the file is changed
+      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
+      //
+      if(this.permissions[this.objectType].global.update===false){
+        this.currentFile.scope = "user"
+      }
+  
+      if (this.permissions[this.objectType].create && this.permissions[this.objectType].update) {
+        // allow the user to enter/change the file name....
+        return fileSave.show(this.currentFile, this.document, description).then(resolve, reject)
+      }
+      reject(new Error("No permission to save files"))
+    })
+    .then(()=>{
+      this.hasUnsavedChanges = false
+      toast(t("common:message.saved"))
+      $("#editorFileSave div").removeClass("highlight")
+      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
+    })
+    .catch( err => {
+      console.log(err)
+    })
   }
 
   load(name, scope){

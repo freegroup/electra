@@ -154,6 +154,11 @@ class Application extends _ApplicationFrame.default {
     this.currentFile = null;
     this.hasUnsavedChanges = false;
     this.objectType = objectType;
+    /*
+    $("body")
+    .on( "focus", ".mousetrap-pause", Mousetrap.pause)
+    .on( "blur",  ".mousetrap-pause", Mousetrap.unpause)
+    */
   }
 
   init(permissions, conf) {
@@ -2850,12 +2855,7 @@ class Application extends _Application.default {
       this.documentConfigurationTempl = {
         baseClass: "draw2d.SetFigure",
         code: $("#shape-edit-template").text().trim()
-      };
-      $("body").on(".mousetrap-pause", "focus", () => {
-        Mousetrap.pause();
-      }).on(".mousetrap-pause", "blur", () => {
-        Mousetrap.unpause();
-      }); // automatic add the configuration to the very first shape
+      }; // automatic add the configuration to the very first shape
       // in the document as userData
       //
 
@@ -2866,10 +2866,7 @@ class Application extends _Application.default {
       this.layer = new _Layer.default(this, "layer_elements", this.view, permissions);
       this.filter = new _FilterPane.default(this, "#filter .filter_actions", this.view, permissions);
       this.view.installEditPolicy(new _SelectionToolPolicy.default());
-      this.view.getCommandStack().addEventListener(this); // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
-
+      this.view.getCommandStack().addEventListener(this);
       let user = this.getParam("user");
       let global = this.getParam("global");
 
@@ -2879,10 +2876,7 @@ class Application extends _Application.default {
         this.load(global, "global");
       } else {
         this.showWelcomeMessage("/digital/gate/IEC60617-12/AND.shape");
-      } // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
-
+      }
 
       let tutorial = this.getParam("tutorial");
 
@@ -2985,24 +2979,39 @@ class Application extends _Application.default {
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click();
     this.view.reset();
-    this.documentConfiguration = { ...this.documentConfigurationTempl
-    };
     this.currentFile = {
       name: name ?? _Configuration.default.fileNew,
       scope: scope ?? "user"
+    };
+    this.documentConfiguration = { ...this.documentConfigurationTempl
     };
     this.view.getCommandStack().markSaveLocation();
     this.view.centerDocument();
   }
 
-  fileSave() {
+  fileSave(description = "") {
     this.setConfiguration();
+    return new Promise((resolve, reject) => {
+      // if the user didn't has the access to write "global" files, the scope of the file is changed
+      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
+      //
+      if (this.permissions[this.objectType].global.update === false) {
+        this.currentFile.scope = "user";
+      }
 
-    _FileSave.default.show(this.currentFile, storage, this.view).then(filePath => {
+      if (this.permissions[this.objectType].create && this.permissions[this.objectType].update) {
+        // allow the user to enter/change the file name....
+        return _FileSave.default.show(this.currentFile, this.view, description).then(resolve, reject);
+      }
+
+      reject(new Error("No permission to save files"));
+    }).then(() => {
       this.hasUnsavedChanges = false;
       (0, _toast.default)(t("common:message.saved"));
       $("#editorFileSave div").removeClass("highlight");
-      this.filePane.refresh(_Configuration.default, this.permissions.shapes, this.currentFile);
+      this.filePane.refresh(_Configuration.default, this.permissions[this.objectType], this.currentFile);
+    }).catch(err => {
+      console.log(err);
     });
   }
 
@@ -3560,7 +3569,7 @@ class Toolbar {
     this.html.append(buttonGroup);
     this.undoButton = $(`<div class="image-button" id="editUndo"><img class="icon disabled svg"  src="../common/images/toolbar_undo.svg"/><div data-i18n="common:toolbar.undo">${t("common:toolbar.undo")}</div></div>`);
     buttonGroup.append(this.undoButton);
-    this.html.on("#editUndo:not(.disabled)", "click", () => {
+    this.html.on("click", "#editUndo:not(.disabled)", () => {
       this.view.getCommandStack().undo();
     });
     Mousetrap.bindGlobal("ctrl+z", () => {
@@ -3571,7 +3580,7 @@ class Toolbar {
 
     this.redoButton = $(`<div class="image-button" id="editRedo"><img  class="icon disabled svg" src="../common/images/toolbar_redo.svg"/><div data-i18n="common:toolbar.redo">${t("common:toolbar.redo")}</div></div>`);
     buttonGroup.append(this.redoButton);
-    this.html.on("#editRedo:not(.disabled)", "click", () => {
+    this.html.on("click", "#editRedo:not(.disabled)", () => {
       this.view.getCommandStack().redo();
     });
     Mousetrap.bindGlobal("ctrl+y", () => {
@@ -3582,7 +3591,7 @@ class Toolbar {
 
     this.deleteButton = $(`<div class="image-button" id="editDelete"><img class="icon disabled svg" src="../common/images/toolbar_delete.svg"/><div data-i18n="common:toolbar.delete">${t("common:toolbar.delete")}</div></div>`);
     buttonGroup.append(this.deleteButton);
-    this.html.on("#editDelete:not(.disabled)", "click", () => {
+    this.html.on("click", "#editDelete:not(.disabled)", () => {
       view.getCommandStack().startTransaction(draw2d.Configuration.i18n.command.deleteShape);
       view.getSelection().each((index, figure) => {
         let cmd = figure.createCommand(new draw2d.command.CommandType(draw2d.command.CommandType.DELETE));
@@ -3661,7 +3670,7 @@ class Toolbar {
     });
     this.unionButton = $(`<div class="image-button disabled" id="toolUnion"><img class="svg" src="../common/images/toolbar_geo_union.svg"/><div data-i18n="common:toolbar.union">${t("common:toolbar.union")}</div></div>`);
     buttonGroup.append(this.unionButton);
-    this.html.on("#toolUnion:not(.disabled)", "click", () => {
+    this.html.on("click", "#toolUnion:not(.disabled)", () => {
       let selection = this.view.getSelection().getAll();
       let p = new _GeoUnionToolPolicy.default();
 
@@ -3678,7 +3687,7 @@ class Toolbar {
     });
     this.differenceButton = $(`<div class="image-button disabled" id="toolDifference"><img class="svg" src="../common/images/toolbar_geo_subtract.svg"/><div data-i18n="common:toolbar.subtract">${t("common:toolbar.subtract")}</div></div>`);
     buttonGroup.append(this.differenceButton);
-    this.html.on("#toolDifference:not(.disabled)", "click", () => {
+    this.html.on("click", "#toolDifference:not(.disabled)", () => {
       let selection = this.view.getSelection().getAll();
       let p = new _GeoDifferenceToolPolicy.default();
 
@@ -3695,7 +3704,7 @@ class Toolbar {
     });
     this.intersectionButton = $(`<div class="image-button disabled" id="toolIntersection"><img class="svg" src="../common/images/toolbar_geo_intersect.svg"/><div data-i18n="common:toolbar.intersect">${t("common:toolbar.intersect")}</div></div>`);
     buttonGroup.append(this.intersectionButton);
-    this.html.on("#toolIntersection:not(.disabled)", "click", () => {
+    this.html.on("click", "#toolIntersection:not(.disabled)", () => {
       let selection = this.view.getSelection().getAll();
       let p = new _GeoIntersectionToolPolicy.default();
 
@@ -4827,7 +4836,11 @@ var _Configuration = _interopRequireDefault(__webpack_require__(/*! ../Configura
 
 var _pathBrowserify = _interopRequireDefault(__webpack_require__(/*! path-browserify */ "./node_modules/path-browserify/index.js"));
 
+var _BackendStorage = _interopRequireDefault(__webpack_require__(/*! ../../../common/js/BackendStorage */ "../common/public/js/BackendStorage.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+let storage = (0, _BackendStorage.default)(_Configuration.default);
 
 class Dialog {
   /**
@@ -4880,22 +4893,36 @@ class Dialog {
    */
 
 
-  show(currentFile, storage, canvas, callback) {
+  show(currentFile, canvas) {
     return new Promise((resolve, reject) => {
       new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
+        let promiseAlreadyHandled = false;
+        Mousetrap.pause();
         $("#fileSaveDialog .filePreview").attr("src", imageDataUrl);
         $("#fileSaveDialog .directoryName").val(_pathBrowserify.default.dirname(currentFile.name));
         $("#fileSaveDialog .fileName").val(_pathBrowserify.default.basename(currentFile.name, _Configuration.default.fileSuffix));
         $('#fileSaveDialog').on('shown.bs.modal', event => {
           $(event.currentTarget).find('input:first').focus();
         });
+        $("#fileSaveDialog").one("hide.bs.modal", () => {
+          Mousetrap.unpause(); // hide event comes even if the dialog is closed with the "ok" button or "ESC". Catch this
+
+          if (!promiseAlreadyHandled) {
+            reject(false);
+          }
+        });
+        $('#fileSaveDialog .fileName').off("keypress").on('keypress', function (e) {
+          let key = e.charCode || e.keyCode || 0;
+
+          if (key === 13) {
+            $("#fileSaveDialog .okButton").click();
+          }
+        });
         $("#fileSaveDialog").modal("show");
-        setTimeout(() => $("#fileSaveDialog .fileName")[0].focus(), 500);
-        Mousetrap.pause(); // Save Button
+        setTimeout(() => $("#fileSaveDialog .fileName")[0].focus(), 500); // Save Button
         //
 
         $("#fileSaveDialog .okButton").off('click').on("click", () => {
-          Mousetrap.unpause();
           let writer = new draw2d.io.json.Writer();
           writer.marshal(canvas, json => {
             // get the directory of the current file
@@ -4909,10 +4936,11 @@ class Dialog {
             // The new reals filename is in the "save" response
 
             currentFile.name = _pathBrowserify.default.join(dir, name + _Configuration.default.fileSuffix);
+            promiseAlreadyHandled = true;
+            $('#fileSaveDialog').modal('hide');
             storage.saveFile({
               draw2d: json
             }, currentFile.name, currentFile.scope).then(response => {
-              $('#fileSaveDialog').modal('hide');
               let data = response.data;
               currentFile.name = data.filePath;
               history.pushState({
@@ -4925,13 +4953,6 @@ class Dialog {
               console.log(exc);
             });
           });
-        });
-        $('#fileSaveDialog .fileName').off("keypress").on('keypress', function (e) {
-          let key = e.charCode || e.keyCode || 0;
-
-          if (key === 13) {
-            $("#fileSaveDialog .okButton").click();
-          }
         });
       }, canvas.getBoundingBox().scale(20, 20));
     });
@@ -54052,7 +54073,6 @@ function setup(md, options) {
     options = defaults;
   }
   var useKeyword = options.useKeyword;
-  console.log(useKeyword);
 
 
   //var options = assign({}, defaults, options);
@@ -54075,8 +54095,6 @@ function setup(md, options) {
 
   md.renderer.rules.code_inline = function(tokens, idx, options, env, self) {
     var token = tokens[idx];
-
-    console.log(useKeyword);
 
     if(!useKeyword) {
       console.log("1");

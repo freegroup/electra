@@ -77,7 +77,7 @@ $(window).load(function () {
     app = require("./Application").default
     return app.init(response.data)
   })
-  .then( ()=>{
+  .then( (app)=>{
     require("./hardware").default.init(socket)
     $('body').localize(); 
     document.title = t("app.name")

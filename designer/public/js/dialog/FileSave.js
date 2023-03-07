@@ -1,6 +1,9 @@
 import conf from "../Configuration"
 import fs from "path-browserify"
 
+import storageFactory from '../../../common/js/BackendStorage'
+let storage = storageFactory(conf)
+
 class Dialog {
 
   /**
@@ -52,9 +55,12 @@ class Dialog {
    *
    * @since 4.0.0
    */
-  show(currentFile, storage, canvas, callback) {
+  show(currentFile, canvas) {
     return new Promise( (resolve, reject) => {
       new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
+        let promiseAlreadyHandled = false
+        Mousetrap.pause()
+
         $("#fileSaveDialog .filePreview").attr("src", imageDataUrl)
         $("#fileSaveDialog .directoryName").val(fs.dirname(currentFile.name))
         $("#fileSaveDialog .fileName").val(fs.basename(currentFile.name, conf.fileSuffix))
@@ -62,14 +68,28 @@ class Dialog {
         $('#fileSaveDialog').on('shown.bs.modal', (event) => {
           $(event.currentTarget).find('input:first').focus()
         })
+
+        $("#fileSaveDialog").one("hide.bs.modal", ()=>{
+          Mousetrap.unpause()
+          // hide event comes even if the dialog is closed with the "ok" button or "ESC". Catch this
+          if (!promiseAlreadyHandled) {
+            reject(false)
+          }
+        })
+  
+        $('#fileSaveDialog .fileName').off("keypress").on('keypress', function (e) {
+          let key = e.charCode || e.keyCode || 0;
+          if (key === 13) {
+            $("#fileSaveDialog .okButton").click()
+          }
+        })
+
         $("#fileSaveDialog").modal("show")
         setTimeout( ()=> $("#fileSaveDialog .fileName")[0].focus(), 500)
-        Mousetrap.pause()
-  
+
         // Save Button
         //
         $("#fileSaveDialog .okButton").off('click').on("click", () => {
-          Mousetrap.unpause()
           let writer = new draw2d.io.json.Writer()
           writer.marshal(canvas, json => {
             // get the directory of the current file
@@ -79,15 +99,16 @@ class Dialog {
             // It is not an seccurity issue, but we remove all entered directorie paths from the filename
             // This happens on the server-side as well.
             let name = $("#fileSaveDialog .fileName").val()
-            name = fs.basename(name,conf.fileSuffix) // remove any directories
+            name = fs.basename(name, conf.fileSuffix) // remove any directories
   
             // generate the current filename. This gets an update after the "save" request comes back.
             // The new reals filename is in the "save" response
             currentFile.name = fs.join(dir, name + conf.fileSuffix)
-  
+            promiseAlreadyHandled = true
+            $('#fileSaveDialog').modal('hide')
+
             storage.saveFile( { draw2d: json }, currentFile.name , currentFile.scope)
               .then((response) => {
-                $('#fileSaveDialog').modal('hide')
                 let data = response.data
                 currentFile.name = data.filePath
                 history.pushState({
@@ -102,14 +123,6 @@ class Dialog {
               });
           })
         })
-  
-        $('#fileSaveDialog .fileName').off("keypress").on('keypress', function (e) {
-          let key = e.charCode || e.keyCode || 0;
-          if (key === 13) {
-            $("#fileSaveDialog .okButton").click()
-          }
-        })
-  
       }, canvas.getBoundingBox().scale(20, 20))
     })
   }
