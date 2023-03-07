@@ -77,15 +77,4 @@ export default class Application extends AppFrame{
         )
     }
 
-
-    stackChanged (event) {
-        if (event.isPreChangeEvent()) {
-            return // silently
-        }
-        
-        if (event.getStack().canUndo()) {
-            $("#editorFileSave div").addClass("highlight")
-            this.hasUnsavedChanges = true
-        }
-    }
 }

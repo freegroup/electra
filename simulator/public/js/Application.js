@@ -28,11 +28,10 @@ class Application extends GenericApplication{
     return new Promise( (resolve, reject)=>{
 
       this.palette = new Palette(permissions)
-      this.view = new View("draw2dCanvas", permissions)
+      this.view    = new View("draw2dCanvas", permissions)
       this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
 
-      this.view.getCommandStack().addEventListener(this)
-  
+
       // check if the user has added a "file" parameter. In this case we load the shape from
       // the draw2d.shape github repository
       //

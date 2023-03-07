@@ -3,6 +3,7 @@ import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 import toast from "../../common/js/toast"
+import exportModePrompt from "./dialog/SelectExportMode"
 
 import Toolbar from "./Toolbar"
 import View from "./view"
@@ -30,10 +31,9 @@ class Application extends GenericApplication{
     return new Promise( (resolve, reject) => {
 
       this.document = null
-      this.view = new View(this, "#editor .content", permissions)
-      this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
 
-      commandStack.on("change", this)
+      this.view    = new View(this, "#editor .content", permissions)
+      this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
 
       let user = this.getParam("user")
       let global = this.getParam("global")
@@ -101,7 +101,7 @@ class Application extends GenericApplication{
     })
   }
 
-  
+
   fileNew(name, scope) {
     $("#leftTabStrip .editor").click()
     this.currentFile = { name: name??"MyNewDocument", scope: scope??"user" }
@@ -134,6 +134,44 @@ class Application extends GenericApplication{
     .catch( err => {
       console.log(err)
     })
+  }
+
+  onPDFExport() {
+    let file = this.currentFile
+    Promise.resolve()
+      .then(() => {
+        if( !((file.scope==="global" && this.permissions[this.objectType].global.update === true) ||
+            (file.scope==="user"   && this.permissions[this.objectType].update === true ))){
+              throw new Error("no permission to export")
+        }
+        return true
+      })
+      .then(() => {
+        if(this.hasUnsavedChanges){
+          return this.fileSave(t("message.save_before_pdf"))
+        }
+        return true
+      })
+      .then(() => {
+        if(this.getDocument().hasLearningContent()){
+          return exportModePrompt.show()
+        }
+        return "worksheet"
+      })
+      .then((mode) => {
+        if(file.scope === "global"){
+          return {scope: "global", file: file.name, mode: mode}
+        }
+        return storage.shareFile(file.name, file.scope).then( (response)=>{
+          return {scope: "sha", file: response.data.filePath, mode: mode}
+        })
+      })
+      .then(({scope, file, mode}) => {        
+        window.open(`../sheets/pdf?${scope}=${file}&mode=${mode}`, "_blank")
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
   }
 
   load(name, scope){

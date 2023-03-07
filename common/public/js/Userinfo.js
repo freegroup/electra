@@ -1,4 +1,5 @@
 import axios from "axios"
+import loadScript from "./loadScript"
 
 export default class Userinfo {
 
@@ -11,23 +12,23 @@ export default class Userinfo {
       // inject google analytics
       //
       $("head").append(` 
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-LNVJQE5N3Z');
-        </script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-LNVJQE5N3Z');
+      </script>
       `)
-      // https://console.cloud.google.com/apis/credentials
-      google.accounts.id.initialize({
-        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
-        login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
-        ux_mode:"redirect"
-      });
-      
+      loadScript("https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z")
+      .then(()=>{
+        // https://console.cloud.google.com/apis/credentials
+        google.accounts.id.initialize({
+          client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
+          login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
+          ux_mode:"redirect"
+        });  
+      })
+
       axios.get("../userinfo")
         .then((response) => {
           this.user = response.data

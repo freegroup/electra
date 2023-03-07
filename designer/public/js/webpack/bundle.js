@@ -208,17 +208,6 @@ class Application extends _ApplicationFrame.default {
     return this.currentFile !== null && (scope === "global" && (this.permissions[this.objectType].global.update || this.permissions[this.objectType].global.create) || scope === "user" && (this.permissions[this.objectType].update || this.permissions[this.objectType].create));
   }
 
-  stackChanged(event) {
-    if (event.isPreChangeEvent()) {
-      return; // silently
-    }
-
-    if (event.getStack().canUndo()) {
-      $("#editorFileSave div").addClass("highlight");
-      this.hasUnsavedChanges = true;
-    }
-  }
-
 }
 
 exports["default"] = Application;
@@ -2866,7 +2855,6 @@ class Application extends _Application.default {
       this.layer = new _Layer.default(this, "layer_elements", this.view, permissions);
       this.filter = new _FilterPane.default(this, "#filter .filter_actions", this.view, permissions);
       this.view.installEditPolicy(new _SelectionToolPolicy.default());
-      this.view.getCommandStack().addEventListener(this);
       let user = this.getParam("user");
       let global = this.getParam("global");
 
@@ -3547,18 +3535,17 @@ class Toolbar {
 
     view.on("select", this.onSelectionChanged.bind(this));
     view.on("unselect", this.onSelectionChanged.bind(this));
-    this.fileName = null;
     let buttonGroup = $("<div id='fileOperationGroup' class='group'></div>");
     this.html.append(buttonGroup);
 
-    if (permissions.shapes.global.update || permissions.shapes.global.create || permissions.shapes.update || permissions.shapes.create) {
+    if (permissions[this.app.objectType].global.update || permissions[this.app.objectType].global.create || permissions[this.app.objectType].update || permissions[this.app.objectType].create) {
       this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`);
       buttonGroup.append(this.saveButton);
       this.saveButton.on("click", () => {
-        app.fileSave();
+        this.app.fileSave();
       });
       Mousetrap.bindGlobal("ctrl+s", () => {
-        app.fileSave();
+        this.app.fileSave();
         return false;
       });
     } // Inject the UNDO Button and the callbacks
@@ -3795,7 +3782,7 @@ class Toolbar {
 
     if (event.getStack().canUndo()) {
       $("#editorFileSave div").addClass("highlight");
-      app.hasUnsavedChanges = true;
+      this.app.hasUnsavedChanges = true;
     }
 
     $("#editUndo").addClass("disabled");

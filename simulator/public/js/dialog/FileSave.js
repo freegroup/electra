@@ -83,23 +83,23 @@ class Dialog {
 
   save(currentFile, canvas){
     canvas.setCurrentSelection(null)
-    writer.marshal(canvas)
-    .then( json => {
-      return storage.saveFile(json, currentFile.name, currentFile.scope)
-    })
-    .then( response =>{
-      let data = response.data
-      currentFile.name = data.filePath
+    return writer.marshal(canvas)
+      .then( json => {
+        return storage.saveFile(json, currentFile.name, currentFile.scope)
+      })
+      .then( response =>{
+        let data = response.data
+        currentFile.name = data.filePath
 
-      history.pushState({
-        id: 'editor',
-        scope: currentFile.scope,
-        file: currentFile.name
-      }, conf.appName+' | ' + currentFile.name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
+        history.pushState({
+          id: 'editor',
+          scope: currentFile.scope,
+          file: currentFile.name
+        }, conf.appName+' | ' + currentFile.name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
 
-      return response
-    })
-  }
+        return response
+      })
+    }
 }
 
 let dialog = new Dialog()

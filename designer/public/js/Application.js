@@ -50,8 +50,6 @@ class Application extends GenericApplication {
 
       this.view.installEditPolicy(new SelectionToolPolicy())
   
-      this.view.getCommandStack().addEventListener(this)
-  
       let user = this.getParam("user")
       let global = this.getParam("global")
       if (user) {

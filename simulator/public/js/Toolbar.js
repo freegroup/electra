@@ -18,7 +18,7 @@ export default class Toolbar {
     // the Undo/Redo Buttons.
     //
     view.getCommandStack().on("change", this)
-
+  
     if(permissions[this.app.objectType].global.update || permissions[this.app.objectType].global.create ||
        permissions[this.app.objectType].update        || permissions[this.app.objectType].create) {
         $("#editorFileCreate").on("click",  () => {this.app.fileCreateNew()})
@@ -85,5 +85,14 @@ export default class Toolbar {
 
 
   stackChanged(event) {
+    if (event.isPreChangeEvent()) {
+        return // silently
+    }
+    
+    if (event.getStack().canUndo()) {
+        $("#editorFileSave div").addClass("highlight")
+        this.app.hasUnsavedChanges = true
+    }
+
   }
 }
