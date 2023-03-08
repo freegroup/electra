@@ -28,8 +28,6 @@ export default class View {
     this.palette = new Palette(app, this, permissions, "#paletteElements")
     this.palette.render()
 
-    commandStack.off(this).on("change", this)
-
     $(document)
       .on("click", ".content", () => {
         this.onUnselect()
@@ -423,29 +421,6 @@ export default class View {
         this.render(this.page)
         this.palette.render()
       })
-  }
-
-
-  /**
-   * @method
-   * Sent when an event occurs on the command stack. draw2d.command.CommandStackEvent.getDetail()
-   * can be used to identify the type of event which has occurred.
-   *
-   * @template
-   *
-   * @param {draw2d.command.CommandStackEvent} event
-   **/
-  stackChanged(event) {
-    $("#editUndo").addClass("disabled")
-    $("#editRedo").addClass("disabled")
-
-    if (event.getStack().canUndo()) {
-      $("#editUndo").removeClass("disabled")
-    }
-
-    if (event.getStack().canRedo()) {
-      $("#editRedo").removeClass("disabled")
-    }
   }
 }
 

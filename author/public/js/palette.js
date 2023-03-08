@@ -2,7 +2,7 @@ import inputPrompt from "../../common/js/InputPrompt"
 import authorDialog from "../../common/js/AuthorDialog"
 
 import commandStack from "./commands/CommandStack"
-import State from "./commands/State";
+import State from "./commands/State"
 
 export default class Palette {
 
@@ -11,9 +11,10 @@ export default class Palette {
     this.app = app
     this.view = view
     this.permissions = permissions
+    this.sourceIsSortEvent = false
     this.hideMenu = ()=>{ 
       $("body").off( "click", this.hideMenu)
-      $('#toggle').attr('checked', false); 
+      $('#toggle').attr('checked', false);
     }
 
     commandStack.off(this).on("change", this)
@@ -112,7 +113,7 @@ export default class Palette {
    * @param {draw2d.command.CommandStackEvent} event
    **/
   stackChanged(event) {
-
+    console.log(event)
     if (this.sourceIsSortEvent) {
       return // silently
     }
@@ -123,55 +124,43 @@ export default class Palette {
       let pages = document.getPages()
       let currentPage = this.view.getPage()
 
-      if (this.app.hasModifyPermissionForCurrentFile()) {
-        $("#documentContentAdd").show()
-        pages.forEach((page) => {
-          let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
-          let icon    = page.hasLearningContent()?"&#127891;":""
-          this.html.append(`
-          <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
-            <span>${page.name}${icon}</span>
-            <span class="spacer"></span>
-            <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >&#9998;</span>
-            <span                         class="list-item-action chapter_help" > ? </span>
-            <span data-page="${page.id}"  class="list-item-action chapter_delete" >&#8855;</span>
-          </div>`)
-        }, true)
-      } else {
-        $("#documentContentAdd").hide()
-        pages.forEach((page) => {
-          this.html.append(`
-          <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" >
-            <span>${page.name}</span>
-          </div>`)
-        }, true)
-      }
+      $("#documentContentAdd").show()
+      pages.forEach((page) => {
+        let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
+        let icon    = page.hasLearningContent()?"&#127891;":""
+        this.html.append(`
+        <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
+          <span>${page.name}${icon}</span>
+          <span class="spacer"></span>
+          <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >&#9998;</span>
+          <span                         class="list-item-action chapter_help" > ? </span>
+          <span data-page="${page.id}"  class="list-item-action chapter_delete" >&#8855;</span>
+        </div>`)
+      }, true)  
 
       $(`.pageElement[data-page=${currentPage.id}]`).addClass("selected")
 
       // Allow only the drag&drop of the pages if the user has the permission
       //
-      if (this.app.hasModifyPermissionForCurrentFile()) {
-        this.html.sortable({
-          axis: "y",
-          update: (event, dd) => {
-            this.sourceIsSortEvent = true
-            commandStack.push(new State(this.app)).then( doneCallback => {
-              // fetch the state of the new order
-              let pageDivs = $(".pageElement").toArray()
-              let newPageOrder = []
-              pageDivs.forEach((page) => {
-                let id = $(page).data("page")
-                newPageOrder.push(document.find(id))
-              })
-              document.setPages(newPageOrder)
-              doneCallback()
-            }).finally( () => {
-              this.sourceIsSortEvent = false
+      this.html.sortable({
+        axis: "y",
+        update: (event, dd) => {
+          this.sourceIsSortEvent = true
+          commandStack.push(new State(this.app)).then( doneCallback => {
+            // fetch the state of the new order
+            let pageDivs = $(".pageElement").toArray()
+            let newPageOrder = []
+            pageDivs.forEach((page) => {
+              let id = $(page).data("page")
+              newPageOrder.push(document.find(id))
             })
-          }
-        })
-      }
+            document.setPages(newPageOrder)
+            doneCallback()
+          }).finally( () => {
+            this.sourceIsSortEvent = false
+          })
+        }
+      })
     }
     else{
       $("#documentContentAdd").hide()

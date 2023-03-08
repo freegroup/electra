@@ -70,12 +70,10 @@ export default class Toolbar {
 
     // must delegate event from parent DOM because of the dynamic property of the CSS selector
     $(".toolbar")
-      .off("#editUndo")
-      .delegate("#editUndo:not(.disabled)","click", () => {
+      .off("#editUndo").on("click", "#editUndo:not(.disabled)",() => {
         commandStack.undo()
       })
-      .off('#editRedo')
-      .delegate("#editRedo:not(.disabled)", "click", () => {
+      .off('#editRedo').on("click", "#editRedo:not(.disabled)", () => {
         commandStack.redo()
       })
 
@@ -93,9 +91,14 @@ export default class Toolbar {
     this.pdfButton.hide()
     this.shareButton.hide()
     this.copyButton.hide()
-    
-    // check the permission if the current file is "user" scope
+    $("#editUndo, #editRedo").hide()
+    this.copyButton.hide()
+
+    // Enable the edit related buttons if the user has a valid document
+    // 
     if(this.app.getDocument() !==null) {
+      this.copyButton.show()
+      $("#editUndo, #editRedo").show()
       if (this.app.currentFile.scope === "user") {
         if (this.permissions[this.app.objectType].pdf === true) {
           this.pdfButton.show()
@@ -109,21 +112,28 @@ export default class Toolbar {
       if (this.permissions.featureset.share) {
         this.shareButton.show()
       }
+      
+      $("#editUndo").addClass("disabled")
+      $("#editRedo").addClass("disabled")
+  
+      if (event.getStack().canUndo()) {
+        $("#editUndo").removeClass("disabled")
+      }
+  
+      if (event.getStack().canRedo()) {
+        $("#editRedo").removeClass("disabled")
+      }  
     }
 
     if(this.app.hasModifyPermissionForCurrentFile()){
-      $("#editUndo, #editRedo").show()
       this.pdfButton.show()
       this.saveButton.show()
       this.createFileButton.show()
-      this.copyButton.show()
     }
     else{
-      $("#editUndo, #editRedo").hide()
       this.pdfButton.hide()
       this.saveButton.hide()
       this.createFileButton.hide()
-      this.copyButton.hide()
     }
 
     if (event.getStack().canUndo()){
