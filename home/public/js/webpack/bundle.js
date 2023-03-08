@@ -247,6 +247,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs"));
+var _loadScript = _interopRequireDefault(__webpack_require__(/*! ./loadScript */ "../common/public/js/loadScript.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class Userinfo {
   constructor(permissions) {
@@ -256,21 +257,20 @@ class Userinfo {
       // inject google analytics
       //
       $("head").append(` 
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-LNVJQE5N3Z');
-        </script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-LNVJQE5N3Z');
+      </script>
       `);
-      // https://console.cloud.google.com/apis/credentials
-      google.accounts.id.initialize({
-        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
-        login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
-        ux_mode: "redirect"
+      (0, _loadScript.default)("https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z").then(() => {
+        // https://console.cloud.google.com/apis/credentials
+        google.accounts.id.initialize({
+          client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
+          login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
+          ux_mode: "redirect"
+        });
       });
       _axios.default.get("../userinfo").then(response => {
         this.user = response.data;
@@ -568,6 +568,43 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
   return inlineSVG;
 });
+
+/***/ }),
+
+/***/ "../common/public/js/loadScript.js":
+/*!*****************************************!*\
+  !*** ../common/public/js/loadScript.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = _default;
+function _default(src) {
+  return new Promise(function (resolve, reject) {
+    const s = document.createElement('script');
+    let r = false;
+    s.type = 'text/javascript';
+    s.src = src;
+    s.async = true;
+    s.onerror = function (err) {
+      reject(err, s);
+    };
+    s.onload = s.onreadystatechange = function () {
+      // console.log(this.readyState); // uncomment this line to see which ready states are called.
+      if (!r && (!this.readyState || this.readyState == 'complete')) {
+        r = true;
+        resolve();
+      }
+    };
+    const t = document.getElementsByTagName('script')[0];
+    t.parentElement.insertBefore(s, t);
+  });
+}
 
 /***/ }),
 
