@@ -1,4 +1,5 @@
 import cookieBar from "./cookiebar"
+import coffeeDialog from "./CoffeeDialog"
 
 let bar = cookieBar.default
 
@@ -53,6 +54,12 @@ export default class AppSwitch {
                         <div>Privacy</div>
                       </label>
 
+                      <label class="applicationSwitchCoffee image-button" >
+                        <img src="../common/images/app_coffee.svg"/>
+                        <div>Send me a</div>
+                        <div>Coffee</div>
+                      </label>
+
                 </div>   
          </span>
     `)
@@ -79,14 +86,9 @@ export default class AppSwitch {
     $(".applicationSwitchHome").off("click").on("click", () => {
       window.open("../home", "home")
     })
-
-    if (permissions.featureset.usermanagement === true) {
-      $(document).on("click", ".applicationSwitchUser", () => {
-        window.open("../user", "user")
-      })
-    } else {
-      $(".applicationSwitchUser").remove()
-    }
+    $(".applicationSwitchCoffee").off("click").on("click", () => {
+      coffeeDialog.show()
+    })
 
     new cookieBar()
   }
