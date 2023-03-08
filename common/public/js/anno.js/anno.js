@@ -205,7 +205,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Anno.prototype.rightArrowClicksLastButton = true;
-
 	  Anno.prototype.autoFocusLastButton = true;
 
 	  Anno.prototype.onShow = function(anno, $target, $annoElem) {};
@@ -666,7 +665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  AnnoButton.prototype.buttonElem = function(anno) {
-	    return $("<button class='anno-btn'></button>").html(this.textFn(anno)).addClass(this.className).click((function(_this) {
+	    return $("<button class='anno-btn electra-button'></button>").html(this.textFn(anno)).addClass(this.className).click((function(_this) {
 	      return function(evt) {
 	        return _this.click.call(anno, anno, evt);
 	      };
