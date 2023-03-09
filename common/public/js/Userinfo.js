@@ -28,8 +28,8 @@ export default class Userinfo {
           ux_mode:"redirect"
         });  
       })
-
-      axios.get("../userinfo")
+      .then(()=>{
+        axios.get("../userinfo")
         .then((response) => {
           this.user = response.data
           let icon = this.user.picture?this.user.picture:"../common/images/toolbar_user.svg"
@@ -45,15 +45,10 @@ export default class Userinfo {
         })
         .catch( () => {
           $(".userinfo_toggler").each(function( i, element ) {
-            google.accounts.id.renderButton(
-              element,
-              // "size: medium" do not render user information into the button. But with "large", only one button is updated and not all of them
-              // In this case I decide to use a consistend appearance
-              { theme: "outline", size: "large", mode:"redirect", text:"signin" }  // customization attributes
-            );
-          });
-          //google.accounts.id.prompt(); // also display the One Tap dialog
+            google.accounts.id.renderButton(element,{ theme: "outline", size: "large", mode:"redirect", text:"signin" })
+          })
         })
+      })
     }
   }
 
