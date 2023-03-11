@@ -1,6 +1,7 @@
 import conf from "./Configuration"
 import Hogan from "hogan.js"
 import TreeView from "js-treeview"
+import jsonStorage from "../../common/js/JsonStorage"
 
 /**
  * @author Andreas Herz
@@ -12,6 +13,8 @@ export default class Palette {
    * @param {Object} permissions The permissions of the current loggedin user
    */
   constructor(permissions) {
+    this.CATEGORY_KEY = "simulator.palette.categories"
+
     this.refreshUI();
 
     // Add an "loader" icon to a shape whenn the backend is calculating the thumbnail
@@ -37,8 +40,10 @@ export default class Palette {
    socket.on("shape/generated", endGenerateEventMethod)
   }
 
-  refreshUI( defaultCategories){
-    defaultCategories ??= ["digital"]
+  refreshUI(){
+    let storedCategories = jsonStorage.getItem(this.CATEGORY_KEY)
+    let defaultCategories = storedCategories ?? ["digital"]
+    console.log(defaultCategories)
     $.getJSON(conf.shapes.jsonUrl, (data) => {
       data.forEach( shape=> shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath))
       this.buildCategory(data, defaultCategories)
@@ -52,7 +57,7 @@ export default class Palette {
     //
     let categories = new Set()
     data.forEach( shape => { 
-      if(shape.scope ==="global")
+      if(shape.scope === "global")
         categories.add(shape.tags[0])
       else
         categories.add("User Shapes")
@@ -69,6 +74,7 @@ export default class Palette {
         selectedOptions.each(( index, selectedOption) => {
           values.push($(selectedOption).val());
         });
+        jsonStorage.setItem(this.CATEGORY_KEY, values)
         this.buildPalette(data, values)
         this.buildTree(data, values)
       }
