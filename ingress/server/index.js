@@ -33,7 +33,7 @@ const app = express();
 
 
 //app.use(helmet.contentSecurityPolicy());
-app.use(helmet.crossOriginEmbedderPolicy({ policy: "credentialless" })); // credentialss required to debug with google tag manager
+app.use(helmet.crossOriginEmbedderPolicy({ policy:'require-corp' })); // credentialss required to debug with google tag manager
 app.use(helmet.crossOriginOpenerPolicy());
 app.use(helmet.crossOriginResourcePolicy());
 app.use(helmet.dnsPrefetchControl());
