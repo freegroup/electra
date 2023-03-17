@@ -17,3 +17,4 @@ You can even adjust the circuit parameters while the simulation is running, and 
 Hosted on [https://electra.academy](https://electra.academy)
 
 ![overview](./electra.png)
+
