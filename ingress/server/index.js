@@ -33,7 +33,7 @@ const app = express();
 
 
 //app.use(helmet.contentSecurityPolicy());
-app.use(helmet.crossOriginEmbedderPolicy());
+app.use(helmet.crossOriginEmbedderPolicy({ policy: "credentialless" }));
 app.use(helmet.crossOriginOpenerPolicy());
 app.use(helmet.crossOriginResourcePolicy());
 app.use(helmet.dnsPrefetchControl());
