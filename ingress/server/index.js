@@ -31,6 +31,7 @@ function die(msg){
 // Create Express Server
 const app = express();
 
+
 //app.use(helmet.contentSecurityPolicy());
 app.use(helmet.crossOriginEmbedderPolicy());
 app.use(helmet.crossOriginOpenerPolicy());
@@ -45,6 +46,7 @@ app.use(helmet.originAgentCluster());
 app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.xssFilter());
+
 
 // Configuration
 const PORT = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
@@ -83,6 +85,7 @@ function ensureLocalhost(req, res, next) {
 	else 
 		return next('route'); //call next /test route to handle check on authentication.
 }
+
 let browserId = 42;
 function onProxyReq(proxyReq, req, res){
     const session = req.session
@@ -228,35 +231,43 @@ app.use('/permissions', createProxyMiddleware({
 }));
 
 // Google auth endpoints
-app.use('/oauth/callback/:componentUri', async function(req, res) {
-    const csrfTokenCookie = req.cookies['g_csrf_token'];
-    if (!csrfTokenCookie) {
-      return res.status(400).send('No CSRF token in Cookie.');
-    }
-    const csrfTokenBody = req.body.g_csrf_token;
-    if (!csrfTokenBody) {
-      return res.status(400).send('No CSRF token in post body.');
-    }
-    if (csrfTokenCookie !== csrfTokenBody) {
-      return res.status(400).send('Failed to verify double submit cookie.');
-    }
-    const token = req.body.credential;
-    const clientId = req.body.clientid;
-    const client = new OAuth2Client(clientId);
-    const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: clientId
-    })
+app.use('/oauth/callback/:componentUri?', async function(req, res) {
+    try {
+        console.log("authenticate called..")
+        const csrfTokenCookie = req.cookies['g_csrf_token'];
+        if (!csrfTokenCookie) {
+            return res.status(400).send('No CSRF token in Cookie.');
+        }
+        const csrfTokenBody = req.body.g_csrf_token;
+        if (!csrfTokenBody) {
+            return res.status(400).send('No CSRF token in post body.');
+        }
+        if (csrfTokenCookie !== csrfTokenBody) {
+            return res.status(400).send('Failed to verify double submit cookie.');
+        }
+        const token = req.body.credential
+        const clientId = req.body.clientid
+        const client = new OAuth2Client(clientId)
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: clientId
+        })
 
-    const payload = ticket.getPayload();
-    req.session.idToken = token;
-    req.session.email = payload.email;
-    req.session.picture = payload.picture;
-    req.session.name = payload.name;
-    req.session.familyName = payload.family_name;
-    req.session.givenName = payload.given_name;
-    return res.redirect(`${req.protocol}://${req.headers.host}/${req.params.componentUri}/`);
-});
+        const payload = ticket.getPayload()
+        const componentUri = req.params.componentUri ?? ""
+        req.session.idToken = token
+        req.session.email = payload.email
+        req.session.picture = payload.picture
+        req.session.name = payload.name
+        req.session.familyName = payload.family_name
+        req.session.givenName = payload.given_name
+        return res.redirect(`${req.protocol}://${req.headers.host}/${componentUri}/`)
+    }
+    catch( error ){
+        console.log(error)
+        return res.status(400).send('Failed to verify token')
+    }
+})
 
 
 app.use('/', createProxyMiddleware({
@@ -264,7 +275,7 @@ app.use('/', createProxyMiddleware({
     changeOrigin: true,
     pathRewrite: {},
     onProxyReq: onProxyReq
-}));
+}))
 
 //then, after all proxys
 app.use(bodyParser.json());

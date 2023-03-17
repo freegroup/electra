@@ -2310,23 +2310,11 @@ class Userinfo {
     if (permissions.featureset.authentication === false) {
       $(".userinfo_toggler").remove();
     } else {
-      // inject google analytics
-      //
-      $("head").append(` 
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-LNVJQE5N3Z');
-      </script>
-      `);
-      (0, _loadScript.default)("https://www.googletagmanager.com/gtag/js?id=G-LNVJQE5N3Z").then(() => {
-        // https://console.cloud.google.com/apis/credentials
-        google.accounts.id.initialize({
-          client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
-          login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
-          ux_mode: "redirect"
-        });
+      // https://console.cloud.google.com/apis/credentials
+      google.accounts.id.initialize({
+        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
+        login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
+        ux_mode: "redirect"
       });
 
       _axios.default.get("../userinfo").then(response => {
@@ -2335,24 +2323,21 @@ class Userinfo {
         let role = this.user.role === "admin" ? "(Administrator)" : "";
         $(".userinfo_toggler img").attr("src", icon);
         $(".userinfo_toggler .dropdown-menu").html(` 
-              <div class="userContainer">
-                <img crossorigin="anonymous" src="${icon}"/>
-                <div>${this.user.displayName}</div>
-                <div>${role}</div>
-              </div>
-          `);
+            <div class="userContainer">
+              <img crossorigin="anonymous" src="${icon}"/>
+              <div>${this.user.displayName}</div>
+              <div>${role}</div>
+            </div>
+        `);
       }).catch(() => {
         $(".userinfo_toggler").each(function (i, element) {
-          google.accounts.id.renderButton(element, // "size: medium" do not render user information into the button. But with "large", only one button is updated and not all of them
-          // In this case I decide to use a consistend appearance
-          {
+          google.accounts.id.renderButton(element, {
             theme: "outline",
             size: "large",
             mode: "redirect",
             text: "signin"
-          } // customization attributes
-          );
-        }); //google.accounts.id.prompt(); // also display the One Tap dialog
+          });
+        });
       });
     }
   }
@@ -2779,6 +2764,7 @@ function _default(src) {
     s.type = 'text/javascript';
     s.src = src;
     s.async = true;
+    s.crossorigin = true;
 
     s.onerror = function (err) {
       reject(err, s);
