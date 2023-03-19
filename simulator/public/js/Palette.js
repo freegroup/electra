@@ -43,7 +43,7 @@ export default class Palette {
   refreshUI(){
     let storedCategories = jsonStorage.getItem(this.CATEGORY_KEY)
     let defaultCategories = storedCategories ?? ["digital"]
-    console.log(defaultCategories)
+
     $.getJSON(conf.shapes.jsonUrl, (data) => {
       data.forEach( shape=> shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath))
       this.buildCategory(data, defaultCategories)
