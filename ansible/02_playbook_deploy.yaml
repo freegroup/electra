@@ -187,12 +187,22 @@
       group: ssl_group
       mode: '0600'
 
-  - name: Delete all running processes via PM2
+  - name: Check for running PM2 processes
+    become: true
+    become_user: electra
+    command: pm2 jlist
+    args:
+      chdir: /home/electra/server/
+    register: pm2_list
+    ignore_errors: yes
+
+  - name: Delete all running processes via PM2 if any exist
     become: true
     become_user: electra
     command: pm2 delete all
     args:
       chdir: /home/electra/server/
+    when: pm2_list.stdout != '[]'  # Condition to check if the PM2 list is not empty
 
   - name: Run the application via PM2 ecosystem configuration
     become: true
