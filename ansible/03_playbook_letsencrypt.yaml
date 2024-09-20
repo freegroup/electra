@@ -8,7 +8,7 @@
     apt: name=nginx state=latest
   
   - name: Create and Install Cert certbot
-    command: "certbot certonly --webroot -w /home/electra/server/ingress/public -d electra.academy -d www.electra.academy -m a.herz@freegroup.de --agree-tos --expand --noninteractive --redirect"
+    command: "certbot certonly --force-renewal --webroot -w /home/electra/server/ingress/public -d electra.academy -d www.electra.academy -m a.herz@freegroup.de --agree-tos --expand --noninteractive --redirect"
 
   - name: Recursively change ownership of a directory
     ansible.builtin.file:
@@ -18,4 +18,9 @@
       group: ssl_group
       mode: g=rX
 
-
+  - name: Restart 'ingress' Node.js application with PM2
+    command: pm2 restart ingress
+    become: true
+    become_user: electra
+    args:
+      chdir: /home/electra/server/
