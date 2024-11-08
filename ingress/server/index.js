@@ -63,6 +63,7 @@ const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable POR
 const PORT_LEGAL = process.env.PORT_LEGAL || die("missing env variable PORT_LEGAL");
 const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
 const PORT_GAMIFICATION = process.env.PORT_GAMIFICATION || die("missing env variable PORT_GAMIFICATION");
+const PORT_GAME = process.env.PORT_GAME || die("missing env variable PORT_GAME");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
@@ -229,6 +230,15 @@ app.use('/permissions', createProxyMiddleware({
     pathRewrite: {},
     onProxyReq: onProxyReq
 }));
+
+app.use('/game', createProxyMiddleware({
+    target: API_SERVICE_URL+":"+PORT_GAME,
+    changeOrigin: true,
+    pathRewrite: {},
+    ws: true, 
+    onProxyReq: onProxyReq
+}));
+
 
 // Google auth endpoints
 app.use('/oauth/callback/:componentUri?', async function(req, res) {
