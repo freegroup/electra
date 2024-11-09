@@ -107,6 +107,14 @@ function onProxyReq(proxyReq, req, res){
         proxyReq.setHeader("x-given_name", 'Guest');
         proxyReq.setHeader("x-role", "anonym");
     }
+    // Dynamically add X-Forwarded headers based on the original request
+    const forwardedProto = req.headers['x-forwarded-proto'] || req.protocol;
+    const forwardedHost = req.headers['x-forwarded-host'] || req.headers.host;
+    const forwardedPort = req.headers['x-forwarded-port'] || (req.socket.encrypted ? '443' : '80');
+
+    proxyReq.setHeader("X-Forwarded-Proto", forwardedProto);
+    proxyReq.setHeader("X-Forwarded-Host", forwardedHost);
+    proxyReq.setHeader("X-Forwarded-Port", forwardedPort);
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
