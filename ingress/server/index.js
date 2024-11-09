@@ -94,6 +94,11 @@ function onProxyReq(proxyReq, req, res){
     console.log("URL:", req.url);
     console.log("Headers:", req.headers);
 
+    console.log("Proxy Request Debugging:");
+    console.log("X-Debug-Protocol:", req.headers['x-debug-protocol']);
+    console.log("X-Debug-Host:", req.headers['x-debug-host']);
+    console.log("X-Debug-Port:", req.headers['x-debug-port']);
+
     const session = req.session
     session.browserId ??= (browserId++)
 
