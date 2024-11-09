@@ -87,6 +87,10 @@ function ensureLocalhost(req, res, next) {
 		return next('route'); //call next /test route to handle check on authentication.
 }
 
+function onProxyRes(proxyRes, req, res) {
+    console.log('Incoming response headers from target:', proxyRes.headers);
+}
+
 let browserId = 42;
 function onProxyReq(proxyReq, req, res){
     console.log("Proxying request...");
@@ -254,7 +258,8 @@ app.use('/game', createProxyMiddleware({
     changeOrigin: true,
     pathRewrite: {},
     ws: true, 
-    onProxyReq: onProxyReq
+    onProxyReq: onProxyReq,
+    onProxyRes: onProxyRes
 }));
 
 
