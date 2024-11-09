@@ -89,6 +89,7 @@ function ensureLocalhost(req, res, next) {
 
 let browserId = 42;
 function onProxyReq(proxyReq, req, res){
+    console.log("onProxyReq......")
     const session = req.session
     session.browserId ??= (browserId++)
 
