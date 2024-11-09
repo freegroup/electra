@@ -20,11 +20,6 @@
       force: true
       update: true
 
-  - name: Delete local "data" directory
-    file:
-      state: absent
-      path: /home/electra/server/data
-
   - name: Delete local "youtube" directory
     file:
       state: absent
@@ -203,6 +198,7 @@
     args:
       chdir: /home/electra/server/
     when: pm2_list.stdout != '[]'  # Condition to check if the PM2 list is not empty
+    ignore_errors: yes
 
   - name: Run the application via PM2 ecosystem configuration
     become: true

@@ -7,6 +7,13 @@
   - name: ensure nginx is at the latest version
     apt: name=nginx state=latest
   
+
+  - name: Install Certbot
+    apt: 
+      name: certbot 
+      state: latest
+
+
   - name: Create and Install Cert certbot
     command: "certbot certonly --force-renewal --webroot -w /home/electra/server/ingress/public -d electra.academy -d www.electra.academy -m a.herz@freegroup.de --agree-tos --expand --noninteractive --redirect"
 

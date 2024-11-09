@@ -25,11 +25,30 @@
       state: present
       update_cache: yes
 
+  - name: Install Snapd (required for Snap packages)
+    apt:
+      name: snapd
+      state: present
+    when: ansible_distribution == "Debian"
+
+
+  - name: Ensure Snapd service is enabled and running
+    systemd:
+      name: snapd
+      state: started
+      enabled: true
+    when: ansible_distribution == "Debian"
+
+
+  - name: Install Chromium using Snap
+    command: snap install chromium
+
   - name: Install required packages
     apt:
       name: 
         - nodejs
-        - chromium-browser
+        - npm
+        - git
         - libnss3
         - libharfbuzz-bin
         - libharfbuzz-dev
@@ -46,7 +65,6 @@
         - libgbm1 
         - libpango-1.0-0 
         - libcairo2
-        - libasound2
       state: latest
 
 
@@ -78,28 +96,3 @@
       to_ports: 8443
       comment: Redirect ssl web traffic to port 8443
     become: yes
-
-  - name: Install Python 3.12
-    apt:
-      name: python3.12
-      state: present
-      update_cache: yes
-
-  - name: Ensure /usr/bin/python3 alternative exists
-    command: update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
-    become: yes
-
-  - name: Update alternatives to make Python 3.12 the default
-    alternatives:
-      name: python3
-      path: /usr/bin/python3.12
-      priority: 2
-      state: present
-
-  - name: Verify Python 3.12 installation
-    command: python3 --version
-    register: python_version
-
-  - name: Display Python version
-    debug:
-      msg: "Installed Python version is {{ python_version.stdout }}"
