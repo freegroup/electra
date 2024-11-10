@@ -88,6 +88,11 @@ function ensureLocalhost(req, res, next) {
 }
 
 function onProxyRes(proxyRes, req, res) {
+    const cookies = proxyRes.headers['set-cookie'];
+    if (cookies) {
+        res.setHeader('set-cookie', cookies);
+    }
+
     console.log('Incoming response headers from target:', proxyRes.headers);
 }
 
