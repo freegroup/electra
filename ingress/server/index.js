@@ -126,9 +126,9 @@ function onProxyReq(proxyReq, req, res){
     const forwardedHost = req.headers['x-forwarded-host'] || req.headers.host;
     const forwardedPort = req.headers['x-forwarded-port'] || (req.socket.encrypted ? '443' : '80');
 
-    proxyReq.setHeader("X-Forwarded-Proto", forwardedProto);
-    proxyReq.setHeader("X-Forwarded-Host", forwardedHost);
-    proxyReq.setHeader("X-Forwarded-Port", forwardedPort);
+    proxyReq.setHeader("X-Dungeon-Proto", forwardedProto);
+    proxyReq.setHeader("X-Dungeon-Host", forwardedHost);
+    proxyReq.setHeader("X-Dungeon-Port", forwardedPort);
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
