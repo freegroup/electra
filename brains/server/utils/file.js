@@ -33,6 +33,11 @@ module.exports = {
         res?.status(403).send('Unable to list file')
         return reject(`'${listDir}' path with dots`)
       }
+
+      if(!listDir.startsWith(baseDir)){
+        res?.status(403).send('Unable to list file')
+        return reject(`'${listDir}' path is not below base dir`)
+      }
   
       glob(listDir + "*", {}, (error, files) => {
         if(error) {
@@ -294,7 +299,7 @@ module.exports = {
   
       fileAbsolutePath = path.normalize(fileAbsolutePath)
       if(!fileAbsolutePath.startsWith(dataDirectory)){
-        res?.status(403).send('Unable to delete image')
+        res?.status(403).send('Unable to delete file')
         reject(`'${fileAbsolutePath}' isn't below data directory`)
         return
       }
@@ -334,7 +339,7 @@ module.exports = {
   
       directoryAbsolutePath = path.normalize(directoryAbsolutePath)
       if(!directoryAbsolutePath.startsWith(baseDir)){
-        res?.status(403).send('Unable to delete image')
+        res?.status(403).send('Unable to create folder')
         reject(`'${directoryAbsolutePath}' isn't below data directory`)
         return
       }
@@ -411,4 +416,3 @@ module.exports = {
     })
   }
 }
-

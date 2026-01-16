@@ -14,6 +14,7 @@ module.exports = {
             filesystem.listFiles(conf.absoluteGlobalDataDirectory(), req.query.path, res)
                 .catch(exception => {
                     console.log(exception)
+                    res.status(500).send("Unable to list files")
                 })
         })
 
@@ -21,6 +22,7 @@ module.exports = {
             filesystem.getJSONFile(conf.absoluteGlobalDataDirectory(), req.query.filePath, res)
                 .catch(exception => {
                     console.log(exception)
+                    res.status(500).send("Unable to read file")
                 })
         })
 
@@ -42,6 +44,7 @@ module.exports = {
             filesystem.getBinaryFile(conf.absoluteGlobalDataDirectory(), req.query.filePath, res)
                 .catch(error => {
                     console.log(error)
+                    res.status(500).send("Unable to read image")
                 })
         })
 
@@ -76,6 +79,7 @@ module.exports = {
                 })
                 .catch(reason => {
                     console.log(reason)
+                    res.status(500).send("Unable to rename file")
                 })
         })
 
@@ -90,6 +94,7 @@ module.exports = {
                 })
                 .catch(error => {
                     console.log(error)
+                    res.status(500).send("Unable to create folder")
                 })
         })
 
@@ -99,6 +104,7 @@ module.exports = {
             filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
                 .catch(reason => {
                     console.log(reason)
+                    res.status(500).send("Unable to save file")
                 })
         })
     }

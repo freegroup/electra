@@ -24,8 +24,13 @@ module.exports = {
             res.status(401).send('string')
             return
         }
+        let mail = req.get("x-mail")
+        if (!mail) {
+            res.status(401).send('Missing x-mail header')
+            return
+        }
         let hash = createHash('sha256')
-        hash.update(req.get("x-mail"))
+        hash.update(mail)
         req.headers["x-hash"]=hash.digest('hex')
         next()
     }

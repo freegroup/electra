@@ -8,6 +8,7 @@ module.exports = {
             filesystem.getJSONFile(conf.absoluteSharedDataDirectory(), req.query.sha, res)
             .catch(exception => {
                 console.log(exception)
+                res.status(500).send("Unable to read file")
             })
         })
     }
