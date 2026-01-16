@@ -1,111 +1,108 @@
 const shortid = require('short-uuid')
 const path = require('path')
 
-const filesystem = require("../utils/file")
 const {nocache, ensureAdminLoggedIn, ensureLoggedIn} = require("./middleware")
 
 const conf = require("../configuration")
+const persistence = conf.persistence
 
+function handleError(res, err, message) {
+    console.log(err)
+    let status = err.statusCode || 500
+    res.status(status).send(message)
+}
 
 module.exports = {
     init: function (app) {
         // TODO: migrate to REST service API
         app.get('/brains/global/list', nocache, (req, res) => {
-            filesystem.listFiles(conf.absoluteGlobalDataDirectory(), req.query.path, res)
-                .catch(exception => {
-                    console.log(exception)
-                    res.status(500).send("Unable to list files")
+            persistence.listFiles("global", req.query.path)
+                .then(stream => {
+                    res.setHeader('Content-Type', 'application/json')
+                    stream.pipe(res)
                 })
+                .catch(err => handleError(res, err, "Unable to list files"))
         })
 
         app.get('/brains/global/get', nocache, (req, res) => {
-            filesystem.getJSONFile(conf.absoluteGlobalDataDirectory(), req.query.filePath, res)
-                .catch(exception => {
-                    console.log(exception)
-                    res.status(500).send("Unable to read file")
+            persistence.getJSONFile("global", req.query.filePath)
+                .then(stream => {
+                    res.setHeader('Content-Type', 'application/json')
+                    stream.pipe(res)
                 })
+                .catch(err => handleError(res, err, "Unable to read file"))
         })
 
 
         app.post('/brains/global/share', ensureLoggedIn, (req, res) => {
             let sha =shortid.generate()
-            filesystem.copy( conf.absoluteGlobalDataDirectory(),req.body.filePath, 
-                             conf.absoluteSharedDataDirectory(), sha)
-            .then( () => {
-                res.status(200).send({ filePath: sha})
+            persistence.copy("global",req.body.filePath, "shared", sha)
+            .then( stream => {
+                stream.pipe(res)
             })
             .catch(exception => {
-                res.status(403).send("error")
                 console.log(exception)
+                res.status(403).send("error")
             })
         })
 
         app.get('/brains/global/image', nocache, (req, res) => {
-            filesystem.getBinaryFile(conf.absoluteGlobalDataDirectory(), req.query.filePath, res)
-                .catch(error => {
-                    console.log(error)
-                    res.status(500).send("Unable to read image")
+            persistence.getBinaryFile("global", req.query.filePath)
+                .then(stream => {
+                    res.writeHead(200, {'Content-Type': 'image/png'})
+                    stream.pipe(res)
                 })
+                .catch(error => handleError(res, error, "Unable to read image"))
         })
 
 
         app.post('/brains/global/delete', ensureAdminLoggedIn, (req, res) => {
             let fileRelativePath = req.body.filePath
-            filesystem.delete(conf.absoluteGlobalDataDirectory(), fileRelativePath)
-                .then((sanitizedRelativePaths) => {
-                    filesystem.delete(conf.absoluteGlobalDataDirectory(), sanitizedRelativePaths.replace(".brain", ".guide"))
-                    .catch (()=>{
-                        // ignore "not found" error
-                    })
-                    .finally (()=> {
-                        res.send("ok")
-                    })
+            persistence.delete("global", fileRelativePath)
+                .then(() => {
+                     persistence.delete("global", fileRelativePath.replace(".brain", ".guide"))
+                        .catch(()=> {}) // ignore
+                     res.send("ok")
                 })
-                .catch(() => {
-                    res.status(403).send("error")
-                })
+                .catch(err => handleError(res, err, "Unable to delete file"))
         })
 
         app.post('/brains/global/rename', ensureAdminLoggedIn, (req, res) => {
-            filesystem.rename(conf.absoluteGlobalDataDirectory(), req.body.from, req.body.to, res)
-                .then(({ fromRelativePath, toRelativePath, isDir }) => {
-                    let tutorialRelativeFromPath = fromRelativePath.replace(".brain", ".guide")
-                    let tutorialRelativeToPath = toRelativePath.replace(".brain", ".guide")
-                    filesystem.rename(conf.absoluteGlobalDataDirectory(),tutorialRelativeFromPath, tutorialRelativeToPath)
-                    .catch (()=>{
-                        console.log("File not found for rename: ",tutorialRelativeFromPath,tutorialRelativeToPath)
-                        // ignore "not found" error
-                    })
+            persistence.rename("global", req.body.from, req.body.to)
+                .then(stream => {
+                    // Side effect: rename .guide
+                    persistence.rename("global", 
+                        req.body.from.replace(".brain", ".guide"), 
+                        req.body.to.replace(".brain", ".guide"))
+                        .catch(()=> {}) // ignore
+                    
+                    stream.pipe(res)
                 })
-                .catch(reason => {
-                    console.log(reason)
-                    res.status(500).send("Unable to rename file")
-                })
+                .catch(reason => handleError(res, reason, "Unable to rename file"))
         })
 
         app.post('/brains/global/folder', ensureAdminLoggedIn, (req, res) => {
-            filesystem.createFolder(conf.absoluteGlobalDataDirectory(), req.body.filePath, res)
-                .then((directoryRelativePath) => {
-                    let fileRelativePath =  path.join(directoryRelativePath, "placeholder.txt")
+            persistence.createFolder("global", req.body.filePath)
+                .then((stream) => {
+                    // Side effect: create placeholder
+                    // We need the resolved directory path to create the placeholder.
+                    // req.body.filePath is the subDir.
+                    let fileRelativePath =  path.join(req.body.filePath, "placeholder.txt")
                     let content =  "-placeholder for empty directories-"
-                    // create file into empty directory. Otherwise the directory is not stored in github.
-                    // (github prunes empty directories)
-                    filesystem.writeFile(conf.absoluteGlobalDataDirectory(), fileRelativePath, content)
+                    persistence.writeFile("global", fileRelativePath, content)
+                        .catch(()=> {})
+
+                    stream.pipe(res)
                 })
-                .catch(error => {
-                    console.log(error)
-                    res.status(500).send("Unable to create folder")
-                })
+                .catch(error => handleError(res, error, "Unable to create folder"))
         })
 
         app.post('/brains/global/save', ensureAdminLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            filesystem.writeFile(conf.absoluteGlobalDataDirectory(), shapeRelativePath, content, res)
-                .catch(reason => {
-                    console.log(reason)
-                    res.status(500).send("Unable to save file")
-                })
+            persistence.writeFile("global", shapeRelativePath, content)
+                .then(stream => stream.pipe(res))
+                .catch(reason => handleError(res, reason, "Unable to save file"))
         })
     }
 }

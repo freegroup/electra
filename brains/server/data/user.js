@@ -1,108 +1,99 @@
 const shortid = require('short-uuid')
 const path = require('path')
 
-const filesystem = require("../utils/file")
 const conf = require("../configuration")
+const persistence = conf.persistence
 const {nocache, ensureLoggedIn} = require("./middleware")
 
+function handleError(res, err, message) {
+    console.log(err)
+    let status = err.statusCode || 500
+    res.status(status).send(message)
+}
 
 module.exports = {
     init: function (app) {
         // TODO: migrate to REST service API
         app.get('/brains/user/list', nocache, ensureLoggedIn, (req, res) => {
-            filesystem.listFiles(conf.absoluteUserDataDirectory(req), req.query.path, res)
-                .catch(exception => {
-                    console.log(exception)
-                    res.status(500).send("Unable to list files")
+            persistence.listFiles("user:"+req.get("x-hash"), req.query.path)
+                .then(stream => {
+                    res.setHeader('Content-Type', 'application/json')
+                    stream.pipe(res)
                 })
+                .catch(err => handleError(res, err, "Unable to list files"))
         })
 
         app.get('/brains/user/get', nocache, ensureLoggedIn, (req, res) => {
-            filesystem.getJSONFile(conf.absoluteUserDataDirectory(req), req.query.filePath, res)
-                .catch(exception => {
-                    console.log(exception)
-                    res.status(500).send("Unable to read file")
+            persistence.getJSONFile("user:"+req.get("x-hash"), req.query.filePath)
+                .then(stream => {
+                    res.setHeader('Content-Type', 'application/json')
+                    stream.pipe(res)
                 })
+                .catch(err => handleError(res, err, "Unable to read file"))
         })
 
         app.post('/brains/user/share', nocache, ensureLoggedIn, (req, res) => {
             let sha = shortid.generate()
-            filesystem.copy( conf.absoluteUserDataDirectory(req),req.body.filePath, 
-                             conf.absoluteSharedDataDirectory(), sha)
-            .then( () => {
-                res.status(200).send({ filePath: sha})
+            persistence.copy( "user:"+req.get("x-hash"),req.body.filePath, "shared", sha)
+            .then( stream => {
+                stream.pipe(res)
             })
-            .catch(exception => {
-                res.status(403).send("error")
-                console.log(exception)
-            })
+            .catch(err => handleError(res, err, "Unable to share file"))
         })
 
         app.get('/brains/user/image', nocache, ensureLoggedIn, (req, res) => {
-            filesystem.getBinaryFile(conf.absoluteUserDataDirectory(req), req.query.filePath, res)
-                .catch(error => {
-                    console.log(error)
-                    res.status(500).send("Unable to read image")
+            persistence.getBinaryFile("user:"+req.get("x-hash"), req.query.filePath)
+                .then(stream => {
+                    res.writeHead(200, {'Content-Type': 'image/png'})
+                    stream.pipe(res)
                 })
+                .catch(err => handleError(res, err, "Unable to read image"))
         })
 
         app.post('/brains/user/delete', ensureLoggedIn, (req, res) => {
             let fileRelativePath = req.body.filePath
-            filesystem.delete(conf.absoluteUserDataDirectory(req), fileRelativePath)
-                .then((sanitizedRelativePaths) => {
-                    let tutorialRelativePath = sanitizedRelativePaths.replace(".brain", ".guide")
-                    filesystem.delete(conf.absoluteUserDataDirectory(req), tutorialRelativePath)
-                    .catch (()=>{
-                        // ignore "not found" error
-                    })
-                    .finally (()=> {
-                        res.send("ok")
-                    })
+            persistence.delete("user:"+req.get("x-hash"), fileRelativePath)
+                .then(() => {
+                    persistence.delete("user:"+req.get("x-hash"), fileRelativePath.replace(".brain", ".guide"))
+                        .catch(()=> {})
+
+                    res.send("ok")
                 })
-                .catch(() => {
-                    res.status(403).send("error")
-                })
+                .catch(err => handleError(res, err, "Unable to delete file"))
         })
 
         app.post('/brains/user/rename', ensureLoggedIn, (req, res) => {
-            filesystem.rename(conf.absoluteUserDataDirectory(req), req.body.from, req.body.to, res)
-                .then(({ fromRelativePath, toRelativePath, isDir }) => {
-                    let tutorialRelativeFromPath = fromRelativePath.replace(".brain", ".guide")
-                    let tutorialRelativeToPath = toRelativePath.replace(".brain", ".guide")
-                    filesystem.rename(conf.absoluteUserDataDirectory(req),tutorialRelativeFromPath, tutorialRelativeToPath)
-                    .catch (()=>{
-                        // ignore "not found" error
-                    })
+            persistence.rename("user:"+req.get("x-hash"), req.body.from, req.body.to)
+                .then(stream => {
+                    persistence.rename("user:"+req.get("x-hash"),
+                        req.body.from.replace(".brain", ".guide"), 
+                        req.body.to.replace(".brain", ".guide"))
+                        .catch(()=> {})
+
+                    stream.pipe(res)
                 })
-                .catch(reason => {
-                    console.log(reason)
-                    res.status(500).send("Unable to rename file")
-                })
+                .catch(err => handleError(res, err, "Unable to rename file"))
         })
 
         app.post('/brains/user/folder', ensureLoggedIn, (req, res) => {
-            filesystem.createFolder(conf.absoluteUserDataDirectory(req), req.body.filePath, res)
-                .then((directoryRelativePath) => {
-                    let fileRelativePath =  path.join(directoryRelativePath, "placeholder.txt")
+            persistence.createFolder("user:"+req.get("x-hash"), req.body.filePath)
+                .then((stream) => {
+                    let fileRelativePath =  path.join(req.body.filePath, "placeholder.txt")
                     let content =  "-placeholder for empty directories-"
-                    // create file into empty directory. Otherwise the directory is not stored in github.
-                    // (github prunes empty directories)
-                    filesystem.writeFile(conf.absoluteUserDataDirectory(req), fileRelativePath, content)
+                    persistence.writeFile("user:"+req.get("x-hash"), fileRelativePath, content)
+                        .catch(()=> {})
+                        
+                    stream.pipe(res)
                 })
-                .catch(error => {
-                    console.log(error)
-                    res.status(500).send("Unable to create folder")
-                })
+                .catch(err => handleError(res, err, "Unable to create folder"))
         })
 
         app.post('/brains/user/save', ensureLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            filesystem.writeFile(conf.absoluteUserDataDirectory(req), shapeRelativePath, content, res)
-                .catch(reason => {
-                    console.log(reason)
-                    res.status(500).send("Unable to save file")
-                })
+            persistence.writeFile("user:"+req.get("x-hash"), shapeRelativePath, content)
+                .then(stream => stream.pipe(res))
+                .catch(err => handleError(res, err, "Unable to save file"))
         })
     }
 }
