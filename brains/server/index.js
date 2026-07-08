@@ -20,7 +20,7 @@ const sharedApi = require("./data/shared")
 const conf = require("./configuration")
 const die = require("./utils/die")
 
-console.log("serving data from :", conf.absoluteGlobalDataDirectory())
+console.log(`serving persistence: ${conf.persistence.getName()}`)
 
 
 const PORT = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
@@ -46,7 +46,13 @@ userApi.init(app)
 async function  runServer() {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
-  app.use('/shapes/global', express.static(conf.absoluteGlobalDataDirectory()));
+  // Legacy: serve global data as static files. Only makes sense when the
+  // filesystem backend is active. With the database backend, /shapes/global
+  // is not exposed as static — global content is served via
+  // /brains/global/get through the database adapter.
+  if (conf.absoluteGlobalDataDirectory) {
+    app.use('/shapes/global', express.static(conf.absoluteGlobalDataDirectory()));
+  }
 
   // Start Server
   // "localhost" => Service ist nicht von ausserhalb aufrufbar.

@@ -44,7 +44,12 @@ app.use(helmet.ieNoOpen());
 app.use(helmet.noSniff());
 app.use(helmet.originAgentCluster());
 app.use(helmet.permittedCrossDomainPolicies());
-app.use(helmet.referrerPolicy());
+// Google's GSI button endpoint refuses (400) when the browser sends no
+// referrer at all — it needs at least the origin to validate the
+// authorized-JavaScript-origins allow-list of the OAuth client. helmet's
+// default is 'no-referrer', which breaks this. Use the OWASP-recommended
+// value that still hides the path but keeps the origin visible.
+app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
 app.use(helmet.xssFilter());
 
 
@@ -145,8 +150,8 @@ app.use(sessionMiddleware);
 // redirect to a non-www domain
 // https://www.electra.academy => https://electra.academy
 //
-app.get ('/*', function (req, res, next){
-  if (req.headers.host.match(/^www\./) ) {
+app.use(function (req, res, next){
+  if (req.headers.host && req.headers.host.match(/^www\./) ) {
     res.redirect( '//' + req.headers.host.substring(4) + req.url)
   }
   else {
@@ -159,117 +164,45 @@ app.get ('/*', function (req, res, next){
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
 
 
-app.use('/home', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_HOME,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
+// http-proxy-middleware v4 strips the mount prefix before proxying. We
+// need to re-attach it so the downstream services (which mount their
+// routes under /brains, /database, ...) still receive the full path.
+function prefixed(mount, port) {
+    return createProxyMiddleware({
+        target: API_SERVICE_URL + ":" + port,
+        changeOrigin: true,
+        pathRewrite: (path) => mount + path,
+        on: { proxyReq: onProxyReq }
+    })
+}
 
-app.use('/legal', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_LEGAL,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/gallery', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_GALLERY,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/gamification', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_GAMIFICATION,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/userinfo', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_USERINFO,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/designer', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_DESIGNER,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/author', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_AUTHOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/sheets', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SHEETS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/brains', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_BRAINS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/shapes', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SHAPES,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/simulator', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/circuit', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/common', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_COMMON,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-// Proxy endpoints
-app.use('/permissions', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_PERMISSIONS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
+app.use('/home',         prefixed('/home',         PORT_HOME))
+app.use('/legal',        prefixed('/legal',        PORT_LEGAL))
+app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
+app.use('/gamification', prefixed('/gamification', PORT_GAMIFICATION))
+app.use('/userinfo',     prefixed('/userinfo',     PORT_USERINFO))
+app.use('/designer',     prefixed('/designer',     PORT_DESIGNER))
+app.use('/author',       prefixed('/author',       PORT_AUTHOR))
+app.use('/sheets',       prefixed('/sheets',       PORT_SHEETS))
+app.use('/brains',       prefixed('/brains',       PORT_BRAINS))
+app.use('/database',     prefixed('/database',     process.env.PORT_DATABASE))
+app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
+app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
+app.use('/circuit',      prefixed('/circuit',      PORT_SIMULATOR))
+app.use('/common',       prefixed('/common',       PORT_COMMON))
+app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
 app.use('/game', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_GAME,
     changeOrigin: true,
-    pathRewrite: {},
-    ws: true, 
-    onProxyReq: onProxyReq,
-    onProxyRes: onProxyRes
-}));
+    pathRewrite: (path) => '/game' + path,
+    ws: true,
+    on: { proxyReq: onProxyReq, proxyRes: onProxyRes }
+}))
 
 
 // Google auth endpoints
-app.use('/oauth/callback/:componentUri?', async function(req, res) {
+app.use('/oauth/callback{/:componentUri}', async function(req, res) {
     try {
         console.log("authenticate called..")
         const csrfTokenCookie = req.cookies['g_csrf_token'];
@@ -312,7 +245,7 @@ app.use('/', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
     changeOrigin: true,
     pathRewrite: {},
-    onProxyReq: onProxyReq
+    on: { proxyReq: onProxyReq }
 }))
 
 //then, after all proxys

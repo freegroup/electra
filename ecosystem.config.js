@@ -19,8 +19,11 @@ module.exports = {
             cwd : "./brains",
             script: "node",
             args: "./server/index",
-            env: { "NODE_ENV": "production"}
-          },          
+            env: {
+              "NODE_ENV": "production",
+              "BRAINS_PERSISTENCE": "database"
+            }
+          },
           {
             name   : "simulator",
             cwd : "./simulator",
@@ -62,7 +65,14 @@ module.exports = {
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
-          },          
+          },
+          {
+            name   : "database",
+            cwd : "./database",
+            script: "node",
+            args: "./server/index",
+            env: { "NODE_ENV": "production"}
+          },
           {
             name   : "ingress",
             cwd : "./ingress",

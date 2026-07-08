@@ -5,6 +5,7 @@ const {nocache, ensureAdminLoggedIn, ensureLoggedIn} = require("./middleware")
 
 const conf = require("../configuration")
 const persistence = conf.persistence
+const {pickAuthHeaders} = require("../utils/auth-headers")
 
 function handleError(res, err, message) {
     console.log(err)
@@ -16,7 +17,7 @@ module.exports = {
     init: function (app) {
         // TODO: migrate to REST service API
         app.get('/brains/global/list', nocache, (req, res) => {
-            persistence.listFiles("global", req.query.path)
+            persistence.listFiles("global", req.query.path, pickAuthHeaders(req))
                 .then(stream => {
                     res.setHeader('Content-Type', 'application/json')
                     stream.pipe(res)
@@ -25,7 +26,7 @@ module.exports = {
         })
 
         app.get('/brains/global/get', nocache, (req, res) => {
-            persistence.getJSONFile("global", req.query.filePath)
+            persistence.getJSONFile("global", req.query.filePath, pickAuthHeaders(req))
                 .then(stream => {
                     res.setHeader('Content-Type', 'application/json')
                     stream.pipe(res)
@@ -36,7 +37,7 @@ module.exports = {
 
         app.post('/brains/global/share', ensureLoggedIn, (req, res) => {
             let sha =shortid.generate()
-            persistence.copy("global",req.body.filePath, "shared", sha)
+            persistence.copy("global",req.body.filePath, "shared", sha, pickAuthHeaders(req))
             .then( stream => {
                 stream.pipe(res)
             })
@@ -47,7 +48,7 @@ module.exports = {
         })
 
         app.get('/brains/global/image', nocache, (req, res) => {
-            persistence.getBinaryFile("global", req.query.filePath)
+            persistence.getBinaryFile("global", req.query.filePath, pickAuthHeaders(req))
                 .then(stream => {
                     res.writeHead(200, {'Content-Type': 'image/png'})
                     stream.pipe(res)
@@ -58,9 +59,9 @@ module.exports = {
 
         app.post('/brains/global/delete', ensureAdminLoggedIn, (req, res) => {
             let fileRelativePath = req.body.filePath
-            persistence.delete("global", fileRelativePath)
+            persistence.delete("global", fileRelativePath, pickAuthHeaders(req))
                 .then(() => {
-                     persistence.delete("global", fileRelativePath.replace(".brain", ".guide"))
+                     persistence.delete("global", fileRelativePath.replace(".brain", ".guide"), pickAuthHeaders(req))
                         .catch(()=> {}) // ignore
                      res.send("ok")
                 })
@@ -68,28 +69,27 @@ module.exports = {
         })
 
         app.post('/brains/global/rename', ensureAdminLoggedIn, (req, res) => {
-            persistence.rename("global", req.body.from, req.body.to)
+            persistence.rename("global", req.body.from, req.body.to, pickAuthHeaders(req))
                 .then(stream => {
                     // Side effect: rename .guide
-                    persistence.rename("global", 
-                        req.body.from.replace(".brain", ".guide"), 
-                        req.body.to.replace(".brain", ".guide"))
+                    persistence.rename("global",
+                        req.body.from.replace(".brain", ".guide"),
+                        req.body.to.replace(".brain", ".guide"),
+                        pickAuthHeaders(req))
                         .catch(()=> {}) // ignore
-                    
+
                     stream.pipe(res)
                 })
                 .catch(reason => handleError(res, reason, "Unable to rename file"))
         })
 
         app.post('/brains/global/folder', ensureAdminLoggedIn, (req, res) => {
-            persistence.createFolder("global", req.body.filePath)
+            persistence.createFolder("global", req.body.filePath, pickAuthHeaders(req))
                 .then((stream) => {
                     // Side effect: create placeholder
-                    // We need the resolved directory path to create the placeholder.
-                    // req.body.filePath is the subDir.
                     let fileRelativePath =  path.join(req.body.filePath, "placeholder.txt")
                     let content =  "-placeholder for empty directories-"
-                    persistence.writeFile("global", fileRelativePath, content)
+                    persistence.writeFile("global", fileRelativePath, content, pickAuthHeaders(req))
                         .catch(()=> {})
 
                     stream.pipe(res)
@@ -100,7 +100,7 @@ module.exports = {
         app.post('/brains/global/save', ensureAdminLoggedIn, (req, res) => {
             let shapeRelativePath = req.body.filePath
             let content = req.body.content
-            persistence.writeFile("global", shapeRelativePath, content)
+            persistence.writeFile("global", shapeRelativePath, content, pickAuthHeaders(req))
                 .then(stream => stream.pipe(res))
                 .catch(reason => handleError(res, reason, "Unable to save file"))
         })
