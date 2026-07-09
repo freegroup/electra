@@ -164,14 +164,13 @@ app.use(function (req, res, next){
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
 
 
-// http-proxy-middleware v4 strips the mount prefix before proxying. We
-// need to re-attach it so the downstream services (which mount their
-// routes under /brains, /database, ...) still receive the full path.
+// http-proxy-middleware v4 keeps the mount prefix by default when using
+// app.use('/mount', ...). Downstream services (which mount their routes
+// under /brains, /database, ...) receive the full path.
 function prefixed(mount, port) {
     return createProxyMiddleware({
         target: API_SERVICE_URL + ":" + port,
         changeOrigin: true,
-        pathRewrite: (path) => mount + path,
         on: { proxyReq: onProxyReq }
     })
 }
@@ -195,7 +194,6 @@ app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 app.use('/game', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_GAME,
     changeOrigin: true,
-    pathRewrite: (path) => '/game' + path,
     ws: true,
     on: { proxyReq: onProxyReq, proxyRes: onProxyRes }
 }))

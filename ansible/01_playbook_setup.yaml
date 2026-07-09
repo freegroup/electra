@@ -21,7 +21,7 @@
 
   - name: Install the nodejs LTS repos
     apt_repository:
-      repo: "deb https://deb.nodesource.com/node_18.x focal main"
+      repo: "deb https://deb.nodesource.com/node_22.x focal main"
       state: present
       update_cache: yes
 
