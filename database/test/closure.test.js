@@ -70,7 +70,7 @@ test("closure for apps/brains contains itself + apps + electra", async () => {
 test("creating a sub-scope under apps/brains populates closure", async () => {
   const res = await ctx.fastify.inject({
     method: "POST",
-    url: `/database/scopes/${brainsId}/children`,
+    url: `/database/scopes/${brainsId}/scopes`,
     headers: asRootAdmin(),
     payload: { name: "klasse8a", requiredApprovalScore: 0 },
   })
@@ -91,7 +91,7 @@ test("creating a sub-scope under apps/brains populates closure", async () => {
 test("non-admin cannot create sub-scopes under apps/brains", async () => {
   const res = await ctx.fastify.inject({
     method: "POST",
-    url: `/database/scopes/${brainsId}/children`,
+    url: `/database/scopes/${brainsId}/scopes`,
     headers: asPerson("someone_else"),
     payload: { name: "hack", requiredApprovalScore: 0 },
   })
@@ -102,7 +102,7 @@ test("duplicate name under same parent conflicts", async () => {
   // 'klasse8a' was created above.
   const res = await ctx.fastify.inject({
     method: "POST",
-    url: `/database/scopes/${brainsId}/children`,
+    url: `/database/scopes/${brainsId}/scopes`,
     headers: asRootAdmin(),
     payload: { name: "klasse8a", requiredApprovalScore: 0 },
   })

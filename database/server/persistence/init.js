@@ -104,10 +104,10 @@ async function applyAdmins(scopeId, node) {
     for (const email of emails) {
       const personRef = hashEmail(email)
       await client.query(
-        `INSERT INTO memberships (scope_id, person_ref, is_admin, reviewer_score)
-         VALUES ($1, $2, true, 10)
+        `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin, reviewer_score)
+         VALUES ($1, $2, true, true, 10)
          ON CONFLICT (scope_id, person_ref)
-         DO UPDATE SET is_admin = true, reviewer_score = 10`,
+         DO UPDATE SET is_member = true, is_admin = true, reviewer_score = 10`,
         [scopeId, personRef]
       )
     }

@@ -1,18 +1,21 @@
-// Doc routes.
+// Doc routes (README §9.2).
 //
-//   GET  /database/scopes/:scopeId/docs           — list effective view
-//   GET  /database/scopes/:scopeId/docs/*         — walk-up lookup
-//   PUT  /database/scopes/:scopeId/docs/*         — write to caller's leaf
+//   GET  /database/scopes/:scopeRef/docs?path=X   — walk-up read
+//   GET  /database/scopes/:scopeRef/docs          — list effective view (?prefix=)
+//   PUT  /database/scopes/:scopeRef/docs?path=X   — write to caller's leaf
+//
+// Reads are guarded by canRead (transitive-up membership, or the world-readable
+// root). Writes require explicit membership and provision the caller's leaf
+// under the operating scope on first write.
 
-const { pool } = require("../persistence/pool")
-const {
-  pathOfScope,
-  isMember,
-  leafIdForPersonUnder,
-  getScope,
-} = require("../persistence/scopes")
 const { getDoc, listDocs, putDoc } = require("../persistence/docs")
-const { ForbiddenError, NotFoundError, BadRequestError } = require("../utils/errors")
+const { NotFoundError } = require("../utils/errors")
+const {
+  requirePathQuery,
+  resolveOriginPath,
+  requireRead,
+  requireWriteLeaf,
+} = require("./helpers")
 
 const putBody = {
   type: "object",
@@ -30,87 +33,50 @@ const putBody = {
   additionalProperties: false,
 }
 
-function parseScopeId(raw) {
-  if (!/^\d+$/.test(raw)) {
-    throw new BadRequestError(`scopeId must be a numeric id, got: ${raw}`)
-  }
-  return raw
-}
-
 async function routes(fastify) {
-  async function resolveAndRequireMember(rawScopeId, personRef) {
-    const scopeId = parseScopeId(rawScopeId)
-    const client = await pool.connect()
-    try {
-      const scope = await getScope(client, scopeId)
-      if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
-      const ok = await isMember(client, scopeId, personRef)
-      if (!ok) {
-        throw new ForbiddenError(`caller is not a member of scope id ${scopeId}`)
-      }
-      const leafId = await leafIdForPersonUnder(client, scopeId, personRef)
-      if (!leafId) {
-        throw new ForbiddenError(`no personal leaf provisioned for caller under scope id ${scopeId}`)
-      }
-      return { scopeId, leafId }
-    } finally {
-      client.release()
-    }
-  }
-
-  async function resolveOriginPath(scopeId) {
-    const client = await pool.connect()
-    try {
-      return await pathOfScope(client, scopeId)
-    } finally {
-      client.release()
-    }
-  }
-
   fastify.get(
-    "/database/scopes/:scopeId/docs",
-    { preHandler: [fastify.requireLogin] },
+    "/database/scopes/:scopeRef/docs",
+    { preHandler: [fastify.resolvePrincipal] },
     async (req) => {
-      const { leafId } = await resolveAndRequireMember(
-        req.params.scopeId,
-        req.personRef
-      )
-      const prefix = req.query && req.query.prefix ? String(req.query.prefix) : null
-      const docs = await listDocs({ callerLeafId: leafId, prefix, resolveOriginPath })
+      const scopeId = await requireRead(req.params.scopeRef, req.personRef)
+      const q = req.query || {}
+      if (q.path) {
+        const doc = await getDoc({
+          operatingScopeId: scopeId,
+          personRef: req.personRef,
+          docPath: String(q.path),
+          resolveOriginPath,
+        })
+        if (!doc) {
+          throw new NotFoundError(`no document at ${q.path} visible from this scope`)
+        }
+        return doc
+      }
+      const prefix = q.prefix ? String(q.prefix) : null
+      const docs = await listDocs({
+        operatingScopeId: scopeId,
+        personRef: req.personRef,
+        prefix,
+        resolveOriginPath,
+      })
       return { docs }
     }
   )
 
-  fastify.get(
-    "/database/scopes/:scopeId/docs/*",
-    { preHandler: [fastify.requireLogin] },
-    async (req) => {
-      const { leafId } = await resolveAndRequireMember(
-        req.params.scopeId,
-        req.personRef
-      )
-      const docPath = req.params["*"]
-      const doc = await getDoc({ callerLeafId: leafId, docPath, resolveOriginPath })
-      if (!doc) {
-        throw new NotFoundError(`no document at ${docPath} visible from this scope`)
-      }
-      return doc
-    }
-  )
-
   fastify.put(
-    "/database/scopes/:scopeId/docs/*",
-    {
-      schema: { body: putBody },
-      preHandler: [fastify.requireLogin],
-    },
+    "/database/scopes/:scopeRef/docs",
+    { schema: { body: putBody }, preHandler: [fastify.requireLogin] },
     async (req, reply) => {
-      const { leafId } = await resolveAndRequireMember(
-        req.params.scopeId,
-        req.personRef
-      )
-      const docPath = req.params["*"]
-      const { data, meta } = req.body
+      const docPath = requirePathQuery(req)
+      const { leafId } = await requireWriteLeaf(req.params.scopeRef, req.personRef)
+      const { data, meta, version, scope } = req.body
+
+      // Optimistic concurrency (§6.12) applies only when the caller edits
+      // their OWN leaf version — i.e. the passed doc's origin scope is the
+      // leaf. Editing an inherited version starts a fresh leaf v1 with no
+      // check.
+      const leafPath = await resolveOriginPath(leafId)
+      const expectedVersion = scope === leafPath ? version : null
 
       const inserted = await putDoc({
         leafScopeId: leafId,
@@ -118,6 +84,7 @@ async function routes(fastify) {
         data,
         meta,
         author: req.personRef,
+        expectedVersion,
       })
       const originPath = await resolveOriginPath(inserted.scope_id)
       reply.code(201)

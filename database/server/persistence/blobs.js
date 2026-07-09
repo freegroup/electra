@@ -4,6 +4,7 @@
 // explicit PUT/GET/DELETE of individual blobs.
 
 const { pool } = require("./pool")
+const { WALKUP_SLOTS } = require("./docs")
 const {
   NotFoundError,
   BadRequestError,
@@ -93,28 +94,28 @@ async function putBlob({ leafScopeId, docPath, key, buffer, contentType }) {
 // Get blob via walk-up
 // ---------------------------------------------------------------------------
 // Blob resolution is tied to the doc walk-up: we resolve the effective doc
-// version first (closest scope with a committed version), then look up the
-// blob on THAT specific version. A missing blob on that version returns 404.
+// version first (per-level leaf-then-shared, README §6.2), then look up the
+// blob on THAT specific version. A missing blob on that version returns null.
 // The walk-up does not continue upward for the blob.
-async function getBlob({ callerLeafId, docPath, key }) {
+async function getBlob({ operatingScopeId, personRef, docPath, key }) {
   validateKey(key)
 
   const res = await pool.query(
-    `WITH picked AS (
+    `${WALKUP_SLOTS},
+     picked AS (
        SELECT v.scope_id, v.version
-       FROM versions v
-       JOIN scope_closure c ON c.ancestor_id = v.scope_id
-       WHERE c.descendant_id = $1
-         AND v.doc_path      = $2
-         AND v.status IN ('committed', 'deleted')
-       ORDER BY c.depth ASC, v.version DESC
+       FROM slots s
+       JOIN versions v ON v.scope_id = s.scope_id
+                      AND v.doc_path = $3
+                      AND v.status IN ('committed', 'deleted')
+       ORDER BY s.depth ASC, s.slot_rank ASC, v.version DESC
        LIMIT 1
      )
      SELECT b.content_type, b.size_bytes, b.data
      FROM blobs b
      JOIN picked p ON p.scope_id = b.scope_id AND p.version = b.version
-     WHERE b.doc_path = $2 AND b.key = $3`,
-    [callerLeafId, docPath, key]
+     WHERE b.doc_path = $3 AND b.key = $4`,
+    [operatingScopeId, personRef, docPath, key]
   )
   if (res.rowCount === 0) return null
   const row = res.rows[0]

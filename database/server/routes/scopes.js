@@ -1,11 +1,19 @@
-// Scope routes.
+// Scope routes: discovery (README §9.7) + administration (README §9.8).
 //
-//   POST /database/scopes/:scopeId/children   — create sub-scope
-//   POST /database/scopes/:scopeId/members    — add member (+ leaf)
-//   GET  /database/scopes/by-path?path=X      — resolve human path → scope id
-//
-// :scopeId is the numeric scopes.id (bigint) as returned by bootstrap or
-// createScope.
+// Discovery:
+//   GET  /database/scopes/mine                     — scopes the caller is a member of
+//   GET  /database/scopes/by-path?name=school/x    — resolve a name → scopeRef
+//   GET  /database/scopes/:scopeRef                — scope metadata
+// Administration (admin-gated):
+//   POST   /database/scopes/:scopeRef/scopes                  — create a sub-scope
+//   DELETE /database/scopes/:scopeRef                         — remove this scope
+//   POST   /database/scopes/:scopeRef/members                 — add member (+ self-enroll)
+//   DELETE /database/scopes/:scopeRef/members/:personRef      — remove member
+//   POST   /database/scopes/:scopeRef/admins                  — grant admin
+//   DELETE /database/scopes/:scopeRef/admins/:personRef       — revoke admin
+//   POST   /database/scopes/:scopeRef/reviewers               — add/update reviewer
+//   DELETE /database/scopes/:scopeRef/reviewers/:personRef    — revoke reviewer
+//   PATCH  /database/scopes/:scopeRef                         — set requiredApprovalScore
 
 const { pool } = require("../persistence/pool")
 const {
@@ -13,10 +21,21 @@ const {
   resolveScopeIdByPath,
   createScope,
   isAdmin,
+  canRead,
   addMemberWithLeaf,
+  removeMember,
+  setAdmin,
+  setReviewer,
+  setRequiredApprovalScore,
+  myScopes,
   getScope,
 } = require("../persistence/scopes")
-const { ForbiddenError, BadRequestError, NotFoundError } = require("../utils/errors")
+const {
+  ForbiddenError,
+  BadRequestError,
+  NotFoundError,
+} = require("../utils/errors")
+const { parseScopeRef } = require("./helpers")
 
 const createChildBody = {
   type: "object",
@@ -28,20 +47,30 @@ const createChildBody = {
   additionalProperties: false,
 }
 
-const addMemberBody = {
+const personRefBody = {
   type: "object",
   required: ["personRef"],
+  properties: { personRef: { type: "string", minLength: 1 } },
+  additionalProperties: false,
+}
+
+const reviewerBody = {
+  type: "object",
+  required: ["personRef", "score"],
   properties: {
     personRef: { type: "string", minLength: 1 },
+    score: { type: "integer", minimum: 0, maximum: 10 },
   },
   additionalProperties: false,
 }
 
-function parseScopeId(raw) {
-  if (!/^\d+$/.test(raw)) {
-    throw new BadRequestError(`scopeId must be a numeric id, got: ${raw}`)
-  }
-  return raw // pg accepts bigint as string
+const configBody = {
+  type: "object",
+  required: ["requiredApprovalScore"],
+  properties: {
+    requiredApprovalScore: { type: "integer", minimum: 0 },
+  },
+  additionalProperties: false,
 }
 
 async function routes(fastify) {
@@ -51,23 +80,91 @@ async function routes(fastify) {
       const scope = await getScope(client, scopeId)
       if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
       const ok = await isAdmin(client, scopeId, personRef)
-      if (!ok) {
-        throw new ForbiddenError(`caller is not admin of scope id ${scopeId}`)
-      }
+      if (!ok) throw new ForbiddenError(`caller is not admin of scope id ${scopeId}`)
       return scope
     } finally {
       client.release()
     }
   }
 
+  // ---- Discovery -----------------------------------------------------------
+
+  fastify.get(
+    "/database/scopes/mine",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const rows = await myScopes(req.personRef)
+      const client = await pool.connect()
+      try {
+        const scopes = []
+        for (const r of rows) {
+          const roles = ["member"]
+          if (r.is_admin) roles.push("admin")
+          if (r.reviewer_score !== null) roles.push("reviewer")
+          scopes.push({
+            scopeRef: String(r.scope_id),
+            name: await pathOfScope(client, r.scope_id),
+            requiredApprovalScore: r.required_approval_score,
+            roles,
+          })
+        }
+        return { scopes }
+      } finally {
+        client.release()
+      }
+    }
+  )
+
+  fastify.get(
+    "/database/scopes/by-path",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const name = (req.query && (req.query.name || req.query.path)) || null
+      if (!name || typeof name !== "string") {
+        throw new BadRequestError("query parameter `name` required")
+      }
+      const client = await pool.connect()
+      let id
+      try {
+        id = await resolveScopeIdByPath(client, name)
+      } finally {
+        client.release()
+      }
+      if (id === null) throw new NotFoundError(`no scope at path ${name}`)
+      return { scopeRef: String(id), name }
+    }
+  )
+
+  fastify.get(
+    "/database/scopes/:scopeRef",
+    { preHandler: [fastify.resolvePrincipal] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      const client = await pool.connect()
+      try {
+        const scope = await getScope(client, scopeId)
+        if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+        const ok = await canRead(client, scopeId, req.personRef)
+        if (!ok) throw new ForbiddenError(`caller may not read scope id ${scopeId}`)
+        return {
+          scopeRef: String(scope.id),
+          name: await pathOfScope(client, scope.id),
+          parent: scope.parent_id === null ? null : String(scope.parent_id),
+          requiredApprovalScore: scope.required_approval_score,
+        }
+      } finally {
+        client.release()
+      }
+    }
+  )
+
+  // ---- Administration ------------------------------------------------------
+
   fastify.post(
-    "/database/scopes/:scopeId/children",
-    {
-      schema: { body: createChildBody },
-      preHandler: [fastify.requireLogin],
-    },
+    "/database/scopes/:scopeRef/scopes",
+    { schema: { body: createChildBody }, preHandler: [fastify.requireLogin] },
     async (req, reply) => {
-      const parentId = parseScopeId(req.params.scopeId)
+      const parentId = parseScopeRef(req.params.scopeRef)
       await requireAdmin(parentId, req.personRef)
 
       const { name, requiredApprovalScore = 0 } = req.body
@@ -93,6 +190,7 @@ async function routes(fastify) {
       reply.code(201)
       return {
         id: scope.id,
+        scopeRef: String(scope.id),
         name: scope.name,
         path,
         requiredApprovalScore: scope.required_approval_score,
@@ -103,34 +201,17 @@ async function routes(fastify) {
   )
 
   fastify.post(
-    "/database/scopes/:scopeId/members",
-    {
-      schema: { body: addMemberBody },
-      preHandler: [fastify.requireLogin],
-    },
+    "/database/scopes/:scopeRef/members",
+    { schema: { body: personRefBody }, preHandler: [fastify.requireLogin] },
     async (req, reply) => {
-      const scopeId = parseScopeId(req.params.scopeId)
+      const scopeId = parseScopeRef(req.params.scopeRef)
       const { personRef } = req.body
 
-      // Two allowed cases:
-      //   1. Admin of the target scope adds anyone (normal path).
-      //   2. Anyone adds themselves — self-enrollment. This lets services
-      //      like brains lazily create per-user leafs without granting
-      //      brains admin rights on every users-bucket scope.
+      // Admin adds anyone; anyone may self-enroll (personRef == caller). The
+      // latter lets services lazily create per-user leaves without granting
+      // them admin on every bucket scope.
       if (personRef !== req.personRef) {
-        const client = await pool.connect()
-        try {
-          const scope = await getScope(client, scopeId)
-          if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
-          const ok = await isAdmin(client, scopeId, req.personRef)
-          if (!ok) {
-            throw new ForbiddenError(
-              `caller is not admin of scope id ${scopeId} — self-enrollment only allows personRef == caller`
-            )
-          }
-        } finally {
-          client.release()
-        }
+        await requireAdmin(scopeId, req.personRef)
       }
 
       const result = await addMemberWithLeaf({
@@ -139,32 +220,73 @@ async function routes(fastify) {
         createdBy: req.personRef,
       })
       reply.code(201)
-      return { scopeId: result.scopeId, leafId: result.leafId }
+      return { scopeRef: String(result.scopeId), leafId: String(result.leafId) }
     }
   )
 
-  // Look up a scope id from a human path like "electra/apps/brains".
-  // Used by other services (brains, shapes, ...) so they can resolve the
-  // canonical scope ids declared in init.json on their first boot.
-  fastify.get(
-    "/database/scopes/by-path",
+  fastify.delete(
+    "/database/scopes/:scopeRef/members/:personRef",
     { preHandler: [fastify.requireLogin] },
     async (req) => {
-      const p = req.query && req.query.path
-      if (!p || typeof p !== "string") {
-        throw new BadRequestError("query parameter `path` required")
-      }
-      const client = await pool.connect()
-      let id
-      try {
-        id = await resolveScopeIdByPath(client, p)
-      } finally {
-        client.release()
-      }
-      if (id === null) {
-        throw new NotFoundError(`no scope at path ${p}`)
-      }
-      return { id, path: p }
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await removeMember({ scopeId, personRef: req.params.personRef })
+      return { removed: true }
+    }
+  )
+
+  fastify.post(
+    "/database/scopes/:scopeRef/admins",
+    { schema: { body: personRefBody }, preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await setAdmin({ scopeId, personRef: req.body.personRef, isAdmin: true })
+      return { granted: true }
+    }
+  )
+
+  fastify.delete(
+    "/database/scopes/:scopeRef/admins/:personRef",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await setAdmin({ scopeId, personRef: req.params.personRef, isAdmin: false })
+      return { revoked: true }
+    }
+  )
+
+  fastify.post(
+    "/database/scopes/:scopeRef/reviewers",
+    { schema: { body: reviewerBody }, preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await setReviewer({ scopeId, personRef: req.body.personRef, score: req.body.score })
+      return { reviewer: true, score: req.body.score }
+    }
+  )
+
+  fastify.delete(
+    "/database/scopes/:scopeRef/reviewers/:personRef",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await setReviewer({ scopeId, personRef: req.params.personRef, score: null })
+      return { revoked: true }
+    }
+  )
+
+  fastify.patch(
+    "/database/scopes/:scopeRef",
+    { schema: { body: configBody }, preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      await setRequiredApprovalScore({ scopeId, score: req.body.requiredApprovalScore })
+      return { requiredApprovalScore: req.body.requiredApprovalScore }
     }
   )
 }

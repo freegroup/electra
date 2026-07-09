@@ -24,6 +24,13 @@ class ForbiddenError extends DomainError {
   }
 }
 
+class UnauthorizedError extends DomainError {
+  constructor(message, details) {
+    super("unauthorized", message, details)
+    this.status = 401
+  }
+}
+
 class BadRequestError extends DomainError {
   constructor(message, details) {
     super("bad_request", message, details)
@@ -56,6 +63,7 @@ module.exports = {
   DomainError,
   NotFoundError,
   ForbiddenError,
+  UnauthorizedError,
   BadRequestError,
   ConflictError,
   OutdatedError,

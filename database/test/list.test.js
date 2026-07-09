@@ -1,68 +1,34 @@
+// Effective listing — README §6.3.
+//
+// list() returns the caller's effective view for one operating scope: each
+// path once, at its nearest visible version, with its origin scope. Tombstones
+// hide a path; a leaf override replaces the inherited entry.
+
 const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
-  setupTestSchema, newTestSchema, dropSchema, asPerson, asRootAdmin,
+  setupTestSchema, newTestSchema, dropSchema,
+  asPerson, get, writeDoc, createScope, addMember, seedSharedDoc, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("list")
 
-let ctx
-let brainsId, klasseId
+let ctx, brainsId, klasseId
 
-async function post(url, headers, payload) {
-  return ctx.fastify.inject({ method: "POST", url, headers, payload })
+function list(scopeRef, prefix) {
+  const url = `/database/scopes/${scopeRef}/docs` + (prefix ? `?prefix=${encodeURIComponent(prefix)}` : "")
+  return get(ctx, url, asPerson("anna"))
 }
-async function put(url, headers, payload) {
-  return ctx.fastify.inject({ method: "PUT", url, headers, payload })
-}
-async function get(url, headers) {
-  return ctx.fastify.inject({ method: "GET", url, headers })
-}
-
-async function scopeIdByPath(pathString) {
-  const parts = pathString.split("/").filter(Boolean)
-  let parentId = null
-  for (const p of parts) {
-    const res = parentId === null
-      ? await ctx.pool.query(
-          `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id IS NULL AND name = $1`, [p])
-      : await ctx.pool.query(
-          `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = $2`,
-          [parentId, p])
-    if (res.rowCount === 0) return null
-    parentId = res.rows[0].id
-  }
-  return parentId
-}
+const byPath = (docs) => Object.fromEntries(docs.map((d) => [d.path, d]))
 
 before(async () => {
   ctx = await newTestSchema()
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  klasseId = await createScope(ctx, brainsId, "klasse8a")
+  await addMember(ctx, klasseId, "anna")
 
-  brainsId = await scopeIdByPath("electra/apps/brains")
-
-  const c = await post(
-    `/database/scopes/${brainsId}/children`,
-    asRootAdmin(),
-    { name: "klasse8a", requiredApprovalScore: 0 }
-  )
-  klasseId = c.json().id
-
-  await post(`/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "anna" })
-
-  // Seed at apps/brains: two docs.
-  await ctx.pool.query(
-    `INSERT INTO "${ctx.schema}".versions
-       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
-     VALUES ($1, 'math/quadratic.json', 1, 'committed', false, '{"src":"brains"}', '{}', 'admin'),
-            ($1, 'bio/photosynthesis.json', 1, 'committed', false, '{"src":"brains"}', '{}', 'admin')`,
-    [brainsId]
-  )
-  // At klasse8a: quadratic overrides.
-  await ctx.pool.query(
-    `INSERT INTO "${ctx.schema}".versions
-       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
-     VALUES ($1, 'math/quadratic.json', 1, 'committed', false, '{"src":"klasse"}', '{}', 'admin')`,
-    [klasseId]
-  )
+  await seedSharedDoc(ctx, brainsId, "math/quadratic.json", { level: "brains" })
+  await seedSharedDoc(ctx, brainsId, "bio/photosynthesis.json", { level: "brains" })
+  await seedSharedDoc(ctx, klasseId, "math/quadratic.json", { level: "klasse" })
 })
 
 after(async () => {
@@ -70,37 +36,26 @@ after(async () => {
   await dropSchema(ctx.pool, ctx.schema)
 })
 
-test("list returns effective view with closest-wins dedup", async () => {
-  const res = await get(`/database/scopes/${klasseId}/docs`, asPerson("anna"))
+test("effective view dedups to the nearest version per path", async () => {
+  const res = await list(klasseId)
   assert.equal(res.statusCode, 200)
-  const docs = res.json().docs
-  assert.equal(docs.length, 2)
-
-  const byPath = new Map(docs.map((d) => [d.path, d]))
-  assert.equal(byPath.get("math/quadratic.json").data.src, "klasse")
-  assert.equal(byPath.get("math/quadratic.json").scope, "electra/apps/brains/klasse8a")
-  assert.equal(byPath.get("bio/photosynthesis.json").data.src, "brains")
-  assert.equal(byPath.get("bio/photosynthesis.json").scope, "electra/apps/brains")
+  const docs = byPath(res.json().docs)
+  assert.equal(Object.keys(docs).length, 2)
+  assert.equal(docs["math/quadratic.json"].scope, "electra/apps/brains/klasse8a") // nearest
+  assert.equal(docs["bio/photosynthesis.json"].scope, "electra/apps/brains")      // inherited
 })
 
-test("list with prefix filters", async () => {
-  const res = await get(`/database/scopes/${klasseId}/docs?prefix=math/`, asPerson("anna"))
-  assert.equal(res.statusCode, 200)
+test("prefix filters the view", async () => {
+  const res = await list(klasseId, "math/")
   const docs = res.json().docs
   assert.equal(docs.length, 1)
   assert.equal(docs[0].path, "math/quadratic.json")
 })
 
-test("list applies caller's own leaf overrides", async () => {
-  await put(
-    `/database/scopes/${klasseId}/docs/math/quadratic.json`,
-    asPerson("anna"),
-    { data: { src: "anna" } }
-  )
-
-  const res = await get(`/database/scopes/${klasseId}/docs`, asPerson("anna"))
-  const docs = res.json().docs
-  const q = docs.find((d) => d.path === "math/quadratic.json")
-  assert.equal(q.data.src, "anna")
-  assert.equal(q.scope, "electra/apps/brains/klasse8a/anna")
+test("a caller's own leaf override replaces the inherited entry", async () => {
+  await writeDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"), { data: { level: "anna" } })
+  const res = await list(klasseId)
+  const docs = byPath(res.json().docs)
+  assert.equal(docs["math/quadratic.json"].scope, "electra/apps/brains/klasse8a/anna")
+  assert.equal(docs["math/quadratic.json"].data.level, "anna")
 })

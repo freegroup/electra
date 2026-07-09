@@ -2,63 +2,89 @@
 
 A generic persistence layer for JSON documents with hierarchical permissions and a review-based promotion workflow — conceptually a "hierarchical git for JSON".
 
-This document describes the **functional model only**. No technology, framework, or library decisions — just behavior, permissions, and data flow.
+This document describes the **functional model only**: behavior, permissions, and data flow. No technology, framework, or library decisions.
 
 ---
 
 ## 1. Core Idea
 
-To the caller, the DB behaves like a flat filesystem of JSON documents — but visibility and ownership are **hierarchical**.
+To the caller, the store behaves like a flat filesystem of JSON documents — but visibility and ownership are **hierarchical**.
 
-A document provided by a higher level is automatically visible to everyone underneath. Any caller may locally override any inherited document without touching the higher version. They can then hand up their local version (**promote**) — reviewers on the next level examine it, and if accepted it becomes the new standard version for all members of that level.
+- A document provided at a higher level is automatically visible to everyone below it.
+- Any member may **locally override** an inherited document. The override is private and immediate — it changes only what that one person sees. Nobody else is affected.
+- A member may **promote** their local version upward. Reviewers on the target level examine it, and once accepted it becomes the new shared version for everyone on that level.
 
-## 2. Two Concepts: Scope and Path
+Writing is always allowed and never reviewed. What is governed by review is *promotion* — making your version the shared truth for a group.
 
-The DB strictly separates two orthogonal dimensions:
+## 2. Scope and Path
+
+The store separates two orthogonal dimensions:
 
 | Dimension | Meaning | Example |
 |-----------|---------|---------|
-| **Scope** | *Who* may see a document / owns it. Position in the permission tree. | `school/class-8a` |
-| **Path** | *Where* a document lives in the name space. Pure organizational tool. | `math/quadratic.json` |
+| **Scope** | *Who* may see and own a document. A node in the permission tree. | `school/class-8a` |
+| **Path**  | *Where* a document sits in the name space. Pure organization, no permission. | `math/quadratic.json` |
 
-A document is uniquely identified by the pair **(Scope, Path)**. Paths carry **no** permission information — all access decisions run through the scope.
+A document is identified by the pair **(Scope, Path)**. All access decisions run through the scope; the path never grants or restricts anything.
 
-**No folders.** Path is a plain string; `/` inside it is a naming convention with no semantic meaning to the DB. Just like git: a "folder" exists exactly as long as there is at least one document whose path starts with it. There is no operation to create an empty folder, and there is no folder to delete once the last document under a prefix is gone. Listing by path-prefix (`list("math/")`) is how the UI reconstructs a folder-like view.
+Scope and path look alike (both are `/`-separated strings) but are unrelated: the scope is chosen from the permission tree, the path is a free label. A UI should present them very differently — the scope as "which group", the path as "which file" — so users never confuse the two.
 
-## 3. Scopes
+**No folders.** A path is a plain string; the `/` inside it is only a naming convention. Like git, a "folder" exists exactly as long as some document's path starts with it. There is no way to create an empty folder and nothing to delete once the last document under a prefix is gone. Listing by path prefix (`list("math/")`) is how a UI reconstructs a folder view.
 
-### 3.1 Hierarchy
+## 3. Scopes and Membership
 
-Scopes form a tree. Every scope has exactly one parent (except the root); a scope can have any number of children.
+### 3.1 The Scope Tree
+
+Scopes form a tree. Every scope has exactly one parent (except the root) and any number of children. A class, a workgroup, a whole school, a personal area — all are just scopes; the store gives none of them special treatment.
 
 ```
-acme                         school
-acme/engineering             school/class-8a
-acme/engineering/frontend    school/robotics-ag
+electra                      school
+electra/users/anna           school/class-8a
+electra/apps/brains          school/class-8a/robotics-ag
 ```
 
-### 3.2 Personal Leaf Scopes
+### 3.2 Membership
 
-Every person who is a member of a scope implicitly owns a **personal leaf** directly beneath it — private storage for their local overrides.
+A person has an **explicit membership** at a scope when they belong to it directly. This is stored as one row on their **personal leaf** under that scope (see 3.3). A person may be an explicit member of several scopes, including scopes in different branches.
 
-The leaf is an implementation detail. It is **never explicitly passed** by the caller — the DB resolves it from the authenticated user context. If Anna is a member of `school/class-8a`, her leaf `school/class-8a/anna` exists implicitly. When Anna writes into `school/class-8a`, the change lands internally in her leaf. From the API's point of view she operates in `school/class-8a`.
+Membership grants two different things:
 
-### 3.3 Multi-Membership and Explicit Context
+- **Read is transitive upward.** A member of a scope can read that scope and every ancestor up to the root. If Anna is a member of `school/class-8a`, she automatically reads `school` and the root too.
+- **Write requires explicit membership.** A person can write (override, create, promote from) only at scopes where they are an explicit member. Transitive read access to an ancestor does **not** allow writing there.
 
-A person may be a member of any number of scopes, including different branches of the tree. Because two branches may hold different views of the same path, **every API call must name its scope explicitly**. There is no implicit "current scope".
+Consequences:
 
-### 3.4 Canonical Bootstrap Structure
+- **Foreign leaves are invisible.** Anna sees her own overrides, never another member's. Bob's leaf under the same class grants Anna nothing and is not visible to her.
+- **Sibling and unrelated branches are inaccessible.** Membership in `class-8a` says nothing about `class-9b` or `apps/shapes`.
+- **A student cannot write at the school level.** A student who is only a member of their class reads school-wide documents but cannot store anything at the school scope. Any edit they make lands in their class leaf, and reaches the school only by being promoted up through the class — which the class's reviewers decide. This is the natural chain, not extra bureaucracy.
 
-The DB is self-provisioning on **first boot**. When the database has no root scope yet, the boot sequence reads `database/init.json` and creates every scope declared in the tree. On any later boot the module is a no-op — runtime state is not modified.
+### 3.3 Personal Leaves
 
-`init.json` uses a compact tree shape: **the property name is the scope name**, and reserved keys carry scope metadata. Two reserved keys are recognized:
+Each explicit membership comes with a **personal leaf** — a private area directly under that scope (`school/class-8a/anna`) that holds the member's local overrides for that scope.
 
-- `admins` — list of email addresses. Each is hashed (`SHA-256(email)`) and inserted as admin + top reviewer (score 10) of that scope. The root **must** declare at least one admin, or the server fails to start on first boot.
+The leaf is an internal detail. The caller never names it: the store derives it from the authenticated user. From the API's point of view, Anna operates *in* `school/class-8a`, and her overrides quietly land in her leaf beneath it. A leaf materializes on first write and disappears again when it becomes empty.
+
+### 3.4 Operating Scope
+
+Because a person may be a member of several scopes, and different branches may hold different versions of the same path, **every call names its scope explicitly.** There is no implicit "current scope". This chosen scope is the **operating scope** of the call.
+
+Where it comes from depends on the operation:
+
+- **Editing an existing document** — the operating scope is *not* chosen when saving. It is fixed by the context in which the document was opened. Open `math/x.json` while operating in `class-8a`, and the edit lands in your `class-8a` leaf; open the same path while operating in `school`, and it lands in your `school` leaf. Saving is never a scope decision — you save back to where you opened.
+- **Creating a new document** — the operating scope *is* a deliberate choice: "which group is this for?" You pick it from the scopes you are an explicit member of. `myScopes()` returns exactly that list, so a UI can offer it at creation time.
+
+Moving a document to a *different* group is never a side effect of saving. It is an explicit action — **promote** (upward) or **distribute** (sideways), described in section 6.
+
+### 3.5 Bootstrap
+
+The store is self-provisioning on **first boot** only. When there is no root scope yet, it reads `database/init.json` and creates the whole declared tree. On every later boot it does nothing — runtime state is never touched, and editing `init.json` afterward has no effect.
+
+`init.json` uses a compact shape: **the property name is the scope name**, and two reserved keys carry metadata:
+
+- `admins` — email addresses. Each is hashed and inserted as admin and top reviewer (score 10) of that scope. The root **must** declare at least one admin, or the server refuses to start on first boot.
 - `requiredApprovalScore` — optional, default `0`.
 
-Every other property under a scope is another scope with the same shape recursively.
-
-Example (matches the default):
+Every other property is a child scope with the same shape.
 
 ```json
 {
@@ -74,325 +100,260 @@ Example (matches the default):
 }
 ```
 
-Meaning:
+- **`electra`** — the root scope; the listed email is the initial root admin.
+- **`electra/users`** — one child scope per person, for material that belongs to the individual regardless of any class or app.
+- **`electra/apps/<app>`** — domain content. Sub-scopes below (e.g. `apps/brains/class-8a`) are created later through the API as groups are onboarded. Where no sub-scope exists, access is structurally impossible.
 
-- **`electra`** is the root scope; the listed email becomes the initial root admin.
-- **`electra/users`** holds one child scope per human user. A user's own material (drafts, private projects, personal notes) lives inside their own scope, independent of any app/class context.
-- **`electra/apps/<app>`** holds domain-specific content. Sub-scopes below (e.g. `apps/brains/klasse8a`) are created by admins later via the API as classes and workgroups are onboarded. If an app is not intended for a group, simply no sub-scope is created there — access is structurally denied.
+### 3.6 Anonymous Readers and the Public Root
 
-After the first boot, all changes go through the runtime API. Editing `init.json` later has no effect on an already-bootstrapped DB.
+Callers may or may not be logged in, so the store defines one built-in principal:
+
+- **Anonymous** — a caller without a login. It reads only, owns no leaf, and can never write. Because writing requires explicit membership and anonymous has none, "no write access" is structural, not a special rule.
+
+**The root scope is world-readable.** Its shared documents are visible to everyone — logged-in members already read the root transitively, and anonymous callers get exactly the same read and nothing more. Every other scope stays private to its members. Anonymous can therefore operate only at the root and only for reads; its walk-up is trivial (no leaf, just the root's shared version).
+
+**"Making something public" means promoting it to the root.** Writing at the root requires root membership, so ordinary users cannot drop content there directly — their document travels the normal promote chain upward, reviewed at each level, until it reaches the root. The public zone is gated by review, not open posting.
+
+This is distinct from **publish** (6.13): the public root is a browsable shared zone for anyone; publish exposes one specific version of *any* scope under a stable link. Both serve anonymous readers, by different means.
 
 ## 4. Roles
 
-Each scope carries two **orthogonal** roles:
+Beyond membership, a scope carries two **orthogonal** roles. Unlike membership, roles do **not** inherit in any direction — a role row applies strictly to the one scope it sits on.
 
-- **Admin** — structural manager. Creates/removes sub-scopes, manages memberships, appoints reviewers and their scores, configures `required_approval_score`, appoints admins in sub-scopes. Has **no** content rights unless also registered as reviewer.
-- **Reviewer** — content examiner. Sees open promotions, casts `approve`/`reject`, carries a numeric score (§5). Has **no** admin rights.
+- **Admin** — structural manager. Creates and removes sub-scopes, manages memberships, appoints reviewers and their scores, sets the required approval score, and appoints admins in sub-scopes. An admin has **no** content rights unless also a reviewer.
+- **Reviewer** — content examiner. Sees open promotions, casts approve/reject, and carries a numeric score. A reviewer has **no** admin rights.
 
-Both roles may overlap in the same person but are conceptually strict separate. Both are **strict per scope** — an admin/reviewer row on a descendant scope does **not** grant admin/reviewer rights on the ancestor.
+The same person may hold both roles, but they remain conceptually separate. An admin or reviewer of a sub-scope does not gain that role on the parent, and vice versa.
 
-**Admin appointment:** the admin of a scope may promote members of its sub-scopes to be admins **of those sub-scopes**. No self-appointment across scopes.
-
-### 4.1 Membership is transitive upward
-
-Membership works differently from the two roles above: **it is transitive through the scope tree.**
-
-Precisely: a person is a member of scope `S` if they own an explicit membership row on `S` itself or on **any of their own descendant scopes**. In practice the DB stores exactly one row per person — on their personal leaf `S/<personRef>` deep in the tree — and derives ancestor membership via `scope_closure`.
-
-Consequences:
-
-- **Walk-up reads and writes come for free at any ancestor.** If Anna has a leaf under `apps/brains/klasse8a`, she is automatically a member of `apps/brains`, `apps`, and the root — she can read those scopes and write into her leaf's ancestor chain.
-- **Foreign leafs remain invisible.** Anna's membership only counts *her* descendants. Bob's leaf under the same class is not part of Anna's tree, so it grants her nothing and she cannot see it.
-- **Sibling and unrelated branches are inaccessible.** A leaf under `klasse8a` does not confer membership in `klasse9b` or `apps/shapes` — those are not ancestors.
-
-The two role concepts (admin, reviewer) do **not** inherit this way. Explicit role rows on a scope stay strictly on that scope.
+An admin may appoint members of a sub-scope as admins **of that sub-scope**. There is no self-appointment across scopes.
 
 ## 5. Score-Based Quorum
 
-Each scope defines a **`required_approval_score`** — the minimum sum of reviewer scores a promotion into this scope must gather to be accepted. Each reviewer has an individual **score** (typically 0–10) expressing the weight of their vote.
-
-Example:
+Each scope defines a **required approval score** — the minimum sum of reviewer scores a promotion into that scope must gather to be accepted. Each reviewer carries an individual **score** (typically 0–10) expressing the weight of their vote.
 
 ```
 Scope: school/class-8a
-  required_approval_score: 5
+  requiredApprovalScore: 5
   reviewers:
-    - teacher_meier    score: 5
-    - assistant_klaus  score: 2
-    - assistant_lisa   score: 2
+    teacher_meier    score 5
+    assistant_klaus  score 2
+    assistant_lisa   score 2
 ```
 
-A promote is accepted as soon as the sum of approver scores ≥ 5. Meier alone suffices; Klaus + Lisa + one more suffices; etc.
-
-### 5.1 Edge Cases
+A promotion is accepted as soon as the approving scores sum to at least 5 — Meier alone suffices, or Klaus + Lisa + one more, and so on.
 
 | Configuration | Behavior |
 |---------------|----------|
-| `required_approval_score = 0` | Auto-approve. Promotions accepted without review. |
-| `required_approval_score > 0`, no reviewer with `score > 0` | Structurally unreachable. Configuration error — the DB should warn. |
-| Reviewer with `score = 0` | May vote; their approve counts 0 but appears in the audit list. Their `reject` still applies (§6.6). Useful for "observers". |
+| `requiredApprovalScore = 0` | Auto-approve. Promotions are accepted without review. |
+| `requiredApprovalScore > 0`, but no reviewer has `score > 0` | Unreachable — a configuration error the store should warn about. |
+| Reviewer with `score = 0` | May vote; an approve counts 0 but is logged, a reject still ends the request. Useful for observers. |
 
-### 5.2 Score Snapshot
-
-The reviewer's score **at the moment they cast their vote** is persisted and counted. Later score changes made by an admin have **no** effect on votes already cast.
+**Score snapshot.** The reviewer's score *at the moment they vote* is recorded and counted. Later changes to that reviewer's score do not affect votes already cast.
 
 ## 6. Document Lifecycle
 
-### 6.1 Document Structure
+### 6.1 Document Shape
 
-A document as **written by the caller** carries two freely usable blocks:
+A document **written by the caller** carries two free-form blocks, both opaque to the store:
 
 ```json
 {
-  "meta": { /* free — tags, owner, schema version, ... */ },
-  "data": { /* the actual payload */ }
+  "meta": { "tags": [], "schemaVersion": 1 },
+  "data": { }
 }
 ```
 
-Both blocks are opaque to the DB. `meta` is a conventional separation so queries and filters can target it without touching payload content.
+`meta` is a conventional place for filterable attributes; `data` is the payload. The store stores both verbatim and never modifies them.
 
-A document as **returned by a read** additionally carries DB-managed fields describing where and when this version came from:
+A document **returned by a read** adds store-managed, read-only fields:
 
 ```json
 {
-  "meta":    { ... },
-  "data":    { ... },
-  "scope":   "school/class-8a",        // origin scope (§6.2)
-  "path":    "math/quadratic.json",    // path within the scope
-  "version": 42,                       // version ID within (scope, path) (§6.11)
-  "status":  "committed",              // committed | deleted (never pending on a read)
-  "author":  "<person-ref>",           // who created this version
+  "meta":      { },
+  "data":      { },
+  "scope":     "school/class-8a",     // origin scope: where this version was found
+  "path":      "math/quadratic.json",
+  "version":   42,                    // version id within (scope, path)
+  "status":    "committed",           // committed | deleted
+  "author":    "<person-ref>",
   "createdAt": "2026-06-15T09:12:44Z"
 }
 ```
 
-DB-managed fields are **read-only**. Writes ignore them if supplied. The caller's `meta`/`data` are stored verbatim; the DB never modifies them.
+Writes ignore these fields if supplied. The origin `scope` in particular lets a caller tell "my own local version" apart from "inherited from a higher level".
 
-### 6.2 Lookup (Read)
+### 6.2 Reading (Walk-Up)
 
-When a caller in scope `S` requests path `P`, the DB performs a **walk-up**:
+A read starts at the operating scope and walks up to the root. **At every level it checks the caller's own leaf first, then the shared version at that level**, and returns the first hit:
 
-1. Check `(S/leaf_of_caller, P)` → return if found.
-2. Otherwise: `(S, P)` → return if found.
-3. Otherwise: parent scope → return if found.
-4. Repeat up to the root. If nothing is found: `not found`.
+```
+for each level L from the operating scope up to the root:
+    if (L/<caller>, path) exists   → return it      # my override at this level
+    if (L, path) exists            → return it      # the shared version here
+→ not found
+```
 
-A successful read returns the full document shape defined in §6.1 — including the DB-managed fields `scope`, `path`, `version`, `status`, `author`, `createdAt`. The origin `scope` in particular lets the caller (or a UI) tell "my own local version" vs. "inherited from a higher level".
+Because the caller's leaf is consulted at *every* level — not just the one they are operating in — an override propagates downward. If Anna patches a stencil while operating in `class-8a`, that patch appears in every context of hers that passes through `class-8a` (the class itself and each workgroup beneath it), until a promoted version replaces it. Other members are unaffected: the walk-up only ever inspects the caller's own leaves, never anyone else's.
 
-A tombstone (`status = deleted`) is **not** returned as a hit — it terminates the walk-up as if the document did not exist. Tombstones are only visible via `scope.history(path)` (§9).
+A read returns the full document shape from 6.1. A tombstone (a committed delete) is **not** a hit — it ends the walk-up as if nothing existed there, shadowing any higher version.
+
+An **anonymous** caller (3.6) operates only at the root: with no leaf and no membership, its walk-up reduces to the root's own shared version.
 
 ### 6.3 Listing
 
-`scope.list(pathPrefix?)` returns the caller's **effective view**: every path they would see in this context, each annotated with its origin scope. Duplicates across levels are deduplicated — nearest visible version wins. Without an argument, the entire effective view is returned; with a path prefix, results are filtered to entries under that prefix.
+`list(pathPrefix?)` returns the caller's **effective view** for one operating scope: every path visible from there, each annotated with its origin scope, deduplicated so the nearest version wins. With a prefix, only paths under it are returned.
+
+A `list` always covers exactly **one operating scope** — one branch, walked upward. It never spans branches, and there is no "highest role" that merges everything: listing from near the root would only surface the generic shared versions and drop your class- and group-level work.
+
+To show "everything across all my groups", a UI calls `myScopes()` and issues one `list` per scope, grouping the results by scope. That aggregation lives in the application, not in a single store call.
 
 ### 6.4 Writing (Local Override)
 
-**Every caller who can see a document can write it.** Writes are never denied. `scope.put(doc)` places a new version in the caller's personal leaf; other members of `S` continue to see the higher version unchanged. Because writes are confined to the writer's own leaf, no other member is impacted — what is privileged is not the write, but the **promote** (§6.5).
+**Every member who can see a document may write it, and writes are never denied.** `put(doc)` stores a new version in the caller's leaf under the operating scope. Other members keep seeing the shared version unchanged, because the write is confined to the writer's own leaf. The privileged step is not the write but the promote.
 
-`put` takes a full doc object (as returned by `get`) with the caller's changes applied to `data`/`meta`. The DB-managed fields on the passed doc are used for **optimistic concurrency** — see §6.12. On success `put` returns the newly written doc (with the new `version`, `createdAt`, `author`).
+`put` takes a full document (as returned by a read) with changes applied to `data`/`meta`. Its store-managed fields drive optimistic concurrency (6.12). On success it returns the newly written document with its fresh `version`, `createdAt`, and `author`. Every write creates a new version — never an in-place overwrite.
 
-Creating a brand-new document (no prior version anywhere in the walk-up) is done by passing a doc without `scope`/`version` — the DB then treats it as version 1 in the caller's leaf.
+To create a brand-new document, pass a document without `scope`/`version`; the store treats it as version 1 in the caller's leaf under the operating scope.
 
-Every write creates a **new version** (§6.11) — never an in-place overwrite.
+### 6.5 Promote — Vertical Delivery
 
-### 6.5 Promotion (Request for Approval — vertical)
+`promote(doc)` offers the caller's active leaf version to the **next level up** the ancestor chain. Exactly one target, chosen by the tree. If that level's required approval score is 0, the version is accepted immediately and the promote continues upward, level by level, until it reaches a level that actually requires review.
 
-`scope.promote(doc)` offers the caller's currently active leaf version to the **next level upward** along the ancestor chain. It is the **vertical** delivery: exactly one target, chosen by the tree structure, with automatic cascade through scopes whose `required_approval_score = 0`.
+The document must be the caller's current active leaf version; older versions are historical and cannot be promoted.
 
-For the **horizontal** case ("deliver this doc to N target scopes I have chosen"), see §6.16 Distribute. Promote and Distribute are two different operations that must not be confused.
+**One open promotion per (caller, path).** Promoting again while one is still open supersedes the first: the earlier one is finalized as rejected ("superseded by a newer version from the same author") and a fresh one is created. This is how a caller amends a submission — write a new leaf version, promote again.
 
-The `doc` must be the caller's current active version in their leaf — see §6.12 for the concurrency check. Older leaf versions cannot be promoted; they are historical.
+A promote returns the resulting **pending** document. Reviewers find it through `pendingPromotions()` and act with `approve`/`reject`.
 
-**One promotion per (caller, path) at a time.** If the caller already has an open promotion for the same path, calling `promote(doc)` again supersedes it: the previous promotion is finalized as `rejected` (with a reason indicating it was superseded by a newer promotion from the same caller), and a fresh one is created from the passed doc. This is how the caller "amends" or "nachreicht": simply `put` a new leaf version and `promote` again.
+Promote is vertical and goes to a single ancestor. For sideways delivery to several groups you choose, use **distribute** (6.16) — a distinct operation.
 
-Note: this is different from §6.7 which resolves conflicts **between different callers**. Here it resolves the trivial conflict of a **single caller** re-promoting the same path.
+### 6.6 Approval
 
-If the level directly above has `required_approval_score = 0`, the version is auto-accepted there and the promote continues toward the root, level by level, as long as `required_approval_score = 0` holds. It halts on the first level that actually requires a review.
+- **Approve** — the vote is recorded with the reviewer's score snapshot. Once the approving scores reach the required approval score, the version is **committed** on that level and becomes its new shared version.
+- **Reject** — a single reject ends the request immediately and finally. The author may start a new promote at any time.
 
-`promote` returns the resulting **pending doc** (a full doc shape with `status: "pending"`). Reviewers retrieve pending docs via `scope.pendingPromotions()` and act on them with `approve(doc)` / `reject(doc, reason)` (§9).
+**Self-approval is allowed.** If the promoting caller is also a reviewer of the target scope, their vote counts like any other. If their own score alone meets the threshold, the promotion commits in one step — a head teacher with score 10 on `school` can make their own document the school standard directly. Requiring a second pair of eyes is an application-level policy, not part of this model.
 
-### 6.6 Approval Behavior
+### 6.7 Parallel Promotions
 
-- **Approve** — the vote is recorded with the reviewer's score snapshot. Once the sum reaches `required_approval_score`, the version is **committed** on that level and becomes its new active version.
-- **Reject** — a **single** `reject` ends the request immediately and finally. The original caller can start a new promote with a new version at any time.
+Several callers may hold open promotions for the same (scope, path). The moment one commits, it becomes the shared version and **all other open promotions for that (scope, path) are automatically rejected.** Their authors start again from the new version if their change still applies.
 
-### 6.7 Conflict Resolution (Parallel Promotions)
+### 6.8 After a Successful Promotion
 
-Multiple open promotions per `(Scope, Path)` from different callers may coexist. The moment one is committed:
+Once the caller's version is committed to the target scope, their now-redundant local copy is **physically deleted** from their leaf. This is transparent: the next read falls through the empty leaf to the freshly committed version above, so the caller sees the same content — now with a higher origin scope, marking it as the group's standard. A later edit simply creates a new local version again.
 
-- It becomes the new active version.
-- **All other open promotions for the same (Scope, Path)** are automatically `rejected`. The affected callers must — if their changes are still relevant — start a new promote based on the new version.
-
-### 6.8 Cleanup After Successful Promotion
-
-When the caller's local version is lifted upward, their now-identical local copy is **automatically dropped** (marked so it no longer resolves in the walk-up — see §7 on how this is realized). Transparent to the caller: they see the same document, just from a higher origin scope. Only a subsequent modification creates a new local version.
+**The author keeps full rights.** Promotion does not hand the document to the reviewer. The author is still a member and may override the committed version again at any time; the edit lands in their leaf and shadows the group version for them alone. To change it for everyone, they promote again and it is reviewed again. Nobody is locked out.
 
 ### 6.9 Delete
 
-A caller may mark any visible document as **deleted** via `scope.delete(doc)`. A delete travels the same promote path as a content update: it starts as `pending` and, when approved, transitions to the terminal status `deleted` — no flag, no distinction at the row level; the status itself carries the meaning. Concurrency rules (§6.12) apply — the passed doc must reflect the current active version.
+`delete(doc)` marks a visible document as deleted. A delete travels the same path as a content change: it starts as pending and, once approved, becomes the terminal status **deleted** — the status itself carries the meaning, with no separate flag.
 
-- **Local (unpromoted):** the document disappears from the caller's view. Others are unaffected.
-- **Committed as `deleted` on an intermediate level:** a **tombstone** on that level shadows higher versions. Every member of the level sees the document as gone. Higher levels remain untouched.
-- **Committed as `deleted` on the root:** the tombstone reaches the level where the document originally lived. Nobody could still see the old version.
+- **Local (not yet promoted)** — the document vanishes from the caller's view only.
+- **Committed as deleted on a level** — a **tombstone** on that level shadows every higher version. All members of that level see the document as gone; higher levels are untouched.
 
-#### Cascading Cleanup on Root Delete
+**Cascading cleanup at the root.** When a delete commits at the root (or at a level with no higher version left), all remaining overrides and versions of that path across every sub-scope are **physically removed**. Nothing is left to resolve. Deleted content may optionally be retained in an archive for recovery, but is never served to active views.
 
-When a delete is committed at the root of the scope tree (or at a level with no higher version anymore), **all remaining overrides and versions of this path across all sub-scopes are physically removed**. All references are gone. This is the **only** exception to the append-only history rule (§7).
+### 6.10 Revert
 
-Optionally, deleted content may be retained in an archive area for audit/recovery. It is no longer served to active views.
+`revert(doc)` **physically discards the caller's local state** for a path — purely local, no review, no tombstone, affecting only that one leaf. In a single transaction it:
 
-### 6.10 Revert (Discard Local Overrides)
+- deletes **every** version of that path in the caller's leaf — active and historical alike;
+- deletes any open promotion by the caller for that path, with its votes;
+- drops any public identifier attached to those versions, so their public URLs stop working (return `404`).
 
-`scope.revert(doc)` **physically discards the caller's local state** for the given doc's path. Purely local — no review, no propagation, no tombstone. Concurrency rules (§6.12) apply: the passed doc must reflect the current active leaf version.
-
-Effect (all in one transaction):
-
-- **Every version** of this `(leaf, path)` is physically deleted from history — active, `outdated`, and any older `committed` rows. Not just the current one.
-- Any `pending` promotion by this caller for the same path is deleted along with its votes.
-- Any `public_id` on any of these versions goes with them — public URLs previously served by these versions **stop working** (§6.13).
-- After revert, a subsequent read continues the walk-up (§6.2) and returns the inherited version again (or 404 if none).
-- Idempotent: if the caller has no local override for the path, the call is a no-op.
-
-Note: revert is the **only** append-only exception besides the cascading root-delete cleanup (§6.9). It is scoped to a single leaf and touches only that leaf's rows.
+Afterward a read falls back to the inherited version (or "not found"). Revert is idempotent: with no local override, it does nothing.
 
 ### 6.11 Versioning
 
-Every write of a `(Scope, Path)` produces a new **version**. Version IDs are **monotonically increasing integers scoped to their (Scope, Path)** — each such pair carries its own independent counter.
+Every write of a (scope, path) produces a new version. Version ids are **integers counted independently per (scope, path)**:
 
 ```
 (school,               math/quadratic.json)   →  v1, v2, v3, ...
-(school/class-8a,      math/quadratic.json)   →  v1, v2, ...       ← independent
-(school/class-8a/anna, math/quadratic.json)   →  v1, v2, ...       ← independent
+(school/class-8a,      math/quadratic.json)   →  v1, v2, ...       (independent)
+(school/class-8a/anna, math/quadratic.json)   →  v1, v2, ...       (independent)
 ```
 
-Consequences:
-
-- A promote does **not** transfer version IDs. If Anna's `v3` is committed on `class-8a`, it becomes `class-8a`'s next version (e.g. `v7`) — same content, new ID. The lineage (which leaf version was promoted) is recorded on the target version's `meta`.
-- Version IDs express local ordering, not global identity.
-- "Active version" is always **the highest committed version-ID** within a `(Scope, Path)` — a derived view, never a stored flag.
+- A promote does not carry version ids across. Anna's `v3` committed on `class-8a` becomes that scope's next id (say `v7`) — same content, new number. The lineage is recorded in the target version's `meta`.
+- The **active version** of a (scope, path) is always the one with the highest id among committed/deleted entries — a derived view, never a stored flag.
 
 ### 6.12 Optimistic Concurrency
 
-Mutating operations that take a doc (`put`, `promote`, `delete`, `revert`) use **optimistic concurrency**: the passed doc's `(scope, path, version)` must match the currently active version the operation targets.
+Mutating operations (`put`, `promote`, `delete`, `revert`) require the passed document's `(scope, path, version)` to match the version the operation targets — the caller's active leaf version. If a newer leaf version was written in the meantime (say from another tab), the call fails with `outdated` and the caller must refetch.
 
-- For `put`, `promote`, `delete`: targets the caller's active leaf version for that path. If a fresher leaf version has been written in the meantime (e.g. from another browser tab of the same user), the operation fails with an `outdated` error and the caller must refetch.
-- For `revert`: same check, unless there is no local override at all — then the call is a no-op (§6.10).
-- For a brand-new document, `put` accepts a doc without `scope`/`version` and treats it as version 1.
+Different people never conflict, because each writes only in their own leaf. Conflicts arise only within a single person across sessions — this check prevents lost updates there. A brand-new document (no `scope`/`version`) skips the check and becomes version 1.
 
-Rationale: writes across different persons never conflict (§6.4). Concurrency conflicts arise only within a single person across sessions/tabs — this check prevents lost updates in that case.
+### 6.13 Publish
 
-### 6.13 Publish (Public Identifier)
+A committed version in the caller's own leaf may be **published**: assigned a globally unique `publicId` that lets anyone with the link read that exact version, without login or membership.
 
-A `committed` version in a caller's own leaf may be **published**: assigned a globally unique **public identifier** (`publicId`, a UUID) that lets anyone with the identifier read this exact version, without login and without scope membership.
+Publishing is orthogonal to promotion — it does not move the version anywhere; it exposes it as-is under a stable, immutable reference.
 
-Publishing is orthogonal to promotion. Publishing does not move a version up the scope tree; it exposes the version as-is under a stable, immutable reference.
+- **Who** — any member who owns the version. Publishing operates on the caller's own leaf version; if the read returned an inherited version instead, the call fails with `409 not_publishable` — make a local edit first, then publish.
+- **Immutable** — a published version never changes, since every edit creates a new version. To publish a newer version, publish it separately; it gets its own `publicId`, and old and new links coexist.
+- **Unpublish** — sets a take-down marker. The `publicId` stays reserved (never reused) and public reads return `410 Gone`. Nothing is physically removed.
+- **Publish vs. revert** — unpublish is a deliberate take-down (`410 Gone`); revert physically deletes the version, so its link returns `404 Not Found`.
 
-**Who may publish.** Any caller who can see the document, i.e. every scope member. `publish(doc)` operates on the doc the walk-up returned. If that doc is not the caller's own leaf version (§6.4), the call fails with `409 not_publishable` — there is no private snapshot to expose. The caller must create a leaf version first (e.g. by making an edit, even a trivial one) and then publish. No automatic forking happens on the DB side.
-
-**Immutability.** A published version cannot change. `put` always creates a new version (§6.11), so subsequent edits by the same author leave the published version untouched at the URL. If the author wants a new version to be public too, they publish it separately — it receives its own `publicId`. Old and new URLs coexist (§6.13.2).
-
-**Unpublish (take-down).** `unpublish(doc)` sets `unpublishedAt` on the version. The `publicId` remains reserved (never reused) and public reads return `410 Gone`. Unpublish does not physically remove anything.
-
-**Revert vs. Publish.** `revert` (§6.10) physically deletes leaf versions. If any of them were published, their `publicId` goes with them and the public URL returns `404 Not Found`. This is different from `unpublish`, which returns `410 Gone`. In short: `unpublish` is a considered take-down; `revert` is a full local discard.
-
-#### 6.13.1 Read
+**Public read** (anonymous):
 
 ```
-GET /database/public/:publicId
+GET /database/public/:publicId          200 active · 410 unpublished · 404 never existed / reverted
 ```
-
-Anonymous — no `x-role`, no `x-hash` needed. Returns the full doc shape (§6.1). Responds:
-
-- `200 OK` — published, still active
-- `410 Gone` — was published, then unpublished
-- `404 Not Found` — never existed, or the underlying version was reverted
-
-#### 6.13.2 Multiple Publications on the Same Path
-
-Every publish attaches a `publicId` to a specific `(scope, path, version)`. Because versions are append-only per `(scope, path)`, an author can publish `v3`, later publish `v5` — both remain online with distinct `publicId`s. There is no "latest published" concept; each URL is stable and points to a fixed snapshot.
 
 ### 6.14 Blobs (Binary Attachments)
 
-Documents may carry binary attachments alongside their JSON payload. Blobs are stored per version, identified by an application-chosen `key`, and served through the API. The DB treats blob content as opaque.
+A document may carry binary attachments alongside its JSON. Blobs are stored per version under an application-chosen `key` and are opaque to the store. Multiple keys per version are allowed; by convention the key `preview` holds a visual preview (PNG, SVG, or PDF depending on the app).
 
-Multiple blobs per version are allowed (different `key`s). Typical convention in Electra: the key `preview` holds the visual preview (PNG for `brains` circuits, PNG/SVG for `shapes` elements, PDF for `sheets`).
-
-**Auto-copy on new version.** When a caller writes a new version via `put(doc)`, the DB automatically copies the blobs of the previous **effective** version (walk-up-resolved) into the new leaf version. Practical effect:
-
-- Anna opens `math/quadratic.json` — walk-up returns the class-level version with its `preview` blob.
-- Anna edits, `put(doc)` — a new version v1 lands in Anna's leaf. Its `preview` blob is copied from the class-level version.
-- Later, `put(doc)` again — v2 gets its blobs copied from Anna's own v1.
-
-Blobs therefore track their document without the caller having to re-upload them for every edit.
-
-**Explicit blob operations override the copy.** A caller can `PUT` a new blob on a key to replace what was auto-copied, or `DELETE` a blob to remove it from the version.
-
-**Content-type allow-list.** The service enforces a configured whitelist of accepted `Content-Type` values (default: `image/png`, `image/gif`, `image/svg+xml`, `application/pdf`). Uploads with other types return `415 Unsupported Media Type`.
-
-**Size limit.** 10 MB per upload. Exceeded uploads return `413 Payload Too Large`.
-
-**Missing blob.** A `GET` for a key that does not exist on the resolved version returns `404 Not Found`. Blobs do not walk up independently of their document — if Anna has her own version but did not carry over a blob (or explicitly deleted it), the class-level blob is not served in its place.
-
-**Revert cascades to blobs.** Since `revert` (§6.10) physically deletes the leaf's versions, all blobs on those versions go with them via `ON DELETE CASCADE`.
-
-**API:**
+- **Auto-copy on new version** — when `put` writes a new version, the blobs of the previous effective version are copied into it, so attachments follow the document without re-uploading on every edit.
+- **Explicit override** — uploading a blob on a key replaces the copied one; deleting a blob removes it from that version.
+- **No independent walk-up** — a blob is served only if it exists on the resolved version. If the caller has their own version without a given blob, the higher-level blob is *not* substituted; the request returns `404`.
+- **Limits** — a configurable content-type allow-list (default PNG, GIF, SVG, PDF; others `415`) and a 10 MB per-upload cap (`413`).
+- **Revert** removes a leaf's versions and all their blobs with them.
 
 ```
-PUT    /database/scopes/:scope/blobs/:key?path=X   — upload / replace a blob (raw body)
-GET    /database/scopes/:scope/blobs/:key?path=X   — read a blob (member only)
-DELETE /database/scopes/:scope/blobs/:key?path=X   — delete this blob on the caller's leaf
-GET    /database/public/:publicId/blobs/:key       — read a blob of a public version (anonymous)
+PUT    /database/scopes/:scope/blobs/:key?path=X    upload / replace (raw body)
+GET    /database/scopes/:scope/blobs/:key?path=X    read (member only)
+DELETE /database/scopes/:scope/blobs/:key?path=X    delete on the caller's leaf
+GET    /database/public/:publicId/blobs/:key        read a public version's blob (anonymous)
 ```
-
-Uploads use the raw request body and pass the desired `Content-Type` in the request header; the server preserves it for later reads.
 
 ### 6.15 Rename
 
-`scope.rename(doc, newPath)` moves a document from `doc.path` to `newPath` within the caller's own leaf. Not a review flow — writes and renames in one's own leaf are always immediate. Because there is no folder concept (§2), `newPath` can differ from `doc.path` in any way: a "file rename" (`old.json` → `new.json`), a "move" (`math/x.json` → `mathematik/x.json`), or both at once — all of these are the same operation. Renaming multiple documents at once ("folder rename") is intentionally not offered; if that operation is needed later, it will be designed separately.
+`rename(doc, newPath)` moves a document from its current path to `newPath` **within the caller's own leaf** — immediate, no review. With no folder concept, a "rename", a "move", or both at once are the same operation. Renaming several documents at once ("folder rename") is intentionally not offered.
 
-- All local versions of `doc.path` in the caller's leaf are renamed to `newPath`. Blobs and votes follow the version rows automatically (schema uses `ON UPDATE CASCADE`).
-- If any local version of `doc.path` is published, the `publicId` stays attached to the moved rows — public URLs remain valid; the `path` field they serve is now `newPath`.
-- Any pending promotion by the caller for `doc.path` is automatically **rejected** with reason `renamed by author`.
-- Optimistic concurrency (§6.12) applies: `doc` must match the caller's current active leaf version.
-- **Conflict:** if the caller's leaf already has any version at `newPath`, returns `409 conflict` with a `usedPaths` field listing the collision. Nothing is moved.
-- **No-op:** if `newPath == doc.path`, returns `200 { moved: 0 }`.
-- **Not found:** if the caller has no local version at `doc.path`, returns `404`.
-- Renaming onto a path that only exists on a higher scope (inherited but not in own leaf) is **allowed**. The renamed versions then shadow the inherited doc at `newPath` — a standard override.
+- All the caller's leaf versions at the old path move to the new one; blobs and votes follow automatically.
+- A published version keeps its `publicId`; the link stays valid and now serves the new path.
+- Any open promotion for the old path is automatically rejected ("renamed by author").
+- Optimistic concurrency applies.
+- **Conflict** — if the caller's leaf already holds any version at `newPath`, nothing moves and the call returns `409` with the colliding path.
+- Renaming onto a path that exists only at a higher scope is allowed: the moved versions simply shadow the inherited document there.
 
-**Name-check lookup.** UIs typically want to warn the user before submitting a rename that will conflict. `scope.hasPath(path)` (`GET /database/scopes/:scopeId/docs/exists?path=X`) returns whether a version at `path` exists in the caller's own leaf. It does not check higher scopes — the collision only exists at the leaf level.
+A `hasPath(path)` check lets a UI warn about a collision before submitting. It inspects only the caller's own leaf, since that is the only place a collision can occur.
 
-### 6.16 Distribute (Horizontal Delivery to Multiple Scopes)
+### 6.16 Distribute — Horizontal Delivery
 
-`distribute` and `promote` are **two different operations** and must not be confused:
+Distribute and promote are different operations:
 
-|            | Promote (§6.5)                               | Distribute (§6.16)                              |
-|------------|----------------------------------------------|-------------------------------------------------|
-| Direction  | vertical — one step up the ancestor chain    | horizontal — to N target scopes chosen by author |
-| Purpose    | "my change should become the new truth"      | "I make this available to these audiences"      |
-| Targets    | exactly one (the next reviewing ancestor)    | many, freely picked from scopes I am member of  |
-| Auto-cascade for `required_approval_score = 0` | yes                            | no — each target is evaluated independently     |
+|            | Promote                                   | Distribute                                        |
+|------------|-------------------------------------------|---------------------------------------------------|
+| Direction  | vertical — one step up the ancestor chain | horizontal — to N scopes the author chooses       |
+| Purpose    | "my change should become the truth here"  | "make this available to these audiences"          |
+| Targets    | exactly one (the next reviewing ancestor) | many, freely picked from scopes I am a member of  |
+| Auto-cascade at score 0 | yes                          | no — each target is evaluated on its own          |
 
-`scope.distribute(doc, targetScopeIds)` takes a doc from the caller's own leaf and creates one delivery per target scope. Each delivery is decided by that target's own rules and reviewers, independently.
+`distribute(doc, targetScopeIds)` takes one of the caller's own versions and creates one delivery per target scope, each decided by that scope's own rules:
 
-**Who may distribute.** Every member of a target scope may distribute into it. No admin privilege required — but membership is checked per target.
+- **No version there yet** → created as **committed** directly.
+- **A version exists and the caller authored the active one** → created as **committed** (updating one's own work).
+- **A version exists authored by someone else** → created as **pending** for that scope's reviewers.
 
-**Path stays identical.** The `doc_path` is not changed by distribute. If Meier's source is `arbeitsblatt-1.pdf`, all recipient copies also live at `arbeitsblatt-1.pdf` in their respective target scopes. Renaming per target must be done separately after the fact.
+This is the same mechanism that lets a teacher hand a worksheet back and forth between workgroups they belong to: distributing into a group they are a member of, decided by that group's rules each time.
 
-**Per-target decision rules.** For each target scope the DB inspects its current state:
-
-- **No active version at that path** → new entry is created as `committed` (direct commit).
-- **Active version exists AND caller is the author of that active version** → new entry is created as `committed` (updating one's own work).
-- **Active version exists AND caller is NOT the author** → new entry is created as `pending`. The target scope's reviewers decide via the standard approval flow (§6.6).
-
-**Author.** The distributor is recorded as `author` on every created entry — even on entries that overwrite someone else's version after review. The previous author is preserved in the older `outdated` version.
-
-**Idempotency.** The DB does **not** compare content. A repeated distribute with the same content produces new versions each time. History always reflects the fact that a distribute happened at that moment.
-
-**Delete.** There is no batch-delete counterpart. If Meier wants to remove a distributed document from three scopes, he issues three independent `delete` operations, each subject to the target scope's normal delete flow (§6.9).
-
-**Blobs.** Blobs of the source version are auto-copied into every created entry, exactly as in §6.14.
-
-**Response shape.** Distribute returns one entry per target:
+- **Who** — any member of a target scope; membership is checked per target, no admin needed.
+- **Path is unchanged** — every copy keeps the source path; rename per target afterward if needed.
+- **Author** — the distributor is recorded as author on each created entry; the previous author survives in the older version.
+- **No content comparison** — repeating a distribute always creates new versions; history reflects that a distribute happened.
+- **Blobs** are auto-copied into every created entry.
+- **No batch delete** — to remove a distributed document from several scopes, issue an independent delete in each.
 
 ```json
 {
@@ -404,159 +365,217 @@ Uploads use the raw request body and pass the desired `Content-Type` in the requ
 }
 ```
 
-**Publish vs. Distribute.** Publish (§6.13) is one version reachable via one URL for anyone. Distribute is N copies in N scopes, each with its own life cycle (independent history, independent reviews, independent public IDs if any are later attached).
+Publish exposes *one* version at *one* URL for anyone; distribute creates *N* copies in *N* scopes, each with its own independent life cycle.
 
 ## 7. Version History
 
-Per `(Scope, Path)` the DB holds a strictly **append-only** history. Four status values are persisted:
+Per (scope, path) the store keeps a strictly **append-only** history with four statuses:
 
 | Status | Meaning |
 |--------|---------|
-| `pending` | Waiting for reviewer approvals. May exist multiple times in parallel. A pending entry may be either a content update or a delete request — the payload distinguishes them. |
-| `rejected` | Terminal. Reached via reviewer `reject` or by the conflict rule (§6.7). Never becomes active. |
-| `committed` | Accepted content version. If the highest committed/deleted version-ID for the `(Scope, Path)`, it is the active version; otherwise historical. |
-| `deleted` | Accepted delete. Behaves as a **tombstone**: for lookups, treated as "not present" on this level, shadowing higher levels (§6.9). Just like `committed`, the entry with the highest version-ID wins over older `committed` entries. |
+| `pending`   | Awaiting reviewer approvals; several may coexist. May be a content change or a delete request — the payload distinguishes them. |
+| `rejected`  | Terminal. Reached by a reject or by the parallel-promotion rule. Never becomes active. |
+| `committed` | Accepted content. The highest committed/deleted id is the active version; older ones are historical. |
+| `deleted`   | Accepted delete. Acts as a tombstone: treated as "not present", shadowing higher levels. Highest id wins, exactly like committed. |
 
-Derived (not stored):
+Each version also records its author, creation time, and — for every terminal state — the reviewer votes with their score snapshots (score-0 votes appear for audit even though they count nothing).
 
-- **active version** = the entry with the highest version-ID among `committed` **and** `deleted` for a `(Scope, Path)`. If it is `deleted`, the document is a tombstone on this level; otherwise its `data`/`meta` are what the walk-up returns.
-- **outdated** = any `committed` or `deleted` entry that is not the current active one.
+The history never rewrites a version's content, author, or identity. Only status transitions, publish/unpublish markers, and rename (which updates the path) change an existing row. **Three operations physically remove rows**, and only these:
 
-Every version additionally carries: author, creation time, and — for `pending`/`committed`/`deleted`/`rejected` — the list of reviewer votes with score snapshots. Reviewers who voted with `score = 0` appear in the list for audit purposes even though their vote contributed nothing.
-
-The history is **strictly append-only for its content and identity fields**. State transitions (`pending → committed`, `pending → deleted`, `pending → rejected`) update the row's status; publish attaches `publicId`/`published_at`; unpublish sets `unpublished_at`; rename updates `doc_path` (with `ON UPDATE CASCADE` to blobs and votes). No prior version's `data`, `meta`, or `author` is ever changed.
-
-Two operations physically remove history rows:
-
-- **Cascading cleanup on root delete** (§6.9) — sweeps overrides in sub-scopes.
-- **Revert** (§6.10) — the caller drops every one of their own leaf rows for a doc-path.
+- **Promotion cleanup** — drops a caller's leaf rows for a path once it is committed above.
+- **Cascading cleanup at the root** — sweeps all sub-scope overrides when a delete commits at the top.
+- **Revert** — drops all of a caller's own leaf rows for a path.
 
 ## 8. Rights Overview
 
 | Action | Who is allowed |
 |--------|----------------|
-| Read a document (walk-up) | Every member of the scope (§4.1 — membership is transitive) |
-| Locally override / delete a document | Every member — write is never denied, effect confined to caller's leaf |
-| Revert own local override | Every member (own leaf only) |
-| Rename own local doc | Every member (own leaf only) |
-| Start a promote | Every member whose local version is to be promoted |
-| Distribute to a target scope | Member of the target scope (§6.16 — no admin needed, review may apply) |
-| Publish / unpublish own leaf version | Every member for their own committed leaf versions |
-| Approve / reject a promote or distribute-pending | Reviewers of the target level (strictly per scope) |
-| Create / remove sub-scopes | Admin of the parent scope (strictly per scope) |
-| Manage memberships | Admin of the scope (strictly per scope) |
-| Set reviewers & scores | Admin of the scope |
-| Configure `required_approval_score` | Admin of the scope |
+| Read root content | Everyone, including anonymous (the root is world-readable) |
+| Read a document | Every member (read is transitive upward) |
+| Override / delete locally | Every member — never denied, effect confined to the caller's leaf |
+| Revert / rename own local doc | Every member, own leaf only |
+| Start a promote | Every member, for their own local version |
+| Distribute into a scope | Every member of that target scope (review may apply) |
+| Publish / unpublish | Every member, for their own committed leaf version |
+| Approve / reject | Reviewers of the target scope |
+| Create / remove sub-scopes | Admin of the parent scope |
+| Manage memberships, reviewers, scores | Admin of the scope |
 | Appoint admins in sub-scopes | Admin of the parent scope |
 
-## 9. API Sketch
+## 9. REST API
 
-Concrete signatures are an implementation matter — the rough shape:
+The store is reached over HTTP under the base path `/database`. This section is feature-complete: every operation in the model has an endpoint here.
 
-```
-// Scope handle — mandatory, no implicit context
-const scope = db.scope("school/class-8a")
+### 9.1 Conventions
 
-// Read
-scope.list()                                // effective view (§6.3)
-scope.list("math/")                         // filtered by path prefix
-scope.get("math/quadratic.json")            // walk-up; full doc shape (§6.1)
-                                            //   → { data, meta, scope, path,
-                                            //       version, status, author, createdAt }
-                                            //   or: not found
-scope.history("math/quadratic.json")        // all versions of this path visible from
-                                            // here (across scopes hit by the walk-up),
-                                            // each with full doc shape + reviewer votes
+**Identifying a scope.** A scope *name* (`school/class-8a`) contains slashes and cannot be a clean URL segment, so every scope also has a stable, slash-free **`scopeRef`** — its identity in URLs. `GET /database/scopes/mine` returns the refs a caller may use, and a resolver turns a name into a ref. URLs therefore read `/database/scopes/{scopeRef}/...`, never the dotted name.
 
-// Mutations — all take a doc; optimistic concurrency on (scope, path, version) (§6.12)
-scope.put(doc)                              // → new doc with fresh version, or `outdated`
-scope.delete(doc)                           // starts a delete promotion (§6.9)
-                                            //   → pending doc, or `outdated`
-scope.revert(doc)                           // physically drop all local versions (§6.10)
-                                            //   → ok / no-op / `outdated`
-scope.promote(doc)                          // vertical: one step upward (§6.5)
-                                            //   → pending doc, or `outdated`
-scope.distribute(doc, [scopeId, ...])       // horizontal: multiple target scopes (§6.16)
-                                            //   → list of per-target results
-scope.rename(doc, newPath)                  // rename in own leaf (§6.15)
-scope.hasPath(path)                         // → { exists: bool } — for pre-rename UX
+**Identifying a document.** The `path` may contain slashes too, so it travels as a query parameter: `?path=math/quadratic.json`. A document is identified end-to-end by the triple `(scopeRef, path, version)`.
 
-// Publish — orthogonal to promotion (§6.13)
-scope.publish(doc)                          // → doc with { publicId, publishedAt }
-                                            //   409 if doc is not the caller's own leaf version
-scope.unpublish(doc)                        // → 200; publicId stays reserved, reads return 410
+**Operating scope.** The `{scopeRef}` in the URL *is* the operating scope of the call (section 3.4). There is no implicit context — every request states its scope.
 
-// Blobs — binary attachments per version (§6.14)
-scope.putBlob(doc, key, buffer, contentType)
-scope.getBlob(doc, key)                     // → { buffer, contentType }
-scope.deleteBlob(doc, key)
+**Optimistic concurrency.** Every mutating request carries the document it is based on (at least `{ path, version }`, normally the full doc from a read). If a fresher version exists, the request fails `409 outdated` and the caller refetches. A brand-new document omits `version`.
 
-// Reviewer side — same doc-based shape
-scope.pendingPromotions()                   // → [ pending doc, ... ]
-                                            //   each: full doc shape with
-                                            //     status: "pending", plus votes[]
-scope.approve(doc)                          // approve this pending doc
-scope.reject(doc, reason)                   // reason: free-text, optional
+**Authentication.** Identity arrives in request headers set by the ingress (`x-hash` = the caller's `personRef`, `x-role`). A request without a resolvable identity is **anonymous** (section 3.6): it may read the root and fetch published content, nothing else. The store itself performs no login — it only maps headers to a `personRef`.
 
-// Admin — structure
-scope.createScope(name, { requiredApprovalScore })  // returns handle to the new scope
-scope.removeScope(name)
+**Media type.** Documents are `application/json`. Blobs use their own content type on upload and download. Errors return a JSON body `{ "error": "<code>", ... }`.
 
-// Admin — membership & roles
-scope.addMember(personRef)
-scope.removeMember(personRef)
-scope.addAdmin(personRef)                   // grant admin on THIS scope
-scope.removeAdmin(personRef)                // revoke admin on THIS scope
-scope.addReviewer(personRef, score)         // add / update reviewer score (0..10)
-                                            //   score = 0 → observer: may vote and
-                                            //   appears in audit list, but contributes 0
-scope.removeReviewer(personRef)             // revoke reviewer role
-scope.setRequiredApprovalScore(n)
-```
-
-`personRef` is an opaque reference to a person (whatever the surrounding auth system provides — e.g. an email hash). The DB treats it as an identifier only.
-
-A pending doc is identified end-to-end by its `(scope, path, version)` triple — the same shape used everywhere else in the API. `approve` / `reject` operate on a pending doc as returned by `pendingPromotions()`. If the same pending entry has already been finalized (approved, rejected, or superseded by the conflict rule §6.7 / the amend rule §6.5), the call fails with an `outdated` error.
-
-**Creating a new document:** pass a doc without `scope`/`version` to `put`. The DB stores it as version 1 in the caller's leaf.
-
-**Typical read-modify-write flow:**
+### 9.2 Documents
 
 ```
-const doc = scope.get("math/quadratic.json")
-doc.data.foo = "bar"
-const updated = scope.put(doc)              // new version in caller's leaf
-scope.promote(updated)                      // hand it upward for review
+GET    /database/scopes/{scopeRef}/docs?path=X        read (walk-up) → full doc, or 404
+GET    /database/scopes/{scopeRef}/docs               list the effective view
+                                                        ?prefix=math/   optional path filter
+PUT    /database/scopes/{scopeRef}/docs?path=X        write a local override (body: doc)
+                                                        create new: omit version; 409 outdated
+DELETE /database/scopes/{scopeRef}/docs?path=X        start a delete (body: doc for concurrency)
+GET    /database/scopes/{scopeRef}/docs/exists?path=X check own-leaf collision → { exists }
+GET    /database/scopes/{scopeRef}/docs/history?path=X full version history with reviewer votes
 ```
 
+`GET .../docs` (list) returns each visible path annotated with its origin scope, deduplicated to the nearest version. A UI that wants "everything across all my groups" calls `GET /scopes/mine` and issues one list per scope.
 
-## 10. Out of Scope / Deliberately Outside the DB
+### 9.3 Move Between Scopes
 
-The following topics are conceivable at the functional level but do **not** belong to the DB — they live in the application logic on top of it:
+```
+POST /database/scopes/{scopeRef}/docs/promote?path=X    vertical: one step up (body: doc)
+                                                          → resulting pending (or committed) doc
+POST /database/scopes/{scopeRef}/docs/distribute        horizontal: to chosen scopes
+                                                          body: { doc, targetScopeRefs: [...] }
+                                                          → { distributions: [ per-target result ] }
+POST /database/scopes/{scopeRef}/docs/rename?path=X      rename / move in own leaf
+                                                          body: { doc, newPath }; 409 on collision
+POST /database/scopes/{scopeRef}/docs/revert?path=X      physically drop all own leaf versions
+                                                          body: doc; idempotent no-op if none
+```
 
-- **Automatic score adjustments** (e.g. "10 successful votes → score 0→1"): pure business logic. The DB only provides the audit log; the rule sits above it.
-- **Notifications** to owners after cascading cleanup or distribute-driven overwrites: responsibility of the app on top.
-- **Schema validation** of the `data` block: the DB treats `data` as opaque JSON. A schema layer sits conceptually on top.
-- **Access control beyond roles** (attribute-based, temporary, path-granular): explicitly not part of this model. Visibility is defined solely by scope membership.
-- **Cross-scope references / foreign keys** between documents from different branches: not part of this model.
-- **Batch operations that span scopes** — e.g. "delete this doc from all my scopes at once", "rename a folder across sub-scopes". Not offered. If needed, may be designed later; each such operation would introduce new semantics.
-- **Content-based idempotency** on distribute or put: the DB does not compare payloads and does not deduplicate.
+### 9.4 Review
+
+Reviewers work against the target scope — the scope the promotion or distribute-pending is waiting on.
+
+```
+GET  /database/scopes/{scopeRef}/pending                 pending docs awaiting this scope, with votes
+POST /database/scopes/{scopeRef}/pending/approve         record an approving vote (body: pending doc)
+                                                           commits when the score threshold is met
+POST /database/scopes/{scopeRef}/pending/reject          end the request (body: { doc, reason? })
+```
+
+Both act on a pending doc identified by its `(scopeRef, path, version)`; a request that was already finalized fails `409 outdated`.
+
+### 9.5 Publish
+
+```
+POST /database/scopes/{scopeRef}/docs/publish?path=X     publish own leaf version (body: doc)
+                                                           → { publicId, publishedAt }
+                                                           409 not_publishable if not own leaf version
+POST /database/scopes/{scopeRef}/docs/unpublish?path=X    take down (body: doc); publicId stays reserved
+```
+
+Anonymous public reads — no authentication, stable links:
+
+```
+GET /database/public/{publicId}              200 active · 410 unpublished · 404 never / reverted
+GET /database/public/{publicId}/blobs/{key}  read a blob of a published version
+```
+
+### 9.6 Blobs
+
+Attachments live per version, addressed by the document's `path` plus a `key`.
+
+```
+PUT    /database/scopes/{scopeRef}/blobs/{key}?path=X   upload / replace (raw body + Content-Type)
+                                                          415 disallowed type · 413 over 10 MB
+GET    /database/scopes/{scopeRef}/blobs/{key}?path=X   read (member only) → 404 if absent on version
+DELETE /database/scopes/{scopeRef}/blobs/{key}?path=X   remove this blob from the caller's leaf version
+```
+
+### 9.7 Scope Discovery
+
+```
+GET /database/scopes/mine                    scopes the caller is an explicit member of
+                                               → [ { scopeRef, name, roles: [...] } ]
+GET /database/scopes/by-path?name=school/x   resolve a scope name → { scopeRef }
+GET /database/scopes/{scopeRef}              scope metadata (name, parent, requiredApprovalScore, roles)
+```
+
+### 9.8 Administration
+
+All of section 9.8 requires **admin of the named scope** (structure and membership) or **admin of the parent** (creating and removing sub-scopes).
+
+```
+POST   /database/scopes/{scopeRef}/scopes             create a sub-scope
+                                                        body: { name, requiredApprovalScore? }
+DELETE /database/scopes/{scopeRef}                     remove this scope
+
+POST   /database/scopes/{scopeRef}/members             add a member (body: { personRef })
+DELETE /database/scopes/{scopeRef}/members/{personRef} remove a member
+
+POST   /database/scopes/{scopeRef}/admins              grant admin here (body: { personRef })
+DELETE /database/scopes/{scopeRef}/admins/{personRef}  revoke admin here
+
+POST   /database/scopes/{scopeRef}/reviewers           add / update a reviewer
+                                                        body: { personRef, score }   (0 = observer)
+DELETE /database/scopes/{scopeRef}/reviewers/{personRef} revoke reviewer
+
+PATCH  /database/scopes/{scopeRef}                     configure the scope
+                                                        body: { requiredApprovalScore }
+```
+
+### 9.9 Status Codes
+
+| Code | When |
+|------|------|
+| `200` / `201` | Success; `201` when a new version or scope was created |
+| `400` | Malformed request (missing `path`, bad body) |
+| `401` | Anonymous caller attempting anything beyond a public read |
+| `403` | Authenticated but lacking the required membership or role |
+| `404` | Document, scope, blob, or `publicId` not found |
+| `409` | `outdated` (concurrency), `conflict` (rename collision), or `not_publishable` |
+| `410` | Public read of an unpublished version |
+| `413` / `415` | Blob too large / disallowed content type |
+
+`personRef` is an opaque person identifier from the surrounding auth system (e.g. an email hash); the store treats it as an identifier only.
+
+### 9.10 Typical Flow
+
+```
+# read a class document, edit, hand it upward for review
+GET  /database/scopes/S/docs?path=math/quadratic.json      → doc (version 5)
+PUT  /database/scopes/S/docs?path=math/quadratic.json      body: edited doc (version 5)
+                                                           → new leaf version 1
+POST /database/scopes/S/docs/promote?path=math/quadratic.json  body: that leaf doc
+                                                           → pending on the level above
+```
+
+## 10. Out of Scope
+
+These belong to the application on top, not the store:
+
+- **Automatic score adjustments** (e.g. raising a score after N successful votes) — the store only provides the audit log.
+- **Notifications** after cleanups or overwrites.
+- **Schema validation** of `data` — the store treats it as opaque.
+- **Access control beyond roles** (attribute-based, time-limited, path-granular). Visibility is defined solely by scope membership.
+- **Cross-scope references** between documents in different branches.
+- **Cross-scope batch operations** (e.g. "delete everywhere", "rename a folder across sub-scopes").
+- **Content-based deduplication** — the store never compares payloads.
 
 ## 11. Glossary
 
 | Term | Meaning |
 |------|---------|
-| **Scope** | Node in the permission hierarchy — company, department, class, club, personal leaf. |
-| **Path** | Organizational path of a document within a scope. Pure structure, no permission. |
-| **Leaf** | Personal scope of a member beneath a scope. Storage for local overrides. |
-| **Override** | Local version stored in a leaf, shadowing a higher version. |
-| **Walk-up** | Read-side resolution algorithm: traverse the scope hierarchy from the caller's leaf upward, return the first hit. |
-| **Promote** | Vertical: submit a local version to the level above for review (§6.5). |
-| **Distribute** | Horizontal: submit a local version to multiple target scopes at once, each evaluated independently (§6.16). |
-| **Revert** | Physically drop all of one's own leaf versions for a doc-path (§6.10). |
-| **Publish** | Attach a stable `publicId` to a leaf version, exposing it via an anonymous URL (§6.13). |
-| **Unpublish** | Set a published version's `unpublished_at`; the `publicId` stays reserved but reads return `410 Gone`. |
-| **Approval Score** | Numeric weight of a reviewer's vote. |
-| **Required Approval Score** | Configured threshold of a scope; sum of approver scores must reach it. |
-| **Tombstone** | Entry with status `deleted`. Shadows higher versions like an override. |
-| **Active version** | The highest-version-ID entry (`committed` or `deleted`) for a `(Scope, Path)`. Derived, not stored. |
+| **Scope** | A node in the permission tree — a group, a class, a personal area. |
+| **Anonymous** | The built-in login-less principal. Reads root content only; owns no leaf, never writes. |
+| **Public root** | The root scope, world-readable by everyone including anonymous. Making a document public means promoting it to the root. |
+| **Path** | A document's organizational label within a scope. No permission meaning. |
+| **Membership** | Belonging to a scope. Explicit membership allows writing; read access extends transitively to all ancestors. |
+| **Leaf** | A member's private area beneath a scope, holding their overrides. |
+| **Operating scope** | The scope a call acts in — fixed by context when editing, chosen when creating. |
+| **Override** | A local version in a leaf that shadows a higher version for its owner. |
+| **Walk-up** | Read resolution: from the operating scope up to the root, checking the caller's leaf then the shared version at each level. |
+| **Promote** | Vertical: submit a local version to the level above for review. |
+| **Distribute** | Horizontal: deliver a version to several chosen scopes, each decided independently. |
+| **Revert** | Physically drop all of one's own leaf versions for a path. |
+| **Publish / Unpublish** | Attach a stable public link to a version / take it down (link then returns `410`). |
+| **Required approval score** | A scope's threshold; approving reviewer scores must sum to at least this. |
+| **Tombstone** | A committed delete. Shadows higher versions like an override. |
+| **Active version** | The highest-id committed or deleted entry of a (scope, path). Derived, not stored. |

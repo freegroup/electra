@@ -1,69 +1,31 @@
-// Transitive membership tests — see README §4.
+// Membership model — README §3.2, §4.
 //
-// Anna has an explicit membership row only on her own leaf, deep in the tree.
-// She should count as a member of every ancestor scope through the closure,
-// but not as a member of sibling leaves or unrelated branches.
+// Membership is now EXPLICIT: adding a member writes an is_member row ON the
+// scope itself. Read is transitive upward (a member reads the scope and every
+// ancestor); write requires explicit membership at the operating scope.
 
 const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
-  setupTestSchema, newTestSchema, dropSchema, asPerson, asRootAdmin,
+  setupTestSchema, newTestSchema, dropSchema,
+  asPerson, get, writeDoc, createScope, addMember, seedSharedDoc, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("membership")
 
 let ctx
 let electraId, appsId, brainsId, shapesId, klasseId, klasse9bId
 
-async function post(url, headers, payload) {
-  return ctx.fastify.inject({ method: "POST", url, headers, payload })
-}
-async function put(url, headers, payload) {
-  return ctx.fastify.inject({ method: "PUT", url, headers, payload })
-}
-async function get(url, headers) {
-  return ctx.fastify.inject({ method: "GET", url, headers })
-}
-
-async function scopeIdByPath(pathString) {
-  const parts = pathString.split("/").filter(Boolean)
-  let parentId = null
-  for (const p of parts) {
-    const res = parentId === null
-      ? await ctx.pool.query(
-          `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id IS NULL AND name = $1`, [p])
-      : await ctx.pool.query(
-          `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = $2`,
-          [parentId, p])
-    if (res.rowCount === 0) return null
-    parentId = res.rows[0].id
-  }
-  return parentId
-}
-
 before(async () => {
   ctx = await newTestSchema()
-  electraId = await scopeIdByPath("electra")
-  appsId    = await scopeIdByPath("electra/apps")
-  brainsId  = await scopeIdByPath("electra/apps/brains")
-  shapesId  = await scopeIdByPath("electra/apps/shapes")
+  electraId = await scopeIdByPath(ctx.pool, ctx.schema, "electra")
+  appsId    = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps")
+  brainsId  = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  shapesId  = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/shapes")
 
-  // Build: apps/brains/klasse8a and apps/brains/klasse9b
-  const k8a = await post(
-    `/database/scopes/${brainsId}/children`,
-    asRootAdmin(),
-    { name: "klasse8a", requiredApprovalScore: 0 }
-  )
-  klasseId = k8a.json().id
-  const k9b = await post(
-    `/database/scopes/${brainsId}/children`,
-    asRootAdmin(),
-    { name: "klasse9b", requiredApprovalScore: 0 }
-  )
-  klasse9bId = k9b.json().id
+  klasseId   = await createScope(ctx, brainsId, "klasse8a")
+  klasse9bId = await createScope(ctx, brainsId, "klasse9b")
 
-  // Anna is added as member of klasse8a — this creates her leaf and
-  // one membership row on that leaf.
-  await post(`/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "anna" })
+  await addMember(ctx, klasseId, "anna")
 })
 
 after(async () => {
@@ -71,93 +33,66 @@ after(async () => {
   await dropSchema(ctx.pool, ctx.schema)
 })
 
-test("addMember creates exactly one membership row (on the leaf)", async () => {
-  const rows = await ctx.pool.query(
-    `SELECT s.name AS scope_name
-     FROM "${ctx.schema}".memberships m
-     JOIN "${ctx.schema}".scopes s ON s.id = m.scope_id
-     WHERE m.person_ref = 'anna'`
-  )
-  assert.equal(rows.rowCount, 1)
-  assert.equal(rows.rows[0].scope_name, "anna")
-})
-
-test("anna can read from klasse8a (direct ancestor of her leaf)", async () => {
-  // seed a doc on klasse8a
-  await ctx.pool.query(
-    `INSERT INTO "${ctx.schema}".versions
-       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
-     VALUES ($1, 'doc.json', 1, 'committed', false, '{"src":"klasse"}'::jsonb, '{}'::jsonb, 'admin')`,
+test("addMember writes an explicit is_member row on the scope", async () => {
+  const row = await ctx.pool.query(
+    `SELECT is_member FROM "${ctx.schema}".memberships
+      WHERE scope_id = $1 AND person_ref = 'anna'`,
     [klasseId]
   )
-  const res = await get(
-    `/database/scopes/${klasseId}/docs/doc.json`,
-    asPerson("anna")
-  )
+  assert.equal(row.rowCount, 1)
+  assert.equal(row.rows[0].is_member, true)
+})
+
+test("anna reads her own scope klasse8a", async () => {
+  await seedSharedDoc(ctx, klasseId, "doc.json", { src: "klasse" })
+  const res = await get(ctx, `/database/scopes/${klasseId}/docs?path=doc.json`, asPerson("anna"))
   assert.equal(res.statusCode, 200)
   assert.equal(res.json().data.src, "klasse")
 })
 
-test("anna can read from apps/brains (transitive ancestor)", async () => {
-  await ctx.pool.query(
-    `INSERT INTO "${ctx.schema}".versions
-       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
-     VALUES ($1, 'inbrains.json', 1, 'committed', false, '{"src":"brains"}'::jsonb, '{}'::jsonb, 'admin')`,
-    [brainsId]
-  )
-  const res = await get(
-    `/database/scopes/${brainsId}/docs/inbrains.json`,
-    asPerson("anna")
-  )
-  assert.equal(res.statusCode, 200)
-  assert.equal(res.json().data.src, "brains")
+test("read is transitive upward: anna reads brains, apps, and root", async () => {
+  for (const id of [brainsId, appsId, electraId]) {
+    const res = await get(ctx, `/database/scopes/${id}/docs`, asPerson("anna"))
+    assert.equal(res.statusCode, 200)
+  }
 })
 
-test("anna can read from apps (transitive, 2 levels up)", async () => {
-  const res = await get(
-    `/database/scopes/${appsId}/docs`,
-    asPerson("anna")
-  )
-  assert.equal(res.statusCode, 200)
-})
-
-test("anna can read from root electra (transitive, all the way up)", async () => {
-  const res = await get(
-    `/database/scopes/${electraId}/docs`,
-    asPerson("anna")
-  )
-  assert.equal(res.statusCode, 200)
-})
-
-test("anna is NOT a member of a sibling scope (klasse9b) — 403", async () => {
-  const res = await get(
-    `/database/scopes/${klasse9bId}/docs`,
-    asPerson("anna")
-  )
+test("a sibling scope (klasse9b) is not readable — 403", async () => {
+  const res = await get(ctx, `/database/scopes/${klasse9bId}/docs`, asPerson("anna"))
   assert.equal(res.statusCode, 403)
 })
 
-test("anna is NOT a member of an unrelated branch (apps/shapes) — 403", async () => {
-  const res = await get(
-    `/database/scopes/${shapesId}/docs`,
-    asPerson("anna")
-  )
+test("an unrelated branch (apps/shapes) is not readable — 403", async () => {
+  const res = await get(ctx, `/database/scopes/${shapesId}/docs`, asPerson("anna"))
   assert.equal(res.statusCode, 403)
 })
 
-test("anna cannot see bob's leaf (both under klasse8a) — foreign leaf invisible", async () => {
-  await post(`/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "bob" })
-  // Bob writes something into his leaf.
-  await put(
-    `/database/scopes/${klasseId}/docs/personal/bob-file.json`,
-    asPerson("bob"),
-    { data: { owner: "bob" } }
-  )
-  // Anna queries her klasse8a view — should NOT see bob's file (walk-up
-  // does not descend into siblings).
-  const res = await get(
-    `/database/scopes/${klasseId}/docs/personal/bob-file.json`,
-    asPerson("anna")
-  )
+test("write requires explicit membership: anna cannot write at an ancestor she only reads", async () => {
+  // anna is a member of klasse8a → reads brains transitively, but is NOT an
+  // explicit member of brains, so writing there is refused.
+  const res = await writeDoc(ctx, brainsId, "x.json", asPerson("anna"), { data: { a: 1 } })
+  assert.equal(res.statusCode, 403)
+})
+
+test("a foreign leaf is invisible: anna never sees bob's override", async () => {
+  await addMember(ctx, klasseId, "bob")
+  await writeDoc(ctx, klasseId, "personal/bob.json", asPerson("bob"), { data: { owner: "bob" } })
+  const res = await get(ctx, `/database/scopes/${klasseId}/docs?path=personal/bob.json`, asPerson("anna"))
   assert.equal(res.statusCode, 404)
+})
+
+test("multiple explicit memberships: anna may be a member of two branches", async () => {
+  await addMember(ctx, klasse9bId, "anna")
+  // Now she writes in both — each lands in its own leaf.
+  const a = await writeDoc(ctx, klasseId, "note.json", asPerson("anna"), { data: { in: "8a" } })
+  const b = await writeDoc(ctx, klasse9bId, "note.json", asPerson("anna"), { data: { in: "9b" } })
+  assert.equal(a.statusCode, 201)
+  assert.equal(b.statusCode, 201)
+
+  const rows = await ctx.pool.query(
+    `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".memberships
+      WHERE person_ref = 'anna' AND is_member = true`
+  )
+  // klasse8a + klasse9b + her two leaves = 4 explicit member rows.
+  assert.equal(rows.rows[0].n, 4)
 })

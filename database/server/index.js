@@ -15,7 +15,7 @@ const Fastify = require("fastify")
 const die = require("./utils/die")
 const { migrate } = require("./persistence/migrate")
 const { bootstrap } = require("./persistence/init")
-const { requireLogin, nocache } = require("./auth")
+const { requireLogin, resolvePrincipal, nocache } = require("./auth")
 const { DomainError } = require("./utils/errors")
 
 const PORT = parseInt(process.env.PORT_DATABASE || die("missing env variable PORT_DATABASE"), 10)
@@ -36,8 +36,9 @@ async function build() {
       : { level: process.env.LOG_LEVEL || "info" },
   })
 
-  // Expose auth as a decorator so route files can list it in preHandler.
+  // Expose auth as decorators so route files can list them in preHandler.
   fastify.decorate("requireLogin", requireLogin)
+  fastify.decorate("resolvePrincipal", resolvePrincipal)
 
   // Global hooks
   fastify.addHook("onRequest", nocache)

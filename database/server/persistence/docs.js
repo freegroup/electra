@@ -1,10 +1,12 @@
-// Document persistence: put / get (walk-up) / list (effective view).
+// Document persistence: put / get (walk-up) / list (effective view) / revert.
 //
-// Milestone 1 scope only — no optimistic concurrency, no promote / delete /
-// revert / history. See ARCHITECTURE.md §4.1 (walk-up), §4.2 (list), §4.3 (put).
+// Walk-up (README §6.2): from the operating scope up to the root, at EVERY
+// level check the caller's own leaf first, then the shared version at that
+// level. The nearest hit wins; a tombstone (deleted) ends the walk-up as
+// "not found". Foreign leaves are never consulted.
 
 const { pool } = require("./pool")
-const { NotFoundError, BadRequestError } = require("../utils/errors")
+const { NotFoundError, BadRequestError, OutdatedError } = require("../utils/errors")
 
 // ---------------------------------------------------------------------------
 // Doc path validation
@@ -41,26 +43,59 @@ function rowToDoc(row, originScopePath) {
 }
 
 // ---------------------------------------------------------------------------
-// Walk-up lookup — ARCHITECTURE.md §4.1
+// Walk-up "slots" — README §6.2
+// ---------------------------------------------------------------------------
+//
+// For an operating scope, the closure gives every ancestor level (depth 0 =
+// operating scope, increasing upward). At each level there are two candidate
+// slots, in priority order:
+//   slot 0 — the caller's own leaf at that level (scope whose parent is the
+//            level and whose name == personRef)
+//   slot 1 — the shared version stored on the level itself
+// The winner is the lowest (depth, slot). personRef null (anonymous) matches
+// no leaf, so only shared slots participate.
+//
+// $1 = operating scope id, $2 = personRef (nullable), $3 = doc path
+const WALKUP_SLOTS = `
+  WITH levels AS (
+    SELECT c.ancestor_id AS level_id, c.depth
+    FROM scope_closure c
+    WHERE c.descendant_id = $1
+  ),
+  slots AS (
+    SELECT l.depth, 0 AS slot_rank, leaf.id AS scope_id
+    FROM levels l
+    JOIN scopes leaf ON leaf.parent_id = l.level_id AND leaf.name = $2
+    UNION ALL
+    SELECT l.depth, 1 AS slot_rank, l.level_id AS scope_id
+    FROM levels l
+  )
+`
+
+// ---------------------------------------------------------------------------
+// Walk-up lookup
 // ---------------------------------------------------------------------------
 
-// Given the caller's personal leaf id and a doc_path, returns the nearest
-// visible version by walking closure ancestors. Returns null if not found
-// (either genuinely not present, or shadowed by a tombstone).
-async function getDoc({ callerLeafId, docPath, resolveOriginPath }) {
+async function getDoc({ operatingScopeId, personRef, docPath, resolveOriginPath }) {
   validateDocPath(docPath)
 
   const res = await pool.query(
-    `SELECT v.scope_id, v.doc_path, v.version, v.status,
-            v.data, v.meta, v.author, v.created_at, c.depth
-     FROM versions v
-     JOIN scope_closure c ON c.ancestor_id = v.scope_id
-     WHERE c.descendant_id = $1
-       AND v.doc_path      = $2
-       AND v.status IN ('committed', 'deleted')
-     ORDER BY c.depth ASC, v.version DESC
+    `${WALKUP_SLOTS},
+     active AS (
+       SELECT DISTINCT ON (s.depth, s.slot_rank)
+              s.depth, s.slot_rank,
+              v.scope_id, v.doc_path, v.version, v.status,
+              v.data, v.meta, v.author, v.created_at
+       FROM slots s
+       JOIN versions v ON v.scope_id = s.scope_id
+                      AND v.doc_path = $3
+                      AND v.status IN ('committed', 'deleted')
+       ORDER BY s.depth, s.slot_rank, v.version DESC
+     )
+     SELECT * FROM active
+     ORDER BY depth ASC, slot_rank ASC
      LIMIT 1`,
-    [callerLeafId, docPath]
+    [operatingScopeId, personRef, docPath]
   )
   if (res.rowCount === 0) return null
   const row = res.rows[0]
@@ -71,28 +106,27 @@ async function getDoc({ callerLeafId, docPath, resolveOriginPath }) {
 }
 
 // ---------------------------------------------------------------------------
-// Effective list — ARCHITECTURE.md §4.2
+// Effective list
 // ---------------------------------------------------------------------------
 
-async function listDocs({ callerLeafId, prefix, resolveOriginPath }) {
+async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath }) {
   const res = await pool.query(
-    `WITH visible AS (
+    `${WALKUP_SLOTS},
+     ranked AS (
        SELECT DISTINCT ON (v.doc_path)
-              v.doc_path, v.scope_id, v.version, v.status,
-              v.data, v.meta, v.author, v.created_at, c.depth
-       FROM versions v
-       JOIN scope_closure c ON c.ancestor_id = v.scope_id
-       WHERE c.descendant_id = $1
-         AND v.status IN ('committed', 'deleted')
-         AND ($2::text IS NULL OR v.doc_path LIKE $2 || '%')
-       ORDER BY v.doc_path, c.depth ASC, v.version DESC
+              v.doc_path, s.depth, s.slot_rank,
+              v.scope_id, v.version, v.status,
+              v.data, v.meta, v.author, v.created_at
+       FROM slots s
+       JOIN versions v ON v.scope_id = s.scope_id
+                      AND v.status IN ('committed', 'deleted')
+                      AND ($3::text IS NULL OR v.doc_path LIKE $3 || '%')
+       ORDER BY v.doc_path, s.depth ASC, s.slot_rank ASC, v.version DESC
      )
-     SELECT * FROM visible WHERE status = 'committed'
-     ORDER BY doc_path`,
-    [callerLeafId, prefix || null]
+     SELECT * FROM ranked WHERE status = 'committed' ORDER BY doc_path`,
+    [operatingScopeId, personRef, prefix || null]
   )
 
-  // Resolve origin scope paths — cached per scope_id.
   const cache = new Map()
   const out = []
   for (const row of res.rows) {
@@ -107,23 +141,41 @@ async function listDocs({ callerLeafId, prefix, resolveOriginPath }) {
 }
 
 // ---------------------------------------------------------------------------
-// Put — ARCHITECTURE.md §4.3 (M1: no optimistic concurrency yet)
+// Put (local override) — README §6.4, §6.12
 // ---------------------------------------------------------------------------
-
-async function putDoc({ leafScopeId, docPath, data, meta, author }) {
+//
+// Writes a new version into the caller's leaf under the operating scope. The
+// leaf is provisioned on demand on first write. Optimistic concurrency: when
+// the passed doc names an existing leaf version, it must match the current
+// active leaf version, else OutdatedError. A doc without a version (new doc,
+// or an edit of an inherited version) starts a fresh version 1 in the leaf.
+async function putDoc({ leafScopeId, docPath, data, meta, author, expectedVersion }) {
   validateDocPath(docPath)
 
   const client = await pool.connect()
   try {
     await client.query("BEGIN ISOLATION LEVEL SERIALIZABLE")
 
-    // Compute next version for (leaf, docPath)
     const maxRes = await client.query(
       `SELECT COALESCE(MAX(version), 0) AS max FROM versions
        WHERE scope_id = $1 AND doc_path = $2`,
       [leafScopeId, docPath]
     )
-    const nextVersion = maxRes.rows[0].max + 1
+    const currentMax = maxRes.rows[0].max
+
+    // Concurrency: an edit that claims to build on leaf version N must match
+    // the current active leaf version. expectedVersion null/undefined means
+    // "new document / first override" and only succeeds when the leaf has no
+    // version yet OR when editing an inherited version (currentMax stays the
+    // base for the next id either way).
+    if (expectedVersion != null && expectedVersion !== currentMax) {
+      throw new OutdatedError(
+        `leaf version is ${currentMax}, caller based edit on ${expectedVersion}`,
+        { current: currentMax, expected: expectedVersion }
+      )
+    }
+
+    const nextVersion = currentMax + 1
 
     const insRes = await client.query(
       `INSERT INTO versions
@@ -135,8 +187,6 @@ async function putDoc({ leafScopeId, docPath, data, meta, author }) {
     )
 
     // Auto-copy blobs from the previous effective version (walk-up target).
-    // See README §6.14. If the walk-up returns the new version itself
-    // (because it's now the closest), the subquery excludes it explicitly.
     await client.query(
       `INSERT INTO blobs (scope_id, doc_path, version, key, content_type, size_bytes, data)
        SELECT $1::bigint, $2, $3, b.key, b.content_type, b.size_bytes, b.data
@@ -182,4 +232,4 @@ async function revertDoc({ leafScopeId, docPath }) {
   return { deleted: res.rowCount }
 }
 
-module.exports = { getDoc, listDocs, putDoc, revertDoc, rowToDoc, validateDocPath }
+module.exports = { getDoc, listDocs, putDoc, revertDoc, rowToDoc, validateDocPath, WALKUP_SLOTS }

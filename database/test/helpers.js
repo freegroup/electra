@@ -85,6 +85,76 @@ function asRootAdmin(extra = {}) {
   return asPerson(ROOT_ADMIN_HASH, extra)
 }
 
+// Headers for an anonymous (not logged-in) caller — no identity at all.
+function asAnon(extra = {}) {
+  return { "x-role": "anonym", ...extra }
+}
+
+// Thin HTTP verb wrappers around fastify.inject so test bodies read like a
+// script. Each takes the ctx from newTestSchema().
+function get(ctx, url, headers) {
+  return ctx.fastify.inject({ method: "GET", url, headers })
+}
+function put(ctx, url, headers, payload) {
+  return ctx.fastify.inject({ method: "PUT", url, headers, payload })
+}
+function post(ctx, url, headers, payload) {
+  return ctx.fastify.inject({ method: "POST", url, headers, payload })
+}
+function patch(ctx, url, headers, payload) {
+  return ctx.fastify.inject({ method: "PATCH", url, headers, payload })
+}
+function del(ctx, url, headers, payload) {
+  return ctx.fastify.inject({ method: "DELETE", url, headers, payload })
+}
+
+// Document helpers built on the REST surface (README §9.2). `path` is a query
+// parameter everywhere.
+const docsUrl = (scopeRef, path) =>
+  `/database/scopes/${scopeRef}/docs` + (path ? `?path=${encodeURIComponent(path)}` : "")
+
+function readDoc(ctx, scopeRef, path, headers) {
+  return get(ctx, docsUrl(scopeRef, path), headers)
+}
+function writeDoc(ctx, scopeRef, path, headers, doc) {
+  return put(ctx, docsUrl(scopeRef, path), headers, doc)
+}
+
+// Create a sub-scope under parentRef (admin only). Returns the new scope id.
+async function createScope(ctx, parentRef, name, opts = {}) {
+  const res = await post(ctx, `/database/scopes/${parentRef}/scopes`, asRootAdmin(), {
+    name,
+    requiredApprovalScore: opts.requiredApprovalScore ?? 0,
+  })
+  if (res.statusCode !== 201) {
+    throw new Error(`createScope(${name}) failed: ${res.statusCode} ${res.body}`)
+  }
+  return res.json().id
+}
+
+// Add an explicit member to a scope (admin action).
+function addMember(ctx, scopeRef, personRef) {
+  return post(ctx, `/database/scopes/${scopeRef}/members`, asRootAdmin(), { personRef })
+}
+
+// Seed a committed shared version directly on a scope via SQL — a shortcut
+// for "this document already exists at that level", bypassing the write path.
+async function seedSharedDoc(ctx, scopeId, path, data, author = "seed") {
+  const max = await ctx.pool.query(
+    `SELECT COALESCE(MAX(version),0) AS m FROM "${ctx.schema}".versions
+      WHERE scope_id = $1 AND doc_path = $2`,
+    [scopeId, path]
+  )
+  const version = max.rows[0].m + 1
+  await ctx.pool.query(
+    `INSERT INTO "${ctx.schema}".versions
+       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
+     VALUES ($1, $2, $3, 'committed', false, $4::jsonb, '{}'::jsonb, $5)`,
+    [scopeId, path, version, JSON.stringify(data), author]
+  )
+  return version
+}
+
 // Look up a scope id by its full human path (e.g. "electra/apps/brains").
 // Uses direct SQL — the by-path API endpoint has been removed.
 async function scopeIdByPath(pool, schema, pathString) {
@@ -105,26 +175,11 @@ async function scopeIdByPath(pool, schema, pathString) {
 
 // Common setup used by content-oriented tests: creates a klasse-scope under
 // apps/brains and adds the given member(s). Returns useful ids.
-async function makeKlasseScope(ctx, extraMembers = ["anna"]) {
+async function makeKlasseScope(ctx, extraMembers = ["anna"], opts = {}) {
   const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
-  const cr = await ctx.fastify.inject({
-    method: "POST",
-    url: `/database/scopes/${brainsId}/children`,
-    headers: asRootAdmin(),
-    payload: { name: "klasse8a", requiredApprovalScore: 0 },
-  })
-  if (cr.statusCode !== 201) {
-    throw new Error(`makeKlasseScope failed: ${cr.statusCode} ${cr.body}`)
-  }
-  const klasseId = cr.json().id
-
+  const klasseId = await createScope(ctx, brainsId, "klasse8a", opts)
   for (const m of extraMembers) {
-    await ctx.fastify.inject({
-      method: "POST",
-      url: `/database/scopes/${klasseId}/members`,
-      headers: asRootAdmin(),
-      payload: { personRef: m },
-    })
+    await addMember(ctx, klasseId, m)
   }
   return { brainsId, klasseId }
 }
@@ -135,6 +190,18 @@ module.exports = {
   dropSchema,
   asPerson,
   asRootAdmin,
+  asAnon,
+  get,
+  put,
+  post,
+  patch,
+  del,
+  docsUrl,
+  readDoc,
+  writeDoc,
+  createScope,
+  addMember,
+  seedSharedDoc,
   scopeIdByPath,
   makeKlasseScope,
   ROOT_ADMIN_HASH,
