@@ -8,7 +8,7 @@
 // root). Writes require explicit membership and provision the caller's leaf
 // under the operating scope on first write.
 
-const { getDoc, listDocs, putDoc } = require("../persistence/docs")
+const { getDoc, listDocs, putDoc, deleteDoc } = require("../persistence/docs")
 const { promote } = require("../persistence/promote")
 const { NotFoundError } = require("../utils/errors")
 const {
@@ -101,6 +101,26 @@ async function routes(fastify) {
       }
     }
   )
+  fastify.delete(
+    "/database/scopes/:scopeRef/docs",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const docPath = requirePathQuery(req)
+      const { leafId } = await requireWriteLeaf(req.params.scopeRef, req.personRef)
+      const version = req.body && req.body.version
+      // Local delete: a tombstone in the caller's own leaf hides the path from
+      // their view immediately. Making it a group-wide delete is a separate
+      // promote of this tombstone, which runs the normal review (README §6.9).
+      const row = await deleteDoc({
+        leafScopeId: leafId,
+        docPath,
+        author: req.personRef,
+        expectedVersion: version,
+      })
+      return { status: "deleted-local", version: row.version }
+    }
+  )
+
   fastify.post(
     "/database/scopes/:scopeRef/docs/promote",
     { preHandler: [fastify.requireLogin] },

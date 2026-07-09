@@ -103,6 +103,21 @@ async function cleanupLeaf(client, leafScopeId, docPath) {
   )
 }
 
+// Cascading cleanup when a deletion commits at the root (§6.9): every remaining
+// version of the path across all descendant scopes is physically removed. The
+// root tombstone itself is kept so the path reads as deleted everywhere.
+async function cascadeRootDelete(client, rootScopeId, docPath) {
+  await client.query(
+    `DELETE FROM versions v
+      USING scope_closure c
+      WHERE c.ancestor_id = $1
+        AND v.scope_id = c.descendant_id
+        AND v.scope_id <> $1
+        AND v.doc_path = $2`,
+    [rootScopeId, docPath]
+  )
+}
+
 // Inserts a new version row at a level and copies the source blobs into it.
 // Returns the inserted version number.
 async function insertVersion(client, {
@@ -181,6 +196,9 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion }
           srcScope: src.scope, srcVersion: src.version,
         })
         await autoRejectOthers(client, target.id, docPath, version)
+        if (leaf.is_deletion && !target.parent_id) {
+          await cascadeRootDelete(client, target.id, docPath)
+        }
         result = { status: leaf.is_deletion ? "deleted" : "committed", scopeRef: String(target.id), version }
         if (isImmediate) committedAtImmediateParent = true
 
@@ -265,6 +283,9 @@ async function quorumCheck(client, scope, docPath, version, isDeletion, leafId) 
     [scope.id, docPath, version, isDeletion ? "deleted" : "committed"]
   )
   await autoRejectOthers(client, scope.id, docPath, version)
+  if (isDeletion && !scope.parent_id) {
+    await cascadeRootDelete(client, scope.id, docPath)
+  }
   if (leafId != null) await cleanupLeaf(client, leafId, docPath)
   return true
 }

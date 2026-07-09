@@ -84,7 +84,7 @@ async function getDoc({ operatingScopeId, personRef, docPath, resolveOriginPath 
      active AS (
        SELECT DISTINCT ON (s.depth, s.slot_rank)
               s.depth, s.slot_rank,
-              v.scope_id, v.doc_path, v.version, v.status,
+              v.scope_id, v.doc_path, v.version, v.status, v.is_deletion,
               v.data, v.meta, v.author, v.created_at
        FROM slots s
        JOIN versions v ON v.scope_id = s.scope_id
@@ -99,7 +99,7 @@ async function getDoc({ operatingScopeId, personRef, docPath, resolveOriginPath 
   )
   if (res.rowCount === 0) return null
   const row = res.rows[0]
-  if (row.status === "deleted") return null // tombstone → not found
+  if (row.status === "deleted" || row.is_deletion) return null // tombstone → not found
 
   const originPath = await resolveOriginPath(row.scope_id)
   return rowToDoc(row, originPath)
@@ -115,7 +115,7 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
      ranked AS (
        SELECT DISTINCT ON (v.doc_path)
               v.doc_path, s.depth, s.slot_rank,
-              v.scope_id, v.version, v.status,
+              v.scope_id, v.version, v.status, v.is_deletion,
               v.data, v.meta, v.author, v.created_at
        FROM slots s
        JOIN versions v ON v.scope_id = s.scope_id
@@ -123,7 +123,8 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
                       AND ($3::text IS NULL OR v.doc_path LIKE $3 || '%')
        ORDER BY v.doc_path, s.depth ASC, s.slot_rank ASC, v.version DESC
      )
-     SELECT * FROM ranked WHERE status = 'committed' ORDER BY doc_path`,
+     SELECT * FROM ranked WHERE status = 'committed' AND is_deletion = false
+     ORDER BY doc_path`,
     [operatingScopeId, personRef, prefix || null]
   )
 
@@ -232,4 +233,49 @@ async function revertDoc({ leafScopeId, docPath }) {
   return { deleted: res.rowCount }
 }
 
-module.exports = { getDoc, listDocs, putDoc, revertDoc, rowToDoc, validateDocPath, WALKUP_SLOTS }
+// ---------------------------------------------------------------------------
+// Delete (local) — README §6.9
+// ---------------------------------------------------------------------------
+//
+// A local delete writes a tombstone version into the caller's leaf: a new
+// version with is_deletion = true. The walk-up then treats the path as gone
+// for the caller only. Promoting this tombstone carries the deletion upward
+// (see promote.js), where a commit becomes the level's `deleted` tombstone.
+async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
+  validateDocPath(docPath)
+
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN ISOLATION LEVEL SERIALIZABLE")
+
+    const maxRes = await client.query(
+      `SELECT COALESCE(MAX(version), 0) AS max FROM versions
+       WHERE scope_id = $1 AND doc_path = $2`,
+      [leafScopeId, docPath]
+    )
+    const currentMax = maxRes.rows[0].max
+    if (expectedVersion != null && expectedVersion !== currentMax) {
+      throw new OutdatedError(
+        `leaf version is ${currentMax}, caller based delete on ${expectedVersion}`,
+        { current: currentMax, expected: expectedVersion }
+      )
+    }
+
+    const insRes = await client.query(
+      `INSERT INTO versions
+         (scope_id, doc_path, version, status, is_deletion, data, meta, author)
+       VALUES ($1, $2, $3, 'committed', true, '{}'::jsonb, '{}'::jsonb, $4)
+       RETURNING scope_id, doc_path, version, status, is_deletion, author, created_at`,
+      [leafScopeId, docPath, currentMax + 1, author]
+    )
+    await client.query("COMMIT")
+    return insRes.rows[0]
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
+module.exports = { getDoc, listDocs, putDoc, deleteDoc, revertDoc, rowToDoc, validateDocPath, WALKUP_SLOTS }
