@@ -278,4 +278,53 @@ async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
   }
 }
 
-module.exports = { getDoc, listDocs, putDoc, deleteDoc, revertDoc, rowToDoc, validateDocPath, WALKUP_SLOTS }
+// ---------------------------------------------------------------------------
+// History — README §7, §9.2
+// ---------------------------------------------------------------------------
+//
+// Every version of a path across the scopes the walk-up touches (the caller's
+// leaves and each shared level from the operating scope up to the root), newest
+// first, each annotated with its origin scope and reviewer votes.
+async function historyDocs({ operatingScopeId, personRef, docPath, resolveOriginPath }) {
+  validateDocPath(docPath)
+
+  const res = await pool.query(
+    `${WALKUP_SLOTS}
+     SELECT v.scope_id, v.doc_path, v.version, v.status, v.is_deletion,
+            v.author, v.created_at, v.finalized_at, v.rejection_reason
+     FROM slots s
+     JOIN versions v ON v.scope_id = s.scope_id AND v.doc_path = $3
+     ORDER BY s.depth ASC, s.slot_rank ASC, v.version DESC`,
+    [operatingScopeId, personRef, docPath]
+  )
+
+  const cache = new Map()
+  const out = []
+  for (const row of res.rows) {
+    let originPath = cache.get(row.scope_id)
+    if (originPath === undefined) {
+      originPath = await resolveOriginPath(row.scope_id)
+      cache.set(row.scope_id, originPath)
+    }
+    const votes = await pool.query(
+      `SELECT voter, kind, score_snapshot, reason, voted_at FROM votes
+        WHERE scope_id = $1 AND doc_path = $2 AND version = $3 ORDER BY voted_at`,
+      [row.scope_id, row.doc_path, row.version]
+    )
+    out.push({
+      scope: originPath,
+      path: row.doc_path,
+      version: row.version,
+      status: row.status,
+      isDeletion: row.is_deletion,
+      author: row.author,
+      createdAt: row.created_at,
+      finalizedAt: row.finalized_at,
+      rejectionReason: row.rejection_reason,
+      votes: votes.rows,
+    })
+  }
+  return out
+}
+
+module.exports = { getDoc, listDocs, putDoc, deleteDoc, revertDoc, historyDocs, rowToDoc, validateDocPath, WALKUP_SLOTS }

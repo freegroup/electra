@@ -8,9 +8,10 @@
 // root). Writes require explicit membership and provision the caller's leaf
 // under the operating scope on first write.
 
-const { getDoc, listDocs, putDoc, deleteDoc } = require("../persistence/docs")
+const { getDoc, listDocs, putDoc, deleteDoc, historyDocs } = require("../persistence/docs")
 const { promote } = require("../persistence/promote")
-const { NotFoundError } = require("../utils/errors")
+const { distribute } = require("../persistence/distribute")
+const { NotFoundError, BadRequestError } = require("../utils/errors")
 const {
   requirePathQuery,
   resolveOriginPath,
@@ -101,6 +102,22 @@ async function routes(fastify) {
       }
     }
   )
+  fastify.get(
+    "/database/scopes/:scopeRef/docs/history",
+    { preHandler: [fastify.resolvePrincipal] },
+    async (req) => {
+      const docPath = requirePathQuery(req)
+      const scopeId = await requireRead(req.params.scopeRef, req.personRef)
+      const history = await historyDocs({
+        operatingScopeId: scopeId,
+        personRef: req.personRef,
+        docPath,
+        resolveOriginPath,
+      })
+      return { history }
+    }
+  )
+
   fastify.delete(
     "/database/scopes/:scopeRef/docs",
     { preHandler: [fastify.requireLogin] },
@@ -134,6 +151,40 @@ async function routes(fastify) {
         personRef: req.personRef,
         docPath,
         expectedVersion: version,
+      })
+    }
+  )
+  fastify.post(
+    "/database/scopes/:scopeRef/docs/distribute",
+    {
+      schema: {
+        body: {
+          type: "object",
+          required: ["path", "targetScopeRefs"],
+          properties: {
+            path: { type: "string", minLength: 1 },
+            version: { type: "integer", minimum: 1 },
+            targetScopeRefs: {
+              type: "array",
+              items: { type: "string", pattern: "^\\d+$" },
+              minItems: 1,
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+      preHandler: [fastify.requireLogin],
+    },
+    async (req) => {
+      const { path, version, targetScopeRefs } = req.body
+      // Caller must be an explicit member of the source scope.
+      await requireWriteLeaf(req.params.scopeRef, req.personRef)
+      return distribute({
+        sourceScopeId: req.params.scopeRef,
+        personRef: req.personRef,
+        docPath: path,
+        expectedVersion: version,
+        targetScopeRefs,
       })
     }
   )
