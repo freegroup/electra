@@ -75,6 +75,7 @@ async function build() {
   // Routes
   await fastify.register(require("./routes/scopes"))
   await fastify.register(require("./routes/docs"))
+  await fastify.register(require("./routes/review"))
   await fastify.register(require("./routes/publish"))
   await fastify.register(require("./routes/blobs"))
   await fastify.register(require("./routes/rename"))

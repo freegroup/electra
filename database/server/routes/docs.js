@@ -9,6 +9,7 @@
 // under the operating scope on first write.
 
 const { getDoc, listDocs, putDoc } = require("../persistence/docs")
+const { promote } = require("../persistence/promote")
 const { NotFoundError } = require("../utils/errors")
 const {
   requirePathQuery,
@@ -98,6 +99,22 @@ async function routes(fastify) {
         author: inserted.author,
         createdAt: inserted.created_at,
       }
+    }
+  )
+  fastify.post(
+    "/database/scopes/:scopeRef/docs/promote",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const docPath = requirePathQuery(req)
+      // Must be an explicit member of the operating scope to promote from it.
+      await requireWriteLeaf(req.params.scopeRef, req.personRef)
+      const version = req.body && req.body.version
+      return promote({
+        operatingScopeId: req.params.scopeRef,
+        personRef: req.personRef,
+        docPath,
+        expectedVersion: version,
+      })
     }
   )
 }
