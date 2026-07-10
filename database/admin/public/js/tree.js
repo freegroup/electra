@@ -12,7 +12,6 @@
 // Exposed as global `Tree`.
 
 const Tree = (() => {
-  let onSelectScope = () => {}
   let onSelectDoc = () => {}
   let nameOf = (ref) => ref // hash → friendly handle (set by app.js)
 
@@ -151,9 +150,9 @@ const Tree = (() => {
     node.appendChild(container)
     container.style.display = open ? "" : "none"
 
-    // Clicking the scope name selects it as operating scope (and toggles).
+    // Clicking a scope only expands/collapses it — selecting the working scope
+    // is done in card 1's dropdown, so the tree stays a pure overview.
     row.addEventListener("click", (ev) => {
-      onSelectScope(scope)
       open = !open
       tw.textContent = open ? "▾" : "▸"
       container.style.display = open ? "" : "none"
@@ -190,7 +189,6 @@ const Tree = (() => {
 
   return {
     render,
-    onSelectScope: (fn) => { onSelectScope = fn },
     onSelectDoc: (fn) => { onSelectDoc = fn },
     setNameResolver: (fn) => { nameOf = fn },
   }

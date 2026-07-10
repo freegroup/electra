@@ -93,17 +93,33 @@
     updateReviewPanel()
   }
 
+  // Full path of a scope (e.g. "electra/apps/brains") from the flat list,
+  // with any personRef segment shown as its friendly handle when known.
+  function scopePath(scope) {
+    const byId = new Map(state.scopes.map((s) => [s.id, s]))
+    const parts = []
+    let cur = scope
+    while (cur) {
+      parts.unshift(state.hashToHandle[cur.name] || cur.name)
+      cur = cur.parentId ? byId.get(cur.parentId) : null
+    }
+    return parts.join("/")
+  }
+
   // Rebuild the "working in" dropdown from the current tree (non-leaf scopes,
   // shown by their full path). Keeps the current selection if still present.
   function refreshScopeSelect() {
     const sel = $("scope-select")
     const cur = state.scope ? (state.scope.isLeaf ? state.scope.parentId : state.scope.id) : ""
     sel.innerHTML = '<option value="">— pick a scope —</option>'
-    for (const s of state.scopes) {
-      if (s.isLeaf) continue
+    const rows = state.scopes
+      .filter((s) => !s.isLeaf)
+      .map((s) => ({ id: s.id, path: scopePath(s) }))
+      .sort((a, b) => a.path.localeCompare(b.path))
+    for (const r of rows) {
       const o = document.createElement("option")
-      o.value = s.id
-      o.textContent = s.name
+      o.value = r.id
+      o.textContent = r.path
       sel.appendChild(o)
     }
     if (cur) sel.value = cur
@@ -131,40 +147,22 @@
     refreshScopeSelect()
   }
 
-  Tree.onSelectScope((scope) => selectScope(scope))
   Tree.onSelectDoc(async (scope, path) => {
-    // Inspecting a node in the tree is a god-view read of THAT exact version —
-    // independent of the acting persona, so it works even for foreign leaves
-    // (the persona-scoped Load button still tests real visibility).
+    // Clicking a file in the tree just INSPECTS it (read-only, god-view) and
+    // fills the path — it does not change who/where you act as. Set that in
+    // card 1, then use Load/Save to act. Works even for foreign leaves.
     $("doc-path").value = path
     const r = await API.god(`doc?scope=${scope.id}&path=${encodeURIComponent(path)}`)
     if (!r.ok) { logResult("inspect", r); return }
     const doc = r.body
-
-    // If the clicked node is a personal leaf, switch the acting persona to its
-    // owner and operate in the parent scope — so edits/promotes act as them.
-    if (scope.isLeaf) {
-      const owner = state.hashToHandle[scope.name] || scope.name
-      if (state.hashToHandle[scope.name]) {
-        API.persona.email = owner
-        refreshPersonaSelect()
-      }
-      const parent = state.scopes.find((s) => s.id === scope.parentId)
-      selectScope(parent || scope)
-    } else {
-      selectScope(scope)
-    }
-
-    // Content view only; god-view has no leaf-origin path, so a subsequent
-    // Save is treated as a fresh write. Use the Load button for a
-    // concurrency-aware, persona-scoped load.
     Doc.clear()
     Doc.fill("doc-data", "doc-meta", doc)
+    const ownerHint = scope.isLeaf
+      ? ` — held by ${state.hashToHandle[scope.name] || scope.name}`
+      : " — shared version"
     $("doc-origin").textContent =
-      `origin: scope ${doc.scopeRef}  v${doc.version}  ${doc.status}` +
-      (scope.isLeaf ? "  (god-view; acting as leaf owner)" : "  (god-view)")
+      `inspecting v${doc.version} ${doc.status}${ownerHint}  (read-only god-view)`
     log(`inspect ${path} @ scope ${scope.id} v${doc.version}`, "ok")
-    await updateReviewPanel()
   })
 
   // ---- document actions --------------------------------------------------
