@@ -11,11 +11,41 @@
     hashToHandle: {},   // personRef (SHA-256) → friendly handle, for display
   }
 
+  // Known handles the admin recognizes. The DB only ever stores the one-way
+  // hash (personRef = SHA-256(handle)) — good for privacy, painful for an
+  // admin staring at hashes. We hash these locally at startup and whenever the
+  // admin adds one, so the tree/dropdown can show real names. Nothing is sent
+  // to or stored by the DB. Persisted in localStorage for convenience.
+  const SEED_HANDLES = [
+    "admin@electra.academy",
+    "test-root@electra.local",
+    "anna", "bob", "zoe",
+  ]
+  function loadKnownHandles() {
+    let saved = []
+    try { saved = JSON.parse(localStorage.getItem("db-admin-handles") || "[]") } catch {}
+    return [...new Set([...SEED_HANDLES, ...saved])]
+  }
+  function saveKnownHandle(handle) {
+    let saved = []
+    try { saved = JSON.parse(localStorage.getItem("db-admin-handles") || "[]") } catch {}
+    if (!saved.includes(handle)) {
+      saved.push(handle)
+      localStorage.setItem("db-admin-handles", JSON.stringify(saved))
+    }
+  }
+  async function resolveKnownHandles() {
+    for (const h of loadKnownHandles()) {
+      state.hashToHandle[await API.personRef(h)] = h
+    }
+  }
+
   // Record the handle↔hash mapping so the tree can show friendly names and the
   // reviewer check can match the current persona against god-view personRefs.
   function rememberHandle(handle, hash) {
     state.hashToHandle[hash] = handle
     if (!state.personas.includes(handle)) state.personas.push(handle)
+    saveKnownHandle(handle)
   }
 
   // ---- logging -----------------------------------------------------------
@@ -421,8 +451,15 @@
       const scope = state.scopes.find((s) => s.id === e.target.value)
       selectScope(scope || null)
     })
-    $("persona-new").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { addPersona(e.target.value.trim()); e.target.value = "" }
+    $("persona-new").addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const h = e.target.value.trim()
+        e.target.value = ""
+        if (!h) return
+        await addPersona(h)
+        // Re-render so a newly-named hash shows its real name in the tree.
+        await reloadTree()
+      }
     })
 
     // doc buttons
@@ -454,7 +491,8 @@
     addPersona("admin@electra.academy")
 
     checkHealth()
-    reloadTree()
+    // Resolve known handles → hashes first, then render so names show up.
+    resolveKnownHandles().then(reloadTree)
   }
 
   document.addEventListener("DOMContentLoaded", init)

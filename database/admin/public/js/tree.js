@@ -95,8 +95,11 @@ const Tree = (() => {
     return node
   }
 
-  function memberBadges(row, members) {
+  function memberBadges(row, members, scopeName) {
     for (const m of members) {
+      // Skip the scope owner's own membership row — showing "d2e7ab02 admin"
+      // right under a scope literally named d2e7ab02 is just noise.
+      if (m.personRef === scopeName) continue
       const roles = []
       if (m.isAdmin) roles.push("admin")
       if (m.reviewerScore !== null && m.reviewerScore !== undefined) roles.push("rev:" + m.reviewerScore)
@@ -116,8 +119,9 @@ const Tree = (() => {
     const tw = twisty(open)
     row.appendChild(tw)
     const nameCls = scope.isLeaf ? "leaf-name" : "scope-name"
-    row.appendChild(el("span", nameCls, (scope.isLeaf ? "👤 " + short(scope.name) : scope.name)))
-    if (!scope.isLeaf) memberBadges(row, scope.members)
+    const displayName = scope.isLeaf ? "👤 " + short(scope.name) : short(scope.name)
+    row.appendChild(el("span", nameCls, displayName))
+    if (!scope.isLeaf) memberBadges(row, scope.members, scope.name)
     node.appendChild(row)
 
     const kids = childrenOf.get(scope.id) || []

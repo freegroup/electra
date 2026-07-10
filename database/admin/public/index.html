@@ -44,7 +44,7 @@
               <option value="anonym">anonym</option>
             </select>
           </label>
-          <input id="persona-new" placeholder="+ new persona, then Enter" />
+          <input id="persona-new" placeholder="+ add/name a persona (handle), Enter" title="Adds a persona you can act as, and labels its hash in the tree" />
           <label>working in
             <select id="scope-select"><option value="">— pick a scope —</option></select>
           </label>
@@ -68,6 +68,21 @@
             <button id="btn-list" title="List everything visible here">List</button>
             <button id="btn-history" title="Show full version history">History</button>
           </div>
+
+          <!-- classic document toolbar -->
+          <div class="toolbar">
+            <button id="btn-save" class="primary" title="Write a new version into my leaf">Save</button>
+            <button id="btn-revert" title="Discard all my local versions">Revert</button>
+            <button id="btn-rename" title="Rename / move within my leaf">Rename…</button>
+            <span class="tb-sep"></span>
+            <button id="btn-promote" title="Offer to the level above for review">Promote ↑</button>
+            <button id="btn-distribute" title="Send to other scopes">Distribute →</button>
+            <button id="btn-delete" class="danger" title="Start a delete (tombstone)">Delete</button>
+            <span class="tb-sep"></span>
+            <button id="btn-publish" title="Attach a public link">Publish</button>
+            <button id="btn-unpublish" title="Take the public link down">Unpublish</button>
+          </div>
+
           <div id="doc-origin" class="origin"></div>
           <div class="editors">
             <div class="editor">
@@ -82,33 +97,9 @@
         </div>
       </div>
 
-      <!-- STEP 3 — actions -->
-      <div class="card">
-        <div class="card-head">3 · Do something</div>
-        <div class="card-body">
-          <div class="action-group">
-            <span class="action-label">Edit in my leaf</span>
-            <button id="btn-save" class="primary">Save</button>
-            <button id="btn-revert" title="Discard all my local versions">Revert</button>
-            <button id="btn-rename">Rename…</button>
-          </div>
-          <div class="action-group">
-            <span class="action-label">Share upward / sideways</span>
-            <button id="btn-promote" title="Offer to the level above for review">Promote ↑</button>
-            <button id="btn-distribute" title="Send to other scopes">Distribute →</button>
-            <button id="btn-delete" class="danger" title="Start a delete (tombstone)">Delete</button>
-          </div>
-          <div class="action-group">
-            <span class="action-label">Public link</span>
-            <button id="btn-publish">Publish</button>
-            <button id="btn-unpublish">Unpublish</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 4 — review (only when reviewer) -->
+      <!-- review (only when reviewer) -->
       <div id="review" class="card hidden">
-        <div class="card-head">4 · Review queue <span class="pane-sub">(you review this scope)</span></div>
+        <div class="card-head">3 · Review queue <span class="pane-sub">(you review this scope)</span></div>
         <div id="pending-list" class="card-body"></div>
       </div>
 

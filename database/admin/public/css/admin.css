@@ -137,7 +137,15 @@ textarea {
   font-size: 12px; resize: vertical; line-height: 1.4;
 }
 
-/* Action groups */
+/* Document toolbar (classic) */
+.toolbar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: 10px 0 4px; padding: 8px; border-radius: 6px;
+  background: var(--panel2); border: 1px solid var(--line);
+}
+.tb-sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
+
+/* Action groups (legacy; kept for any remaining use) */
 .action-group { display: flex; align-items: center; gap: 8px; padding: 5px 0; flex-wrap: wrap; }
 .action-group + .action-group { border-top: 1px dashed var(--line); }
 .action-label { color: var(--muted); font-size: 11px; width: 130px; flex-shrink: 0; }
