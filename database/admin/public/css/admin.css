@@ -60,17 +60,6 @@ body {
 }
 .pane-sub { text-transform: none; letter-spacing: 0; opacity: .8; }
 
-/* Tree legend */
-.legend {
-  display: flex; flex-direction: column; gap: 3px;
-  padding: 4px 12px 8px; color: var(--muted); font-size: 11px;
-}
-.legend .lg { font-family: var(--mono); margin-right: 6px; }
-.legend .lg.scope { color: var(--fg); }
-.legend .lg.leaf { color: var(--accent); }
-.legend .lg.doc { color: var(--fg); background: var(--panel2); padding: 0 5px; border-radius: 6px; }
-.legend-foot { padding: 8px 12px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); }
-
 /* Tree */
 .tree { padding: 4px 6px; font-family: var(--mono); font-size: 12px; flex: 1; overflow: auto; }
 .node { padding: 1px 0; white-space: nowrap; }
