@@ -25,6 +25,10 @@ process.env.DATABASE_TEST_MODE = "1"
 process.env.NODE_ENV = "test"
 process.env.LOG_LEVEL = process.env.LOG_LEVEL || "warn"
 
+// A deterministic admin token so the god-view endpoints are enabled in tests.
+process.env.DATABASE_ADMIN_TOKEN = process.env.DATABASE_ADMIN_TOKEN || "test-admin-token"
+const ADMIN_TOKEN = process.env.DATABASE_ADMIN_TOKEN
+
 // Point the init module at a deterministic test init file that declares
 // TEST_ROOT_ADMIN_EMAIL as the root admin.
 const TEST_ROOT_ADMIN_EMAIL = "test-root@electra.local"
@@ -206,4 +210,5 @@ module.exports = {
   makeKlasseScope,
   ROOT_ADMIN_HASH,
   TEST_ROOT_ADMIN_EMAIL,
+  ADMIN_TOKEN,
 }

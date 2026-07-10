@@ -74,6 +74,15 @@ module.exports = {
             env: { "NODE_ENV": "production"}
           },
           {
+            // Localhost-only admin/testing explorer. Deliberately NOT proxied
+            // by the ingress — reach it via localhost or an SSH tunnel.
+            name   : "database-admin",
+            cwd : "./database/admin",
+            script: "node",
+            args: "./server/index",
+            env: { "NODE_ENV": "production"}
+          },
+          {
             name   : "ingress",
             cwd : "./ingress",
             script: "node",

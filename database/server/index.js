@@ -79,6 +79,7 @@ async function build() {
   await fastify.register(require("./routes/publish"))
   await fastify.register(require("./routes/blobs"))
   await fastify.register(require("./routes/rename"))
+  await fastify.register(require("./routes/admin"))
 
   fastify.get("/database/health", async () => ({ status: "ok" }))
 

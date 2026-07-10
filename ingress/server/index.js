@@ -185,6 +185,10 @@ app.use('/author',       prefixed('/author',       PORT_AUTHOR))
 app.use('/sheets',       prefixed('/sheets',       PORT_SHEETS))
 app.use('/brains',       prefixed('/brains',       PORT_BRAINS))
 app.use('/database',     prefixed('/database',     process.env.PORT_DATABASE))
+// NOTE: the database admin explorer (database/admin, PORT_DB_ADMIN) is
+// intentionally NOT proxied here. It is a localhost-only dev/ops tool with a
+// god-view over all private data; exposing it publicly would defeat that.
+// Reach it via localhost or an SSH tunnel.
 app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
 app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
 app.use('/circuit',      prefixed('/circuit',      PORT_SIMULATOR))

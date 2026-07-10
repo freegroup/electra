@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Database Explorer</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">Database Explorer</span>
+    <span class="hint">localhost admin / testing tool</span>
+    <button id="reload-tree" title="Reload the whole tree">↻ reload tree</button>
+    <span id="db-status" class="status">DB: …</span>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: god-view tree -->
+    <section class="tree-pane">
+      <div class="pane-title">Scope tree</div>
+      <div id="tree" class="tree"></div>
+    </section>
+
+    <!-- RIGHT: document + actions -->
+    <section class="doc-pane">
+      <div class="acting-as">
+        <label>acting as
+          <select id="persona"></select>
+        </label>
+        <label>role
+          <select id="role">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+            <option value="anonym">anonym</option>
+          </select>
+        </label>
+        <input id="persona-new" placeholder="+ add persona (email/handle)" />
+        <span class="op-scope">operating scope:
+          <strong id="op-scope">—</strong>
+        </span>
+      </div>
+
+      <div class="doc-head">
+        <label class="path-row">path
+          <input id="doc-path" placeholder="math/quadratic.json" />
+        </label>
+        <span id="doc-origin" class="origin"></span>
+        <span class="doc-actions">
+          <button id="btn-load">Load</button>
+          <button id="btn-list">List</button>
+          <button id="btn-history">History</button>
+        </span>
+      </div>
+
+      <div class="editors">
+        <div class="editor">
+          <div class="editor-label">data</div>
+          <textarea id="doc-data" spellcheck="false">{}</textarea>
+        </div>
+        <div class="editor">
+          <div class="editor-label">meta</div>
+          <textarea id="doc-meta" spellcheck="false">{}</textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btn-save" class="primary">Save</button>
+        <button id="btn-promote">Promote ↑</button>
+        <button id="btn-distribute">Distribute →</button>
+        <button id="btn-delete" class="danger">Delete</button>
+        <button id="btn-revert">Revert</button>
+        <button id="btn-rename">Rename</button>
+        <button id="btn-publish">Publish</button>
+        <button id="btn-unpublish">Unpublish</button>
+      </div>
+
+      <div id="review" class="review hidden">
+        <div class="pane-title">Review (you are a reviewer here)</div>
+        <div id="pending-list"></div>
+      </div>
+
+      <div class="admin-forms">
+        <div class="pane-title">Scope admin (on selected scope)</div>
+        <div class="mini-forms">
+          <span><input id="f-subscope" placeholder="new sub-scope name" />
+            <input id="f-subscope-score" type="number" min="0" value="0" title="requiredApprovalScore" style="width:4em" />
+            <button id="btn-subscope">+ sub-scope</button></span>
+          <span><input id="f-member" placeholder="personRef" />
+            <button id="btn-member">+ member</button></span>
+          <span><input id="f-reviewer" placeholder="personRef" />
+            <input id="f-reviewer-score" type="number" min="0" max="10" value="5" style="width:4em" />
+            <button id="btn-reviewer">+ reviewer</button></span>
+          <span><input id="f-score" type="number" min="0" value="0" style="width:5em" />
+            <button id="btn-score">set requiredApprovalScore</button></span>
+        </div>
+      </div>
+
+      <pre id="log" class="log"></pre>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/tree.js"></script>
+  <script src="js/doc.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
