@@ -201,8 +201,16 @@
     if (!id) { log("select an operating scope first", "err"); return null }
     return id
   }
+  // Normalize a path the way the DB expects: no leading/trailing slashes, no
+  // doubled slashes. The DB rejects malformed paths (integrity); we sanitize
+  // here so the admin doesn't have to. "/mein//ordner/x " → "mein/ordner/x".
+  function sanitizePath(p) {
+    return String(p || "").trim().replace(/\/+/g, "/").replace(/^\/|\/$/g, "")
+  }
   function docPath() {
-    const p = $("doc-path").value.trim()
+    const raw = $("doc-path").value
+    const p = sanitizePath(raw)
+    if (p !== raw.trim()) $("doc-path").value = p // reflect the cleanup
     if (!p) { log("enter a document path", "err") }
     return p
   }
@@ -300,13 +308,29 @@
   async function renameDoc() {
     const id = needScope(); if (!id) return
     const path = docPath(); if (!path) return
-    const newPath = prompt("New path:", path)
+    const newPath = sanitizePath(prompt("New path:", path))
     if (!newPath || newPath === path) return
+
+    // 1. Try a normal leaf rename (moves all local versions, keeps publicId).
     const cur = Doc.getCurrent()
     const body = { path, newPath }
     if (cur && cur.version != null) body.version = cur.version
     const r = await API.call("POST", `scopes/${id}/docs/rename`, body)
-    logResult("rename", r)
+    if (r.ok) { logResult("rename", r); await afterMutation(); return }
+    if (r.status !== 404) { logResult("rename", r); return }
+
+    // 2. 404 = nothing local at the old path → the doc is inherited/shared.
+    //    A real rename = copy to the new path + tombstone the old one, both in
+    //    the caller's leaf. (The DB rename stays leaf-only by design; this is a
+    //    UI convenience.) Promote both afterwards to rename it for the group.
+    log("inherited doc — renaming via copy + local tombstone", "ok")
+    const read = await API.call("GET", `scopes/${id}/docs?path=${encodeURIComponent(path)}`)
+    if (!read.ok) { logResult("rename/read", read); return }
+    const putR = await API.call("PUT", `scopes/${id}/docs?path=${encodeURIComponent(newPath)}`,
+      { data: read.body.data, meta: read.body.meta })
+    if (!putR.ok) { logResult("rename/copy", putR); return }
+    const delR = await API.call("DELETE", `scopes/${id}/docs?path=${encodeURIComponent(path)}`, {})
+    logResult("rename (copy + tombstone)", delR)
     await afterMutation()
   }
 
