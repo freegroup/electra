@@ -5,7 +5,7 @@
 // secret (X-Admin-Token == DATABASE_ADMIN_TOKEN) and are intentionally NOT
 // proxied by the public ingress — only the local admin BFF can reach them.
 
-const { fullTree, versionsUnder } = require("../persistence/admin")
+const { fullTree, versionsUnder, docAt } = require("../persistence/admin")
 const { getScope } = require("../persistence/scopes")
 const { pool } = require("../persistence/pool")
 const {
@@ -51,6 +51,21 @@ async function routes(fastify) {
       }
       const versions = await versionsUnder(scope)
       return { versions }
+    }
+  )
+  fastify.get(
+    "/database/admin/doc",
+    { preHandler: [requireAdminToken] },
+    async (req) => {
+      const scope = req.query && req.query.scope
+      const path = req.query && req.query.path
+      if (!scope || !/^\d+$/.test(String(scope))) {
+        throw new BadRequestError("query parameter `scope` (numeric id) required")
+      }
+      if (!path) throw new BadRequestError("query parameter `path` required")
+      const doc = await docAt(scope, String(path))
+      if (!doc) throw new NotFoundError(`no version at ${path} in scope ${scope}`)
+      return doc
     }
   )
 }

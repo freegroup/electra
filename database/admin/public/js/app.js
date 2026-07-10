@@ -29,8 +29,30 @@
   }
   function logResult(label, r) {
     const kind = r.ok ? "ok" : "err"
-    const body = typeof r.body === "string" ? r.body : JSON.stringify(r.body)
-    log(`${label} → ${r.status} ${body}`, kind)
+    log(`${label} — ${summarize(r)}`, kind)
+  }
+
+  // Turn a raw response into a short human sentence.
+  function summarize(r) {
+    const b = r.body
+    if (!r.ok) {
+      const code = b && b.error && b.error.code
+      const msg = b && b.error && b.error.message
+      return `✗ ${r.status} ${code || ""}${msg ? " — " + msg : ""}`.trim()
+    }
+    if (b && b.version != null && b.status) return `✓ saved v${b.version} (${b.status})`
+    if (b && b.status && b.scopeRef) return `✓ ${b.status}${b.version ? " v" + b.version : ""} on scope ${b.scopeRef}`
+    if (b && b.publicId) return `✓ published → /database/public/${b.publicId}`
+    if (b && Array.isArray(b.distributions)) {
+      return "✓ distributed: " + b.distributions.map((d) => `${d.targetScopeRef}:${d.status}`).join(", ")
+    }
+    if (b && Array.isArray(b.docs)) return `✓ ${b.docs.length} document(s) visible`
+    if (b && Array.isArray(b.history)) return `✓ ${b.history.length} version(s) in history`
+    if (b && typeof b.deleted === "number") return `✓ removed ${b.deleted} version(s)`
+    if (b && b.committed !== undefined) return `✓ ${b.committed ? "approved & committed" : "vote recorded (still pending)"}`
+    if (b && b.rejected) return "✓ rejected"
+    if (b && b.moved !== undefined) return `✓ moved ${b.moved}`
+    return `✓ ${r.status}`
   }
 
   // ---- persona bar -------------------------------------------------------
@@ -57,7 +79,15 @@
   // ---- scope selection ---------------------------------------------------
   function selectScope(scope) {
     state.scope = scope
-    $("op-scope").textContent = scope ? scope.name : "—"
+    $("op-scope").textContent = scope ? scope.name : "— pick a scope on the left —"
+    // Show the scope-admin card for the selected scope (not for leaves).
+    const adminCard = $("admin-card")
+    if (scope && !scope.isLeaf) {
+      adminCard.classList.remove("hidden")
+      $("admin-scope-name").textContent = scope.name
+    } else {
+      adminCard.classList.add("hidden")
+    }
     updateReviewPanel()
   }
 
@@ -84,12 +114,38 @@
 
   Tree.onSelectScope((scope) => selectScope(scope))
   Tree.onSelectDoc(async (scope, path) => {
-    // Operate in the scope where the doc was found; load via walk-up from there.
-    const opId = scope.isLeaf ? scope.parentId : scope.id
-    const target = state.scopes.find((s) => s.id === opId)
-    selectScope(target || scope)
+    // Inspecting a node in the tree is a god-view read of THAT exact version —
+    // independent of the acting persona, so it works even for foreign leaves
+    // (the persona-scoped Load button still tests real visibility).
     $("doc-path").value = path
-    await loadDoc()
+    const r = await API.god(`doc?scope=${scope.id}&path=${encodeURIComponent(path)}`)
+    if (!r.ok) { logResult("inspect", r); return }
+    const doc = r.body
+
+    // If the clicked node is a personal leaf, switch the acting persona to its
+    // owner and operate in the parent scope — so edits/promotes act as them.
+    if (scope.isLeaf) {
+      const owner = state.hashToHandle[scope.name] || scope.name
+      if (state.hashToHandle[scope.name]) {
+        API.persona.email = owner
+        refreshPersonaSelect()
+      }
+      const parent = state.scopes.find((s) => s.id === scope.parentId)
+      selectScope(parent || scope)
+    } else {
+      selectScope(scope)
+    }
+
+    // Content view only; god-view has no leaf-origin path, so a subsequent
+    // Save is treated as a fresh write. Use the Load button for a
+    // concurrency-aware, persona-scoped load.
+    Doc.clear()
+    Doc.fill("doc-data", "doc-meta", doc)
+    $("doc-origin").textContent =
+      `origin: scope ${doc.scopeRef}  v${doc.version}  ${doc.status}` +
+      (scope.isLeaf ? "  (god-view; acting as leaf owner)" : "  (god-view)")
+    log(`inspect ${path} @ scope ${scope.id} v${doc.version}`, "ok")
+    await updateReviewPanel()
   })
 
   // ---- document actions --------------------------------------------------
@@ -124,6 +180,7 @@
     const id = needScope(); if (!id) return
     const r = await API.call("GET", `scopes/${id}/docs`)
     logResult("list", r)
+    if (r.ok) for (const d of r.body.docs) log(`   • ${d.path}  ←  ${d.scope}`, "ok")
   }
 
   async function historyDoc() {
@@ -131,7 +188,12 @@
     const path = docPath(); if (!path) return
     const r = await API.call("GET", `scopes/${id}/docs/history?path=${encodeURIComponent(path)}`)
     logResult("history", r)
+    if (r.ok) for (const h of r.body.history) {
+      const votes = (h.votes || []).map((v) => `${short(v.voter)}:${v.kind}`).join(",")
+      log(`   • v${h.version} ${h.status} by ${short(h.author)} @ ${h.scope}${votes ? "  [" + votes + "]" : ""}`, "ok")
+    }
   }
+  function short(ref) { return ref && ref.length > 12 ? ref.slice(0, 8) + "…" : ref }
 
   async function saveDoc() {
     const id = needScope(); if (!id) return
@@ -266,7 +328,7 @@
       row.append(label, ok, no)
       list.appendChild(row)
     }
-    if (!r.body.pending.length) list.textContent = "  (nothing pending)"
+    if (!r.body.pending.length) list.innerHTML = '<div class="empty">nothing pending</div>'
   }
 
   // ---- scope admin forms -------------------------------------------------
@@ -362,6 +424,7 @@
     $("btn-score").onclick = setScore
 
     $("reload-tree").onclick = reloadTree
+    $("clear-log").onclick = () => { $("log").innerHTML = "" }
 
     // Let the tree show friendly handles instead of raw personRef hashes.
     Tree.setNameResolver((ref) => state.hashToHandle[ref] || ref)

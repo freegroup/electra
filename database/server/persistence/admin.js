@@ -95,4 +95,32 @@ async function versionsUnder(scopeId) {
   }))
 }
 
-module.exports = { fullTree, versionsUnder }
+// The active version (highest committed/deleted) stored on EXACTLY this scope
+// (no walk-up), with full content. Powers the explorer's "click any node to
+// inspect it" — including foreign leaves the normal API would hide.
+async function docAt(scopeId, docPath) {
+  const res = await pool.query(
+    `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
+            author, public_id, created_at
+       FROM versions
+      WHERE scope_id = $1 AND doc_path = $2 AND status IN ('committed', 'deleted')
+      ORDER BY version DESC LIMIT 1`,
+    [scopeId, docPath]
+  )
+  if (res.rowCount === 0) return null
+  const r = res.rows[0]
+  return {
+    scopeRef: String(r.scope_id),
+    path: r.doc_path,
+    version: r.version,
+    status: r.status,
+    isDeletion: r.is_deletion,
+    data: r.data,
+    meta: r.meta,
+    author: r.author,
+    publicId: r.public_id,
+    createdAt: r.created_at,
+  }
+}
+
+module.exports = { fullTree, versionsUnder, docAt }

@@ -79,3 +79,21 @@ test("versions endpoint validates the scope id", async () => {
   const missing = await get(ctx, "/database/admin/versions?scope=999999", tokenHeader())
   assert.equal(missing.statusCode, 404)
 })
+
+test("the doc endpoint reads a foreign leaf's exact version (god-view)", async () => {
+  // anna's private version lives in her leaf under klasse8a; the walk-up would
+  // hide it from anyone else, but the god-view reads it directly.
+  const tree = await get(ctx, "/database/admin/tree", tokenHeader())
+  const annaLeaf = tree.json().scopes.find(
+    (s) => s.name === "anna" && s.parentId === String(klasseId)
+  )
+  const res = await get(ctx, `/database/admin/doc?scope=${annaLeaf.id}&path=math/quad.json`, tokenHeader())
+  assert.equal(res.statusCode, 200)
+  assert.equal(res.json().author, "anna")
+  assert.equal(res.json().data.by, "anna")
+})
+
+test("the doc endpoint requires the token and validates params", async () => {
+  assert.equal((await get(ctx, "/database/admin/doc?scope=1&path=x", {})).statusCode, 401)
+  assert.equal((await get(ctx, "/database/admin/doc?scope=1", tokenHeader())).statusCode, 400)
+})
