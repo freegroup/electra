@@ -86,7 +86,11 @@ body {
 .hidden { display: none; }
 
 /* Cards */
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  overflow: hidden;
+  flex: 0 0 auto;   /* never shrink below content — otherwise a card clips itself */
+}
 .card-head {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 12px; background: var(--panel2);
