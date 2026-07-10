@@ -79,7 +79,9 @@
   // ---- scope selection ---------------------------------------------------
   function selectScope(scope) {
     state.scope = scope
-    $("op-scope").textContent = scope ? scope.name : "— pick a scope on the left —"
+    // Keep the "working in" dropdown in sync (leaves resolve to their parent).
+    const sel = $("scope-select")
+    if (scope) sel.value = scope.isLeaf ? (scope.parentId || "") : scope.id
     // Show the scope-admin card for the selected scope (not for leaves).
     const adminCard = $("admin-card")
     if (scope && !scope.isLeaf) {
@@ -89,6 +91,22 @@
       adminCard.classList.add("hidden")
     }
     updateReviewPanel()
+  }
+
+  // Rebuild the "working in" dropdown from the current tree (non-leaf scopes,
+  // shown by their full path). Keeps the current selection if still present.
+  function refreshScopeSelect() {
+    const sel = $("scope-select")
+    const cur = state.scope ? (state.scope.isLeaf ? state.scope.parentId : state.scope.id) : ""
+    sel.innerHTML = '<option value="">— pick a scope —</option>'
+    for (const s of state.scopes) {
+      if (s.isLeaf) continue
+      const o = document.createElement("option")
+      o.value = s.id
+      o.textContent = s.name
+      sel.appendChild(o)
+    }
+    if (cur) sel.value = cur
   }
 
   // The operating scope for doc actions: if a personal leaf is selected, use
@@ -110,6 +128,7 @@
     for (const s of scopes) for (const m of s.members) refs.add(m.personRef)
     state.personas = [...refs]
     refreshPersonaSelect()
+    refreshScopeSelect()
   }
 
   Tree.onSelectScope((scope) => selectScope(scope))
@@ -400,6 +419,10 @@
     // persona controls
     $("persona").addEventListener("change", (e) => { API.persona.email = e.target.value })
     $("role").addEventListener("change", (e) => { API.persona.role = e.target.value; updateReviewPanel() })
+    $("scope-select").addEventListener("change", (e) => {
+      const scope = state.scopes.find((s) => s.id === e.target.value)
+      selectScope(scope || null)
+    })
     $("persona-new").addEventListener("keydown", (e) => {
       if (e.key === "Enter") { addPersona(e.target.value.trim()); e.target.value = "" }
     })
