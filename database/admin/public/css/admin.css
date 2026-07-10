@@ -88,19 +88,21 @@ body {
 /* Cards */
 .card {
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-  overflow: hidden;
   flex: 0 0 auto;   /* never shrink below content — otherwise a card clips itself */
 }
 .card-head {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 12px; background: var(--panel2);
   font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--line);
+  border-radius: 8px 8px 0 0;
 }
 .card-body { padding: 12px; }
 .card-help { padding: 0 12px 10px; color: var(--muted); font-size: 11px; }
 
 .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .row label { color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.row label.grow { flex: 1; }
+.row label.grow select { flex: 1; }
 .grow { flex: 1; }
 .spacer { flex: 1; }
 .op-scope { color: var(--muted); }
