@@ -73,3 +73,43 @@ test("self-enrollment: a caller may add themselves without being admin", async (
   const res = await post(ctx, `/database/scopes/${klasseId}/members`, asPerson("selfie"), { personRef: "selfie" })
   assert.equal(res.statusCode, 201)
 })
+
+test("a scope can be renamed; path reflects it, docs are untouched", async () => {
+  // Seed a doc so we can prove the rename doesn't disturb content.
+  await ctx.pool.query(
+    `INSERT INTO "${ctx.schema}".versions
+       (scope_id, doc_path, version, status, is_deletion, data, meta, author)
+     VALUES ($1, 'x.json', 1, 'committed', false, '{"a":1}'::jsonb, '{}'::jsonb, 'seed')`,
+    [klasseId]
+  )
+  const res = await patch(ctx, `/database/scopes/${klasseId}`, asRootAdmin(), { name: "klasse-8b" })
+  assert.equal(res.statusCode, 200)
+  assert.equal(res.json().name, "klasse-8b")
+
+  const meta = await get(ctx, `/database/scopes/${klasseId}`, asRootAdmin())
+  assert.equal(meta.json().name, "electra/apps/brains/klasse-8b")
+
+  const doc = await ctx.pool.query(
+    `SELECT data FROM "${ctx.schema}".versions WHERE scope_id = $1 AND doc_path = 'x.json'`,
+    [klasseId]
+  )
+  assert.equal(doc.rows[0].data.a, 1) // content survived the rename
+})
+
+test("renaming onto a sibling's name → 409 conflict", async () => {
+  await createScope(ctx, brainsId, "sibling")
+  const res = await patch(ctx, `/database/scopes/${klasseId}`, asRootAdmin(), { name: "sibling" })
+  assert.equal(res.statusCode, 409)
+})
+
+test("renaming a personal leaf is refused → 409", async () => {
+  // The leaf owner is admin of their own leaf, so they pass the admin gate —
+  // and then hit the 'a personal leaf cannot be renamed' guard.
+  await post(ctx, `/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "leafowner" })
+  const leaf = await ctx.pool.query(
+    `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = 'leafowner'`,
+    [klasseId]
+  )
+  const res = await patch(ctx, `/database/scopes/${leaf.rows[0].id}`, asPerson("leafowner"), { name: "renamed" })
+  assert.equal(res.statusCode, 409)
+})

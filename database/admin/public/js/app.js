@@ -307,7 +307,7 @@
     }
     container.appendChild(listWrap)
 
-    if (known) Detail.setActions([actionBtn("New document", () => newDocument({ scopeId: scope.parentId, persona: owner }))])
+    if (known) Detail.setActions([actionBtn("Add document", () => newDocument({ scopeId: scope.parentId, persona: owner }))])
     else container.appendChild(UI.el("div", "detail-note", "Unknown persona — add its handle (top bar) to act as them."))
   }
 
@@ -317,8 +317,12 @@
     scope = state.scopes.find((s) => s.id === scope.id) || scope
     Detail.setTitle(`Scope: ${scopePath(scope)}`)
 
-    // config: score + ceiling (Save lives in the toolbar)
+    // config: name + score + ceiling (Save lives in the toolbar)
     const cfg = UI.el("div", "detail-section")
+    const nameInput = document.createElement("input")
+    nameInput.type = "text"; nameInput.value = scope.name
+    const nRow = UI.el("div", "form-row"); nRow.append(UI.el("label", "form-label", "name"), nameInput)
+    cfg.appendChild(nRow)
     const scoreInput = document.createElement("input")
     scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
     const sRow = UI.el("div", "form-row"); sRow.append(UI.el("label", "form-label", "required approval score"), scoreInput)
@@ -330,6 +334,8 @@
 
     const saveConfig = async () => {
       const patch = {}
+      const newName = nameInput.value.trim()
+      if (newName && newName !== scope.name) patch.name = newName
       if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)
       if (ceil.checked !== !!scope.promoteCeiling) patch.promoteCeiling = ceil.checked
       if (!Object.keys(patch).length) { log("no config changes", "ok"); return }
@@ -345,7 +351,7 @@
     save.onclick = saveConfig
     Detail.setActions([
       save,
-      actionBtn("New document here", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
+      actionBtn("Add document", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
       actionBtn("Add sub-scope", () => addSubScope(scope)),
       actionBtn("Review queue", () => reviewQueue(scope)),
       actionBtn("Delete scope", () => deleteScope(scope), true),
@@ -494,7 +500,7 @@
     const res = await UI.dialog({
       title: "New document", okLabel: "Create & edit",
       fields: [
-        { key: "scopeId", label: "in scope", type: "custom", el: sel, get: () => sel.value },
+        { key: "scopeId", label: "visible for", type: "custom", el: sel, get: () => sel.value },
         { key: "persona", label: "as persona", type: "text", value: persona || API.persona.email },
         { key: "path", label: "path", type: "text", placeholder: "e.g. math/quadratic.json" },
       ],
@@ -654,7 +660,7 @@
 
   function scopeMenu(scope, x, y) {
     UI.menu(x, y, [
-      { label: "New document here…", onClick: () => newDocument({ scopeId: scope.id, persona: API.persona.email }) },
+      { label: "Add document…", onClick: () => newDocument({ scopeId: scope.id, persona: API.persona.email }) },
       { label: "Scope properties…", onClick: () => scopeProperties(scope) },
       { label: "Add sub-scope…", onClick: () => addSubScope(scope) },
       { label: "Review queue…", onClick: () => reviewQueue(scope) },

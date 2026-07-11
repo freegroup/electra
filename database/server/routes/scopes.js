@@ -28,6 +28,7 @@ const {
   setReviewer,
   setRequiredApprovalScore,
   setPromoteCeiling,
+  renameScope,
   myScopes,
   getScope,
 } = require("../persistence/scopes")
@@ -72,6 +73,7 @@ const configBody = {
   properties: {
     requiredApprovalScore: { type: "integer", minimum: 0 },
     promoteCeiling: { type: "boolean" },
+    name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
   },
   additionalProperties: false,
 }
@@ -300,6 +302,10 @@ async function routes(fastify) {
       if (req.body.promoteCeiling !== undefined) {
         await setPromoteCeiling({ scopeId, value: req.body.promoteCeiling })
         out.promoteCeiling = req.body.promoteCeiling
+      }
+      if (req.body.name !== undefined) {
+        const row = await renameScope({ scopeId, name: req.body.name })
+        out.name = row.name
       }
       return out
     }

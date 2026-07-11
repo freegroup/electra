@@ -424,6 +424,53 @@ async function setPromoteCeiling({ scopeId, value }) {
   if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
 }
 
+// Renames a scope. Internally cheap: everything (versions, closure, members,
+// votes, blobs) keys off scopes.id, and paths are derived live from the
+// parent chain — so only this one row changes, no cascade.
+//
+// Guards:
+//   - a personal LEAF must not be renamed: the walk-up joins leaves by
+//     name == personRef, so a leaf's name is load-bearing (README §6.2).
+//   - the new name must not collide with a sibling (UNIQUE(parent_id, name)).
+//   - a name must not contain "/" (path separator) and must be non-empty.
+async function renameScope({ scopeId, name }) {
+  if (typeof name !== "string" || name.length === 0) {
+    throw new BadRequestError("scope name must be a non-empty string")
+  }
+  if (name.includes("/")) {
+    throw new BadRequestError('scope name must not contain "/"')
+  }
+  const client = await pool.connect()
+  try {
+    const cur = await getScope(client, scopeId)
+    if (!cur) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    // Reject renaming a personal leaf (name == a member's personRef of parent).
+    if (cur.parent_id != null) {
+      const isLeaf = await client.query(
+        `SELECT 1 FROM memberships WHERE scope_id = $1 AND person_ref = $2`,
+        [cur.parent_id, cur.name]
+      )
+      if (isLeaf.rowCount > 0) {
+        throw new ConflictError("a personal leaf cannot be renamed")
+      }
+    }
+    try {
+      const res = await client.query(
+        `UPDATE scopes SET name = $2 WHERE id = $1 RETURNING id, name`,
+        [scopeId, name]
+      )
+      return res.rows[0]
+    } catch (err) {
+      if (err.code === "23505") {
+        throw new ConflictError(`a sibling scope named "${name}" already exists`)
+      }
+      throw err
+    }
+  } finally {
+    client.release()
+  }
+}
+
 // Returns every scope the caller is an explicit member of, with their roles
 // there (README §9.7). Feeds the UI's create-in / browse pickers. Excludes
 // the caller's own personal leaves — those are internal storage, not scopes a
@@ -471,6 +518,7 @@ module.exports = {
   setReviewer,
   setRequiredApprovalScore,
   setPromoteCeiling,
+  renameScope,
   myScopes,
   leafUnderScope,
 }
