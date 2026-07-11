@@ -10,19 +10,24 @@
 const Detail = (() => {
   const renderers = {}
   let container = null
+  let headEl = null
   let current = null // { kind, ctx }
   let emptyHint = "Select a node in the tree."
 
-  function init(el, hint) {
+  function init(el, hint, head) {
     container = el
+    headEl = head || null
     if (hint) emptyHint = hint
     clear()
   }
 
   function register(kind, renderFn) { renderers[kind] = renderFn }
 
+  function setTitle(t) { if (headEl) headEl.textContent = t }
+
   function clear() {
     current = null
+    setTitle("Detail")
     if (!container) return
     container.innerHTML = ""
     const empty = document.createElement("div")
@@ -47,5 +52,5 @@ const Detail = (() => {
 
   function currentSelection() { return current }
 
-  return { init, register, show, refresh, clear, currentSelection }
+  return { init, register, show, refresh, clear, currentSelection, setTitle }
 })()

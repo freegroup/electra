@@ -156,9 +156,9 @@
     const r = await API.god(`doc?scope=${godScope}&path=${encodeURIComponent(path)}`)
     const doc = r.ok ? r.body : { data: {}, meta: {}, version: "?", status: "?" }
 
-    container.appendChild(UI.el("div", "detail-head", `Document — ${path}`))
     container.appendChild(UI.el("div", "detail-sub",
       inLeaf ? `in ${nameOf(scope.name)}'s leaf under ${scopePathById(scope.parentId)}` : `shared on ${scopePath(scope)}`))
+    Detail.setTitle(`Document: ${path}`)
 
     // "save in" target: every scope the persona may write in (default the
     // operating scope). A new/inherited edit lands in that persona's leaf here.
@@ -240,7 +240,7 @@
   async function renderLeafDetail(container, { scope }) {
     const owner = nameOf(scope.name)
     const known = state.hashToHandle[scope.name] !== undefined
-    container.appendChild(UI.el("div", "detail-head", `👤 ${owner}`))
+    Detail.setTitle(`Person: ${owner}`)
     container.appendChild(UI.el("div", "detail-sub", `personal leaf under ${scopePathById(scope.parentId)}`))
 
     const vr = await API.god("versions?scope=" + scope.id)
@@ -269,7 +269,7 @@
   async function renderScopeDetail(container, { scope }) {
     // Use the freshest copy from state (afterMutation reloads the tree).
     scope = state.scopes.find((s) => s.id === scope.id) || scope
-    container.appendChild(UI.el("div", "detail-head", `Scope — ${scopePath(scope)}`))
+    Detail.setTitle(`Scope: ${scopePath(scope)}`)
 
     // config: score + ceiling + save
     const cfg = UI.el("div", "detail-section")
@@ -674,7 +674,7 @@
     $("clear-log").onclick = () => { $("log").innerHTML = "" }
 
     // Detail registry: each node kind → its renderer.
-    Detail.init($("detail"), "Select a scope, person, or document in the tree.")
+    Detail.init($("detail"), "Select a scope, person, or document in the tree.", $("detail-head"))
     Detail.register("scope", renderScopeDetail)
     Detail.register("leaf", renderLeafDetail)
     Detail.register("doc", renderDocDetail)
