@@ -244,6 +244,9 @@
         actionBtn("Revert", () => actRevert(base), true),
         actionBtn("Delete", () => actDelete(base), true),
       )
+    } else if (!inLeaf) {
+      // Shared/inherited doc: Save forks a copy; Delete = tombstone + promote.
+      buttons.push(actionBtn("Delete", () => actDelete(base), true))
     }
     buttons.push(actionBtn("History", () => actHistory(base)))
     Detail.setActions(buttons)
@@ -416,11 +419,22 @@
     await afterMutation()
   }
 
-  async function actDelete({ scopeId, path, persona, active }) {
+  // Delete = the document is gone (for the group). Always tombstone + promote.
+  // Works uniformly whether the caller has an own leaf copy or only the
+  // inherited/shared original — the DELETE endpoint writes the tombstone into
+  // the caller's leaf either way; promote then removes it for the scope.
+  async function actDelete({ scopeId, path, persona }) {
     actAs(persona)
-    if (!(await UI.confirm({ title: "Delete", message: `Delete "${path}" (as ${persona})? A local tombstone hides it from this persona; promote it to remove it for the group.`, okLabel: "Delete", danger: true }))) return
-    const body = active && active.version != null ? { version: active.version } : {}
-    logResult(`delete ${path}`, await API.call("DELETE", `scopes/${scopeId}/docs?path=${encodeURIComponent(path)}`, body))
+    if (!(await UI.confirm({
+      title: "Delete",
+      message: `Delete "${path}" as ${persona}? Writes a delete and promotes it — removed for ${scopePathById(scopeId)}, subject to that scope's review.`,
+      okLabel: "Delete", danger: true,
+    }))) return
+    const del = await API.call("DELETE", `scopes/${scopeId}/docs?path=${encodeURIComponent(path)}`, {})
+    logResult(`delete ${path}`, del)
+    if (!del.ok) { await afterMutation(); return }
+    const pbody = del.body && del.body.version != null ? { version: del.body.version } : {}
+    logResult(`promote delete ${path}`, await API.call("POST", `scopes/${scopeId}/docs/promote?path=${encodeURIComponent(path)}`, pbody))
     await afterMutation()
   }
 
@@ -660,9 +674,13 @@
   function docMenu(ctx, x, y) {
     const { scope, path, active, inLeaf } = ctx
     if (!inLeaf) {
+      // A shared/inherited doc — acted on as the current persona; Delete writes
+      // a tombstone into their leaf and promotes it (removed for the group).
       return UI.menu(x, y, [
-        { label: "Open (edit → creates your copy)", onClick: () => navigate("doc", ctx) },
+        { label: "Open", onClick: () => navigate("doc", ctx) },
         { label: "History…", onClick: () => actHistory({ scopeId: scope.id, path, persona: API.persona.email }) },
+        null,
+        { label: "Delete", danger: true, onClick: () => actDelete({ scopeId: scope.id, path, persona: API.persona.email }) },
       ])
     }
     const owner = nameOf(scope.name)
