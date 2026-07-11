@@ -171,8 +171,7 @@
     const tRow = UI.el("div", "form-row")
     tRow.append(UI.el("label", "form-label", "visible for"), saveSel)
     container.appendChild(tRow)
-    const asRow = UI.el("div", "detail-sub"); asRow.textContent = `acting as ${owner}`
-    container.appendChild(asRow)
+    // (persona is shown in the top bar; a leaf doc auto-switches it to the owner)
 
     // path + editors (reuse Doc IDs so Doc.* helpers keep working).
     const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
