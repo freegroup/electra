@@ -8,12 +8,11 @@
 const { pool } = require("./pool")
 
 // The full scope tree with members. Each scope row carries its parent, name,
-// approval score, and the list of member rows (personRef + roles). A scope is
-// flagged `isLeaf` when its name equals a person who is a member of its parent
-// — i.e. it is somebody's personal leaf.
+// approval score, and the list of member rows (personRef + roles). `isLeaf`
+// comes straight from the scopes.is_personal_leaf column.
 async function fullTree() {
   const scopeRes = await pool.query(
-    `SELECT id, parent_id, name, required_approval_score, promote_ceiling
+    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf
        FROM scopes
       ORDER BY id`
   )
@@ -34,25 +33,15 @@ async function fullTree() {
     })
   }
 
-  // A scope is a personal leaf if its name matches a person who is a member of
-  // its parent scope (the leaf-naming convention).
-  const byId = new Map(scopeRes.rows.map((s) => [s.id, s]))
-  const scopes = scopeRes.rows.map((s) => {
-    let isLeaf = false
-    if (s.parent_id != null) {
-      const parentMembers = membersByScope.get(s.parent_id) || []
-      isLeaf = parentMembers.some((m) => m.personRef === s.name)
-    }
-    return {
-      id: String(s.id),
-      parentId: s.parent_id == null ? null : String(s.parent_id),
-      name: s.name,
-      requiredApprovalScore: s.required_approval_score,
-      promoteCeiling: s.promote_ceiling,
-      isLeaf,
-      members: membersByScope.get(s.id) || [],
-    }
-  })
+  const scopes = scopeRes.rows.map((s) => ({
+    id: String(s.id),
+    parentId: s.parent_id == null ? null : String(s.parent_id),
+    name: s.name,
+    requiredApprovalScore: s.required_approval_score,
+    promoteCeiling: s.promote_ceiling,
+    isLeaf: s.is_personal_leaf,
+    members: membersByScope.get(s.id) || [],
+  }))
 
   return { scopes }
 }

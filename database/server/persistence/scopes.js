@@ -178,7 +178,7 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
 
 async function getScope(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, created_at, created_by
+    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf, created_at, created_by
      FROM scopes WHERE id = $1`,
     [scopeId]
   )
@@ -301,8 +301,8 @@ async function addMemberWithLeaf({ scopeId, personRef, createdBy }) {
       leafId = leafRes.rows[0].id
     } else {
       const insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, required_approval_score, created_by)
-         VALUES ($1, $2, 0, $3)
+        `INSERT INTO scopes (parent_id, name, required_approval_score, created_by, is_personal_leaf)
+         VALUES ($1, $2, 0, $3, true)
          RETURNING id`,
         [scopeId, personRef, createdBy]
       )
@@ -336,12 +336,18 @@ async function addMemberWithLeaf({ scopeId, personRef, createdBy }) {
   }
 }
 
-// Revokes explicit membership at scopeId. Clears is_member; if no role flags
-// remain (not admin, not reviewer) the row is removed entirely. The personal
-// leaf is left in place — its documents are removed via revert, not here.
+// Revokes explicit membership at scopeId AND physically deletes their personal
+// leaf beneath it (name == personRef), including all its versions/blobs/votes
+// and any public_ids on them. This is a hard cleanup — like a forced revert of
+// that leaf — chosen so removing a member never leaves an orphan leaf behind.
+// All in one transaction.
 async function removeMember({ scopeId, personRef }) {
   const client = await pool.connect()
   try {
+    await client.query("BEGIN")
+
+    // Drop the explicit membership on the scope (keep other role rows, or
+    // remove the row entirely if nothing else remains).
     await client.query(
       `UPDATE memberships SET is_member = false
         WHERE scope_id = $1 AND person_ref = $2`,
@@ -353,6 +359,28 @@ async function removeMember({ scopeId, personRef }) {
           AND is_member = false AND is_admin = false AND reviewer_score IS NULL`,
       [scopeId, personRef]
     )
+
+    // Find and remove the person's personal leaf under this scope, if any.
+    const leaf = await client.query(
+      `SELECT id FROM scopes WHERE parent_id = $1 AND name = $2`,
+      [scopeId, personRef]
+    )
+    if (leaf.rowCount > 0) {
+      const leafId = leaf.rows[0].id
+      // versions → scopes is ON DELETE RESTRICT, so purge content first
+      // (blobs/votes cascade off versions).
+      await client.query(`DELETE FROM versions WHERE scope_id = $1`, [leafId])
+      await client.query(
+        `DELETE FROM memberships WHERE scope_id = $1`, [leafId])
+      await client.query(
+        `DELETE FROM scope_closure WHERE ancestor_id = $1 OR descendant_id = $1`, [leafId])
+      await client.query(`DELETE FROM scopes WHERE id = $1`, [leafId])
+    }
+
+    await client.query("COMMIT")
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
   } finally {
     client.release()
   }
@@ -445,15 +473,10 @@ async function renameScope({ scopeId, name }) {
   try {
     const cur = await getScope(client, scopeId)
     if (!cur) throw new NotFoundError(`unknown scope id ${scopeId}`)
-    // Reject renaming a personal leaf (name == a member's personRef of parent).
-    if (cur.parent_id != null) {
-      const isLeaf = await client.query(
-        `SELECT 1 FROM memberships WHERE scope_id = $1 AND person_ref = $2`,
-        [cur.parent_id, cur.name]
-      )
-      if (isLeaf.rowCount > 0) {
-        throw new ConflictError("a personal leaf cannot be renamed")
-      }
+    // A personal leaf must not be renamed — its name is load-bearing for the
+    // walk-up (which joins leaves by name == personRef, README §6.2).
+    if (cur.is_personal_leaf) {
+      throw new ConflictError("a personal leaf cannot be renamed")
     }
     try {
       const res = await client.query(

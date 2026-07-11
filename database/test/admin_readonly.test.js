@@ -59,6 +59,19 @@ test("the tree exposes every scope, its members, and flags personal leaves", asy
   assert.ok(bobLeaf && bobLeaf.isLeaf)
 })
 
+test("a leaf stays classified as a leaf after its owner is removed from the parent", async () => {
+  // Removing bob's membership from klasse8a must NOT turn his leftover leaf
+  // into a normal scope — leaf detection keys off the leaf's own self-row.
+  await ctx.pool.query(
+    `UPDATE "${ctx.schema}".memberships SET is_member = false
+      WHERE scope_id = $1 AND person_ref = 'bob'`,
+    [klasseId]
+  )
+  const res = await get(ctx, "/database/admin/tree", tokenHeader())
+  const bobLeaf = res.json().scopes.find((s) => s.name === "bob" && s.parentId === String(klasseId))
+  assert.ok(bobLeaf && bobLeaf.isLeaf, "bob's leaf still reads as a leaf")
+})
+
 test("the versions endpoint spans the subtree including foreign leaves", async () => {
   const res = await get(ctx, `/database/admin/versions?scope=${klasseId}`, tokenHeader())
   assert.equal(res.statusCode, 200)

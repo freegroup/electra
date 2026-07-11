@@ -86,9 +86,9 @@ Both are wrapped in the same transaction as the corresponding `scopes` INSERT/DE
 
 ### 2.4 Personal Leaf Auto-Provisioning
 
-When a person is added as a member of scope `S`, a leaf scope is inserted as a child of `S` in the same transaction. The person is the sole member and no reviewer/admin configuration is applied.
+When a person is added as a member of scope `S`, a leaf scope is inserted as a child of `S` in the same transaction, with `is_personal_leaf = true`. The person is the sole member and no reviewer/admin configuration is applied. The leaf's `name` equals the person's `personRef` — the walk-up joins leaves by name to know *whose* leaf it is — while `is_personal_leaf` is the explicit, robust flag for *whether* a scope is a leaf (a scope is never mis-detected as a leaf just because its name happens to match a member).
 
-A leaf is removed only when the person is removed from `S` **and** the leaf holds no content. Otherwise removal fails. Enforced by a foreign-key from `versions` to `scopes` with `ON DELETE RESTRICT`.
+Removing a person from `S` (`DELETE .../members/:personRef`) also **physically deletes their leaf and all its content** — versions, blobs, votes, and any `public_id`s go with it (a forced revert of that leaf). This is a hard cleanup so removal never leaves an orphan leaf behind. Everything runs in one transaction; `versions` rows are deleted before the leaf scope (their FK to `scopes` is `ON DELETE RESTRICT`), closure/membership rows go with the scope.
 
 ---
 
@@ -108,6 +108,8 @@ CREATE TABLE scopes (
     name                        text        NOT NULL,
     required_approval_score     integer     NOT NULL DEFAULT 0
                                 CHECK (required_approval_score >= 0),
+    promote_ceiling             boolean     NOT NULL DEFAULT false,  -- content can't promote above here
+    is_personal_leaf            boolean     NOT NULL DEFAULT false,  -- a member's private override scope
     created_at                  timestamptz NOT NULL DEFAULT now(),
     created_by                  text        NOT NULL,     -- personRef
 

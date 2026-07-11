@@ -510,7 +510,7 @@ POST   /database/scopes/{scopeRef}/scopes             create a sub-scope
 DELETE /database/scopes/{scopeRef}                     remove this scope
 
 POST   /database/scopes/{scopeRef}/members             add a member (body: { personRef })
-DELETE /database/scopes/{scopeRef}/members/{personRef} remove a member
+DELETE /database/scopes/{scopeRef}/members/{personRef} remove a member (also deletes their personal leaf + its content)
 
 POST   /database/scopes/{scopeRef}/admins              grant admin here (body: { personRef })
 DELETE /database/scopes/{scopeRef}/admins/{personRef}  revoke admin here

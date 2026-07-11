@@ -7,7 +7,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asPerson, asRootAdmin, asAnon, get, post, patch, del, createScope, scopeIdByPath,
+  asPerson, asRootAdmin, asAnon, get, post, put, patch, del, createScope, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("admin")
 
@@ -37,6 +37,34 @@ test("an admin adds and removes a member", async () => {
   )
   // Either removed entirely, or is_member cleared.
   assert.ok(row.rowCount === 0 || row.rows[0].is_member === false)
+})
+
+test("removing a member physically deletes their personal leaf and its docs", async () => {
+  // anna joins, writes a private doc (creating her leaf + a version), then is
+  // removed → her leaf and its content must be gone.
+  await post(ctx, `/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "carla" })
+  await put(ctx, `/database/scopes/${klasseId}/docs?path=notes.json`, asPerson("carla"), { data: { x: 1 } })
+
+  const before = await ctx.pool.query(
+    `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = 'carla'`, [klasseId])
+  assert.equal(before.rowCount, 1, "leaf exists before removal")
+  const leafId = before.rows[0].id
+  const docsBefore = await ctx.pool.query(
+    `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".versions WHERE scope_id = $1`, [leafId])
+  assert.equal(docsBefore.rows[0].n, 1, "leaf has the doc")
+
+  const rm = await del(ctx, `/database/scopes/${klasseId}/members/carla`, asRootAdmin())
+  assert.equal(rm.statusCode, 200)
+
+  const leafAfter = await ctx.pool.query(
+    `SELECT id FROM "${ctx.schema}".scopes WHERE id = $1`, [leafId])
+  assert.equal(leafAfter.rowCount, 0, "leaf scope is gone")
+  const docsAfter = await ctx.pool.query(
+    `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".versions WHERE scope_id = $1`, [leafId])
+  assert.equal(docsAfter.rows[0].n, 0, "leaf versions are gone")
+  const closureAfter = await ctx.pool.query(
+    `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".scope_closure WHERE descendant_id = $1 OR ancestor_id = $1`, [leafId])
+  assert.equal(closureAfter.rows[0].n, 0, "closure rows are gone")
 })
 
 test("granting a reviewer role is independent of membership", async () => {
