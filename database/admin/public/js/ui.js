@@ -68,7 +68,7 @@ const UI = (() => {
       }
       for (const f of fields) {
         const rowEl = el("div", "form-row")
-        if (f.type !== "custom") rowEl.appendChild(el("label", "form-label", f.label))
+        if (f.label) rowEl.appendChild(el("label", "form-label", f.label))
         let input
         if (f.type === "static") {
           input = el("div", "form-static", f.value == null ? "" : String(f.value))

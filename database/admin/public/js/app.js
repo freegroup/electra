@@ -208,20 +208,20 @@
     }
     saveSel.value = operatingScopeId
     const tRow = UI.el("div", "form-row")
-    tRow.append(UI.el("label", "form-label", "visible for"), saveSel)
+    tRow.append(UI.el("label", "form-label", "Visible for"), saveSel)
     container.appendChild(tRow)
     // (persona is shown in the top bar; a leaf doc auto-switches it to the owner)
 
     // path + editors (reuse Doc IDs so Doc.* helpers keep working).
     const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
-    const pRow = UI.el("div", "form-row"); pRow.append(UI.el("label", "form-label", "path"), pathInput)
+    const pRow = UI.el("div", "form-row"); pRow.append(UI.el("label", "form-label", "Path"), pathInput)
     container.appendChild(pRow)
 
     const editors = UI.el("div", "editors")
-    const dWrap = UI.el("div", "editor"); dWrap.appendChild(UI.el("div", "editor-label", "data"))
+    const dWrap = UI.el("div", "editor"); dWrap.appendChild(UI.el("div", "editor-label", "Data"))
     const dTa = document.createElement("textarea"); dTa.id = "doc-data"; dTa.spellcheck = false
     dWrap.appendChild(dTa)
-    const mWrap = UI.el("div", "editor"); mWrap.appendChild(UI.el("div", "editor-label", "meta"))
+    const mWrap = UI.el("div", "editor"); mWrap.appendChild(UI.el("div", "editor-label", "Meta"))
     const mTa = document.createElement("textarea"); mTa.id = "doc-meta"; mTa.spellcheck = false
     mWrap.appendChild(mTa)
     editors.append(dWrap, mWrap)
@@ -321,14 +321,14 @@
     const cfg = UI.el("div", "detail-section")
     const nameInput = document.createElement("input")
     nameInput.type = "text"; nameInput.value = scope.name
-    const nRow = UI.el("div", "form-row"); nRow.append(UI.el("label", "form-label", "name"), nameInput)
+    const nRow = UI.el("div", "form-row"); nRow.append(UI.el("label", "form-label", "Name"), nameInput)
     cfg.appendChild(nRow)
     const scoreInput = document.createElement("input")
     scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
-    const sRow = UI.el("div", "form-row"); sRow.append(UI.el("label", "form-label", "required approval score"), scoreInput)
+    const sRow = UI.el("div", "form-row"); sRow.append(UI.el("label", "form-label", "Required approval score"), scoreInput)
     cfg.appendChild(sRow)
     const ceil = document.createElement("input"); ceil.type = "checkbox"; ceil.checked = !!scope.promoteCeiling
-    const cRow = UI.el("div", "form-row"); cRow.append(UI.el("label", "form-label", "promote ceiling"), ceil)
+    const cRow = UI.el("div", "form-row"); cRow.append(UI.el("label", "form-label", "Promote ceiling"), ceil)
     cfg.appendChild(cRow)
     container.appendChild(cfg)
 
@@ -365,10 +365,10 @@
     const ok = await UI.dialog({
       title: "Promote", okLabel: "Promote",
       fields: [
-        { key: "scope", label: "from scope", type: "static", value: scopePathById(scopeId) },
-        { key: "path", label: "path", type: "static", value: path },
-        { key: "as", label: "as", type: "static", value: persona },
-        { key: "v", label: "version", type: "static", value: active ? active.version : "(current)" },
+        { key: "scope", label: "From scope", type: "static", value: scopePathById(scopeId) },
+        { key: "path", label: "Path", type: "static", value: path },
+        { key: "as", label: "As", type: "static", value: persona },
+        { key: "v", label: "Version", type: "static", value: active ? active.version : "(current)" },
       ],
     })
     if (!ok) return
@@ -390,7 +390,7 @@
     }
     const res = await UI.dialog({
       title: `Distribute ${path}`, okLabel: "Distribute",
-      fields: [{ key: "targets", label: "to scopes", type: "custom", el: list,
+      fields: [{ key: "targets", label: "To scopes", type: "custom", el: list,
         get: () => boxes.filter((b) => b.checked).map((b) => b.value) }],
     })
     if (!res) return
@@ -406,7 +406,7 @@
     actAs(persona)
     const res = await UI.dialog({
       title: `Rename ${path}`, okLabel: "Rename",
-      fields: [{ key: "newPath", label: "new path", type: "text", value: path }],
+      fields: [{ key: "newPath", label: "New path", type: "text", value: path }],
     })
     if (!res) return
     const newPath = sanitizePath(res.newPath)
@@ -459,7 +459,7 @@
     logResult(`publish ${path}`, r)
     if (r.ok && r.body.publicId) {
       await UI.dialog({ title: "Published", okLabel: "OK", cancelLabel: "Close",
-        fields: [{ key: "url", label: "public URL", type: "static", value: `/database/public/${r.body.publicId}` }] })
+        fields: [{ key: "url", label: "Public URL", type: "static", value: `/database/public/${r.body.publicId}` }] })
     }
     await afterMutation()
   }
@@ -500,9 +500,9 @@
     const res = await UI.dialog({
       title: "New document", okLabel: "Create & edit",
       fields: [
-        { key: "scopeId", label: "visible for", type: "custom", el: sel, get: () => sel.value },
-        { key: "persona", label: "as persona", type: "text", value: persona || API.persona.email },
-        { key: "path", label: "path", type: "text", placeholder: "e.g. math/quadratic.json" },
+        { key: "scopeId", label: "Visible for", type: "custom", el: sel, get: () => sel.value },
+        { key: "persona", label: "As persona", type: "text", value: persona || API.persona.email },
+        { key: "path", label: "Path", type: "text", placeholder: "e.g. math/quadratic.json" },
       ],
     })
     if (!res) return
@@ -529,13 +529,13 @@
     const scoreInput = document.createElement("input")
     scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
     const scoreRow = UI.el("div", "form-row")
-    scoreRow.append(UI.el("label", "form-label", "required approval score"), scoreInput)
+    scoreRow.append(UI.el("label", "form-label", "Required approval score"), scoreInput)
     body.appendChild(scoreRow)
 
     const ceil = document.createElement("input")
     ceil.type = "checkbox"; ceil.checked = !!scope.promoteCeiling
     const ceilRow = UI.el("div", "form-row")
-    ceilRow.append(UI.el("label", "form-label", "promote ceiling"), ceil)
+    ceilRow.append(UI.el("label", "form-label", "Promote ceiling"), ceil)
     body.appendChild(ceilRow)
 
     // Members / reviewers / admins live editors (each row: handle + remove).
@@ -606,9 +606,9 @@
     const res = await UI.dialog({
       title: `New sub-scope under ${scopePath(scope)}`, okLabel: "Create",
       fields: [
-        { key: "name", label: "name", type: "text", placeholder: "e.g. klasse8a" },
-        { key: "requiredApprovalScore", label: "required approval score", type: "number", value: 0, min: 0 },
-        { key: "promoteCeiling", label: "promote ceiling", type: "checkbox", value: false },
+        { key: "name", label: "Name", type: "text", placeholder: "e.g. klasse8a" },
+        { key: "requiredApprovalScore", label: "Required approval score", type: "number", value: 0, min: 0 },
+        { key: "promoteCeiling", label: "Promote ceiling", type: "checkbox", value: false },
       ],
     })
     if (!res || !res.name) return
@@ -639,7 +639,7 @@
       }
       const no = UI.el("button", "danger", "reject")
       no.onclick = async () => {
-        const rr = await UI.dialog({ title: "Reject", okLabel: "Reject", fields: [{ key: "reason", label: "reason", type: "text" }] })
+        const rr = await UI.dialog({ title: "Reject", okLabel: "Reject", fields: [{ key: "reason", label: "Reason", type: "text" }] })
         if (!rr) return
         logResult("reject", await API.call("POST", `scopes/${scope.id}/pending/reject`, { path: p.path, version: p.version, reason: rr.reason || undefined }))
         await afterMutation()
