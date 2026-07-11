@@ -5,7 +5,7 @@
 // secret (X-Admin-Token == DATABASE_ADMIN_TOKEN) and are intentionally NOT
 // proxied by the public ingress — only the local admin BFF can reach them.
 
-const { fullTree, versionsUnder, docAt } = require("../persistence/admin")
+const { fullTree, versionsUnder, docAt, docVersions } = require("../persistence/admin")
 const { getScope } = require("../persistence/scopes")
 const { pool } = require("../persistence/pool")
 const {
@@ -59,13 +59,29 @@ async function routes(fastify) {
     async (req) => {
       const scope = req.query && req.query.scope
       const path = req.query && req.query.path
+      const version = req.query && req.query.version
       if (!scope || !/^\d+$/.test(String(scope))) {
         throw new BadRequestError("query parameter `scope` (numeric id) required")
       }
       if (!path) throw new BadRequestError("query parameter `path` required")
-      const doc = await docAt(scope, String(path))
+      const v = version != null && /^\d+$/.test(String(version)) ? Number(version) : undefined
+      const doc = await docAt(scope, String(path), v)
       if (!doc) throw new NotFoundError(`no version at ${path} in scope ${scope}`)
       return doc
+    }
+  )
+
+  fastify.get(
+    "/database/admin/doc-versions",
+    { preHandler: [requireAdminToken] },
+    async (req) => {
+      const scope = req.query && req.query.scope
+      const path = req.query && req.query.path
+      if (!scope || !/^\d+$/.test(String(scope))) {
+        throw new BadRequestError("query parameter `scope` (numeric id) required")
+      }
+      if (!path) throw new BadRequestError("query parameter `path` required")
+      return { versions: await docVersions(scope, String(path)) }
     }
   )
 }

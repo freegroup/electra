@@ -94,3 +94,28 @@ test("an unknown public id → 404", async () => {
   const res = await publicRead("00000000-0000-0000-0000-000000000000")
   assert.equal(res.statusCode, 404)
 })
+
+test("publishing an OLDER version explicitly, independent of the newer one", async () => {
+  // Two versions of the same leaf path.
+  const w1 = await writeDoc(ctx, klasseId, "ver/x.json", asPerson("anna"), { data: { rev: 1 } })
+  const v1 = w1.json().version
+  const cur = (await get(ctx, `/database/scopes/${klasseId}/docs?path=ver/x.json`, asPerson("anna"))).json()
+  await writeDoc(ctx, klasseId, "ver/x.json", asPerson("anna"), { ...cur, data: { rev: 2 } })
+
+  // Publish the OLDER version (v1) explicitly — newer stays unpublished.
+  const pub = await post(ctx, `/database/scopes/${klasseId}/docs/publish`, asPerson("anna"),
+    { path: "ver/x.json", version: v1 })
+  assert.equal(pub.statusCode, 201, pub.body)
+  const id1 = pub.json().publicId
+  assert.equal(pub.json().version, v1)
+
+  const anon = await publicRead(id1)
+  assert.equal(anon.statusCode, 200)
+  assert.equal(anon.json().data.rev, 1) // the OLD content is what's public
+
+  // Unpublish that specific version → its link is 410 (take-down, not 404).
+  const unp = await post(ctx, `/database/scopes/${klasseId}/docs/unpublish`, asPerson("anna"),
+    { path: "ver/x.json", version: v1 })
+  assert.equal(unp.statusCode, 200)
+  assert.equal((await publicRead(id1)).statusCode, 410)
+})

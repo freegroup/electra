@@ -117,7 +117,10 @@
   // node is bookmarkable.
   function keyForCtx(kind, ctx) {
     if (kind === "scope" || kind === "leaf") return `${kind}/${ctx.scope.id}`
-    if (kind === "doc") return `doc/${ctx.scope.id}/${encodeURIComponent(ctx.path)}`
+    if (kind === "doc") {
+      const base = `doc/${ctx.scope.id}/${encodeURIComponent(ctx.path)}`
+      return ctx.version != null ? `${base}/${ctx.version}` : base
+    }
     return null
   }
   function navigate(kind, ctx) {
@@ -135,17 +138,22 @@
       return scope ? { kind, ctx: { scope } } : null
     }
     if (kind === "doc") {
+      // doc/<scopeId>/<encodedPath>[/<version>]
       const scope = state.scopes.find((s) => s.id === parts[1])
-      const path = decodeURIComponent(parts.slice(2).join("/"))
       if (!scope) return null
-      return { kind, ctx: { scope, path, active: null, inLeaf: !!scope.isLeaf } }
+      const path = decodeURIComponent(parts[2] || "")
+      const version = parts[3] != null && /^\d+$/.test(parts[3]) ? Number(parts[3]) : undefined
+      return { kind, ctx: { scope, path, version, inLeaf: !!scope.isLeaf } }
     }
     return null
   }
   async function routeHash() {
     const sel = ctxFromHash()
     if (!sel) { Detail.clear(); Tree.highlightKey(null); return }
-    Tree.highlightKey(keyForCtx(sel.kind, sel.ctx))
+    // Tree rows key on scope+path (no version) — highlight the row regardless
+    // of which version the detail shows.
+    const rowCtx = sel.kind === "doc" ? { scope: sel.ctx.scope, path: sel.ctx.path } : sel.ctx
+    Tree.highlightKey(keyForCtx(sel.kind, rowCtx))
     await Detail.show(sel.kind, sel.ctx)
   }
 
@@ -161,29 +169,51 @@
   // DETAIL RENDERERS — one per node kind. Registered in init().
   // =======================================================================
 
-  // ---- doc detail: the editor + per-doc action row -----------------------
-  // ctx: { scope, path, active, inLeaf }. A leaf doc is edited/acted-on as its
-  // owner; a shared doc is edited as the current persona (Save forks a copy).
+  // ---- doc detail: version selector + editor + per-doc actions -----------
+  // ctx: { scope, path, inLeaf, version? }. A leaf doc is edited/acted-on as
+  // its owner; a shared doc as the current persona. The Version combobox picks
+  // which version to view: the newest is editable; older ones are read-only
+  // except for the per-version "Shared public" toggle.
   async function renderDocDetail(container, ctx) {
     const { scope, path, inLeaf } = ctx
     const owner = inLeaf ? nameOf(scope.name) : API.persona.email
     const knownOwner = !inLeaf || state.hashToHandle[scope.name] !== undefined
     const operatingScopeId = inLeaf ? scope.parentId : scope.id
-
     if (inLeaf) actAs(owner)
-
-    // Load the exact version (god-view, read-only fetch of content).
-    const godScope = scope.id
-    const r = await API.god(`doc?scope=${godScope}&path=${encodeURIComponent(path)}`)
-    const doc = r.ok ? r.body : { data: {}, meta: {}, version: "?", status: "?" }
 
     Detail.setTitle(`Document: ${path}`)
 
-    // Save edits in place (this scope/leaf). Redirecting a doc to another scope
-    // is a deliberate act — that's Promote (up) or Distribute (sideways), not a
-    // silent save target. So there is no scope selector here.
+    // All versions on this exact scope+path (newest first).
+    const vres = await API.god(`doc-versions?scope=${scope.id}&path=${encodeURIComponent(path)}`)
+    const versions = vres.ok ? vres.body.versions : []
+    const activeVersion = versions.length ? versions[0].version : null
+    const selectedVersion = ctx.version != null ? ctx.version : activeVersion
+    const isActive = selectedVersion === activeVersion
 
-    // path + editors (reuse Doc IDs so Doc.* helpers keep working).
+    // Load the selected version's content (god-view).
+    const qv = selectedVersion != null ? `&version=${selectedVersion}` : ""
+    const r = await API.god(`doc?scope=${scope.id}&path=${encodeURIComponent(path)}${qv}`)
+    const doc = r.ok ? r.body : { data: {}, meta: {}, version: selectedVersion, status: "?" }
+
+    // Version combobox.
+    if (versions.length) {
+      const vsel = document.createElement("select")
+      for (const v of versions) {
+        const o = document.createElement("option")
+        o.value = v.version
+        const tags = [v.status]
+        if (v.isDeletion) tags.push("deleted")
+        if (v.publicLive) tags.push("public")
+        o.textContent = `v${v.version} (${tags.join(", ")})` + (v.version === activeVersion ? " · active" : "")
+        vsel.appendChild(o)
+      }
+      vsel.value = selectedVersion
+      vsel.onchange = () => navigate("doc", { scope, path, version: Number(vsel.value) })
+      const vRow = UI.el("div", "form-row"); vRow.append(UI.el("label", "form-label", "Version"), vsel)
+      container.appendChild(vRow)
+    }
+
+    // Path + editors.
     const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
     const pRow = UI.el("div", "form-row"); pRow.append(UI.el("label", "form-label", "Path"), pathInput)
     container.appendChild(pRow)
@@ -197,27 +227,52 @@
     mWrap.appendChild(mTa)
     editors.append(dWrap, mWrap)
     container.appendChild(editors)
-    Doc.setCurrent(inLeaf ? doc : null) // shared edit forks; leaf edit is concurrency-checked
+    Doc.setCurrent(inLeaf ? doc : null)
     Doc.fill("doc-data", "doc-meta", doc)
 
-    // action toolbar (under the header)
-    const save = UI.el("button", "primary", "Save")
-    save.onclick = () => saveDocFrom(operatingScopeId, owner)
-    const buttons = [save]
-    const base = { scopeId: operatingScopeId, path, persona: owner, active: ctx.active }
-    if (inLeaf && knownOwner) {
-      buttons.push(
-        actionBtn("Promote", () => actPromote(base)),
-        actionBtn("Distribute", () => actDistribute(base)),
-        actionBtn("Rename", () => actRename(base)),
-        actionBtn("Publish", () => actPublish(base)),
-        actionBtn("Unpublish", () => actUnpublish(base)),
-        actionBtn("Revert", () => actRevert(base), true),
-        actionBtn("Delete", () => actDelete(base), true),
-      )
-    } else if (!inLeaf) {
-      // Shared/inherited doc: Save forks a copy; Delete = tombstone + promote.
-      buttons.push(actionBtn("Delete", () => actDelete(base), true))
+    // Older versions are append-only history → read-only content.
+    if (!isActive) {
+      pathInput.readOnly = true; dTa.readOnly = true; mTa.readOnly = true
+      container.appendChild(UI.el("div", "detail-note",
+        "Older version — read-only. Only public sharing can be changed here."))
+    }
+
+    // Per-version "Shared public" toggle (own leaf versions only). Immediate:
+    // check → publish this version, uncheck → unpublish it (take-down → 410).
+    if (inLeaf && knownOwner && selectedVersion != null) {
+      const box = document.createElement("input"); box.type = "checkbox"; box.checked = !!doc.publicLive
+      box.onchange = async () => {
+        actAs(owner)
+        const ep = box.checked ? "publish" : "unpublish"
+        logResult(`${ep} ${path} v${selectedVersion}`,
+          await API.call("POST", `scopes/${operatingScopeId}/docs/${ep}`, { path, version: selectedVersion }))
+        await afterMutation()
+      }
+      const shRow = UI.el("div", "form-row"); shRow.append(UI.el("label", "form-label", "Shared public"), box)
+      container.appendChild(shRow)
+      if (doc.publicLive && doc.publicId) {
+        container.appendChild(UI.el("div", "detail-sub", `public link: /database/public/${doc.publicId}`))
+      }
+    }
+
+    // Action toolbar — full actions only on the active version.
+    const base = { scopeId: operatingScopeId, path, persona: owner, active: { version: activeVersion } }
+    const buttons = []
+    if (isActive) {
+      const save = UI.el("button", "primary", "Save")
+      save.onclick = () => saveDocFrom(operatingScopeId, owner)
+      buttons.push(save)
+      if (inLeaf && knownOwner) {
+        buttons.push(
+          actionBtn("Promote", () => actPromote(base)),
+          actionBtn("Distribute", () => actDistribute(base)),
+          actionBtn("Rename", () => actRename(base)),
+          actionBtn("Revert", () => actRevert(base), true),
+          actionBtn("Delete", () => actDelete(base), true),
+        )
+      } else if (!inLeaf) {
+        buttons.push(actionBtn("Delete", () => actDelete(base), true))
+      }
     }
     buttons.push(actionBtn("History", () => actHistory(base)))
     Detail.setActions(buttons)

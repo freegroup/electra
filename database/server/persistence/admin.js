@@ -88,15 +88,23 @@ async function versionsUnder(scopeId) {
 // The active version (highest committed/deleted) stored on EXACTLY this scope
 // (no walk-up), with full content. Powers the explorer's "click any node to
 // inspect it" — including foreign leaves the normal API would hide.
-async function docAt(scopeId, docPath) {
-  const res = await pool.query(
-    `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
-            author, public_id, created_at
-       FROM versions
-      WHERE scope_id = $1 AND doc_path = $2 AND status IN ('committed', 'deleted')
-      ORDER BY version DESC LIMIT 1`,
-    [scopeId, docPath]
-  )
+async function docAt(scopeId, docPath, version) {
+  const res = version != null
+    ? await pool.query(
+        `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
+                author, public_id, published_at, unpublished_at, created_at
+           FROM versions
+          WHERE scope_id = $1 AND doc_path = $2 AND version = $3`,
+        [scopeId, docPath, version]
+      )
+    : await pool.query(
+        `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
+                author, public_id, published_at, unpublished_at, created_at
+           FROM versions
+          WHERE scope_id = $1 AND doc_path = $2 AND status IN ('committed', 'deleted')
+          ORDER BY version DESC LIMIT 1`,
+        [scopeId, docPath]
+      )
   if (res.rowCount === 0) return null
   const r = res.rows[0]
   return {
@@ -109,8 +117,31 @@ async function docAt(scopeId, docPath) {
     meta: r.meta,
     author: r.author,
     publicId: r.public_id,
+    // "published & live" = has a publicId and hasn't been taken down.
+    publicLive: !!r.public_id && !r.unpublished_at,
     createdAt: r.created_at,
   }
 }
 
-module.exports = { fullTree, versionsUnder, docAt }
+// All versions stored on EXACTLY this scope + path, newest first — feeds the
+// explorer's version combobox. Includes each version's publish state.
+async function docVersions(scopeId, docPath) {
+  const res = await pool.query(
+    `SELECT version, status, is_deletion, author, public_id, unpublished_at, created_at
+       FROM versions
+      WHERE scope_id = $1 AND doc_path = $2
+      ORDER BY version DESC`,
+    [scopeId, docPath]
+  )
+  return res.rows.map((r) => ({
+    version: r.version,
+    status: r.status,
+    isDeletion: r.is_deletion,
+    author: r.author,
+    publicId: r.public_id,
+    publicLive: !!r.public_id && !r.unpublished_at,
+    createdAt: r.created_at,
+  }))
+}
+
+module.exports = { fullTree, versionsUnder, docAt, docVersions }

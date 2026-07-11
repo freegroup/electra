@@ -15,6 +15,17 @@ const pathOnlyBody = {
   additionalProperties: false,
 }
 
+// publish/unpublish accept an optional explicit version (default: active).
+const pubBody = {
+  type: "object",
+  required: ["path"],
+  properties: {
+    path: { type: "string", minLength: 1 },
+    version: { type: "integer", minimum: 1 },
+  },
+  additionalProperties: false,
+}
+
 async function routes(fastify) {
   fastify.post(
     "/database/scopes/:scopeRef/docs/revert",
@@ -28,10 +39,10 @@ async function routes(fastify) {
 
   fastify.post(
     "/database/scopes/:scopeRef/docs/publish",
-    { schema: { body: pathOnlyBody }, preHandler: [fastify.requireLogin] },
+    { schema: { body: pubBody }, preHandler: [fastify.requireLogin] },
     async (req, reply) => {
       const { leafId } = await requireWriteLeaf(req.params.scopeRef, req.personRef)
-      const result = await publish({ callerLeafId: leafId, docPath: req.body.path })
+      const result = await publish({ callerLeafId: leafId, docPath: req.body.path, version: req.body.version })
       reply.code(201)
       return {
         publicId: result.publicId,
@@ -43,10 +54,10 @@ async function routes(fastify) {
 
   fastify.post(
     "/database/scopes/:scopeRef/docs/unpublish",
-    { schema: { body: pathOnlyBody }, preHandler: [fastify.requireLogin] },
+    { schema: { body: pubBody }, preHandler: [fastify.requireLogin] },
     async (req) => {
       const { leafId } = await requireWriteLeaf(req.params.scopeRef, req.personRef)
-      const result = await unpublish({ callerLeafId: leafId, docPath: req.body.path })
+      const result = await unpublish({ callerLeafId: leafId, docPath: req.body.path, version: req.body.version })
       return { unpublished: result }
     }
   )

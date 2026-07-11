@@ -12,28 +12,34 @@ const { validateDocPath, rowToDoc } = require("./docs")
 // Publish
 // ---------------------------------------------------------------------------
 
-// Publishes the caller's own leaf version at (docPath).
-// Refuses if the walk-up from the caller's leaf resolves to a scope other
-// than the caller's leaf itself (i.e. the doc is inherited, not local).
-async function publish({ callerLeafId, docPath }) {
+// Publishes one of the caller's own leaf versions at (docPath). If `version`
+// is given, that exact committed version is targeted; otherwise the active
+// (highest committed) one. Refuses if the doc is inherited (not local).
+async function publish({ callerLeafId, docPath, version }) {
   validateDocPath(docPath)
 
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
 
-    // Look up the caller's own active leaf version for this path.
-    const localRes = await client.query(
-      `SELECT scope_id, doc_path, version, status,
-              data, meta, author, created_at, public_id
-       FROM versions
-       WHERE scope_id = $1
-         AND doc_path = $2
-         AND status   = 'committed'
-       ORDER BY version DESC
-       LIMIT 1`,
-      [callerLeafId, docPath]
-    )
+    // Look up the target committed leaf version (specific or active).
+    const localRes = version != null
+      ? await client.query(
+          `SELECT scope_id, doc_path, version, status,
+                  data, meta, author, created_at, public_id
+           FROM versions
+           WHERE scope_id = $1 AND doc_path = $2 AND version = $3
+             AND status = 'committed'`,
+          [callerLeafId, docPath, version]
+        )
+      : await client.query(
+          `SELECT scope_id, doc_path, version, status,
+                  data, meta, author, created_at, public_id
+           FROM versions
+           WHERE scope_id = $1 AND doc_path = $2 AND status = 'committed'
+           ORDER BY version DESC LIMIT 1`,
+          [callerLeafId, docPath]
+        )
 
     if (localRes.rowCount === 0) {
       // Nothing local. Is there anything inherited? -> 409 not_publishable.
@@ -96,20 +102,29 @@ async function publish({ callerLeafId, docPath }) {
 // Unpublish
 // ---------------------------------------------------------------------------
 
-async function unpublish({ callerLeafId, docPath }) {
+async function unpublish({ callerLeafId, docPath, version }) {
   validateDocPath(docPath)
 
-  // Find the newest committed leaf row that is currently published + active.
-  const res = await pool.query(
-    `UPDATE versions
-        SET unpublished_at = now()
-      WHERE scope_id = $1
-        AND doc_path = $2
-        AND public_id IS NOT NULL
-        AND unpublished_at IS NULL
-      RETURNING version, public_id`,
-    [callerLeafId, docPath]
-  )
+  // Take down the given version (or every published row for the path if no
+  // version is specified). Sets unpublished_at; the publicId stays reserved
+  // and public reads then return 410.
+  const res = version != null
+    ? await pool.query(
+        `UPDATE versions
+            SET unpublished_at = now()
+          WHERE scope_id = $1 AND doc_path = $2 AND version = $3
+            AND public_id IS NOT NULL AND unpublished_at IS NULL
+          RETURNING version, public_id`,
+        [callerLeafId, docPath, version]
+      )
+    : await pool.query(
+        `UPDATE versions
+            SET unpublished_at = now()
+          WHERE scope_id = $1 AND doc_path = $2
+            AND public_id IS NOT NULL AND unpublished_at IS NULL
+          RETURNING version, public_id`,
+        [callerLeafId, docPath]
+      )
   if (res.rowCount === 0) {
     throw new NotFoundError(`no published version to unpublish at ${docPath}`)
   }

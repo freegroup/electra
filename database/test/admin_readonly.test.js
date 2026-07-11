@@ -110,3 +110,26 @@ test("the doc endpoint requires the token and validates params", async () => {
   assert.equal((await get(ctx, "/database/admin/doc?scope=1&path=x", {})).statusCode, 401)
   assert.equal((await get(ctx, "/database/admin/doc?scope=1", tokenHeader())).statusCode, 400)
 })
+
+test("doc-versions lists every version of a leaf path, newest first", async () => {
+  // anna wrote two versions of math/quad.json in the before() hook.
+  const tree = await get(ctx, "/database/admin/tree", tokenHeader())
+  const annaLeaf = tree.json().scopes.find(
+    (s) => s.name === "anna" && s.parentId === String(klasseId)
+  )
+  // add a second version so there are >= 2 to order
+  await writeDoc(ctx, klasseId, "math/quad.json", asPerson("anna"), { data: { by: "anna2" } })
+
+  const res = await get(ctx, `/database/admin/doc-versions?scope=${annaLeaf.id}&path=math/quad.json`, tokenHeader())
+  assert.equal(res.statusCode, 200)
+  const versions = res.json().versions
+  assert.ok(versions.length >= 2)
+  assert.ok(versions[0].version > versions[1].version, "newest first")
+  assert.ok("publicLive" in versions[0])
+
+  // docAt with an explicit version returns that exact one.
+  const older = versions[versions.length - 1].version
+  const at = await get(ctx, `/database/admin/doc?scope=${annaLeaf.id}&path=math/quad.json&version=${older}`, tokenHeader())
+  assert.equal(at.statusCode, 200)
+  assert.equal(at.json().version, older)
+})
