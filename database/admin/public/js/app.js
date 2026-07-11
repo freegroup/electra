@@ -99,24 +99,6 @@
       .sort((a, b) => a.path.localeCompare(b.path))
   }
 
-  // Scopes a persona is an EXPLICIT member of (can write in). The god-view tree
-  // carries every scope's members; a person may write wherever they hold an
-  // is_member row. Returns [{ id, path }] sorted, always including `include`.
-  async function memberScopes(personaHandle, include) {
-    const ref = await API.personRef(personaHandle)
-    const ids = new Set()
-    for (const s of state.scopes) {
-      if (s.isLeaf) continue
-      if ((s.members || []).some((m) => m.personRef === ref && m.isMember)) ids.add(s.id)
-    }
-    if (include) ids.add(include)
-    return [...ids]
-      .map((id) => state.scopes.find((s) => s.id === id))
-      .filter(Boolean)
-      .map((s) => ({ id: s.id, path: scopePath(s) }))
-      .sort((a, b) => a.path.localeCompare(b.path))
-  }
-
   // ---- tree --------------------------------------------------------------
   async function reloadTree() {
     const { scopes } = await Tree.render($("tree"))
@@ -197,20 +179,9 @@
 
     Detail.setTitle(`Document: ${path}`)
 
-    // "visible for" = the scope whose members may see this version. This IS the
-    // permission (not a storage location); the write lands in the persona's
-    // leaf under it. Defaults to the current scope; changeable to any scope the
-    // persona is a member of (e.g. steer a fix into a task-force scope).
-    const choices = await memberScopes(owner, operatingScopeId)
-    const saveSel = document.createElement("select")
-    for (const c of choices) {
-      const o = document.createElement("option"); o.value = c.id; o.textContent = c.path; saveSel.appendChild(o)
-    }
-    saveSel.value = operatingScopeId
-    const tRow = UI.el("div", "form-row")
-    tRow.append(UI.el("label", "form-label", "Visible for"), saveSel)
-    container.appendChild(tRow)
-    // (persona is shown in the top bar; a leaf doc auto-switches it to the owner)
+    // Save edits in place (this scope/leaf). Redirecting a doc to another scope
+    // is a deliberate act — that's Promote (up) or Distribute (sideways), not a
+    // silent save target. So there is no scope selector here.
 
     // path + editors (reuse Doc IDs so Doc.* helpers keep working).
     const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
@@ -231,7 +202,7 @@
 
     // action toolbar (under the header)
     const save = UI.el("button", "primary", "Save")
-    save.onclick = () => saveDocFrom(saveSel.value, owner)
+    save.onclick = () => saveDocFrom(operatingScopeId, owner)
     const buttons = [save]
     const base = { scopeId: operatingScopeId, path, persona: owner, active: ctx.active }
     if (inLeaf && knownOwner) {
