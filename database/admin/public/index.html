@@ -32,35 +32,11 @@
       <div id="tree" class="tree"></div>
     </section>
 
-    <!-- RIGHT: document editor only -->
+    <!-- RIGHT: node-typed detail view -->
     <section class="doc-pane">
       <div class="card">
-        <div class="card-head">Document</div>
-        <div class="card-body">
-          <div id="edit-context" class="edit-context">no document open — click one in the tree, or “+ new”.</div>
-          <div class="row edit-target hidden" id="edit-target">
-            <label>save in
-              <select id="edit-scope"></select>
-            </label>
-            <span class="edit-as">as <strong id="edit-persona">—</strong></span>
-          </div>
-          <div class="row">
-            <label class="grow">path
-              <input id="doc-path" placeholder="e.g. math/quadratic.json" />
-            </label>
-            <button id="btn-save" class="primary">Save</button>
-          </div>
-          <div id="editor" class="editors hidden">
-            <div class="editor">
-              <div class="editor-label">data</div>
-              <textarea id="doc-data" spellcheck="false">{}</textarea>
-            </div>
-            <div class="editor">
-              <div class="editor-label">meta</div>
-              <textarea id="doc-meta" spellcheck="false">{}</textarea>
-            </div>
-          </div>
-        </div>
+        <div class="card-head">Detail</div>
+        <div id="detail" class="card-body detail"></div>
       </div>
 
       <div class="card">
@@ -72,6 +48,7 @@
 
   <script src="js/api.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/detail.js"></script>
   <script src="js/tree.js"></script>
   <script src="js/doc.js"></script>
   <script src="js/app.js"></script>

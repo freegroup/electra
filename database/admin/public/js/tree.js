@@ -13,8 +13,16 @@
 
 const Tree = (() => {
   let onSelectDoc = () => {}
+  let onSelectNode = () => {}     // (kind, ctx) — left-click selects a node
   let onNodeMenu = () => {}       // (kind, ctx, x, y) — see attachMenu below
   let nameOf = (ref) => ref // hash → friendly handle (set by app.js)
+  let selectedEl = null     // currently highlighted row
+
+  function selectRow(row) {
+    if (selectedEl) selectedEl.classList.remove("selected")
+    selectedEl = row
+    if (row) row.classList.add("selected")
+  }
 
   // Wire a right-click + a hover "⋯" button on a row to the node-menu callback.
   // kind: "scope" | "leaf" | "doc"; ctx carries what the menu needs.
@@ -73,7 +81,7 @@ const Tree = (() => {
     return t
   }
 
-  // Render a document line (click → inspect; right-click/⋯ → doc menu).
+  // Render a document line (click → select/detail; right-click/⋯ → doc menu).
   // `scope` is the scope the doc physically lives on (a leaf, or a shared scope).
   function docLine(scope, entry) {
     const node = el("div", "node")
@@ -85,15 +93,17 @@ const Tree = (() => {
         "v" + v.version + (v.isDeletion ? " ✗" : v.status === "pending" ? " ⏳" : ""))
       row.appendChild(b)
     }
-    row.addEventListener("click", () => onSelectDoc(scope, entry.path))
     const active = entry.versions[0] // newest first (versionBadges sorts desc)
-    attachMenu(row, "doc", { scope, path: entry.path, active, inLeaf: !!scope.isLeaf })
+    const ctx = { scope, path: entry.path, active, inLeaf: !!scope.isLeaf }
+    row.addEventListener("click", () => { selectRow(row); onSelectNode("doc", ctx) })
+    attachMenu(row, "doc", ctx)
     node.appendChild(row)
     return node
   }
 
   // Collapsible group ("shared", "👤 person") holding document lines.
-  // When `leafScope` is given, the group header carries a leaf context menu.
+  // When `leafScope` is given, the header selects the leaf (detail) on click and
+  // carries the leaf context menu; the twisty toggles expand/collapse.
   function docGroup(label, cls, scope, entries, openByDefault, leafScope) {
     const node = el("div", "node")
     const row = el("div", "row")
@@ -110,33 +120,19 @@ const Tree = (() => {
     for (const e of entries) children.appendChild(docLine(scope, e))
     node.appendChild(children)
 
+    const toggle = () => { open = !open; tw.textContent = open ? "▾" : "▸"; children.style.display = open ? "" : "none" }
+    tw.addEventListener("click", (ev) => { ev.stopPropagation(); toggle() })
     row.addEventListener("click", () => {
-      open = !open
-      tw.textContent = open ? "▾" : "▸"
-      children.style.display = open ? "" : "none"
+      if (leafScope) { selectRow(row); onSelectNode("leaf", { scope: leafScope }) }
+      else toggle() // the "shared" group has no detail — just expand/collapse
     })
     return node
   }
 
-  function memberBadges(row, members, scopeName) {
-    for (const m of members) {
-      // Skip the scope owner's own membership row — showing "d2e7ab02 admin"
-      // right under a scope literally named d2e7ab02 is just noise.
-      if (m.personRef === scopeName) continue
-      const roles = []
-      if (m.isAdmin) roles.push("admin")
-      if (m.reviewerScore !== null && m.reviewerScore !== undefined) roles.push("rev:" + m.reviewerScore)
-      if (roles.length) {
-        row.appendChild(el("span", "badge role", short(m.personRef) + " " + roles.join(",")))
-      }
-    }
-  }
-
   // Recursively render a scope node.
-  function scopeNode(scope, childrenOf, versions, selectedScopeRef) {
+  function scopeNode(scope, childrenOf, versions) {
     const node = el("div", "node")
     const row = el("div", "row")
-    if (scope.id === selectedScopeRef) row.classList.add("selected")
 
     let open = true
     const tw = twisty(open)
@@ -147,10 +143,9 @@ const Tree = (() => {
     if (scope.promoteCeiling) {
       row.appendChild(el("span", "badge ceiling", "⛔ ceiling"))
     }
-    if (!scope.isLeaf) {
-      memberBadges(row, scope.members, scope.name)
-      attachMenu(row, "scope", { scope })
-    }
+    // Member/role badges intentionally omitted — membership lives in the scope
+    // detail pane now (master/detail).
+    if (!scope.isLeaf) attachMenu(row, "scope", { scope })
     node.appendChild(row)
 
     const kids = childrenOf.get(scope.id) || []
@@ -171,7 +166,7 @@ const Tree = (() => {
       }
       // Sub-scopes (recurse).
       for (const c of subScopes) {
-        container.appendChild(scopeNode(c, childrenOf, versions, selectedScopeRef))
+        container.appendChild(scopeNode(c, childrenOf, versions))
       }
       // One node per person's leaf.
       for (const leaf of leaves) {
@@ -183,19 +178,20 @@ const Tree = (() => {
     node.appendChild(container)
     container.style.display = open ? "" : "none"
 
-    // Clicking a scope only expands/collapses it — selecting the working scope
-    // is done in card 1's dropdown, so the tree stays a pure overview.
+    // Twisty toggles expand/collapse; clicking the name selects the scope and
+    // routes to its detail view (master/detail).
+    const toggle = () => { open = !open; tw.textContent = open ? "▾" : "▸"; container.style.display = open ? "" : "none" }
+    tw.addEventListener("click", (ev) => { ev.stopPropagation(); toggle() })
     row.addEventListener("click", (ev) => {
-      open = !open
-      tw.textContent = open ? "▾" : "▸"
-      container.style.display = open ? "" : "none"
       ev.stopPropagation()
+      if (!scope.isLeaf) { selectRow(row); onSelectNode("scope", { scope }) }
+      else toggle()
     })
 
     return node
   }
 
-  async function render(container, selectedScopeRef) {
+  async function render(container) {
     const treeRes = await API.god("tree")
     if (!treeRes.ok) {
       container.textContent = "failed to load tree: " + JSON.stringify(treeRes.body)
@@ -216,13 +212,14 @@ const Tree = (() => {
     }
 
     container.innerHTML = ""
-    container.appendChild(scopeNode(root, childrenOf, versions, selectedScopeRef))
+    container.appendChild(scopeNode(root, childrenOf, versions))
     return { scopes }
   }
 
   return {
     render,
     onSelectDoc: (fn) => { onSelectDoc = fn },
+    onSelectNode: (fn) => { onSelectNode = fn },
     onNodeMenu: (fn) => { onNodeMenu = fn },
     setNameResolver: (fn) => { nameOf = fn },
   }

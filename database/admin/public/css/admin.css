@@ -133,6 +133,19 @@ textarea {
   font-size: 12px; resize: vertical; line-height: 1.4;
 }
 
+/* Master/detail right pane */
+.detail { display: flex; flex-direction: column; gap: 10px; }
+.detail-empty { color: var(--muted); font-style: italic; padding: 8px 0; }
+.detail-head { font-weight: 600; font-size: 14px; }
+.detail-sub { color: var(--muted); font-size: 11px; font-family: var(--mono); }
+.detail-section { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.detail-actions { display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+.detail-note { color: var(--amber); font-size: 11px; }
+.leaf-doc { padding: 2px 0; }
+.doc-link { cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--fg); }
+.doc-link:hover { color: var(--accent); }
+.node .row.selected { background: #34506e; }
+
 /* Editor bound-context line */
 .edit-context {
   color: var(--muted); font-size: 11px; font-family: var(--mono);

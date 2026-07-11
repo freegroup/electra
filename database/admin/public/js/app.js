@@ -13,10 +13,6 @@
     scopes: [],         // flat list from the last tree render
     personas: [],       // known persona handles for the persona bar
     hashToHandle: {},   // personRef (SHA-256) → friendly handle, for display
-    // The editor's bound context. scopeId = the scope we write "in"; persona =
-    // the handle we act as for THIS document (may differ from the top bar when
-    // editing inside someone's leaf).
-    editing: null,      // { scopeId, scopeName, personaHandle, path } | null
   }
 
   // Known handles the admin recognizes. The DB only stores the one-way hash
@@ -130,80 +126,184 @@
     state.personas = [...refs]
     refreshPersonaSelect()
   }
-  async function afterMutation() { await reloadTree() }
+  async function afterMutation() { await reloadTree(); await Detail.refresh() }
 
-  // Inspect (read-only, god-view) when a doc row is left-clicked.
-  Tree.onSelectDoc(async (scope, path) => {
-    const r = await API.god(`doc?scope=${scope.id}&path=${encodeURIComponent(path)}`)
-    if (!r.ok) { logResult("inspect", r); return }
-    const doc = r.body
-    // Bind the editor: if the doc lives in a leaf, we edit as its owner in the
-    // parent scope; if it's a shared doc, we edit as the current persona in
-    // that scope. Either way the write target is explicit.
-    if (scope.isLeaf) {
-      const owner = nameOf(scope.name)
-      await bindEditor({ scopeId: scope.parentId, personaHandle: owner, path })
-    } else {
-      await bindEditor({ scopeId: scope.id, personaHandle: API.persona.email, path })
-    }
-    Doc.clear()
-    Doc.fill("doc-data", "doc-meta", doc)
-    log(`inspect ${path} @ scope ${scope.id} v${doc.version} — read-only god-view`, "ok")
-  })
+  // Left-click a node → show its type's detail view (master/detail).
+  Tree.onSelectNode((kind, ctx) => Detail.show(kind, ctx))
 
-  // ---- editor binding ----------------------------------------------------
-  // Binds the editor to { scopeId, personaHandle, path } and fills the
-  // "save in" selector with every scope the persona may write in. The passed
-  // scopeId is pre-selected but the user may redirect the save to any other
-  // membership scope (e.g. fix a school doc but land it in a task-force leaf).
-  async function bindEditor({ scopeId, personaHandle, path }) {
-    const persona = personaHandle || API.persona.email
-    const choices = await memberScopes(persona, scopeId)
-    const sel = $("edit-scope")
-    sel.innerHTML = ""
-    for (const c of choices) {
-      const o = document.createElement("option"); o.value = c.id; o.textContent = c.path
-      sel.appendChild(o)
-    }
-    if (scopeId) sel.value = scopeId
-
-    state.editing = { personaHandle: persona, path: path || "" }
-    $("doc-path").value = state.editing.path
-    $("edit-persona").textContent = persona
-    $("edit-target").classList.remove("hidden")
-    $("editor").classList.remove("hidden")
-    updateEditContext()
-  }
-  function currentEditScopeId() {
-    return $("edit-scope").value || null
-  }
-  function updateEditContext() {
-    if (!state.editing) return
-    const id = currentEditScopeId()
-    const path = state.editing.path || "(new)"
-    $("edit-context").textContent =
-      `editing "${path}" — Save lands in ${scopePathById(id)} as ${state.editing.personaHandle}`
-  }
   // Run a call as a specific persona (reflected in the top bar).
   function actAs(handle) {
     if (handle && handle !== API.persona.email) { API.persona.email = handle; refreshPersonaSelect() }
   }
 
-  async function saveDoc() {
-    if (!state.editing) { log("open or create a document first", "err"); return }
-    const scopeId = currentEditScopeId()
+  // =======================================================================
+  // DETAIL RENDERERS — one per node kind. Registered in init().
+  // =======================================================================
+
+  // ---- doc detail: the editor + per-doc action row -----------------------
+  // ctx: { scope, path, active, inLeaf }. A leaf doc is edited/acted-on as its
+  // owner; a shared doc is edited as the current persona (Save forks a copy).
+  async function renderDocDetail(container, ctx) {
+    const { scope, path, inLeaf } = ctx
+    const owner = inLeaf ? nameOf(scope.name) : API.persona.email
+    const knownOwner = !inLeaf || state.hashToHandle[scope.name] !== undefined
+    const operatingScopeId = inLeaf ? scope.parentId : scope.id
+
+    if (inLeaf) actAs(owner)
+
+    // Load the exact version (god-view, read-only fetch of content).
+    const godScope = scope.id
+    const r = await API.god(`doc?scope=${godScope}&path=${encodeURIComponent(path)}`)
+    const doc = r.ok ? r.body : { data: {}, meta: {}, version: "?", status: "?" }
+
+    container.appendChild(UI.el("div", "detail-head", `Document — ${path}`))
+    container.appendChild(UI.el("div", "detail-sub",
+      inLeaf ? `in ${nameOf(scope.name)}'s leaf under ${scopePathById(scope.parentId)}` : `shared on ${scopePath(scope)}`))
+
+    // "save in" target: every scope the persona may write in (default the
+    // operating scope). A new/inherited edit lands in that persona's leaf here.
+    const choices = await memberScopes(owner, operatingScopeId)
+    const saveSel = document.createElement("select")
+    for (const c of choices) {
+      const o = document.createElement("option"); o.value = c.id; o.textContent = c.path; saveSel.appendChild(o)
+    }
+    saveSel.value = operatingScopeId
+    const tRow = UI.el("div", "form-row")
+    tRow.append(UI.el("label", "form-label", "save in"), saveSel)
+    container.appendChild(tRow)
+    const asRow = UI.el("div", "detail-sub"); asRow.textContent = `acting as ${owner}`
+    container.appendChild(asRow)
+
+    // path + editors (reuse Doc IDs so Doc.* helpers keep working).
+    const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
+    const pRow = UI.el("div", "form-row"); pRow.append(UI.el("label", "form-label", "path"), pathInput)
+    container.appendChild(pRow)
+
+    const editors = UI.el("div", "editors")
+    const dWrap = UI.el("div", "editor"); dWrap.appendChild(UI.el("div", "editor-label", "data"))
+    const dTa = document.createElement("textarea"); dTa.id = "doc-data"; dTa.spellcheck = false
+    dWrap.appendChild(dTa)
+    const mWrap = UI.el("div", "editor"); mWrap.appendChild(UI.el("div", "editor-label", "meta"))
+    const mTa = document.createElement("textarea"); mTa.id = "doc-meta"; mTa.spellcheck = false
+    mWrap.appendChild(mTa)
+    editors.append(dWrap, mWrap)
+    container.appendChild(editors)
+    Doc.setCurrent(inLeaf ? doc : null) // shared edit forks; leaf edit is concurrency-checked
+    Doc.fill("doc-data", "doc-meta", doc)
+
+    // action row
+    const acts = UI.el("div", "detail-actions")
+    const save = UI.el("button", "primary", "Save")
+    save.onclick = () => saveDocFrom(saveSel.value, owner)
+    acts.appendChild(save)
+    const base = { scopeId: operatingScopeId, path, persona: owner, active: ctx.active }
+    if (inLeaf && knownOwner) {
+      acts.append(
+        actionBtn("Promote", () => actPromote(base)),
+        actionBtn("Distribute", () => actDistribute(base)),
+        actionBtn("Rename", () => actRename(base)),
+        actionBtn("Publish", () => actPublish(base)),
+        actionBtn("Unpublish", () => actUnpublish(base)),
+        actionBtn("Revert", () => actRevert(base), true),
+        actionBtn("Delete", () => actDelete(base), true),
+      )
+    }
+    acts.appendChild(actionBtn("History", () => actHistory(base)))
+    container.appendChild(acts)
+
+    if (inLeaf && !knownOwner) {
+      container.appendChild(UI.el("div", "detail-note",
+        "Unknown persona — add this leaf owner's handle (top bar) to act as them."))
+    }
+  }
+  function actionBtn(label, fn, danger) {
+    const b = UI.el("button", danger ? "danger" : null, label)
+    b.onclick = fn
+    return b
+  }
+
+  async function saveDocFrom(scopeId, persona) {
     if (!scopeId) { log("choose a scope to save in", "err"); return }
     const path = sanitizePath($("doc-path").value)
     if (!path) { log("enter a document path", "err"); return }
     let data, meta
     try { data = Doc.parseEditor("doc-data"); meta = Doc.parseEditor("doc-meta") }
     catch (e) { log(e.message, "err"); return }
-    actAs(state.editing.personaHandle)
-    const r = await API.call("PUT", `scopes/${scopeId}/docs?path=${encodeURIComponent(path)}`,
-      Doc.putBody(data, meta))
+    actAs(persona)
+    const r = await API.call("PUT", `scopes/${scopeId}/docs?path=${encodeURIComponent(path)}`, Doc.putBody(data, meta))
     logResult(`save ${path} → ${scopePathById(scopeId)}`, r)
-    if (r.ok) { Doc.setCurrent(r.body); state.editing.path = path }
+    if (r.ok) Doc.setCurrent(r.body)
     await afterMutation()
+  }
+
+  // ---- leaf detail: owner + their docs -----------------------------------
+  async function renderLeafDetail(container, { scope }) {
+    const owner = nameOf(scope.name)
+    const known = state.hashToHandle[scope.name] !== undefined
+    container.appendChild(UI.el("div", "detail-head", `👤 ${owner}`))
+    container.appendChild(UI.el("div", "detail-sub", `personal leaf under ${scopePathById(scope.parentId)}`))
+
+    const vr = await API.god("versions?scope=" + scope.id)
+    const versions = vr.ok ? vr.body.versions : []
+    const byPath = new Map()
+    for (const v of versions) { if (!byPath.has(v.path)) byPath.set(v.path, v) }
+    const listWrap = UI.el("div", "detail-section")
+    listWrap.appendChild(UI.el("div", "props-line", "documents"))
+    if (!byPath.size) listWrap.appendChild(UI.el("div", "empty", "no documents"))
+    for (const [p, v] of byPath) {
+      const row = UI.el("div", "leaf-doc")
+      const link = UI.el("span", "doc-link", `${p}  v${v.version} ${v.status}`)
+      link.onclick = () => Detail.show("doc", { scope, path: p, active: v, inLeaf: true })
+      row.appendChild(link)
+      listWrap.appendChild(row)
+    }
+    container.appendChild(listWrap)
+
+    const acts = UI.el("div", "detail-actions")
+    if (known) acts.appendChild(actionBtn(`New document as ${owner}`, () => newDocument({ scopeId: scope.parentId, persona: owner })))
+    else container.appendChild(UI.el("div", "detail-note", "Unknown persona — add its handle (top bar) to act as them."))
+    container.appendChild(acts)
+  }
+
+  // ---- scope detail: editable properties + roles + actions ---------------
+  async function renderScopeDetail(container, { scope }) {
+    // Use the freshest copy from state (afterMutation reloads the tree).
+    scope = state.scopes.find((s) => s.id === scope.id) || scope
+    container.appendChild(UI.el("div", "detail-head", `Scope — ${scopePath(scope)}`))
+
+    // config: score + ceiling + save
+    const cfg = UI.el("div", "detail-section")
+    const scoreInput = document.createElement("input")
+    scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
+    const sRow = UI.el("div", "form-row"); sRow.append(UI.el("label", "form-label", "required approval score"), scoreInput)
+    cfg.appendChild(sRow)
+    const ceil = document.createElement("input"); ceil.type = "checkbox"; ceil.checked = !!scope.promoteCeiling
+    const cRow = UI.el("div", "form-row"); cRow.append(UI.el("label", "form-label", "promote ceiling"), ceil)
+    cfg.appendChild(cRow)
+    const saveCfg = UI.el("button", "primary", "Save config")
+    saveCfg.onclick = async () => {
+      const patch = {}
+      if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)
+      if (ceil.checked !== !!scope.promoteCeiling) patch.promoteCeiling = ceil.checked
+      if (!Object.keys(patch).length) { log("no config changes", "ok"); return }
+      logResult("scope config", await API.call("PATCH", `scopes/${scope.id}`, patch))
+      await afterMutation()
+    }
+    cfg.appendChild(saveCfg)
+    container.appendChild(cfg)
+
+    // roles editor (members / reviewers)
+    container.appendChild(rolesEditor(scope))
+
+    // actions
+    const acts = UI.el("div", "detail-actions")
+    acts.append(
+      actionBtn("New document here", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
+      actionBtn("Add sub-scope", () => addSubScope(scope)),
+      actionBtn("Review queue", () => reviewQueue(scope)),
+      actionBtn("Delete scope", () => deleteScope(scope), true),
+    )
+    container.appendChild(acts)
   }
 
   // ---- document actions (explicit context) -------------------------------
@@ -346,10 +446,23 @@
     const path = sanitizePath(res.path)
     if (!path) { log("enter a path for the new document", "err"); return }
     await addPersona(res.persona, false)
-    await bindEditor({ scopeId: res.scopeId, personaHandle: res.persona, path })
-    Doc.clear()
-    document.getElementById("doc-data").value = "{}"
-    document.getElementById("doc-meta").value = "{}"
+    // Open a blank doc detail bound to the chosen scope; Save creates v1 in
+    // that persona's leaf. We model a brand-new doc as a leaf-context doc.
+    const scope = state.scopes.find((s) => s.id === res.scopeId)
+    const personaRef = await API.personRef(res.persona)
+    const leaf = scope
+      ? state.scopes.find((s) => s.parentId === scope.id && s.name === personaRef)
+      : null
+    // If the persona already has a leaf here, present as an in-leaf doc; else a
+    // fresh doc whose Save provisions the leaf. Either way DocDetail's saveSel
+    // targets res.scopeId.
+    await Detail.show("doc", {
+      scope: leaf || scope,
+      path,
+      active: null,
+      inLeaf: !!leaf,
+      isNew: true,
+    })
     log(`new document ${path} in ${scopePathById(res.scopeId)} as ${res.persona} — edit + Save`, "ok")
   }
 
@@ -515,10 +628,8 @@
   function docMenu(ctx, x, y) {
     const { scope, path, active, inLeaf } = ctx
     if (!inLeaf) {
-      // A shared doc — you can inspect/open and view history; acting on it needs
-      // your own leaf version first, which Open→edit→Save creates.
       return UI.menu(x, y, [
-        { label: "Open (edit → creates your copy)", onClick: () => openShared(scope, path) },
+        { label: "Open (edit → creates your copy)", onClick: () => Detail.show("doc", ctx) },
         { label: "History…", onClick: () => actHistory({ scopeId: scope.id, path, persona: API.persona.email }) },
       ])
     }
@@ -529,7 +640,7 @@
     }
     const base = { scopeId: scope.parentId, path, persona: owner, active }
     UI.menu(x, y, [
-      { label: "Open", onClick: () => openLeafDoc(scope, path, owner) },
+      { label: "Open", onClick: () => Detail.show("doc", ctx) },
       { label: "Promote…", onClick: () => actPromote(base) },
       { label: "Distribute…", onClick: () => actDistribute(base) },
       { label: "Rename…", onClick: () => actRename(base) },
@@ -541,23 +652,6 @@
       { label: "Revert", danger: true, onClick: () => actRevert(base) },
       { label: "Delete", danger: true, onClick: () => actDelete(base) },
     ])
-  }
-
-  // Open helpers load content into the editor bound to the right context.
-  async function openLeafDoc(leafScope, path, owner) {
-    const r = await API.god(`doc?scope=${leafScope.id}&path=${encodeURIComponent(path)}`)
-    if (!r.ok) { logResult("open", r); return }
-    actAs(owner)
-    await bindEditor({ scopeId: leafScope.parentId, personaHandle: owner, path })
-    Doc.setCurrent(r.body)
-    Doc.fill("doc-data", "doc-meta", r.body)
-  }
-  async function openShared(scope, path) {
-    const r = await API.god(`doc?scope=${scope.id}&path=${encodeURIComponent(path)}`)
-    if (!r.ok) { logResult("open", r); return }
-    await bindEditor({ scopeId: scope.id, personaHandle: API.persona.email, path })
-    Doc.clear() // editing a shared doc starts a fresh leaf copy on Save
-    Doc.fill("doc-data", "doc-meta", r.body)
   }
 
   // ---- health ------------------------------------------------------------
@@ -576,10 +670,14 @@
     $("persona-new").addEventListener("keydown", async (e) => {
       if (e.key === "Enter") { const h = e.target.value.trim(); e.target.value = ""; if (h) { await addPersona(h); await reloadTree() } }
     })
-    $("btn-save").onclick = saveDoc
-    $("edit-scope").addEventListener("change", updateEditContext)
     $("reload-tree").onclick = reloadTree
     $("clear-log").onclick = () => { $("log").innerHTML = "" }
+
+    // Detail registry: each node kind → its renderer.
+    Detail.init($("detail"), "Select a scope, person, or document in the tree.")
+    Detail.register("scope", renderScopeDetail)
+    Detail.register("leaf", renderLeafDetail)
+    Detail.register("doc", renderDocDetail)
 
     Tree.setNameResolver((ref) => state.hashToHandle[ref] || ref)
     addPersona("admin@electra.academy")
