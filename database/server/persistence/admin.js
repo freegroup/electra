@@ -13,7 +13,7 @@ const { pool } = require("./pool")
 // — i.e. it is somebody's personal leaf.
 async function fullTree() {
   const scopeRes = await pool.query(
-    `SELECT id, parent_id, name, required_approval_score
+    `SELECT id, parent_id, name, required_approval_score, promote_ceiling
        FROM scopes
       ORDER BY id`
   )
@@ -48,6 +48,7 @@ async function fullTree() {
       parentId: s.parent_id == null ? null : String(s.parent_id),
       name: s.name,
       requiredApprovalScore: s.required_approval_score,
+      promoteCeiling: s.promote_ceiling,
       isLeaf,
       members: membersByScope.get(s.id) || [],
     }

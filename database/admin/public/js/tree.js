@@ -121,6 +121,9 @@ const Tree = (() => {
     const nameCls = scope.isLeaf ? "leaf-name" : "scope-name"
     const displayName = scope.isLeaf ? "👤 " + short(scope.name) : short(scope.name)
     row.appendChild(el("span", nameCls, displayName))
+    if (scope.promoteCeiling) {
+      row.appendChild(el("span", "badge ceiling", "⛔ ceiling"))
+    }
     if (!scope.isLeaf) memberBadges(row, scope.members, scope.name)
     node.appendChild(row)
 

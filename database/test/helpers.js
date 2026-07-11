@@ -129,6 +129,7 @@ async function createScope(ctx, parentRef, name, opts = {}) {
   const res = await post(ctx, `/database/scopes/${parentRef}/scopes`, asRootAdmin(), {
     name,
     requiredApprovalScore: opts.requiredApprovalScore ?? 0,
+    ...(opts.promoteCeiling !== undefined ? { promoteCeiling: opts.promoteCeiling } : {}),
   })
   if (res.statusCode !== 201) {
     throw new Error(`createScope(${name}) failed: ${res.statusCode} ${res.body}`)

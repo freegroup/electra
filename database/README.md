@@ -227,6 +227,8 @@ A promote returns the resulting **pending** document. Reviewers find it through 
 
 Promote is vertical and goes to a single ancestor. For sideways delivery to several groups you choose, use **distribute** (6.16) — a distinct operation.
 
+**Promote ceiling.** A scope may be flagged as a **promote ceiling**: the highest level content can be promoted to. Promotion may land *on* a ceiling scope, but never rises above it — the auto-cascade through score-0 levels halts there, so no shared copies are created higher up. This bounds where a document can travel (e.g. mark an app scope so its files never leave the app, or seal an org-level scope). It constrains promotion only; **distribute is unaffected** (sideways delivery still works, subject to per-target membership).
+
 ### 6.6 Approval
 
 - **Approve** — the vote is recorded with the reviewer's score snapshot. Once the approving scores reach the required approval score, the version is **committed** on that level and becomes its new shared version.
@@ -577,5 +579,6 @@ These belong to the application on top, not the store:
 | **Revert** | Physically drop all of one's own leaf versions for a path. |
 | **Publish / Unpublish** | Attach a stable public link to a version / take it down (link then returns `410`). |
 | **Required approval score** | A scope's threshold; approving reviewer scores must sum to at least this. |
+| **Promote ceiling** | A scope flagged as the highest level content may be promoted to; promotion halts there and never rises above. Distribute is unaffected (6.5). |
 | **Tombstone** | A committed delete. Shadows higher versions like an override. |
 | **Active version** | The highest-id committed or deleted entry of a (scope, path). Derived, not stored. |

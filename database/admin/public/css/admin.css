@@ -82,6 +82,7 @@ body {
 .badge.pending { color: var(--amber); }
 .badge.deleted, .badge.rejected { color: var(--red); }
 .badge.role { color: var(--accent); }
+.badge.ceiling { color: var(--red); border-color: var(--red); }
 .children { padding-left: 16px; border-left: 1px solid var(--line); margin-left: 6px; }
 .hidden { display: none; }
 
@@ -160,7 +161,9 @@ textarea {
 .mini-row { display: flex; align-items: center; gap: 8px; }
 .mini-label { color: var(--muted); font-size: 11px; width: 110px; flex-shrink: 0; }
 .mini-row input[type=number] { width: 4em; }
-.mini-row input:not([type=number]) { flex: 1; }
+.mini-row input:not([type=number]):not([type=checkbox]) { flex: 1; }
+.ceiling-toggle { display: inline-flex; align-items: center; gap: 7px; color: var(--fg); font-size: 12px; cursor: pointer; }
+.ceiling-toggle input { width: auto; }
 
 /* Activity log */
 .log {

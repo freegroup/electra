@@ -113,7 +113,7 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
 // Inserts a new scope under parentId and populates its closure rows in the
 // same transaction. The creator becomes the first admin + reviewer (score 10)
 // of the new scope. See ARCHITECTURE.md §2.3.
-async function createScope({ parentId, name, requiredApprovalScore, createdBy }) {
+async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, createdBy }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -127,10 +127,10 @@ async function createScope({ parentId, name, requiredApprovalScore, createdBy })
     let insRes
     try {
       insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, required_approval_score, created_by)
-         VALUES ($1, $2, $3, $4)
-         RETURNING id, parent_id, name, required_approval_score, created_at, created_by`,
-        [parentId, name, requiredApprovalScore, createdBy]
+        `INSERT INTO scopes (parent_id, name, required_approval_score, promote_ceiling, created_by)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, parent_id, name, required_approval_score, promote_ceiling, created_at, created_by`,
+        [parentId, name, requiredApprovalScore, promoteCeiling, createdBy]
       )
     } catch (err) {
       // Unique (parent_id, name) violation
@@ -177,7 +177,7 @@ async function createScope({ parentId, name, requiredApprovalScore, createdBy })
 
 async function getScope(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, name, required_approval_score, created_at, created_by
+    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, created_at, created_by
      FROM scopes WHERE id = $1`,
     [scopeId]
   )
@@ -414,13 +414,23 @@ async function setRequiredApprovalScore({ scopeId, score }) {
   if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
 }
 
+// Marks / unmarks a scope as a promote ceiling (README §6.5). Content may be
+// promoted up to a ceiling scope but never above it.
+async function setPromoteCeiling({ scopeId, value }) {
+  const res = await pool.query(
+    `UPDATE scopes SET promote_ceiling = $2 WHERE id = $1 RETURNING id`,
+    [scopeId, value]
+  )
+  if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
+}
+
 // Returns every scope the caller is an explicit member of, with their roles
 // there (README §9.7). Feeds the UI's create-in / browse pickers. Excludes
 // the caller's own personal leaves — those are internal storage, not scopes a
 // user consciously "works in".
 async function myScopes(personRef) {
   const res = await pool.query(
-    `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score,
+    `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score, s.promote_ceiling,
             m.is_admin, m.reviewer_score
        FROM memberships m
        JOIN scopes s ON s.id = m.scope_id
@@ -460,6 +470,7 @@ module.exports = {
   setAdmin,
   setReviewer,
   setRequiredApprovalScore,
+  setPromoteCeiling,
   myScopes,
   leafUnderScope,
 }

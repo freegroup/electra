@@ -27,6 +27,7 @@ const {
   setAdmin,
   setReviewer,
   setRequiredApprovalScore,
+  setPromoteCeiling,
   myScopes,
   getScope,
 } = require("../persistence/scopes")
@@ -43,6 +44,7 @@ const createChildBody = {
   properties: {
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
     requiredApprovalScore: { type: "integer", minimum: 0, default: 0 },
+    promoteCeiling: { type: "boolean", default: false },
   },
   additionalProperties: false,
 }
@@ -66,9 +68,10 @@ const reviewerBody = {
 
 const configBody = {
   type: "object",
-  required: ["requiredApprovalScore"],
+  minProperties: 1,
   properties: {
     requiredApprovalScore: { type: "integer", minimum: 0 },
+    promoteCeiling: { type: "boolean" },
   },
   additionalProperties: false,
 }
@@ -105,6 +108,7 @@ async function routes(fastify) {
             scopeRef: String(r.scope_id),
             name: await pathOfScope(client, r.scope_id),
             requiredApprovalScore: r.required_approval_score,
+            promoteCeiling: r.promote_ceiling,
             roles,
           })
         }
@@ -151,6 +155,7 @@ async function routes(fastify) {
           name: await pathOfScope(client, scope.id),
           parent: scope.parent_id === null ? null : String(scope.parent_id),
           requiredApprovalScore: scope.required_approval_score,
+          promoteCeiling: scope.promote_ceiling,
         }
       } finally {
         client.release()
@@ -167,7 +172,7 @@ async function routes(fastify) {
       const parentId = parseScopeRef(req.params.scopeRef)
       await requireAdmin(parentId, req.personRef)
 
-      const { name, requiredApprovalScore = 0 } = req.body
+      const { name, requiredApprovalScore = 0, promoteCeiling = false } = req.body
       if (name.includes("/")) {
         throw new BadRequestError('scope name must not contain "/"')
       }
@@ -176,6 +181,7 @@ async function routes(fastify) {
         parentId,
         name,
         requiredApprovalScore,
+        promoteCeiling,
         createdBy: req.personRef,
       })
 
@@ -194,6 +200,7 @@ async function routes(fastify) {
         name: scope.name,
         path,
         requiredApprovalScore: scope.required_approval_score,
+        promoteCeiling: scope.promote_ceiling,
         createdAt: scope.created_at,
         createdBy: scope.created_by,
       }
@@ -285,8 +292,16 @@ async function routes(fastify) {
     async (req) => {
       const scopeId = parseScopeRef(req.params.scopeRef)
       await requireAdmin(scopeId, req.personRef)
-      await setRequiredApprovalScore({ scopeId, score: req.body.requiredApprovalScore })
-      return { requiredApprovalScore: req.body.requiredApprovalScore }
+      const out = {}
+      if (req.body.requiredApprovalScore !== undefined) {
+        await setRequiredApprovalScore({ scopeId, score: req.body.requiredApprovalScore })
+        out.requiredApprovalScore = req.body.requiredApprovalScore
+      }
+      if (req.body.promoteCeiling !== undefined) {
+        await setPromoteCeiling({ scopeId, value: req.body.promoteCeiling })
+        out.promoteCeiling = req.body.promoteCeiling
+      }
+      return out
     }
   )
 }

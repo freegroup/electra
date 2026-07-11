@@ -117,6 +117,7 @@
     if (scope && !scope.isLeaf) {
       adminCard.classList.remove("hidden")
       $("admin-scope-name").textContent = scope.name
+      $("f-ceiling").checked = !!scope.promoteCeiling
     } else {
       adminCard.classList.add("hidden")
     }
@@ -445,6 +446,13 @@
     logResult("set score", await API.call("PATCH", `scopes/${id}`, { requiredApprovalScore }))
     await afterMutation()
   }
+  async function setCeiling() {
+    const id = adminScopeId(); if (!id) return
+    const promoteCeiling = $("f-ceiling").checked
+    logResult(`promote ceiling ${promoteCeiling ? "on" : "off"}`,
+      await API.call("PATCH", `scopes/${id}`, { promoteCeiling }))
+    await afterMutation()
+  }
 
   // ---- after any mutation: refresh tree + review -------------------------
   async function afterMutation() {
@@ -504,6 +512,7 @@
     $("btn-member").onclick = addMember
     $("btn-reviewer").onclick = addReviewer
     $("btn-score").onclick = setScore
+    $("f-ceiling").onchange = setCeiling
 
     $("reload-tree").onclick = reloadTree
     $("clear-log").onclick = () => { $("log").innerHTML = "" }

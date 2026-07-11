@@ -25,7 +25,7 @@ const {
 
 async function getScopeRow(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, required_approval_score FROM scopes WHERE id = $1`,
+    `SELECT id, parent_id, required_approval_score, promote_ceiling FROM scopes WHERE id = $1`,
     [scopeId]
   )
   return res.rowCount === 0 ? null : res.rows[0]
@@ -203,7 +203,11 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion }
         if (isImmediate) committedAtImmediateParent = true
 
         src = { scope: target.id, version }
-        target = target.parent_id ? await getScopeRow(client, target.parent_id) : null
+        // Promote ceiling (§6.5): content may land ON this scope but must not
+        // rise above it — halt the cascade here even if the parent is score-0.
+        target = (target.promote_ceiling || !target.parent_id)
+          ? null
+          : await getScopeRow(client, target.parent_id)
         isImmediate = false
         continue
       }
