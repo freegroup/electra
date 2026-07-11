@@ -135,8 +135,15 @@ textarea {
 
 /* Master/detail right pane */
 .detail-toolbar {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 10px 12px;
+  /* a shade lighter than the header (--panel2), same family */
+  background: #292f38;
+  border-bottom: 1px solid var(--line);
+}
+.detail-toolbar button {
+  padding: 7px 14px;
+  border-radius: 6px;
 }
 .detail { display: flex; flex-direction: column; gap: 10px; }
 .detail-empty { color: var(--muted); font-style: italic; padding: 8px 0; }
