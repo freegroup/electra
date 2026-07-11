@@ -257,7 +257,7 @@
     }
     container.appendChild(listWrap)
 
-    if (known) Detail.setActions([actionBtn(`New document as ${owner}`, () => newDocument({ scopeId: scope.parentId, persona: owner }))])
+    if (known) Detail.setActions([actionBtn("New document", () => newDocument({ scopeId: scope.parentId, persona: owner }))])
     else container.appendChild(UI.el("div", "detail-note", "Unknown persona — add its handle (top bar) to act as them."))
   }
 
