@@ -126,10 +126,49 @@
     state.personas = [...refs]
     refreshPersonaSelect()
   }
-  async function afterMutation() { await reloadTree(); await Detail.refresh() }
+  async function afterMutation() { await reloadTree(); await routeHash() }
 
-  // Left-click a node → show its type's detail view (master/detail).
-  Tree.onSelectNode((kind, ctx) => Detail.show(kind, ctx))
+  // ---- deep links: the URL hash is the source of truth for selection -------
+  //   #scope/<id>   #leaf/<id>   #doc/<scopeId>/<encodedPath>
+  // Left-clicking a node sets the hash; the hashchange handler renders detail
+  // and highlights the tree — so tree and detail can never drift, and any
+  // node is bookmarkable.
+  function keyForCtx(kind, ctx) {
+    if (kind === "scope" || kind === "leaf") return `${kind}/${ctx.scope.id}`
+    if (kind === "doc") return `doc/${ctx.scope.id}/${encodeURIComponent(ctx.path)}`
+    return null
+  }
+  function navigate(kind, ctx) {
+    const key = keyForCtx(kind, ctx)
+    if (key) location.hash = key
+  }
+  // Rebuild a render ctx from a hash key using the current tree state.
+  function ctxFromHash() {
+    const raw = location.hash.replace(/^#/, "")
+    if (!raw) return null
+    const parts = raw.split("/")
+    const kind = parts[0]
+    if (kind === "scope" || kind === "leaf") {
+      const scope = state.scopes.find((s) => s.id === parts[1])
+      return scope ? { kind, ctx: { scope } } : null
+    }
+    if (kind === "doc") {
+      const scope = state.scopes.find((s) => s.id === parts[1])
+      const path = decodeURIComponent(parts.slice(2).join("/"))
+      if (!scope) return null
+      return { kind, ctx: { scope, path, active: null, inLeaf: !!scope.isLeaf } }
+    }
+    return null
+  }
+  async function routeHash() {
+    const sel = ctxFromHash()
+    if (!sel) { Detail.clear(); Tree.highlightKey(null); return }
+    Tree.highlightKey(keyForCtx(sel.kind, sel.ctx))
+    await Detail.show(sel.kind, sel.ctx)
+  }
+
+  // Left-click a node → set the hash (routeHash does the rest).
+  Tree.onSelectNode((kind, ctx) => navigate(kind, ctx))
 
   // Run a call as a specific persona (reflected in the top bar).
   function actAs(handle) {
@@ -230,7 +269,15 @@
     actAs(persona)
     const r = await API.call("PUT", `scopes/${scopeId}/docs?path=${encodeURIComponent(path)}`, Doc.putBody(data, meta))
     logResult(`save ${path} → ${scopePathById(scopeId)}`, r)
-    if (r.ok) Doc.setCurrent(r.body)
+    if (r.ok) {
+      Doc.setCurrent(r.body)
+      await reloadTree()
+      // The write landed in the persona's leaf under scopeId — point the deep
+      // link at that leaf doc so tree + detail select the row that now exists.
+      const ref = await API.personRef(persona)
+      const leaf = state.scopes.find((s) => s.parentId === scopeId && s.name === ref)
+      if (leaf) { navigate("doc", { scope: leaf, path }); return }
+    }
     await afterMutation()
   }
 
@@ -251,7 +298,7 @@
     for (const [p, v] of byPath) {
       const row = UI.el("div", "leaf-doc")
       const link = UI.el("span", "doc-link", `${p}  v${v.version} ${v.status}`)
-      link.onclick = () => Detail.show("doc", { scope, path: p, active: v, inLeaf: true })
+      link.onclick = () => navigate("doc", { scope, path: p })
       row.appendChild(link)
       listWrap.appendChild(row)
     }
@@ -440,23 +487,14 @@
     const path = sanitizePath(res.path)
     if (!path) { log("enter a path for the new document", "err"); return }
     await addPersona(res.persona, false)
-    // Open a blank doc detail bound to the chosen scope; Save creates v1 in
-    // that persona's leaf. We model a brand-new doc as a leaf-context doc.
+    // Point the deep link at where the doc will show: the persona's leaf if it
+    // already exists here, else the scope itself (Save provisions the leaf).
     const scope = state.scopes.find((s) => s.id === res.scopeId)
     const personaRef = await API.personRef(res.persona)
     const leaf = scope
       ? state.scopes.find((s) => s.parentId === scope.id && s.name === personaRef)
       : null
-    // If the persona already has a leaf here, present as an in-leaf doc; else a
-    // fresh doc whose Save provisions the leaf. Either way DocDetail's saveSel
-    // targets res.scopeId.
-    await Detail.show("doc", {
-      scope: leaf || scope,
-      path,
-      active: null,
-      inLeaf: !!leaf,
-      isNew: true,
-    })
+    navigate("doc", { scope: leaf || scope, path })
     log(`new document ${path} in ${scopePathById(res.scopeId)} as ${res.persona} — edit + Save`, "ok")
   }
 
@@ -623,7 +661,7 @@
     const { scope, path, active, inLeaf } = ctx
     if (!inLeaf) {
       return UI.menu(x, y, [
-        { label: "Open (edit → creates your copy)", onClick: () => Detail.show("doc", ctx) },
+        { label: "Open (edit → creates your copy)", onClick: () => navigate("doc", ctx) },
         { label: "History…", onClick: () => actHistory({ scopeId: scope.id, path, persona: API.persona.email }) },
       ])
     }
@@ -634,7 +672,7 @@
     }
     const base = { scopeId: scope.parentId, path, persona: owner, active }
     UI.menu(x, y, [
-      { label: "Open", onClick: () => Detail.show("doc", ctx) },
+      { label: "Open", onClick: () => navigate("doc", ctx) },
       { label: "Promote…", onClick: () => actPromote(base) },
       { label: "Distribute…", onClick: () => actDistribute(base) },
       { label: "Rename…", onClick: () => actRename(base) },
@@ -674,9 +712,13 @@
     Detail.register("doc", renderDocDetail)
 
     Tree.setNameResolver((ref) => state.hashToHandle[ref] || ref)
+    // The hash drives selection: clicks set it, this renders it. Also fires for
+    // back/forward and for bookmarked deep links.
+    window.addEventListener("hashchange", routeHash)
     addPersona("admin@electra.academy")
     checkHealth()
-    resolveKnownHandles().then(reloadTree)
+    // First render, then route to whatever the (possibly bookmarked) hash says.
+    resolveKnownHandles().then(reloadTree).then(routeHash)
   }
   document.addEventListener("DOMContentLoaded", init)
 })()

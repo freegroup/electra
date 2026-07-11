@@ -17,16 +17,50 @@ const Tree = (() => {
   let onNodeMenu = () => {}       // (kind, ctx, x, y) — see attachMenu below
   let nameOf = (ref) => ref // hash → friendly handle (set by app.js)
   let selectedEl = null     // currently highlighted row
+  let selectedKey = null    // stable key of the selection (survives re-render)
 
   function selectRow(row) {
     if (selectedEl) selectedEl.classList.remove("selected")
     selectedEl = row
-    if (row) row.classList.add("selected")
+    if (row) { row.classList.add("selected"); selectedKey = row.dataset.key || null }
   }
 
-  // Wire a right-click + a hover "⋯" button on a row to the node-menu callback.
+  // A stable, URL-friendly key per node — the deep-link identity.
+  function keyOf(kind, ctx) {
+    if (kind === "scope" || kind === "leaf") return `${kind}/${ctx.scope.id}`
+    if (kind === "doc") return `doc/${ctx.scope.id}/${encodeURIComponent(ctx.path)}`
+    return null
+  }
+
+  // Re-apply the highlight to the row matching `key` after a re-render, and
+  // reveal it by opening any collapsed ancestor groups.
+  function highlightKey(key) {
+    selectedKey = key
+    if (selectedEl) { selectedEl.classList.remove("selected"); selectedEl = null }
+    if (!key) return
+    const row = document.querySelector(`#tree .row[data-key="${cssEscape(key)}"]`)
+    if (!row) return
+    // Walk up: for each ancestor .children that's hidden, show it + flip twisty.
+    let node = row.parentElement
+    while (node && node.id !== "tree") {
+      if (node.classList && node.classList.contains("children") && node.style.display === "none") {
+        node.style.display = ""
+        const headRow = node.previousElementSibling
+        const tw = headRow && headRow.querySelector(".twisty")
+        if (tw && tw.textContent === "▸") tw.textContent = "▾"
+      }
+      node = node.parentElement
+    }
+    selectRow(row)
+    row.scrollIntoView({ block: "nearest" })
+  }
+  function cssEscape(s) { return s.replace(/["\\]/g, "\\$&") }
+
+  // Wire a row: stable key (for deep-link highlight) + right-click/⋯ menu.
   // kind: "scope" | "leaf" | "doc"; ctx carries what the menu needs.
   function attachMenu(row, kind, ctx) {
+    const key = keyOf(kind, ctx)
+    if (key) row.dataset.key = key
     row.addEventListener("contextmenu", (ev) => {
       ev.preventDefault(); ev.stopPropagation()
       onNodeMenu(kind, ctx, ev.clientX, ev.clientY)
@@ -213,6 +247,7 @@ const Tree = (() => {
 
     container.innerHTML = ""
     container.appendChild(scopeNode(root, childrenOf, versions))
+    if (selectedKey) highlightKey(selectedKey) // survive re-render
     return { scopes }
   }
 
@@ -222,5 +257,7 @@ const Tree = (() => {
     onSelectNode: (fn) => { onSelectNode = fn },
     onNodeMenu: (fn) => { onNodeMenu = fn },
     setNameResolver: (fn) => { nameOf = fn },
+    highlightKey,
+    keyOf,
   }
 })()
