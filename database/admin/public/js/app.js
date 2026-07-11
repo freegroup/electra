@@ -343,8 +343,9 @@
       await afterMutation()
     }
 
-    // roles editor (members / reviewers)
-    container.appendChild(rolesEditor(scope))
+    // roles editor (members / reviewers) — read-only list; add via toolbar
+    const roles = rolesEditor(scope)
+    container.appendChild(roles)
 
     // action toolbar (under the header) — Save first, like the document view.
     const save = UI.el("button", "primary", "Save")
@@ -352,6 +353,7 @@
     Detail.setActions([
       save,
       actionBtn("Add document", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
+      actionBtn("Add member", () => addMemberDialog(scope, roles)),
       actionBtn("Add sub-scope", () => addSubScope(scope)),
       actionBtn("Review queue", () => reviewQueue(scope)),
       actionBtn("Delete scope", () => deleteScope(scope), true),
@@ -555,51 +557,64 @@
     await afterMutation()
   }
 
-  // A compact members+reviewers+admins editor with add controls. Changes apply
-  // immediately (each add/remove is its own call) so the dialog stays simple.
+  // Read-only members/roles list with a per-row Remove. Adding is done via the
+  // "Add member" toolbar button → addMemberDialog().
   function rolesEditor(scope) {
     const wrap = UI.el("div", "roles-editor")
     const render = () => {
       wrap.innerHTML = ""
-      wrap.appendChild(UI.el("div", "props-line", "members / roles"))
+      wrap.appendChild(UI.el("div", "props-line", "Members / roles"))
+      let any = false
       for (const m of scope.members) {
         if (m.personRef === scope.name) continue // skip the scope's own row
+        any = true
         const row = UI.el("div", "role-row")
         const roles = []
         if (m.isMember) roles.push("member")
         if (m.isAdmin) roles.push("admin")
         if (m.reviewerScore != null) roles.push("rev:" + m.reviewerScore)
         row.appendChild(UI.el("span", "role-name", `${nameOf(m.personRef)}  [${roles.join(", ") || "—"}]`))
-        const rm = UI.el("button", "link", "remove member")
+        const rm = UI.el("button", "link", "remove")
         rm.onclick = async () => {
           logResult("remove member", await API.call("DELETE", `scopes/${scope.id}/members/${m.personRef}`))
-          await afterMutation(); const fresh = state.scopes.find((s) => s.id === scope.id); if (fresh) { scope.members = fresh.members; render() }
+          await refreshAfterRole(scope); render()
         }
         row.appendChild(rm)
         wrap.appendChild(row)
       }
-      // Add controls.
-      const add = UI.el("div", "role-add")
-      const handle = document.createElement("input"); handle.placeholder = "persona handle"
-      const asMember = UI.el("button", null, "add member")
-      const asReviewer = UI.el("button", null, "add reviewer(5)")
-      asMember.onclick = async () => {
-        const h = handle.value.trim(); if (!h) return
-        const ref = await API.personRef(h); rememberHandle(h, ref)
-        logResult(`add member ${h}`, await API.call("POST", `scopes/${scope.id}/members`, { personRef: ref }))
-        await refreshAfterRole(scope); render()
-      }
-      asReviewer.onclick = async () => {
-        const h = handle.value.trim(); if (!h) return
-        const ref = await API.personRef(h); rememberHandle(h, ref)
-        logResult(`add reviewer ${h}`, await API.call("POST", `scopes/${scope.id}/reviewers`, { personRef: ref, score: 5 }))
-        await refreshAfterRole(scope); render()
-      }
-      add.append(handle, asMember, asReviewer)
-      wrap.appendChild(add)
+      if (!any) wrap.appendChild(UI.el("div", "empty", "no members yet"))
     }
     render()
+    // expose re-render so the Add dialog can refresh this section in place
+    wrap._render = render
     return wrap
+  }
+
+  // One dialog to add a person with any combination of roles + reviewer score.
+  async function addMemberDialog(scope, rolesWrap) {
+    const isReviewer = document.createElement("input"); isReviewer.type = "checkbox"
+    const isAdmin = document.createElement("input"); isAdmin.type = "checkbox"
+    const isMember = document.createElement("input"); isMember.type = "checkbox"; isMember.checked = true
+    const score = document.createElement("input"); score.type = "number"; score.min = 0; score.max = 10; score.value = 5
+    const res = await UI.dialog({
+      title: `Add member — ${scopePath(scope)}`, okLabel: "Add",
+      fields: [
+        { key: "handle", label: "Persona handle", type: "text", placeholder: "e.g. anna" },
+        { key: "member", label: "Member", type: "custom", el: isMember, get: () => isMember.checked },
+        { key: "admin", label: "Admin", type: "custom", el: isAdmin, get: () => isAdmin.checked },
+        { key: "reviewer", label: "Reviewer", type: "custom", el: isReviewer, get: () => isReviewer.checked },
+        { key: "score", label: "Reviewer score", type: "custom", el: score, get: () => Number(score.value) },
+      ],
+    })
+    if (!res) return
+    const h = (res.handle || "").trim()
+    if (!h) { log("enter a persona handle", "err"); return }
+    const ref = await API.personRef(h); rememberHandle(h, ref)
+    if (res.member) logResult(`add member ${h}`, await API.call("POST", `scopes/${scope.id}/members`, { personRef: ref }))
+    if (res.admin) logResult(`grant admin ${h}`, await API.call("POST", `scopes/${scope.id}/admins`, { personRef: ref }))
+    if (res.reviewer) logResult(`add reviewer ${h}`, await API.call("POST", `scopes/${scope.id}/reviewers`, { personRef: ref, score: res.score }))
+    await refreshAfterRole(scope)
+    if (rolesWrap && rolesWrap._render) rolesWrap._render()
   }
   async function refreshAfterRole(scope) {
     await reloadTree()
