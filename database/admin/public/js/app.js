@@ -490,7 +490,9 @@
   }
 
   // ---- new document ------------------------------------------------------
-  // scope + persona + path chosen explicitly (a new doc has no origin).
+  // scope + persona + path chosen explicitly (a new doc has no origin). The
+  // dialog actually CREATES the doc (writes v1 into the persona's leaf under
+  // the chosen scope), then opens it for editing — so it appears in the tree.
   async function newDocument({ scopeId, persona }) {
     const sel = document.createElement("select")
     for (const c of scopeChoices()) {
@@ -498,7 +500,7 @@
     }
     if (scopeId) sel.value = scopeId
     const res = await UI.dialog({
-      title: "New document", okLabel: "Create & edit",
+      title: "New document", okLabel: "Create",
       fields: [
         { key: "scopeId", label: "Visible for", type: "custom", el: sel, get: () => sel.value },
         { key: "persona", label: "As persona", type: "text", value: persona || API.persona.email },
@@ -509,15 +511,18 @@
     const path = sanitizePath(res.path)
     if (!path) { log("enter a path for the new document", "err"); return }
     await addPersona(res.persona, false)
-    // Point the deep link at where the doc will show: the persona's leaf if it
-    // already exists here, else the scope itself (Save provisions the leaf).
-    const scope = state.scopes.find((s) => s.id === res.scopeId)
+    // Actually create it now: v1 with empty data/meta in the persona's leaf
+    // under the chosen scope.
+    actAs(res.persona)
+    const r = await API.call("PUT", `scopes/${res.scopeId}/docs?path=${encodeURIComponent(path)}`,
+      { data: {}, meta: {} })
+    logResult(`create ${path} → ${scopePathById(res.scopeId)}`, r)
+    if (!r.ok) { await afterMutation(); return }
+    await reloadTree()
+    // Point the deep link at the persona's leaf where it now lives.
     const personaRef = await API.personRef(res.persona)
-    const leaf = scope
-      ? state.scopes.find((s) => s.parentId === scope.id && s.name === personaRef)
-      : null
-    navigate("doc", { scope: leaf || scope, path })
-    log(`new document ${path} in ${scopePathById(res.scopeId)} as ${res.persona} — edit + Save`, "ok")
+    const leaf = state.scopes.find((s) => s.parentId === res.scopeId && s.name === personaRef)
+    navigate("doc", leaf ? { scope: leaf, path } : { scope: state.scopes.find((s) => s.id === res.scopeId), path })
   }
 
   // ---- scope admin dialogs ----------------------------------------------
