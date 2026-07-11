@@ -13,7 +13,25 @@
 
 const Tree = (() => {
   let onSelectDoc = () => {}
+  let onNodeMenu = () => {}       // (kind, ctx, x, y) — see attachMenu below
   let nameOf = (ref) => ref // hash → friendly handle (set by app.js)
+
+  // Wire a right-click + a hover "⋯" button on a row to the node-menu callback.
+  // kind: "scope" | "leaf" | "doc"; ctx carries what the menu needs.
+  function attachMenu(row, kind, ctx) {
+    row.addEventListener("contextmenu", (ev) => {
+      ev.preventDefault(); ev.stopPropagation()
+      onNodeMenu(kind, ctx, ev.clientX, ev.clientY)
+    })
+    const dots = el("span", "row-menu", "⋯")
+    dots.title = "actions"
+    dots.addEventListener("click", (ev) => {
+      ev.preventDefault(); ev.stopPropagation()
+      const r = dots.getBoundingClientRect()
+      onNodeMenu(kind, ctx, r.right, r.bottom)
+    })
+    row.appendChild(dots)
+  }
 
   // Shorten a raw personRef hash for display when we have no friendly name.
   function short(ref) {
@@ -55,7 +73,8 @@ const Tree = (() => {
     return t
   }
 
-  // Render a document line (clickable → loads that scope+path into the editor).
+  // Render a document line (click → inspect; right-click/⋯ → doc menu).
+  // `scope` is the scope the doc physically lives on (a leaf, or a shared scope).
   function docLine(scope, entry) {
     const node = el("div", "node")
     const row = el("div", "row")
@@ -67,12 +86,15 @@ const Tree = (() => {
       row.appendChild(b)
     }
     row.addEventListener("click", () => onSelectDoc(scope, entry.path))
+    const active = entry.versions[0] // newest first (versionBadges sorts desc)
+    attachMenu(row, "doc", { scope, path: entry.path, active, inLeaf: !!scope.isLeaf })
     node.appendChild(row)
     return node
   }
 
   // Collapsible group ("shared", "👤 person") holding document lines.
-  function docGroup(label, cls, scope, entries, openByDefault) {
+  // When `leafScope` is given, the group header carries a leaf context menu.
+  function docGroup(label, cls, scope, entries, openByDefault, leafScope) {
     const node = el("div", "node")
     const row = el("div", "row")
     let open = !!openByDefault
@@ -80,6 +102,7 @@ const Tree = (() => {
     row.appendChild(tw)
     row.appendChild(el("span", cls, label))
     if (entries.length) row.appendChild(el("span", "badge", entries.length + ""))
+    if (leafScope) attachMenu(row, "leaf", { scope: leafScope })
     node.appendChild(row)
 
     const children = el("div", "children")
@@ -124,7 +147,10 @@ const Tree = (() => {
     if (scope.promoteCeiling) {
       row.appendChild(el("span", "badge ceiling", "⛔ ceiling"))
     }
-    if (!scope.isLeaf) memberBadges(row, scope.members, scope.name)
+    if (!scope.isLeaf) {
+      memberBadges(row, scope.members, scope.name)
+      attachMenu(row, "scope", { scope })
+    }
     node.appendChild(row)
 
     const kids = childrenOf.get(scope.id) || []
@@ -150,7 +176,7 @@ const Tree = (() => {
       // One node per person's leaf.
       for (const leaf of leaves) {
         const entries = versionBadges(group(versions, leaf.id))
-        container.appendChild(docGroup("👤 " + short(leaf.name), "leaf-name", leaf, entries, false))
+        container.appendChild(docGroup("👤 " + short(leaf.name), "leaf-name", leaf, entries, false, leaf))
       }
     }
 
@@ -197,6 +223,7 @@ const Tree = (() => {
   return {
     render,
     onSelectDoc: (fn) => { onSelectDoc = fn },
+    onNodeMenu: (fn) => { onNodeMenu = fn },
     setNameResolver: (fn) => { nameOf = fn },
   }
 })()

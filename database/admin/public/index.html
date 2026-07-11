@@ -10,79 +10,47 @@
   <header class="topbar">
     <span class="brand">Database Explorer</span>
     <span class="hint">local testing &amp; admin tool</span>
+    <label class="persona-label">acting as
+      <select id="persona"></select>
+    </label>
+    <label class="persona-label">role
+      <select id="role">
+        <option value="user">user</option>
+        <option value="admin">admin</option>
+        <option value="anonym">anonym</option>
+      </select>
+    </label>
+    <input id="persona-new" placeholder="+ add/name persona, Enter" title="Adds a persona you can act as, and labels its hash in the tree" />
     <button id="reload-tree" title="Reload the whole tree">↻ reload</button>
     <span id="db-status" class="status">DB: …</span>
   </header>
 
   <main class="layout">
-    <!-- LEFT: god-view tree -->
+    <!-- LEFT: god-view tree; right-click / ⋯ for scope + document actions -->
     <section class="tree-pane">
-      <div class="pane-title">Scope tree <span class="pane-sub">(full god-view)</span></div>
+      <div class="pane-title">Scope tree <span class="pane-sub">(right-click a node for actions)</span></div>
       <div id="tree" class="tree"></div>
     </section>
 
-    <!-- RIGHT: workspace -->
+    <!-- RIGHT: document editor only -->
     <section class="doc-pane">
-
-      <!-- STEP 1 — identity -->
       <div class="card">
-        <div class="card-head">1 · Who am I?</div>
+        <div class="card-head">Document</div>
         <div class="card-body">
-          <div class="row">
-            <label>acting as
-              <select id="persona"></select>
+          <div id="edit-context" class="edit-context">no document open — click one in the tree, or “+ new”.</div>
+          <div class="row edit-target hidden" id="edit-target">
+            <label>save in
+              <select id="edit-scope"></select>
             </label>
-            <label>role
-              <select id="role">
-                <option value="user">user</option>
-                <option value="admin">admin</option>
-                <option value="anonym">anonym</option>
-              </select>
-            </label>
-            <input id="persona-new" placeholder="+ add/name a persona (handle), Enter" title="Adds a persona you can act as, and labels its hash in the tree" />
+            <span class="edit-as">as <strong id="edit-persona">—</strong></span>
           </div>
-          <div class="row" style="margin-top:8px">
-            <label class="grow">working in
-              <select id="scope-select"><option value="">— pick a scope —</option></select>
-            </label>
-          </div>
-        </div>
-        <div class="card-help">
-          Every action below runs as this person, in the selected scope. Switch
-          personas to see the same data through different eyes. You can also
-          click a scope or file in the tree on the left.
-        </div>
-      </div>
-
-      <!-- STEP 2 — document -->
-      <div class="card">
-        <div class="card-head">2 · Document</div>
-        <div class="card-body">
           <div class="row">
             <label class="grow">path
               <input id="doc-path" placeholder="e.g. math/quadratic.json" />
             </label>
-            <button id="btn-load" title="Load as the current persona (respects visibility)">Load</button>
-            <button id="btn-list" title="List everything visible here">List</button>
-            <button id="btn-history" title="Show full version history">History</button>
+            <button id="btn-save" class="primary">Save</button>
           </div>
-
-          <!-- classic document toolbar -->
-          <div class="toolbar">
-            <button id="btn-save" class="primary" title="Write a new version into my leaf">Save</button>
-            <button id="btn-revert" title="Discard all my local versions">Revert</button>
-            <button id="btn-rename" title="Rename / move within my leaf">Rename…</button>
-            <span class="tb-sep"></span>
-            <button id="btn-promote" title="Offer to the level above for review">Promote ↑</button>
-            <button id="btn-distribute" title="Send to other scopes">Distribute →</button>
-            <button id="btn-delete" class="danger" title="Start a delete (tombstone)">Delete</button>
-            <span class="tb-sep"></span>
-            <button id="btn-publish" title="Attach a public link">Publish</button>
-            <button id="btn-unpublish" title="Take the public link down">Unpublish</button>
-          </div>
-
-          <div id="doc-origin" class="origin"></div>
-          <div class="editors">
+          <div id="editor" class="editors hidden">
             <div class="editor">
               <div class="editor-label">data</div>
               <textarea id="doc-data" spellcheck="false">{}</textarea>
@@ -95,58 +63,15 @@
         </div>
       </div>
 
-      <!-- review (only when reviewer) -->
-      <div id="review" class="card hidden">
-        <div class="card-head">3 · Review queue <span class="pane-sub">(you review this scope)</span></div>
-        <div id="pending-list" class="card-body"></div>
-      </div>
-
-      <!-- scope admin (only when a scope is selected) -->
-      <div id="admin-card" class="card hidden">
-        <div class="card-head">Scope admin <span class="pane-sub" id="admin-scope-name"></span></div>
-        <div class="card-body mini-forms">
-          <div class="mini-row">
-            <span class="mini-label">add sub-scope</span>
-            <input id="f-subscope" placeholder="name" />
-            <input id="f-subscope-score" type="number" min="0" value="0" title="requiredApprovalScore" />
-            <button id="btn-subscope">create</button>
-          </div>
-          <div class="mini-row">
-            <span class="mini-label">add member</span>
-            <input id="f-member" placeholder="persona handle (e.g. anna)" />
-            <button id="btn-member">add</button>
-          </div>
-          <div class="mini-row">
-            <span class="mini-label">add reviewer</span>
-            <input id="f-reviewer" placeholder="persona handle" />
-            <input id="f-reviewer-score" type="number" min="0" max="10" value="5" title="score" />
-            <button id="btn-reviewer">add</button>
-          </div>
-          <div class="mini-row">
-            <span class="mini-label">approval score</span>
-            <input id="f-score" type="number" min="0" value="0" />
-            <button id="btn-score">set</button>
-          </div>
-          <div class="mini-row">
-            <span class="mini-label">promote ceiling</span>
-            <label class="ceiling-toggle">
-              <input id="f-ceiling" type="checkbox" />
-              content can't be promoted above this scope
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- activity -->
       <div class="card">
         <div class="card-head">Activity <button id="clear-log" class="link">clear</button></div>
         <div id="log" class="log card-body"></div>
       </div>
-
     </section>
   </main>
 
   <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/tree.js"></script>
   <script src="js/doc.js"></script>
   <script src="js/app.js"></script>
