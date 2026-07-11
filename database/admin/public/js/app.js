@@ -156,12 +156,12 @@
     const r = await API.god(`doc?scope=${godScope}&path=${encodeURIComponent(path)}`)
     const doc = r.ok ? r.body : { data: {}, meta: {}, version: "?", status: "?" }
 
-    container.appendChild(UI.el("div", "detail-sub",
-      inLeaf ? `in ${nameOf(scope.name)}'s leaf under ${scopePathById(scope.parentId)}` : `shared on ${scopePath(scope)}`))
     Detail.setTitle(`Document: ${path}`)
 
-    // "save in" target: every scope the persona may write in (default the
-    // operating scope). A new/inherited edit lands in that persona's leaf here.
+    // "visible for" = the scope whose members may see this version. This IS the
+    // permission (not a storage location); the write lands in the persona's
+    // leaf under it. Defaults to the current scope; changeable to any scope the
+    // persona is a member of (e.g. steer a fix into a task-force scope).
     const choices = await memberScopes(owner, operatingScopeId)
     const saveSel = document.createElement("select")
     for (const c of choices) {
@@ -169,7 +169,7 @@
     }
     saveSel.value = operatingScopeId
     const tRow = UI.el("div", "form-row")
-    tRow.append(UI.el("label", "form-label", "save in"), saveSel)
+    tRow.append(UI.el("label", "form-label", "visible for"), saveSel)
     container.appendChild(tRow)
     const asRow = UI.el("div", "detail-sub"); asRow.textContent = `acting as ${owner}`
     container.appendChild(asRow)
