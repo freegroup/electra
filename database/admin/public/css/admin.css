@@ -134,6 +134,10 @@ textarea {
 }
 
 /* Master/detail right pane */
+.detail-toolbar {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line);
+}
 .detail { display: flex; flex-direction: column; gap: 10px; }
 .detail-empty { color: var(--muted); font-style: italic; padding: 8px 0; }
 .detail-head { font-weight: 600; font-size: 14px; }

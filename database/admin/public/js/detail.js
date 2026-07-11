@@ -11,12 +11,14 @@ const Detail = (() => {
   const renderers = {}
   let container = null
   let headEl = null
+  let toolbarEl = null
   let current = null // { kind, ctx }
   let emptyHint = "Select a node in the tree."
 
-  function init(el, hint, head) {
+  function init(el, hint, head, toolbar) {
     container = el
     headEl = head || null
+    toolbarEl = toolbar || null
     if (hint) emptyHint = hint
     clear()
   }
@@ -25,9 +27,20 @@ const Detail = (() => {
 
   function setTitle(t) { if (headEl) headEl.textContent = t }
 
+  // Fill the fixed toolbar under the header with action buttons. Pass an array
+  // of <button> elements (renderers build them); [] hides the toolbar.
+  function setActions(buttons) {
+    if (!toolbarEl) return
+    toolbarEl.innerHTML = ""
+    if (!buttons || !buttons.length) { toolbarEl.classList.add("hidden"); return }
+    toolbarEl.classList.remove("hidden")
+    for (const b of buttons) toolbarEl.appendChild(b)
+  }
+
   function clear() {
     current = null
     setTitle("Detail")
+    setActions([])
     if (!container) return
     container.innerHTML = ""
     const empty = document.createElement("div")
@@ -40,6 +53,7 @@ const Detail = (() => {
     const fn = renderers[kind]
     if (!fn) { clear(); return }
     current = { kind, ctx }
+    setActions([])          // renderer repopulates
     container.innerHTML = ""
     await fn(container, ctx)
   }
@@ -52,5 +66,5 @@ const Detail = (() => {
 
   function currentSelection() { return current }
 
-  return { init, register, show, refresh, clear, currentSelection, setTitle }
+  return { init, register, show, refresh, clear, currentSelection, setTitle, setActions }
 })()

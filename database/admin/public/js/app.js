@@ -190,14 +190,13 @@
     Doc.setCurrent(inLeaf ? doc : null) // shared edit forks; leaf edit is concurrency-checked
     Doc.fill("doc-data", "doc-meta", doc)
 
-    // action row
-    const acts = UI.el("div", "detail-actions")
+    // action toolbar (under the header)
     const save = UI.el("button", "primary", "Save")
     save.onclick = () => saveDocFrom(saveSel.value, owner)
-    acts.appendChild(save)
+    const buttons = [save]
     const base = { scopeId: operatingScopeId, path, persona: owner, active: ctx.active }
     if (inLeaf && knownOwner) {
-      acts.append(
+      buttons.push(
         actionBtn("Promote", () => actPromote(base)),
         actionBtn("Distribute", () => actDistribute(base)),
         actionBtn("Rename", () => actRename(base)),
@@ -207,8 +206,8 @@
         actionBtn("Delete", () => actDelete(base), true),
       )
     }
-    acts.appendChild(actionBtn("History", () => actHistory(base)))
-    container.appendChild(acts)
+    buttons.push(actionBtn("History", () => actHistory(base)))
+    Detail.setActions(buttons)
 
     if (inLeaf && !knownOwner) {
       container.appendChild(UI.el("div", "detail-note",
@@ -258,10 +257,8 @@
     }
     container.appendChild(listWrap)
 
-    const acts = UI.el("div", "detail-actions")
-    if (known) acts.appendChild(actionBtn(`New document as ${owner}`, () => newDocument({ scopeId: scope.parentId, persona: owner })))
+    if (known) Detail.setActions([actionBtn(`New document as ${owner}`, () => newDocument({ scopeId: scope.parentId, persona: owner }))])
     else container.appendChild(UI.el("div", "detail-note", "Unknown persona — add its handle (top bar) to act as them."))
-    container.appendChild(acts)
   }
 
   // ---- scope detail: editable properties + roles + actions ---------------
@@ -294,15 +291,13 @@
     // roles editor (members / reviewers)
     container.appendChild(rolesEditor(scope))
 
-    // actions
-    const acts = UI.el("div", "detail-actions")
-    acts.append(
+    // action toolbar (under the header)
+    Detail.setActions([
       actionBtn("New document here", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
       actionBtn("Add sub-scope", () => addSubScope(scope)),
       actionBtn("Review queue", () => reviewQueue(scope)),
       actionBtn("Delete scope", () => deleteScope(scope), true),
-    )
-    container.appendChild(acts)
+    ])
   }
 
   // ---- document actions (explicit context) -------------------------------
@@ -673,7 +668,7 @@
     $("clear-log").onclick = () => { $("log").innerHTML = "" }
 
     // Detail registry: each node kind → its renderer.
-    Detail.init($("detail"), "Select a scope, person, or document in the tree.", $("detail-head"))
+    Detail.init($("detail"), "Select a scope, person, or document in the tree.", $("detail-head"), $("detail-toolbar"))
     Detail.register("scope", renderScopeDetail)
     Detail.register("leaf", renderLeafDetail)
     Detail.register("doc", renderDocDetail)
