@@ -152,12 +152,13 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
       [scope.id, parentId]
     )
 
-    // The creator becomes first admin + reviewer + member of the new scope.
-    // Without this the new scope would be unreachable — nobody could add
-    // members to it or promote into it.
+    // The creator becomes admin + member of the new scope — but NOT a reviewer.
+    // Reviewer must be granted explicitly (so a scope with a required approval
+    // score enforces real review; the creator can't self-approve by default).
+    // A fresh scope therefore has no reviewer until an admin appoints one.
     await client.query(
-      `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin, reviewer_score)
-       VALUES ($1, $2, true, true, 10)`,
+      `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin)
+       VALUES ($1, $2, true, true)`,
       [scope.id, createdBy]
     )
 
