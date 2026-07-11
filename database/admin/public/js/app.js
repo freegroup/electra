@@ -317,7 +317,7 @@
     scope = state.scopes.find((s) => s.id === scope.id) || scope
     Detail.setTitle(`Scope: ${scopePath(scope)}`)
 
-    // config: score + ceiling + save
+    // config: score + ceiling (Save lives in the toolbar)
     const cfg = UI.el("div", "detail-section")
     const scoreInput = document.createElement("input")
     scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
@@ -326,8 +326,9 @@
     const ceil = document.createElement("input"); ceil.type = "checkbox"; ceil.checked = !!scope.promoteCeiling
     const cRow = UI.el("div", "form-row"); cRow.append(UI.el("label", "form-label", "promote ceiling"), ceil)
     cfg.appendChild(cRow)
-    const saveCfg = UI.el("button", "primary", "Save config")
-    saveCfg.onclick = async () => {
+    container.appendChild(cfg)
+
+    const saveConfig = async () => {
       const patch = {}
       if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)
       if (ceil.checked !== !!scope.promoteCeiling) patch.promoteCeiling = ceil.checked
@@ -335,14 +336,15 @@
       logResult("scope config", await API.call("PATCH", `scopes/${scope.id}`, patch))
       await afterMutation()
     }
-    cfg.appendChild(saveCfg)
-    container.appendChild(cfg)
 
     // roles editor (members / reviewers)
     container.appendChild(rolesEditor(scope))
 
-    // action toolbar (under the header)
+    // action toolbar (under the header) — Save first, like the document view.
+    const save = UI.el("button", "primary", "Save")
+    save.onclick = saveConfig
     Detail.setActions([
+      save,
       actionBtn("New document here", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
       actionBtn("Add sub-scope", () => addSubScope(scope)),
       actionBtn("Review queue", () => reviewQueue(scope)),
