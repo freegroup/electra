@@ -29,6 +29,7 @@ const {
   setRequiredApprovalScore,
   setPromoteCeiling,
   renameScope,
+  setParentScope,
   myScopes,
   getScope,
 } = require("../persistence/scopes")
@@ -74,6 +75,7 @@ const configBody = {
     requiredApprovalScore: { type: "integer", minimum: 0 },
     promoteCeiling: { type: "boolean" },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
+    parentRef: { type: "string", pattern: "^\\d+$" },
   },
   additionalProperties: false,
 }
@@ -306,6 +308,13 @@ async function routes(fastify) {
       if (req.body.name !== undefined) {
         const row = await renameScope({ scopeId, name: req.body.name })
         out.name = row.name
+      }
+      if (req.body.parentRef !== undefined) {
+        // Reparenting places content into the new parent — require admin there
+        // too (admin of the moved scope is already checked above).
+        await requireAdmin(req.body.parentRef, req.personRef)
+        const row = await setParentScope({ scopeId, newParentId: req.body.parentRef })
+        out.parentRef = row.parentId
       }
       return out
     }

@@ -381,6 +381,7 @@
       actionBtn("Add document", () => newDocument({ scopeId: scope.id, persona: API.persona.email })),
       actionBtn("Add member", () => addMemberDialog(scope, roles)),
       actionBtn("Add sub-scope", () => addSubScope(scope)),
+      actionBtn("Set parent", () => moveScope(scope)),
       actionBtn("Review queue", () => reviewQueue(scope)),
       actionBtn("Delete scope", () => deleteScope(scope), true),
     ])
@@ -670,6 +671,40 @@
     await afterMutation()
   }
 
+  // Ids of a scope and all its descendants (from the flat state tree) — the
+  // set that is NOT a valid move target (self / descendant → cycle).
+  function subtreeIds(scopeId) {
+    const kids = new Map()
+    for (const s of state.scopes) {
+      if (s.parentId == null) continue
+      if (!kids.has(s.parentId)) kids.set(s.parentId, [])
+      kids.get(s.parentId).push(s.id)
+    }
+    const out = new Set([scopeId])
+    const stack = [scopeId]
+    while (stack.length) {
+      for (const c of kids.get(stack.pop()) || []) { out.add(c); stack.push(c) }
+    }
+    return out
+  }
+
+  async function moveScope(scope) {
+    const excluded = subtreeIds(scope.id)
+    const sel = document.createElement("select")
+    for (const c of scopeChoices()) {
+      if (excluded.has(c.id) || c.id === scope.parentId) continue // no self/descendant/no-op
+      const o = document.createElement("option"); o.value = c.id; o.textContent = c.path; sel.appendChild(o)
+    }
+    if (!sel.options.length) { log("no valid target parent available", "err"); return }
+    const res = await UI.dialog({
+      title: `Move ${scopePath(scope)}`, okLabel: "Move",
+      fields: [{ key: "parentRef", label: "New parent", type: "custom", el: sel, get: () => sel.value }],
+    })
+    if (!res) return
+    logResult(`move ${scope.name}`, await API.call("PATCH", `scopes/${scope.id}`, { parentRef: res.parentRef }))
+    await afterMutation()
+  }
+
   async function reviewQueue(scope) {
     // Any persona that reviews this scope can act; use the current persona.
     const r = await API.call("GET", `scopes/${scope.id}/pending`)
@@ -709,6 +744,7 @@
       { label: "Add document…", onClick: () => newDocument({ scopeId: scope.id, persona: API.persona.email }) },
       { label: "Scope properties…", onClick: () => scopeProperties(scope) },
       { label: "Add sub-scope…", onClick: () => addSubScope(scope) },
+      { label: "Set parent…", onClick: () => moveScope(scope) },
       { label: "Review queue…", onClick: () => reviewQueue(scope) },
       null,
       { label: "Delete scope", danger: true, onClick: () => deleteScope(scope) },

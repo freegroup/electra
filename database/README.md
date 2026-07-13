@@ -520,7 +520,9 @@ POST   /database/scopes/{scopeRef}/reviewers           add / update a reviewer
 DELETE /database/scopes/{scopeRef}/reviewers/{personRef} revoke reviewer
 
 PATCH  /database/scopes/{scopeRef}                     configure the scope
-                                                        body: { requiredApprovalScore }
+                                                        body: { requiredApprovalScore?, promoteCeiling?, name?, parentRef? }
+                                                        parentRef moves the scope (+ subtree) under a new parent;
+                                                        requires admin of both the scope and the new parent
 ```
 
 ### 9.9 Status Codes

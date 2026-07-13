@@ -495,6 +495,81 @@ async function renameScope({ scopeId, name }) {
   }
 }
 
+// Reparents a scope (moves its whole subtree under newParentId). Identity is
+// scopes.id, so documents/members/reviewers/leaves/publicIds all stay — only
+// the inherited position changes. Rebuilds the transitive closure in one tx.
+//
+// Guards (all → throw): can't move the root; can't move a personal leaf; new
+// parent must exist; no cycle (new parent must not be the scope or a
+// descendant); no sibling name collision at the new parent.
+async function setParentScope({ scopeId, newParentId }) {
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+
+    const cur = await getScope(client, scopeId)
+    if (!cur) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    if (cur.parent_id == null) throw new BadRequestError("cannot move the root scope")
+    if (cur.is_personal_leaf) throw new ConflictError("a personal leaf cannot be moved")
+
+    const np = await getScope(client, newParentId)
+    if (!np) throw new NotFoundError(`unknown parent scope id ${newParentId}`)
+
+    // Cycle: new parent must not be the scope itself nor any of its descendants.
+    const cycle = await client.query(
+      `SELECT 1 FROM scope_closure WHERE ancestor_id = $1 AND descendant_id = $2`,
+      [scopeId, newParentId]
+    )
+    if (cycle.rowCount > 0) {
+      throw new ConflictError("cannot move a scope under itself or its own descendant")
+    }
+
+    // Name collision at the destination.
+    const clash = await client.query(
+      `SELECT 1 FROM scopes WHERE parent_id = $1 AND name = $2 AND id <> $3`,
+      [newParentId, cur.name, scopeId]
+    )
+    if (clash.rowCount > 0) {
+      throw new ConflictError(`a sibling scope named "${cur.name}" already exists under the new parent`)
+    }
+
+    // 1. Detach: remove closure rows linking the subtree to its OLD ancestors.
+    await client.query(
+      `DELETE FROM scope_closure
+        WHERE descendant_id IN (SELECT descendant_id FROM scope_closure WHERE ancestor_id = $1)
+          AND ancestor_id   IN (SELECT ancestor_id  FROM scope_closure
+                                 WHERE descendant_id = $1 AND ancestor_id <> descendant_id)`,
+      [scopeId]
+    )
+
+    // 2. Reattach: every ancestor of (incl.) the new parent × every node in the
+    //    subtree, with recomputed depth.
+    await client.query(
+      `INSERT INTO scope_closure (ancestor_id, descendant_id, depth)
+       SELECT super.ancestor_id, sub.descendant_id, super.depth + sub.depth + 1
+         FROM scope_closure super
+         CROSS JOIN scope_closure sub
+        WHERE super.descendant_id = $1
+          AND sub.ancestor_id     = $2`,
+      [newParentId, scopeId]
+    )
+
+    // 3. Update the adjacency edge.
+    await client.query(
+      `UPDATE scopes SET parent_id = $2 WHERE id = $1`,
+      [scopeId, newParentId]
+    )
+
+    await client.query("COMMIT")
+    return { scopeId: String(scopeId), parentId: String(newParentId) }
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
 // Returns every scope the caller is an explicit member of, with their roles
 // there (README §9.7). Feeds the UI's create-in / browse pickers. Excludes
 // the caller's own personal leaves — those are internal storage, not scopes a
@@ -543,6 +618,7 @@ module.exports = {
   setRequiredApprovalScore,
   setPromoteCeiling,
   renameScope,
+  setParentScope,
   myScopes,
   leafUnderScope,
 }

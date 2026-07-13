@@ -82,7 +82,9 @@ DELETE FROM scope_closure
     OR ancestor_id   IN (SELECT descendant_id FROM scope_closure WHERE ancestor_id = :X);
 ```
 
-Both are wrapped in the same transaction as the corresponding `scopes` INSERT/DELETE. Moving a scope (changing its parent) is not supported — scopes are anchored at creation time.
+Both are wrapped in the same transaction as the corresponding `scopes` INSERT/DELETE.
+
+**Moving a scope (reparenting).** `setParentScope(scopeId, newParentId)` moves a scope and its whole subtree under a new parent in one transaction. Identity is `scopes.id`, so documents, members, reviewers, leaves, votes and publicIds are untouched — only the transitive closure and the adjacency edge change. The closure is rebuilt in two steps: delete rows linking the subtree to its old ancestors, then insert `(new-ancestor × subtree-node)` pairs with recomputed depth. Guards (all reject): can't move the root or a personal leaf, no cycle (target must not be the scope or a descendant), no sibling-name collision at the target. Config (score, ceiling, roles) is not changed; the new parent chain's ceilings/visibility apply automatically. Consequence: overlay inheritance shifts — a doc in the subtree that shadowed the old parent's version now inherits from the new chain.
 
 ### 2.4 Personal Leaf Auto-Provisioning
 
@@ -833,5 +835,5 @@ Version pruning and snapshot compaction are not part of the initial implementati
 ## 11. Open Technical Questions
 
 - **Scope rename.** The schema stores `name` on `scopes`. Renaming is a single UPDATE and does not touch `scope_closure`. Whether renames are exposed via the API is undecided.
-- **Scope move.** Reparenting a scope requires rebuilding a subtree in `scope_closure`. Not supported in the initial implementation.
+- **Scope move.** `setParentScope` reparents a scope + subtree by rebuilding its `scope_closure` rows in one transaction (see §2.4). Guarded against cycles, root/leaf moves and name collisions.
 - **`history()` scope.** Currently walks the ancestor chain via `scope_closure`. Result-set size can be large; pagination or a scope-local variant may be added.
