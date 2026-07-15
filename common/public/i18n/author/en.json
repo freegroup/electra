@@ -19,7 +19,9 @@
 		"new_document": "New Document",
 		"open_example": "Open Example",
 		"add_chapter": "Add Chapter",
-		"paste_chapter": "Paste Chapter"
+		"paste_chapter": "Paste Chapter",
+		"revert": "Revert",
+		"promote": "Promote"
 	},
 	"editor": {
 		"empty": {
@@ -35,13 +37,22 @@
 		"create": "Create new Docment",
 		"share": "Share worksheet with other",
 		"save": "Save Document",
-		"add_folder": "Neuen Ordner anlegen"
+		"add_folder": "Neuen Ordner anlegen",
+		"new_document": "New Document",
+		"promote_explain": "Make your version the shared version? Everyone who sees this document under the same \"Provided by\" group will then get your changes.",
+		"revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
+		"delete_explain": "Delete this document? There is no shared version to fall back to — this cannot be undone."
 	},
     "pane": {
 		"files": {
             "title": "Document Library",
 			"title_your": "Your Documents",
-			"title_global": "Public Documents"
+			"title_global": "Public Documents",
+			"col_name": "Name",
+			"col_provider": "Provided by",
+			"col_actions": "Actions",
+			"my_copy": "personal copy",
+			"personal": "personal"
 		}
 	},
 	"label": {
@@ -53,7 +64,11 @@
 		"section_to_clipboard": "Section copied to clipboard",
 		"save_before_share": "File must be saved before you can share it",
 		"save_before_pdf": "File must be saved before you can save it as PDF",
-		"contains_learning": "This page contains learning material which ends later in two documents: a worksheet and a solution paper."
+		"contains_learning": "This page contains learning material which ends later in two documents: a worksheet and a solution paper.",
+		"promoted": "Promoted to the shared version",
+		"pending_review": "Sent for review",
+		"reverted": "Personal changes discarded",
+		"deleted": "Deleted"
 	},
 	"error": {
 		"clipboard_not_page": "Clipboard data is not an electra.academy page",

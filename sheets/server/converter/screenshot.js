@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const { launch } = require('./launch')
 const fs = require('fs')
 
 
@@ -6,7 +6,7 @@ module.exports = {
 
   render: async (url, location) => {
     try {
-      let browser = await puppeteer.launch()
+      let browser = await launch()
       const page = await browser.newPage()
 
       await page.emulateMediaType('screen')

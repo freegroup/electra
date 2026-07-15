@@ -108,6 +108,18 @@
     community.general.npm:
       path: /home/electra/server/sheets
 
+  # Download Chromium into the project-local puppeteer cache (.puppeteerrc.cjs
+  # pins cacheDirectory to /home/electra/server/sheets/.puppeteer-cache). Run as
+  # the same user that runs the sheets process so the browser is found at
+  # runtime. Needed for PDF export + preview screenshots. (puppeteer 19 ships
+  # the downloader as install.js — there is no `npx puppeteer` CLI.)
+  - name: Install Chromium for puppeteer (/sheets)
+    become: true
+    become_user: electra
+    command: node node_modules/puppeteer/install.js
+    args:
+      chdir: /home/electra/server/sheets
+
   - name: Install packages in /userinfo
     become: true
     become_user: electra

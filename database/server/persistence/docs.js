@@ -105,6 +105,32 @@ async function getDoc({ operatingScopeId, personRef, docPath, resolveOriginPath 
   return rowToDoc(row, originPath)
 }
 
+// Resolve the effective version of a doc for a caller (same walk-up as getDoc)
+// but return its CONCRETE location { scopeId, version } — the exact scope/leaf
+// the effective version lives in. Used to mint a render token that points at
+// the real version, not the operating scope (which may only inherit it).
+async function resolveEffective({ operatingScopeId, personRef, docPath }) {
+  validateDocPath(docPath)
+  const res = await pool.query(
+    `${WALKUP_SLOTS},
+     active AS (
+       SELECT DISTINCT ON (s.depth, s.slot_rank)
+              s.depth, s.slot_rank, v.scope_id, v.version, v.status, v.is_deletion
+       FROM slots s
+       JOIN versions v ON v.scope_id = s.scope_id
+                      AND v.doc_path = $3
+                      AND v.status IN ('committed', 'deleted')
+       ORDER BY s.depth, s.slot_rank, v.version DESC
+     )
+     SELECT * FROM active ORDER BY depth ASC, slot_rank ASC LIMIT 1`,
+    [operatingScopeId, personRef, docPath]
+  )
+  if (res.rowCount === 0) return null
+  const row = res.rows[0]
+  if (row.status === "deleted" || row.is_deletion) return null
+  return { scopeId: String(row.scope_id), version: row.version }
+}
+
 // ---------------------------------------------------------------------------
 // Effective list
 // ---------------------------------------------------------------------------
@@ -138,6 +164,127 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
     }
     out.push(rowToDoc(row, originPath))
   }
+  return out
+}
+
+// ---------------------------------------------------------------------------
+// Glob list — aggregate across all the caller's groups under a root scope
+// ---------------------------------------------------------------------------
+//
+// Unlike listDocs (walk-up from ONE operating scope), globDocs gives a global
+// "provided by" view: every document visible to the caller anywhere under
+// rootScopeId, collapsed to one row per doc_path. For each group the caller is
+// an explicit member of (their operating scopes — personal leaves excluded),
+// the tested walk-up runs; results merge keeping the nearest hit
+// (own-leaf/slot 0 over shared/slot 1, then lowest depth, then highest version).
+//
+// Each row carries: path, provider (origin scope path) + providerVersion (where
+// the effective version lives), and operatingScopeRef (the group that produced
+// it → where a save from this row lands). No data/meta — the payload stays small.
+async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
+  // Operating scopes to walk up from:
+  //   logged-in — the group scopes the caller is an explicit member of, at or
+  //               under the root (personal leaves are not operable groups).
+  //   anonymous — the anonymous-readable scopes at or under the root. With no
+  //               personRef the walk-up's leaf slot matches nothing, so only
+  //               shared versions surface (read-only, no personal copies).
+  const opRes = personRef
+    ? await pool.query(
+        `SELECT DISTINCT m.scope_id
+           FROM memberships m
+           JOIN scope_closure c ON c.descendant_id = m.scope_id
+           JOIN scopes s        ON s.id = m.scope_id
+          WHERE c.ancestor_id = $1
+            AND m.person_ref  = $2
+            AND m.is_member   = true
+            AND s.is_personal_leaf = false`,
+        [rootScopeId, personRef]
+      )
+    : await pool.query(
+        `SELECT s.id AS scope_id
+           FROM scopes s
+           JOIN scope_closure c ON c.descendant_id = s.id
+          WHERE c.ancestor_id = $1
+            AND s.is_anonymous = true`,
+        [rootScopeId]
+      )
+
+  // best[doc_path] = { row, opScopeId } — nearest hit across all operating scopes
+  const best = new Map()
+  for (const { scope_id: opScopeId } of opRes.rows) {
+    const res = await pool.query(
+      `${WALKUP_SLOTS},
+       matches AS (
+         SELECT v.doc_path, s.depth, s.slot_rank,
+                v.scope_id, v.version, v.status, v.is_deletion
+         FROM slots s
+         JOIN versions v ON v.scope_id = s.scope_id
+                        AND v.status IN ('committed', 'deleted')
+                        AND ($3::text IS NULL OR v.doc_path LIKE $3 || '%')
+       ),
+       winner AS (
+         SELECT DISTINCT ON (doc_path)
+                doc_path, depth, slot_rank, scope_id, version, status, is_deletion
+         FROM matches
+         ORDER BY doc_path, depth ASC, slot_rank ASC, version DESC
+       ),
+       shared_winner AS (
+         -- the effective SHARED version (slot 1 only) — what the caller would
+         -- see if they dropped their own leaf copy (revert).
+         SELECT DISTINCT ON (doc_path)
+                doc_path, status AS shared_status, is_deletion AS shared_is_deletion
+         FROM matches
+         WHERE slot_rank = 1
+         ORDER BY doc_path, depth ASC, version DESC
+       )
+       SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version,
+              w.status, w.is_deletion,
+              COALESCE(sw.shared_status = 'committed' AND sw.shared_is_deletion = false, false) AS has_shared
+       FROM winner w
+       LEFT JOIN shared_winner sw USING (doc_path)
+       WHERE w.status = 'committed' AND w.is_deletion = false`,
+      [opScopeId, personRef, prefix || null]
+    )
+    for (const row of res.rows) {
+      const prev = best.get(row.doc_path)
+      // Prefer own-leaf (lower slot_rank), then nearer level (lower depth),
+      // then newer version.
+      const better =
+        !prev ||
+        row.slot_rank < prev.row.slot_rank ||
+        (row.slot_rank === prev.row.slot_rank && row.depth < prev.row.depth) ||
+        (row.slot_rank === prev.row.slot_rank && row.depth === prev.row.depth && row.version > prev.row.version)
+      if (better) best.set(row.doc_path, { row, opScopeId })
+    }
+  }
+
+  const cache = new Map()
+  const out = []
+  for (const { row, opScopeId } of best.values()) {
+    let providerPath = cache.get(row.scope_id)
+    if (providerPath === undefined) {
+      providerPath = await resolveOriginPath(row.scope_id)
+      cache.set(row.scope_id, providerPath)
+    }
+    // Classify where the effective version comes from (README §6.2):
+    //   personal      — only in the caller's own leaf; no shared version above
+    //   personalCopy  — caller's leaf version shadowing a shared version above
+    //   inherit       — the effective version is a shared/inherited one
+    let instanceType
+    if (row.slot_rank === 0) {
+      instanceType = row.has_shared ? "personalCopy" : "personal"
+    } else {
+      instanceType = "inherit"
+    }
+    out.push({
+      path: row.doc_path,
+      provider: providerPath,
+      providerVersion: row.version,
+      operatingScopeRef: String(opScopeId),
+      instanceType,
+    })
+  }
+  out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
   return out
 }
 
@@ -327,4 +474,4 @@ async function historyDocs({ operatingScopeId, personRef, docPath, resolveOrigin
   return out
 }
 
-module.exports = { getDoc, listDocs, putDoc, deleteDoc, revertDoc, historyDocs, rowToDoc, validateDocPath, WALKUP_SLOTS }
+module.exports = { getDoc, resolveEffective, listDocs, globDocs, putDoc, deleteDoc, revertDoc, historyDocs, rowToDoc, validateDocPath, WALKUP_SLOTS }

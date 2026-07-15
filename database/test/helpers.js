@@ -14,7 +14,6 @@
 
 const path = require("path")
 const dotenv = require("dotenv")
-const { createHash } = require("crypto")
 
 const PROJECT_PATH = path.resolve(__dirname + "/../..")
 dotenv.config({ path: PROJECT_PATH + "/settings.ini" })
@@ -34,9 +33,10 @@ const ADMIN_TOKEN = process.env.DATABASE_ADMIN_TOKEN
 const TEST_ROOT_ADMIN_EMAIL = "test-root@electra.local"
 process.env.DATABASE_INIT_FILE = path.join(__dirname, "test-init.json")
 
-const ROOT_ADMIN_HASH = createHash("sha256")
-  .update(TEST_ROOT_ADMIN_EMAIL)
-  .digest("hex")
+// personRef is the clear email now (no hashing). The root admin's personRef is
+// simply their email. Kept under the historical name to avoid churning every
+// test file that imports it.
+const ROOT_ADMIN_HASH = TEST_ROOT_ADMIN_EMAIL
 
 // Set once by setupTestSchema — every file names itself.
 let currentSchema = null
@@ -73,8 +73,9 @@ async function dropSchema(pool, schema) {
 }
 
 // Build the ingress-style auth headers for a fake person. Under
-// DATABASE_TEST_MODE=1 the server accepts x-hash directly, so tests can
-// simulate any identity by picking an arbitrary hash string.
+// DATABASE_TEST_MODE=1 the server accepts x-hash as a literal personRef, so
+// tests can simulate any identity by picking an arbitrary string (an email, or
+// a short handle like "anna").
 function asPerson(personRef, extra = {}) {
   return {
     "x-role": "user",

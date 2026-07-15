@@ -100,20 +100,32 @@ const UI = (() => {
       box.appendChild(btns)
 
       function close(result) {
-        document.removeEventListener("keydown", onEsc, true)
+        document.removeEventListener("keydown", onKey, true)
         overlay.remove()
         resolve(result)
       }
-      function onEsc(e) { if (e.key === "Escape") close(null) }
-
-      cancel.addEventListener("click", () => close(null))
-      ok.addEventListener("click", () => {
+      function submit() {
         const values = {}
         for (const k of Object.keys(getters)) values[k] = getters[k]()
         close(values)
-      })
+      }
+      // ESC → cancel; ENTER → activate the default (OK) button. Enter is
+      // ignored inside a textarea (multi-line) and left to native handling in
+      // a select, so those keep working normally.
+      function onKey(e) {
+        if (e.key === "Escape") { e.preventDefault(); close(null); return }
+        if (e.key === "Enter") {
+          const tag = e.target && e.target.tagName
+          if (tag === "TEXTAREA" || tag === "SELECT") return
+          e.preventDefault()
+          submit()
+        }
+      }
+
+      cancel.addEventListener("click", () => close(null))
+      ok.addEventListener("click", submit)
       overlay.addEventListener("click", (e) => { if (e.target === overlay) close(null) })
-      document.addEventListener("keydown", onEsc, true)
+      document.addEventListener("keydown", onKey, true)
 
       overlay.appendChild(box)
       document.body.appendChild(overlay)

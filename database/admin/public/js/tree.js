@@ -177,6 +177,12 @@ const Tree = (() => {
     if (scope.promoteCeiling) {
       row.appendChild(el("span", "badge ceiling", "⛔ ceiling"))
     }
+    if (scope.bootstrap) {
+      row.appendChild(el("span", "badge bootstrap", "🚀 bootstrap"))
+    }
+    if (scope.anonymous) {
+      row.appendChild(el("span", "badge anonymous", "🌐 anonymous"))
+    }
     // Member/role badges intentionally omitted — membership lives in the scope
     // detail pane now (master/detail).
     if (!scope.isLeaf) attachMenu(row, "scope", { scope })

@@ -73,6 +73,24 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
 
+// Backends that want a heads-up when a user logs in. Each hook receives the
+// user's identity headers (x-mail/x-role) and resolves the person itself — the
+// ingress never hashes. Fire-and-forget: login must never block on these.
+// Add more backends here as one-liners.
+const ON_LOGIN_HOOKS = [
+    { url: `${API_SERVICE_URL}:${process.env.PORT_DATABASE}/database/on_login` },
+];
+
+function fireOnLogin(session){
+    const role = session.email === "openjacob@gmail.com" ? "admin" : "user";
+    for (const hook of ON_LOGIN_HOOKS) {
+        fetch(hook.url, {
+            method: "POST",
+            headers: { "x-mail": session.email, "x-role": role },
+        }).catch(err => console.log(`on_login hook failed for ${hook.url}:`, err.message));
+    }
+}
+
 let sessionMiddleware = session({
     secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
     saveUninitialized:true,
@@ -164,13 +182,15 @@ app.use(function (req, res, next){
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
 
 
-// http-proxy-middleware v4 keeps the mount prefix by default when using
-// app.use('/mount', ...). Downstream services (which mount their routes
-// under /brains, /database, ...) receive the full path.
+// Express 5 strips the mount prefix from req.url before the handler runs, so
+// app.use('/mount', proxy) forwards '/' instead of '/mount/...'. Downstream
+// services mount their routes under /brains, /database, ... and need the full
+// path, so we re-prepend the mount prefix via pathRewrite.
 function prefixed(mount, port) {
     return createProxyMiddleware({
         target: API_SERVICE_URL + ":" + port,
         changeOrigin: true,
+        pathRewrite: (path) => mount + path,
         on: { proxyReq: onProxyReq }
     })
 }
@@ -191,7 +211,6 @@ app.use('/database',     prefixed('/database',     process.env.PORT_DATABASE))
 // Reach it via localhost or an SSH tunnel.
 app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
 app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
-app.use('/circuit',      prefixed('/circuit',      PORT_SIMULATOR))
 app.use('/common',       prefixed('/common',       PORT_COMMON))
 app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
@@ -234,7 +253,13 @@ app.use('/oauth/callback{/:componentUri}', async function(req, res) {
         req.session.name = payload.name
         req.session.familyName = payload.family_name
         req.session.givenName = payload.given_name
-        return res.redirect(`${req.protocol}://${req.headers.host}/${componentUri}/`)
+        // Notify backends (database, …) so the user is enrolled into bootstrap
+        // scopes. Fire-and-forget — never block the redirect on it.
+        fireOnLogin(req.session)
+        // componentUri may be empty (login from the home page) — redirect to
+        // the site root in that case, not to '//'.
+        const target = componentUri ? `/${componentUri}/` : "/"
+        return res.redirect(`${req.protocol}://${req.headers.host}${target}`)
     }
     catch( error ){
         console.log(error)

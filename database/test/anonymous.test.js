@@ -7,7 +7,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asAnon, asPerson, get, writeDoc, seedSharedDoc, scopeIdByPath,
+  asAnon, asPerson, asRootAdmin, get, patch, writeDoc, seedSharedDoc, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("anonymous")
 
@@ -53,4 +53,40 @@ test("a logged-in member also reads the root transitively", async () => {
   // read the root. Here the root admin reads their own root doc.
   const res = await get(ctx, `/database/scopes/${electraId}/docs?path=welcome.json`, asPerson(require("./helpers").ROOT_ADMIN_HASH))
   assert.equal(res.statusCode, 200)
+})
+
+// ---- is_anonymous flag (non-transitive) ---------------------------------
+
+test("flagged scope becomes anonymous-readable; sibling stays private", async () => {
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  await seedSharedDoc(ctx, brainsId, "demo.json", { hello: "world" })
+
+  // Before flagging: anonymous is denied.
+  let res = await get(ctx, `/database/scopes/${brainsId}/docs?path=demo.json`, asAnon())
+  assert.equal(res.statusCode, 403)
+
+  // Admin flips the flag on.
+  const p = await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
+  assert.equal(p.statusCode, 200)
+  assert.equal(p.json().anonymous, true)
+
+  // Now anonymous can read the flagged scope's shared doc + list it.
+  res = await get(ctx, `/database/scopes/${brainsId}/docs?path=demo.json`, asAnon())
+  assert.equal(res.statusCode, 200)
+  assert.equal(res.json().data.hello, "world")
+
+  const glob = await get(ctx, `/database/scopes/${brainsId}/docs?glob=true`, asAnon())
+  assert.equal(glob.statusCode, 200)
+  assert.ok(glob.json().docs.some((d) => d.path === "demo.json"))
+
+  // Non-transitive: the parent apps scope is NOT anonymous-readable.
+  const parent = await get(ctx, `/database/scopes/${appsId}/docs?path=internal.json`, asAnon())
+  assert.equal(parent.statusCode, 403)
+})
+
+test("anonymous still cannot write to an anonymous-readable scope → 401", async () => {
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
+  const res = await writeDoc(ctx, brainsId, "hack.json", asAnon(), { data: { x: 1 } })
+  assert.equal(res.statusCode, 401)
 })

@@ -3,9 +3,10 @@
     "admins": ["admin@electra.academy"],
     "users": {},
     "apps": {
-      "brains": {},
-      "shapes": {},
-      "docs": {}
+      "brains": { "bootstrap": true },
+      "shapes": { "bootstrap": true },
+      "docs": { "bootstrap": true },
+      "sheets": { "bootstrap": true }
     }
   }
 }

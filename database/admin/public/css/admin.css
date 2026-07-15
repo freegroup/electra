@@ -83,6 +83,8 @@ body {
 .badge.deleted, .badge.rejected { color: var(--red); }
 .badge.role { color: var(--accent); }
 .badge.ceiling { color: var(--red); border-color: var(--red); }
+.badge.bootstrap { color: var(--green); border-color: var(--green); }
+.badge.anonymous { color: var(--accent); border-color: var(--accent); }
 .children { padding-left: 16px; border-left: 1px solid var(--line); margin-left: 6px; }
 .hidden { display: none; }
 
@@ -209,7 +211,7 @@ textarea {
 .form-label { color: var(--muted); font-size: 12px; width: 150px; flex-shrink: 0; }
 .form-input { flex: 1; }
 .form-static { flex: 1; font-family: var(--mono); color: var(--fg); }
-input[type=checkbox].form-input { flex: 0; width: auto; }
+input[type=checkbox].form-input { flex: 0 0 auto; width: auto; }
 
 /* Dialog sub-widgets */
 .check-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow: auto; flex: 1; }

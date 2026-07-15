@@ -28,6 +28,9 @@ const {
   setReviewer,
   setRequiredApprovalScore,
   setPromoteCeiling,
+  setBootstrap,
+  setAnonymous,
+  enrollBootstrap,
   renameScope,
   setParentScope,
   myScopes,
@@ -47,6 +50,8 @@ const createChildBody = {
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
     requiredApprovalScore: { type: "integer", minimum: 0, default: 0 },
     promoteCeiling: { type: "boolean", default: false },
+    bootstrap: { type: "boolean", default: false },
+    anonymous: { type: "boolean", default: false },
   },
   additionalProperties: false,
 }
@@ -74,6 +79,8 @@ const configBody = {
   properties: {
     requiredApprovalScore: { type: "integer", minimum: 0 },
     promoteCeiling: { type: "boolean" },
+    bootstrap: { type: "boolean" },
+    anonymous: { type: "boolean" },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
     parentRef: { type: "string", pattern: "^\\d+$" },
   },
@@ -113,6 +120,7 @@ async function routes(fastify) {
             name: await pathOfScope(client, r.scope_id),
             requiredApprovalScore: r.required_approval_score,
             promoteCeiling: r.promote_ceiling,
+            bootstrap: r.is_bootstrap,
             roles,
           })
         }
@@ -125,7 +133,10 @@ async function routes(fastify) {
 
   fastify.get(
     "/database/scopes/by-path",
-    { preHandler: [fastify.requireLogin] },
+    // Soft auth: anonymous callers may resolve a name → id too (needed so an
+    // app backend can find its public/app-root scope without a session). This
+    // only maps a path to an id; reading the scope still goes through canRead.
+    { preHandler: [fastify.resolvePrincipal] },
     async (req) => {
       const name = (req.query && (req.query.name || req.query.path)) || null
       if (!name || typeof name !== "string") {
@@ -160,6 +171,8 @@ async function routes(fastify) {
           parent: scope.parent_id === null ? null : String(scope.parent_id),
           requiredApprovalScore: scope.required_approval_score,
           promoteCeiling: scope.promote_ceiling,
+          bootstrap: scope.is_bootstrap,
+          anonymous: scope.is_anonymous,
         }
       } finally {
         client.release()
@@ -169,6 +182,18 @@ async function routes(fastify) {
 
   // ---- Administration ------------------------------------------------------
 
+  // Called by the ingress after a successful login (and safely on every app
+  // start). Enrolls the caller as an explicit member of every bootstrap scope,
+  // provisioning their personal leaf in each. Idempotent.
+  fastify.post(
+    "/database/on_login",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopes = await enrollBootstrap(req.personRef)
+      return { scopes }
+    }
+  )
+
   fastify.post(
     "/database/scopes/:scopeRef/scopes",
     { schema: { body: createChildBody }, preHandler: [fastify.requireLogin] },
@@ -176,7 +201,7 @@ async function routes(fastify) {
       const parentId = parseScopeRef(req.params.scopeRef)
       await requireAdmin(parentId, req.personRef)
 
-      const { name, requiredApprovalScore = 0, promoteCeiling = false } = req.body
+      const { name, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
       if (name.includes("/")) {
         throw new BadRequestError('scope name must not contain "/"')
       }
@@ -186,6 +211,8 @@ async function routes(fastify) {
         name,
         requiredApprovalScore,
         promoteCeiling,
+        isBootstrap: bootstrap,
+        isAnonymous: anonymous,
         createdBy: req.personRef,
       })
 
@@ -205,6 +232,8 @@ async function routes(fastify) {
         path,
         requiredApprovalScore: scope.required_approval_score,
         promoteCeiling: scope.promote_ceiling,
+        bootstrap: scope.is_bootstrap,
+        anonymous: scope.is_anonymous,
         createdAt: scope.created_at,
         createdBy: scope.created_by,
       }
@@ -304,6 +333,14 @@ async function routes(fastify) {
       if (req.body.promoteCeiling !== undefined) {
         await setPromoteCeiling({ scopeId, value: req.body.promoteCeiling })
         out.promoteCeiling = req.body.promoteCeiling
+      }
+      if (req.body.bootstrap !== undefined) {
+        await setBootstrap({ scopeId, value: req.body.bootstrap })
+        out.bootstrap = req.body.bootstrap
+      }
+      if (req.body.anonymous !== undefined) {
+        await setAnonymous({ scopeId, value: req.body.anonymous })
+        out.anonymous = req.body.anonymous
       }
       if (req.body.name !== undefined) {
         const row = await renameScope({ scopeId, name: req.body.name })

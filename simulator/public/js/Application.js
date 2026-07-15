@@ -1,6 +1,5 @@
 import GenericApplication from "../../common/js/Application"
 import toast from "../../common/js/toast"
-import checkElement from "../../common/js/checkElement"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 
 import Toolbar from "./Toolbar"
@@ -8,181 +7,154 @@ import Palette from "./Palette"
 import View from "./View"
 import conf from "./Configuration"
 import reader from "./io/Reader"
-import fileCreate from "./dialog/FileCreate"
-import fileSave from "./dialog/FileSave"
+import writer from "./io/Writer"
 import progress from "./dialog/Progress"
-import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
 
-import storageFactory from '../../common/js/BackendStorage'
+import storageFactory from "../../common/js/storage/StorageClient"
+import SaveDialog from "../../common/js/storage/SaveDialog"
+import NewDocumentDialog from "../../common/js/storage/NewDocumentDialog"
+import PublishDialog from "../../common/js/storage/PublishDialog"
+
 let storage = storageFactory(conf)
 
-class Application extends GenericApplication{
+// currentFile is { id, name, version, editable } where id is the opaque handle
+// the backend minted. All operations name the document by id; the frontend
+// never sees scope/path as request inputs.
+class Application extends GenericApplication {
 
   constructor() {
     super("brains")
+    this.saveDialog       = new SaveDialog(storage, conf)
+    this.newDialog        = new NewDocumentDialog(storage, conf)
+    this.publishDialog    = new PublishDialog(storage, conf)
   }
 
   init(permissions) {
     super.init(permissions, conf)
-    return new Promise( (resolve, reject)=>{
-
+    return new Promise((resolve, reject) => {
       this.palette = new Palette(permissions)
       this.view    = new View("draw2dCanvas", permissions)
       this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
 
-
-      // check if the user has added a "file" parameter. In this case we load the shape from
-      // the draw2d.shape github repository
-      //
-      let user   = this.getParam("user")
-      let global = this.getParam("global")
-      let shared = this.getParam("shared")
-      if (user) {
-        this.load(user, "user")
-      }
-      else if (global) {
-        this.load(global, "global")
-      }
-      else if (shared) {
-        this.load(shared, "shared")
-      }
-      else {
+      // deep-link: ?doc=<id> opens a document by its opaque handle.
+      let doc = this.getParam("doc")
+      if (doc) {
+        this.open(doc)
+      } else {
         this.showWelcomeMessage("guides/intro.brain")
       }
-  
+
       resolve(this)
     })
   }
 
+  // Publish the current document version as an anonymous public link.
   fileShare() {
-    let filePath = this.currentFile.name
-    let scope = this.currentFile.scope
-    return new Promise( (resolve, reject)=>{
-      return app.fileSave(t("message.save_before_share")).then(resolve, reject)
-    })
-    .then( ()=>{
-      return storage.shareFile(filePath,scope)
-    })
-    .then((response) => {
-      return shareDialog.show(response.data.filePath)
-    })
-    .catch (error => {
-      console.log(error)
-    })
+    if (!this.currentFile) return Promise.resolve()
+    return this.fileSave(t("message.save_before_share"))
+      .then(() => this.publishDialog.show(this.currentFile.id, this.currentFile.version))
+      .catch((error) => { if (error) console.log(error) })
   }
 
-  fileCreateNew(){
-    return new Promise((resolve, reject)=>{
-      if (this.hasUnsavedChanges === true){
-         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
+  // Create a brand-new document: choose a name, then write version 1.
+  fileCreateNew() {
+    return new Promise((resolve, reject) => {
+      if (this.hasUnsavedChanges === true) {
+        return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
       }
       return resolve()
     })
-    .then(()=>{
-      this.fileNew()
-      if(this.permissions[this.objectType ].create && this.permissions[this.objectType ].update){
-        return fileCreate.show(this.currentFile)
-      }
-      return this.showLoginHint()
-    })
-    .then(()=>{
-      this.hasUnsavedChanges = false
-      toast(t("common:message.created"))
-      $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
-    })
-    .catch( (error)=>{
-      console.log(error)
-
-    })
+      .then(() => this.newDialog.show(conf.fileNew))
+      .then(({ name }) => {
+        this.fileNew(name)
+        return this._writeCurrent()
+      })
+      .then(() => {
+        this.hasUnsavedChanges = false
+        toast(t("common:message.created"))
+        $("#editorFileSave div").removeClass("highlight")
+        this.filePane.refresh()
+      })
+      .catch((error) => { if (error) console.log(error) })
   }
 
-  fileNew(name, scope) {
+  // Reset to a fresh unsaved document with the given name.
+  fileNew(name) {
     $("#leftTabStrip .editor").click()
-    this.currentFile = { name: name??"MyNewCircuit", scope: scope??"user" }
+    this.currentFile = { id: null, name: name ?? "MyNewCircuit", version: undefined, editable: true }
     this.view.clear()
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
   }
 
-  fileSave(description=""){
-    return new Promise( (resolve, reject)=>{
-      // if the user didn't has the access to write "global" files, the scope of the file is changed
-      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
-      //
-      if(this.permissions[this.objectType ].global.update===false){
-        this.currentFile.scope = "user"
-      }
+  fileSave(description = "") {
+    if (!this.currentFile) {
+      return this.fileCreateNew()
+    }
+    return this.saveDialog.show(this.currentFile)
+      .then(({ name }) => {
+        this.currentFile.name = name
+        return this._writeCurrent()
+      })
+      .then(() => {
+        this.hasUnsavedChanges = false
+        toast(t("common:message.saved"))
+        $("#editorFileSave div").removeClass("highlight")
+        this.filePane.refresh()
+      })
+      .catch((err) => { if (err) console.log(err) })
+  }
 
-      if (this.permissions[this.objectType].create && this.permissions[this.objectType].update) {
-        // allow the user to enter/change the file name....
-        return fileSave.show(this.currentFile, this.view, description).then(resolve, reject)
-      }
-      reject(new Error("No permission to save files"))
-    })
-    .then( ()=>{
-      this.hasUnsavedChanges = false
-      toast(t("common:message.saved"))
-      $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
-    })
-    .catch( err => {
-      console.log(err)
+  // Marshal the canvas and save it. A null id creates a new document; otherwise
+  // it writes a new version. The backend returns the (possibly new) handle.
+  _writeCurrent() {
+    this.view.setCurrentSelection(null)
+    return writer.marshal(this.view).then((json) => {
+      return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content: json })
+        .then((res) => {
+          this.currentFile.id = res.id
+          this.currentFile.version = res.version
+          if (res.path) this.currentFile.name = res.path.split("/").pop()
+          history.pushState(
+            { id: "editor", doc: res.id },
+            conf.application + " | " + this.currentFile.name,
+            window.location.href.split("?")[0] + "?doc=" + encodeURIComponent(res.id))
+          return res
+        })
     })
   }
 
-
-  load(name, scope) {
-    let url = conf.backend[scope].get(name)
+  open(id, version) {
     this.view.clear()
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
-    return storage.loadUrl(url)
-      .then((content) => {
+    let loadedName = null
+    return storage.open(id, version)
+      .then((doc) => {
+        loadedName = doc.name
         this.view.clear()
         progress.show()
-        return reader.unmarshal(this.view, content, progress.update.bind(progress)).then( ()=>{
+        return reader.unmarshal(this.view, doc.content, progress.update.bind(progress)).then(() => {
           progress.hide()
           this.view.getCommandStack().markSaveLocation()
           this.view.centerDocument()
           this.hasUnsavedChanges = false
           $("#editorFileSave div").removeClass("highlight")
-          this.currentFile = { name, scope}
- 
-          return content
+          this.currentFile = { id: doc.id, name: doc.name, version: doc.version, editable: doc.editable }
+          return doc
         })
       })
-      .then( ()=>{
-        history.pushState({
-          id: 'editor',
-          scope: scope,
-          file: name
-        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      .then(() => {
+        history.pushState(
+          { id: "editor", doc: id },
+          conf.application + " | " + (this.currentFile ? this.currentFile.name : ""),
+          window.location.href.split("?")[0] + "?doc=" + encodeURIComponent(id))
       })
-      .then( ()=>{
-        /** shared files do not provide any guided tours */
-        if(scope!=="shared"){
-          // check if a tutorial exists for the named file and load/activate them
-          //
-          storage.loadUrl(url.replace(conf.fileSuffix, ".guide"))
-            .then(guide => {
-              if (typeof guide === "string") {
-                guide = JSON.parse(guide)
-              }
-              $(guide.screen).click()
-              checkElement("#paletteElementsScroll").then(() => {
-                new Anno(guide.steps).show()
-              })
-            })
-            .catch(error => {
-              // ignore 404 HTTP error silently for "guide" files
-            })
-        }
-      })
-      .catch( error => {
+      .catch((error) => {
         console.log(error)
-        notFoundDialog.show(name)
+        progress.hide() // a failed/corrupt load must not leave the loader up
+        notFoundDialog.show(loadedName || id)
       })
   }
 }

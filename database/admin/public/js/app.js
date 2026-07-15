@@ -46,7 +46,12 @@
     line.textContent = `[${new Date().toISOString().slice(11, 19)}] ${msg}`
     $("log").prepend(line)
   }
-  function logResult(label, r) { log(`${label} — ${summarize(r)}`, r.ok ? "ok" : "err") }
+  function logResult(label, r) {
+    // Show WHO the call acted as — the 403s hinge on the persona, so make it
+    // visible. Uses the persona active at log time (calls run actAs() first).
+    const who = API.persona.email || "(anonymous)"
+    log(`${label} [as ${who}] — ${summarize(r)}`, r.ok ? "ok" : "err")
+  }
   function summarize(r) {
     const b = r.body
     if (!r.ok) {
@@ -177,7 +182,9 @@
   async function renderDocDetail(container, ctx) {
     const { scope, path, inLeaf } = ctx
     const owner = inLeaf ? nameOf(scope.name) : API.persona.email
-    const knownOwner = !inLeaf || state.hashToHandle[scope.name] !== undefined
+    // personRef is a clear handle now, so a leaf's owner is always actionable
+    // (its name is a usable persona). "known" is simply: it has a name.
+    const knownOwner = !inLeaf || !!scope.name
     const operatingScopeId = inLeaf ? scope.parentId : scope.id
     if (inLeaf) actAs(owner)
 
@@ -276,11 +283,6 @@
     }
     buttons.push(actionBtn("History", () => actHistory(base)))
     Detail.setActions(buttons)
-
-    if (inLeaf && !knownOwner) {
-      container.appendChild(UI.el("div", "detail-note",
-        "Unknown persona — add this leaf owner's handle (top bar) to act as them."))
-    }
   }
   function actionBtn(label, fn, danger) {
     const b = UI.el("button", danger ? "danger" : null, label)
@@ -313,7 +315,6 @@
   // ---- leaf detail: owner + their docs -----------------------------------
   async function renderLeafDetail(container, { scope }) {
     const owner = nameOf(scope.name)
-    const known = state.hashToHandle[scope.name] !== undefined
     Detail.setTitle(`Person: ${owner}`)
     container.appendChild(UI.el("div", "detail-sub", `personal leaf under ${scopePathById(scope.parentId)}`))
 
@@ -333,8 +334,7 @@
     }
     container.appendChild(listWrap)
 
-    if (known) Detail.setActions([actionBtn("Add document", () => newDocument({ scopeId: scope.parentId, persona: owner }))])
-    else container.appendChild(UI.el("div", "detail-note", "Unknown persona — add its handle (top bar) to act as them."))
+    Detail.setActions([actionBtn("Add document", () => newDocument({ scopeId: scope.parentId, persona: owner }))])
   }
 
   // ---- scope detail: editable properties + roles + actions ---------------
@@ -356,6 +356,12 @@
     const ceil = document.createElement("input"); ceil.type = "checkbox"; ceil.checked = !!scope.promoteCeiling
     const cRow = UI.el("div", "form-row"); cRow.append(UI.el("label", "form-label", "Promote ceiling"), ceil)
     cfg.appendChild(cRow)
+    const boot = document.createElement("input"); boot.type = "checkbox"; boot.checked = !!scope.bootstrap
+    const bRow = UI.el("div", "form-row"); bRow.append(UI.el("label", "form-label", "Bootstrap (auto-join on login)"), boot)
+    cfg.appendChild(bRow)
+    const anon = document.createElement("input"); anon.type = "checkbox"; anon.checked = !!scope.anonymous
+    const aRow = UI.el("div", "form-row"); aRow.append(UI.el("label", "form-label", "Anonymous readable"), anon)
+    cfg.appendChild(aRow)
     container.appendChild(cfg)
 
     const saveConfig = async () => {
@@ -364,6 +370,8 @@
       if (newName && newName !== scope.name) patch.name = newName
       if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)
       if (ceil.checked !== !!scope.promoteCeiling) patch.promoteCeiling = ceil.checked
+      if (boot.checked !== !!scope.bootstrap) patch.bootstrap = boot.checked
+      if (anon.checked !== !!scope.anonymous) patch.anonymous = anon.checked
       if (!Object.keys(patch).length) { log("no config changes", "ok"); return }
       logResult("scope config", await API.call("PATCH", `scopes/${scope.id}`, patch))
       await afterMutation()
@@ -572,6 +580,18 @@
     ceilRow.append(UI.el("label", "form-label", "Promote ceiling"), ceil)
     body.appendChild(ceilRow)
 
+    const boot = document.createElement("input")
+    boot.type = "checkbox"; boot.checked = !!scope.bootstrap
+    const bootRow = UI.el("div", "form-row")
+    bootRow.append(UI.el("label", "form-label", "Bootstrap (auto-join on login)"), boot)
+    body.appendChild(bootRow)
+
+    const anon = document.createElement("input")
+    anon.type = "checkbox"; anon.checked = !!scope.anonymous
+    const anonRow = UI.el("div", "form-row")
+    anonRow.append(UI.el("label", "form-label", "Anonymous readable"), anon)
+    body.appendChild(anonRow)
+
     // Members / reviewers / admins live editors (each row: handle + remove).
     body.appendChild(rolesEditor(scope))
 
@@ -580,6 +600,8 @@
     const patch = {}
     if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)
     if (ceil.checked !== !!scope.promoteCeiling) patch.promoteCeiling = ceil.checked
+    if (boot.checked !== !!scope.bootstrap) patch.bootstrap = boot.checked
+    if (anon.checked !== !!scope.anonymous) patch.anonymous = anon.checked
     if (Object.keys(patch).length) logResult("scope config", await API.call("PATCH", `scopes/${scope.id}`, patch))
     await afterMutation()
   }
@@ -656,11 +678,13 @@
         { key: "name", label: "Name", type: "text", placeholder: "e.g. klasse8a" },
         { key: "requiredApprovalScore", label: "Required approval score", type: "number", value: 0, min: 0 },
         { key: "promoteCeiling", label: "Promote ceiling", type: "checkbox", value: false },
+        { key: "bootstrap", label: "Bootstrap (auto-join on login)", type: "checkbox", value: false },
+        { key: "anonymous", label: "Anonymous readable", type: "checkbox", value: false },
       ],
     })
     if (!res || !res.name) return
     logResult(`create sub-scope ${res.name}`, await API.call("POST", `scopes/${scope.id}/scopes`, {
-      name: res.name, requiredApprovalScore: res.requiredApprovalScore, promoteCeiling: res.promoteCeiling,
+      name: res.name, requiredApprovalScore: res.requiredApprovalScore, promoteCeiling: res.promoteCeiling, bootstrap: res.bootstrap, anonymous: res.anonymous,
     }))
     await afterMutation()
   }
@@ -753,12 +777,32 @@
 
   function leafMenu(leaf, x, y) {
     const owner = nameOf(leaf.name)
-    const known = state.hashToHandle[leaf.name] !== undefined
-    UI.menu(x, y, [
-      known
-        ? { label: `New document as ${owner}…`, onClick: () => newDocument({ scopeId: leaf.parentId, persona: owner }) }
-        : { label: "Unknown persona — add its handle to act as them", disabled: true },
-    ])
+    const items = []
+    // A leaf owner is always a usable persona now (personRef is the clear
+    // handle), so "New document as …" is always available.
+    if (leaf.name) {
+      items.push({ label: `New document as ${owner}…`, onClick: () => newDocument({ scopeId: leaf.parentId, persona: owner }) })
+      items.push(null)
+    }
+    items.push({ label: `Delete person (${owner})`, danger: true, onClick: () => deletePerson(leaf) })
+    UI.menu(x, y, items)
+  }
+
+  // Remove a person from their group. removeMember (DELETE .../members/:ref)
+  // also deletes their personal leaf and all of its content — so this wipes the
+  // person's private docs/overrides under that group. Not reversible.
+  async function deletePerson(leaf) {
+    const owner = nameOf(leaf.name)
+    if (!(await UI.confirm({
+      title: "Delete person",
+      message: `Remove "${owner}" from ${scopePathById(leaf.parentId)}? This deletes their personal leaf and all documents/overrides they hold there. This cannot be undone.`,
+      okLabel: "Delete",
+      danger: true,
+    }))) return
+    // leaf.name is the raw personRef; the membership lives on the parent group.
+    logResult(`delete person ${owner}`,
+      await API.call("DELETE", `scopes/${leaf.parentId}/members/${encodeURIComponent(leaf.name)}`))
+    await afterMutation()
   }
 
   function docMenu(ctx, x, y) {
@@ -774,10 +818,6 @@
       ])
     }
     const owner = nameOf(scope.name)
-    const known = state.hashToHandle[scope.name] !== undefined
-    if (!known) {
-      return UI.menu(x, y, [{ label: "Unknown persona — add its handle to act on this leaf", disabled: true }])
-    }
     const base = { scopeId: scope.parentId, path, persona: owner, active }
     UI.menu(x, y, [
       { label: "Open", onClick: () => navigate("doc", ctx) },

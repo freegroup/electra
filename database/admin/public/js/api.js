@@ -5,16 +5,15 @@
 const API = (() => {
   const BASE = "api" // relative to /admin/ → /admin/api/...
 
-  // Current persona, mutated by the UI (see app.js). `email` is the handle we
-  // send as x-mail; the DB derives personRef = SHA-256(handle) from it (prod
-  // mode). So anywhere we must name a person to the DB (add member/reviewer),
-  // we send that same SHA-256 — see personRef() below.
+  // Current persona, mutated by the UI (see app.js). `email` is sent as x-mail;
+  // the DB uses the clear email AS the personRef (no hashing anymore). So a
+  // person's ref is simply their handle — see personRef() below.
   const persona = { email: "", role: "user" }
 
-  // SHA-256 hex of a handle — matches the DB's personRef derivation from x-mail.
+  // personRef IS the handle now (the DB stores clear emails, no SHA-256).
+  // Kept async for call-site compatibility.
   async function personRef(handle) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(handle))
-    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("")
+    return handle
   }
 
   function personaHeaders(extra = {}) {

@@ -113,7 +113,7 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
 // Inserts a new scope under parentId and populates its closure rows in the
 // same transaction. The creator becomes the first admin + reviewer (score 10)
 // of the new scope. See ARCHITECTURE.md §2.3.
-async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, createdBy }) {
+async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -127,10 +127,10 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
     let insRes
     try {
       insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, required_approval_score, promote_ceiling, created_by)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, parent_id, name, required_approval_score, promote_ceiling, created_at, created_by`,
-        [parentId, name, requiredApprovalScore, promoteCeiling, createdBy]
+        `INSERT INTO scopes (parent_id, name, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, parent_id, name, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_at, created_by`,
+        [parentId, name, requiredApprovalScore, promoteCeiling, isBootstrap, isAnonymous, createdBy]
       )
     } catch (err) {
       // Unique (parent_id, name) violation
@@ -178,7 +178,7 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
 
 async function getScope(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf, created_at, created_by
+    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous, created_at, created_by
      FROM scopes WHERE id = $1`,
     [scopeId]
   )
@@ -236,15 +236,17 @@ async function isMember(client, scopeId, personRef) {
 // scopeId (their own point of presence lies within the sub-tree). The root
 // scope is world-readable by everyone, including anonymous (personRef null).
 async function canRead(client, scopeId, personRef) {
-  // Root is world-readable (§3.6).
+  // Root is world-readable (§3.6); an is_anonymous scope is readable by anyone
+  // too (non-transitive — only the flagged scope itself).
   const rootRes = await client.query(
-    `SELECT parent_id FROM scopes WHERE id = $1`,
+    `SELECT parent_id, is_anonymous FROM scopes WHERE id = $1`,
     [scopeId]
   )
   if (rootRes.rowCount === 0) return false
   if (rootRes.rows[0].parent_id === null) return true
+  if (rootRes.rows[0].is_anonymous) return true
 
-  if (!personRef) return false // anonymous: only the root is readable
+  if (!personRef) return false // anonymous: only root + anonymous scopes
 
   const res = await client.query(
     `SELECT 1
@@ -453,6 +455,42 @@ async function setPromoteCeiling({ scopeId, value }) {
   if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
 }
 
+// Marks / unmarks a scope as a bootstrap scope. Every logged-in user is
+// auto-enrolled as a member of every bootstrap scope on login (see
+// enrollBootstrap).
+async function setBootstrap({ scopeId, value }) {
+  const res = await pool.query(
+    `UPDATE scopes SET is_bootstrap = $2 WHERE id = $1 RETURNING id`,
+    [scopeId, value]
+  )
+  if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
+}
+
+// Marks / unmarks a scope as anonymous-readable. Not transitive: applies only
+// to this exact scope. Anonymous callers may then read its (shared) documents;
+// writing still requires explicit membership.
+async function setAnonymous({ scopeId, value }) {
+  const res = await pool.query(
+    `UPDATE scopes SET is_anonymous = $2 WHERE id = $1 RETURNING id`,
+    [scopeId, value]
+  )
+  if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
+}
+
+// Enrolls a person as an explicit member of every bootstrap scope, provisioning
+// their personal leaf in each. Idempotent (addMemberWithLeaf upserts), so it is
+// safe to call on every login — for new and returning users alike. Returns the
+// scopeRefs the person is now a member of.
+async function enrollBootstrap(personRef) {
+  const res = await pool.query(`SELECT id FROM scopes WHERE is_bootstrap = true`)
+  const enrolled = []
+  for (const row of res.rows) {
+    await addMemberWithLeaf({ scopeId: row.id, personRef, createdBy: personRef })
+    enrolled.push(String(row.id))
+  }
+  return enrolled
+}
+
 // Renames a scope. Internally cheap: everything (versions, closure, members,
 // votes, blobs) keys off scopes.id, and paths are derived live from the
 // parent chain — so only this one row changes, no cascade.
@@ -576,7 +614,7 @@ async function setParentScope({ scopeId, newParentId }) {
 // user consciously "works in".
 async function myScopes(personRef) {
   const res = await pool.query(
-    `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score, s.promote_ceiling,
+    `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score, s.promote_ceiling, s.is_bootstrap,
             m.is_admin, m.reviewer_score
        FROM memberships m
        JOIN scopes s ON s.id = m.scope_id
@@ -617,6 +655,9 @@ module.exports = {
   setReviewer,
   setRequiredApprovalScore,
   setPromoteCeiling,
+  setBootstrap,
+  setAnonymous,
+  enrollBootstrap,
   renameScope,
   setParentScope,
   myScopes,

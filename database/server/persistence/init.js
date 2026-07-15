@@ -25,19 +25,12 @@
 
 const fs = require("fs")
 const path = require("path")
-const { createHash } = require("crypto")
 const { pool } = require("./pool")
 const { getRoot, createRootScope, createScope } = require("./scopes")
 
 const DEFAULT_INIT_FILE = path.join(__dirname, "..", "..", "init.json")
 
-const RESERVED_KEYS = new Set(["admins", "requiredApprovalScore"])
-
-function hashEmail(email) {
-  const h = createHash("sha256")
-  h.update(email)
-  return h.digest("hex")
-}
+const RESERVED_KEYS = new Set(["admins", "requiredApprovalScore", "bootstrap"])
 
 function readInitFile() {
   const filePath = process.env.DATABASE_INIT_FILE || DEFAULT_INIT_FILE
@@ -102,7 +95,7 @@ async function applyAdmins(scopeId, node) {
   try {
     await client.query("BEGIN")
     for (const email of emails) {
-      const personRef = hashEmail(email)
+      const personRef = email
       await client.query(
         `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin, reviewer_score)
          VALUES ($1, $2, true, true, 10)
@@ -121,15 +114,16 @@ async function applyAdmins(scopeId, node) {
 }
 
 // Recursively creates a scope and all its declared descendants.
-async function createSubtree({ parentId, name, node, adminHash }) {
+async function createSubtree({ parentId, name, node, adminEmail }) {
   const required = node.requiredApprovalScore ?? 0
+  const isBootstrap = node.bootstrap === true
 
   let scope
   if (parentId === null) {
     scope = await createRootScope({
       name,
       requiredApprovalScore: required,
-      createdBy: adminHash,
+      createdBy: adminEmail,
     })
     console.log(`[database] bootstrap: created root scope "${name}" (id=${scope.id})`)
   } else {
@@ -137,9 +131,10 @@ async function createSubtree({ parentId, name, node, adminHash }) {
       parentId,
       name,
       requiredApprovalScore: required,
-      createdBy: adminHash,
+      isBootstrap,
+      createdBy: adminEmail,
     })
-    console.log(`[database] bootstrap: created scope "${name}" under parent ${parentId} (id=${scope.id})`)
+    console.log(`[database] bootstrap: created scope "${name}" under parent ${parentId} (id=${scope.id})${isBootstrap ? " [bootstrap]" : ""}`)
   }
 
   await applyAdmins(scope.id, node)
@@ -148,7 +143,7 @@ async function createSubtree({ parentId, name, node, adminHash }) {
     if (!childNode || typeof childNode !== "object" || Array.isArray(childNode)) {
       throw new Error(`init.json: child "${childName}" must be an object`)
     }
-    await createSubtree({ parentId: scope.id, name: childName, node: childNode, adminHash })
+    await createSubtree({ parentId: scope.id, name: childName, node: childNode, adminEmail })
   }
 
   return scope.id
@@ -173,9 +168,9 @@ async function bootstrap() {
   // in the tree. Sub-scopes without explicit admins inherit no rights —
   // that must be configured later via API.
   const rootAdminEmail = admins(rootNode)[0]
-  const adminHash = hashEmail(rootAdminEmail)
+  const adminEmail = rootAdminEmail
 
-  await createSubtree({ parentId: null, name: rootName, node: rootNode, adminHash })
+  await createSubtree({ parentId: null, name: rootName, node: rootNode, adminEmail })
 }
 
-module.exports = { bootstrap, hashEmail }
+module.exports = { bootstrap }

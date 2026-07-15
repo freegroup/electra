@@ -184,14 +184,22 @@
                     callback(settings.svgSelector);
                 } else {
 
-                    console.error('There was an error retrieving the source of the SVG.');
+                    // A missing/broken SVG must NOT hang the whole page: the
+                    // callback counts down once per SVG (see `after`), so we
+                    // still fire it here. The <img> is left in place (broken),
+                    // but loading completes and the app becomes usable.
+                    console.error('There was an error retrieving the source of the SVG: ' + src);
+                    callback(settings.svgSelector);
 
                 }
 
             };
 
             request.onerror = function () {
-                console.error('There was an error connecting to the origin server.');
+                // Same reasoning as the bad-status branch above: fire the
+                // callback so one unreachable SVG can't stall the page.
+                console.error('There was an error connecting to the origin server: ' + src);
+                callback(settings.svgSelector);
             };
             request.send();
         });

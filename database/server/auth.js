@@ -4,20 +4,15 @@
 //   x-mail  — authenticated email
 //   x-role  — "admin" | "user" | "anonym"
 //
-// We derive personRef = SHA-256(email) and expose it on req.personRef.
-// Test mode (DATABASE_TEST_MODE=1) bypasses SHA and lets the caller pass
-// x-hash directly so tests can simulate multiple identities.
+// personRef IS the clear email (req.personRef). There is deliberately no
+// hashing: the admin knows who every member is anyway (members are entered by
+// email), so a hash gave only pseudo-privacy. See ARCHITECTURE.md.
+// Test mode (DATABASE_TEST_MODE=1) lets the caller pass x-hash as a literal
+// personRef so tests can simulate multiple identities without real emails.
 
-const { createHash } = require("crypto")
 const { UnauthorizedError } = require("./utils/errors")
 
 const TEST_MODE = process.env.DATABASE_TEST_MODE === "1"
-
-function hashEmail(email) {
-  const h = createHash("sha256")
-  h.update(email)
-  return h.digest("hex")
-}
 
 // Resolves the caller's personRef from the ingress headers, or null when the
 // caller is anonymous (not logged in). Never throws — read routes and public
@@ -44,7 +39,7 @@ async function resolvePrincipal(req) {
       req.role = "anonym"
       return
     }
-    personRef = hashEmail(mail)
+    personRef = mail
   }
 
   req.personRef = personRef
@@ -69,4 +64,4 @@ async function nocache(req, reply) {
   reply.header("Expires", "-1")
 }
 
-module.exports = { requireLogin, resolvePrincipal, nocache, hashEmail }
+module.exports = { requireLogin, resolvePrincipal, nocache }

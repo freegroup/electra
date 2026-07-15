@@ -8,7 +8,7 @@
 // root). Writes require explicit membership and provision the caller's leaf
 // under the operating scope on first write.
 
-const { getDoc, listDocs, putDoc, deleteDoc, historyDocs } = require("../persistence/docs")
+const { getDoc, listDocs, globDocs, putDoc, deleteDoc, historyDocs } = require("../persistence/docs")
 const { promote } = require("../persistence/promote")
 const { distribute } = require("../persistence/distribute")
 const { NotFoundError, BadRequestError } = require("../utils/errors")
@@ -55,6 +55,17 @@ async function routes(fastify) {
         return doc
       }
       const prefix = q.prefix ? String(q.prefix) : null
+      // Glob mode: aggregate every doc visible under this scope (as root) across
+      // all the caller's groups, one row per path with its provider.
+      if (q.glob === "true" || q.glob === "1") {
+        const docs = await globDocs({
+          rootScopeId: scopeId,
+          personRef: req.personRef,
+          prefix,
+          resolveOriginPath,
+        })
+        return { docs }
+      }
       const docs = await listDocs({
         operatingScopeId: scopeId,
         personRef: req.personRef,

@@ -11,7 +11,12 @@
 		"create_folder": "New Folder",
 		"create_file": "New Circuit",
 		"new_document": "Create new circuit",
-		"open_example": "Open Example"
+		"open_example": "Open Example",
+		"revert": "Revert",
+		"promote": "Promote",
+		"copy": "Copy",
+		"publish": "Publish",
+		"unpublish": "Unpublish"
 	},
 	"dialog":{
 		"save": "Save the Circuit",
@@ -19,13 +24,24 @@
 		"share": "Share circuit with other",
 		"add_probe": "Probe Label",
 		"add_label": "Add Label",
-		"add_folder": "Create new folder"
+		"add_folder": "Create new folder",
+		"new_document": "Create new circuit",
+		"publish": "Publish",
+		"publish_explain": "Create a public link anyone can open (no login required):",
+		"promote_explain": "Make your version the shared version? Everyone who sees this circuit under the same \"Provided by\" group will then get your changes.",
+		"revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
+		"delete_explain": "Delete this circuit? There is no shared version to fall back to — this cannot be undone."
 	},
     "pane": {
 		"files": {
 			"title": "Circuit Library",
 			"title_your": "Your Circuits",
-			"title_global": "Public Circuits"
+			"title_global": "Public Circuits",
+			"col_name": "Name",
+			"col_provider": "Provided by",
+			"col_actions": "Actions",
+			"my_copy": "personal copy",
+			"personal": "personal"
 		},
 		"editor": {
 			"components": "Components"
@@ -48,7 +64,12 @@
 	"message": {
 		"loading": "Loading...",
 		"unable_to_load_element": "Unable to load element of type [{{name}}]",
-		"probe_hint":"Right click on a connection to add a probe signal to this logic analyzer window"
+		"probe_hint":"Right click on a connection to add a probe signal to this logic analyzer window",
+		"promoted": "Promoted to the shared version",
+		"pending_review": "Sent for review",
+		"reverted": "Personal changes discarded",
+		"deleted": "Deleted",
+		"save_before_share": "Save the circuit before sharing it"
 	},
 	"error": {
 	}

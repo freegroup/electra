@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
 const fs = require('fs')
+const { launch } = require('./launch')
 
 module.exports = {
 
@@ -8,7 +8,9 @@ module.exports = {
       const templateHeader = fs.readFileSync(__dirname+'/header.html', 'utf-8').replace("{headerText}",headerText)
       const templateFooter = fs.readFileSync(__dirname+'/footer.html', 'utf-8').replace("{footerText}",footerText)
     
-      let browser = await puppeteer.launch( )
+      // --no-sandbox: the service may run as root / in a confined (snap-like)
+      // environment where Chromium's sandbox can't initialise.
+      let browser = await launch()
 
       const page = await browser.newPage()
       await page.emulateMediaType('screen')

@@ -19,7 +19,9 @@
 		"new_document": "Neues Dokument",
 		"open_example": "Beispiel öffnen",
 		"add_chapter": "Neues Kapitel",
-		"paste_chapter": "Kapitel einfügen"
+		"paste_chapter": "Kapitel einfügen",
+		"revert": "Verwerfen",
+		"promote": "Promoten"
 	},
 	"editor": {
 		"empty": {
@@ -35,13 +37,22 @@
 		"create": "Neues Dokument anlegen",
 		"share": "Arbeitsblatt mit anderen teilen",
 		"save": "Dokument speichern",
-		"add_folder": "Neuen Ordner anlegen"
+		"add_folder": "Neuen Ordner anlegen",
+		"new_document": "Neues Dokument",
+		"promote_explain": "Deine Version zur geteilten Version machen? Alle, die dieses Dokument unter derselben Gruppe \"Bereitgestellt von\" sehen, erhalten dann deine Änderungen.",
+		"revert_explain": "Deine persönlichen Änderungen verwerfen und wieder die offizielle Version anzeigen? Das kann nicht rückgängig gemacht werden.",
+		"delete_explain": "Dieses Dokument löschen? Es gibt keine geteilte Version, auf die zurückgefallen werden könnte — das kann nicht rückgängig gemacht werden."
 	},
 	"pane": {
 		"files": {
 			"title": "Gespeicherte Dokumente",
 			"title_your": "Deine Dokumente",
-			"title_global": "Allgemein"
+			"title_global": "Allgemein",
+			"col_name": "Name",
+			"col_provider": "Bereitgestellt von",
+			"col_actions": "Aktionen",
+			"my_copy": "persönliche Kopie",
+			"personal": "privat"
 		}
 	},
 	"label": {
@@ -53,7 +64,11 @@
 		"section_to_clipboard": "Abschnitt in die Zwischenablage kopiert",
 		"save_before_share": "Dokument must gespeichert werden bevor Du es teilen kannst",
 		"save_before_pdf": "Dokument must gespeichert werden bevor Du es als PDF speichern kannst",
-		"contains_learning": "Die Seite enthält Frageabschnitte. Der PDF Export enthält somit ein Lösungsdokument und einer Aufgabendokument"
+		"contains_learning": "Die Seite enthält Frageabschnitte. Der PDF Export enthält somit ein Lösungsdokument und einer Aufgabendokument",
+		"promoted": "Zur geteilten Version freigegeben",
+		"pending_review": "Zur Prüfung eingereicht",
+		"reverted": "Persönliche Änderungen verworfen",
+		"deleted": "Gelöscht"
 	},
 	"error": {
 		"clipboard_not_page": "Zwischenablage enthält keine Electra.Academy Seite",
