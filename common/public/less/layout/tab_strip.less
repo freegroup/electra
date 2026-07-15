@@ -13,6 +13,8 @@
       a {
         margin-right: 0;
         border: 0;
+        // no browser focus ring on the tab after a click
+        outline: none;
       }
     }
 
@@ -20,6 +22,7 @@
     >.active>a:hover,
     >.active>a:focus {
       border:0;
+      outline: none;
     }
 
     .spacer {
@@ -29,6 +32,13 @@
     // A left-nav entry: icon on the left, label to its right.
     .leftTab {
       border-radius: 0 !important;
+      // kill Bootstrap's a:focus outline (the blue ring after a click)
+      &,
+      &:focus,
+      &:focus-visible,
+      &:active {
+        outline: none !important;
+      }
       display: flex;
       flex-direction: row;
       align-items: center;

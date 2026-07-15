@@ -1,0 +1,108 @@
+// The Draft pane — the documents the caller holds in their own personal leaf
+// (personal drafts and personal copies that override a shared original). It has
+// its own meaning and wording ("Overrides file in", "Document Path"), so it is
+// kept fully isolated from the Files pane rather than sharing selectors.
+//
+// Layout mirrors the Files pane on purpose (teaser header + a "+ New" table
+// finder), but lives here standalone so the two can diverge freely.
+#draft {
+  overflow-y: scroll;
+  padding: 40px;
+
+  .draftTeaser {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 48px;
+
+    .title {
+      font-weight: var(--label-font-weight);
+      font-size: 2vw;
+      white-space: nowrap;
+    }
+    img, svg {
+      padding-right: 40px;
+      height: 100%;
+    }
+  }
+
+  .draftFinder {
+    .storageHeader {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding: @buttonSpacing @contentToEdgePadding;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+    }
+
+    .storageTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead th {
+        text-align: left;
+        font-weight: var(--label-font-weight);
+        text-transform: uppercase;
+        font-size: var(--label-font-size);
+        padding: 10px @contentToEdgePadding;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        opacity: 0.6;
+      }
+
+      .storageRow {
+        cursor: pointer;
+
+        td {
+          padding: 10px @contentToEdgePadding;
+          vertical-align: middle;
+        }
+
+        .storageThumb {
+          width: 32px;
+          height: 32px;
+          object-fit: contain;
+          vertical-align: middle;
+          margin-right: 12px;
+        }
+
+        .storageTitle {
+          font-size: 16px;
+        }
+
+        .colProvider {
+          .providerScope { opacity: 0.75; }
+          .providerVersion { margin-left: 8px; opacity: 0.5; }
+          .providerMine {
+            margin-left: 8px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            background: var(--electra-primary, #e91e63);
+            color: #fff;
+          }
+        }
+
+        .colActions {
+          text-align: right;
+          white-space: nowrap;
+
+          button {
+            margin-left: 8px;
+          }
+        }
+
+        &:hover .storageTitle {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .fileListEmpty {
+      padding: 20px @contentToEdgePadding;
+      opacity: 0.6;
+    }
+  }
+}

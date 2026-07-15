@@ -11,6 +11,10 @@ body.light {
     /* colors of the left hand side navigation tabbar */
     --lefttab-font-color: 255, 255, 255;
     --lefttab-bg-color:  218, 26, 95;
+    /* the active tab: label/icon colour + how strongly the bar colour is
+       blended into white for its background (0..1) */
+    --lefttab-active-font-color: 0, 0, 0;
+    --lefttab-active-bg-blend: 0.5;
 
     /* colors for listitems */
     --menu-container-padding: 4px;
@@ -230,13 +234,26 @@ body.light {
         >div {
             &.active {
                 a{
+                    // The tab-strip colour blended into white (opaque white base
+                    // + a tint overlay at --lefttab-active-bg-blend). Gives the
+                    // active tab a clear edge against the white palette/content
+                    // on its right, themed from --lefttab-bg-color.
+                    background-color: white;
+                    background-image: linear-gradient(
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
+
                     &:hover {
                         background-color: white;
+                        background-image: linear-gradient(
+                            rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                            rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
                     }
 
-                    // label recolors with the icon on the active entry
+                    // On the tinted active background, label + icon use the
+                    // dedicated active-tab font colour for legible contrast.
                     .leftTabLabel {
-                        color: rgb(var(--lefttab-bg-color));
+                        color: rgb(var(--lefttab-active-font-color));
                     }
 
                     svg {
@@ -246,12 +263,12 @@ body.light {
                         line[stroke],
                         circle[stroke],
                         polyline[stroke] {
-                            stroke: rgb(var(--lefttab-bg-color))  !important;
+                            stroke: rgb(var(--lefttab-active-font-color))  !important;
                         }
 
                         circle[fill],
                         rect[fill] {
-                            fill: rgb(var(--lefttab-bg-color))  !important;
+                            fill: rgb(var(--lefttab-active-font-color))  !important;
                         }
                     }
                 }
@@ -374,7 +391,7 @@ body.light {
 
     #files {
         background-color: rgb(var(--workplace-bg-color));
-        .teaser {
+        .filesTeaser {
             .title {
                 color: rgb(var(--tint-color));
             }
@@ -419,6 +436,21 @@ body.light {
                 transition: all 0.3s ease;
                 border-color:rgb(var(--tint-color));
             }
+        }
+    }
+
+    #draft {
+        background-color: rgb(var(--workplace-bg-color));
+        .draftTeaser {
+            .title {
+                color: rgb(var(--tint-color));
+            }
+        }
+        .draftFinder {
+            background-color: rgb(var(--pane-bg-color));
+            border: 1px solid rgb(var(--border-color));
+            border-radius: @borderRadiusBig;
+            box-shadow: var(--box-shadow-1);
         }
     }
 
