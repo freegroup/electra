@@ -18,7 +18,7 @@ class StorageClient {
 
   // All documents visible under this app's root, uniform shape.
   files(prefix) {
-    let params = {}
+    let params = { _: Date.now() } // cache-buster (see open())
     if (prefix) params.prefix = prefix
     return axios.get(`${this.base}/files`, { params })
       .then((response) => response.data.items || [])
@@ -27,8 +27,12 @@ class StorageClient {
   // --- one document --------------------------------------------------------
 
   // Open a document (optionally a specific version). -> item + { content }
+  // `_` is a cache-buster: opening the same id twice is an identical GET URL,
+  // which some browsers serve from their in-memory cache even with no-store
+  // response headers. A unique param per call forces a real fetch (stays GET,
+  // no REST break).
   open(id, version) {
-    let params = { id }
+    let params = { id, _: Date.now() }
     if (version != null) params.version = version
     return axios.get(`${this.base}/file`, { params })
       .then((response) => response.data)

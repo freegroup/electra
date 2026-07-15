@@ -34,6 +34,17 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 
+// These are dynamic, per-user API responses (a document's content depends on
+// the caller's walk-up and can change on every save/promote). They must never
+// be cached: otherwise clicking the same id twice serves a stale document from
+// the browser cache until a hard reload. Disable caching for the whole API.
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+  res.set("Pragma", "no-cache")
+  res.set("Expires", "0")
+  next()
+})
+
 files.init(app)
 pdfApi.init(app)
 

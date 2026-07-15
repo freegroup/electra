@@ -16,7 +16,7 @@ const db = require("./db")
 //   providedBy   — origin scope human path (the "Provided by" column)
 //   version      — effective version
 //   instanceType — "personal" | "personalCopy" | "inherit" (see globDocs)
-function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit" }) {
+function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null }) {
   const id = db.encodeId(scopeRef, docPath)
   // For personal / personal-copy docs the provider path ends in the caller's
   // own leaf (named after their hash — an ugly, meaningless segment). Show the
@@ -27,6 +27,19 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
     const slash = displayProvider.lastIndexOf("/")
     if (slash !== -1) displayProvider = displayProvider.slice(0, slash)
   }
+  // The shared "original" this personal copy overlays (personalCopy rows only).
+  // Its own handle + version let the finder open the original directly, and its
+  // provider is shown as-is (a shared scope, no personal leaf to strip).
+  let originalItem = null
+  if (original) {
+    const originalId = db.encodeId(original.scopeRef, docPath)
+    originalItem = {
+      id: originalId,
+      version: original.version ?? null,
+      providedBy: original.provider || null,
+      thumbnailUrl: `../sheets/thumb?id=${encodeURIComponent(originalId)}${original.version != null ? `&v=${original.version}` : ""}`,
+    }
+  }
   return {
     id,
     name: docPath.split("/").pop(),
@@ -36,6 +49,7 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
     editable,
     published,
     instanceType,
+    original: originalItem,
     // `v` is a cache-buster: it changes when the document (and its embedded
     // preview) changes, so the browser's <img> cache re-fetches the new image
     // instead of reusing the identical-URL copy from memory.
@@ -58,6 +72,7 @@ function init(app) {
           providedBy: d.provider,
           version: d.providerVersion,
           instanceType: d.instanceType,
+          original: d.original,
         })
       )
       res.json({ items })
