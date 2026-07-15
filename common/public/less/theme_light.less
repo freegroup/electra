@@ -221,12 +221,22 @@ body.light {
     #leftTabStrip {
         background-color: rgb(var(--lefttab-bg-color)) ;
 
+        // group divider: faint line in the bar's font color
+        .leftTabSeparator hr {
+            border-top-color: rgba(var(--lefttab-font-color), 0.25);
+        }
+
         >li,
         >div {
             &.active {
                 a{
                     &:hover {
                         background-color: white;
+                    }
+
+                    // label recolors with the icon on the active entry
+                    .leftTabLabel {
+                        color: rgb(var(--lefttab-bg-color));
                     }
 
                     svg {
@@ -250,6 +260,10 @@ body.light {
             a {
                 &:hover {
                     background-color: rgba(0, 0, 0, 0.1);
+                }
+
+                .leftTabLabel {
+                    color: rgb(var(--lefttab-font-color));
                 }
 
                 svg {

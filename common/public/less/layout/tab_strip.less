@@ -1,8 +1,7 @@
 #leftTabStrip {
     height: 100%;
     position:absolute;
-    width: @tabSize;
-    padding-top: @tabSize;
+    width: @tabBarWidth;
     overflow:hidden;
     display: flex;
     flex-direction: column;
@@ -17,8 +16,8 @@
       }
     }
 
-    >.active>a, 
-    >.active>a:hover, 
+    >.active>a,
+    >.active>a:hover,
     >.active>a:focus {
       border:0;
     }
@@ -27,11 +26,42 @@
       flex-grow: 1;
     }
 
+    // A left-nav entry: icon on the left, label to its right.
     .leftTab {
       border-radius: 0 !important;
-      width:@tabSize;
-      height:@tabSize;
-      padding: 4px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      height: @tabSize;
+      padding: 0 18px;
+
+      // The <img class="icon svg"> is replaced by an inline <svg> at runtime
+      // (inlineSVG), which drops width/height — so size the .icon class, which
+      // survives the swap, and constrain both img and svg forms.
+      .icon,
+      img,
+      svg {
+        width: @tabIconSize;
+        height: @tabIconSize;
+        margin: 0;
+        flex: 0 0 auto;
+      }
+
+      .leftTabLabel {
+        white-space: nowrap;
+        font-size: 15px;
+      }
+    }
+
+    // A purely optical divider between groups of entries (no header/title).
+    .leftTabSeparator {
+      hr {
+        margin: 8px 18px;
+        border: 0;
+        border-top: 1px solid;
+      }
     }
 
 }
