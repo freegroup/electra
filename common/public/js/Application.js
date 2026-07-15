@@ -4,8 +4,10 @@ import welcomeMessage from "./WelcomeMessage"
 
 import Files from "./FilesScreen"
 import StorageScreen from "./storage/StorageScreen"
+import DraftScreen from "./storage/DraftScreen"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
+import openConflictDialog from "./storage/OpenConflictDialog"
 import toast from "./toast"
 
 export default class Application extends AppFrame{
@@ -31,7 +33,11 @@ export default class Application extends AppFrame{
         // scope-based finder; everyone else keeps the folder-based FilesScreen.
         if (conf.database) {
             this.storage = storageFactory(conf)
+            // Two panes: "Files" (shared originals) and "Draft" (the caller's
+            // own personal copies). filePane stays the primary handle; draftPane
+            // is refreshed alongside it after promote/revert/delete.
             this.filePane = new StorageScreen(this, conf, permissions[this.objectType])
+            this.draftPane = new DraftScreen(this, conf, permissions[this.objectType])
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
         }
@@ -88,6 +94,34 @@ export default class Application extends AppFrame{
     // They are pure storage operations, so they live in the base rather than
     // each app.
 
+    // A promote/revert/delete changes what BOTH panes show (a draft may vanish,
+    // an original may gain/lose its "my copy" marker), so refresh both. Used by
+    // finder-internal actions where the user is looking at the list now, so it
+    // reloads immediately.
+    refreshFinders() {
+        if (this.filePane) this.filePane.reload()
+        if (this.draftPane) this.draftPane.reload()
+    }
+
+    // Mark both panes stale without reloading now — used after a save/create,
+    // where the user stays in the editor and the lists reload lazily on show.
+    markFindersDirty() {
+        if (this.filePane) this.filePane.refresh()
+        if (this.draftPane) this.draftPane.refresh()
+    }
+
+    // Ask the user whether to open their private draft or the shared original,
+    // then open the chosen one. Used by the Files pane when a row's path also
+    // has a personal draft.
+    openWithConflict({ originalId, version, draftId }) {
+        return openConflictDialog.show()
+            .then((choice) => {
+                if (choice === "draft") return this.open(draftId)
+                return this.open(originalId, version)
+            })
+            .catch((err) => { if (err) console.log(err) })
+    }
+
     // Promote: make the caller's version the shared one for everyone who sees
     // the document under the same "provided by" group. Confirms first.
     promoteById(id) {
@@ -95,7 +129,7 @@ export default class Application extends AppFrame{
             .then(() => this.storage.promote(id))
             .then((res) => {
                 toast(res && res.status === "committed" ? t("message.promoted") : t("message.pending_review"))
-                this.filePane.reload()
+                this.refreshFinders()
             })
             .catch((err) => { if (err) console.log(err) })
     }
@@ -105,7 +139,7 @@ export default class Application extends AppFrame{
     revertById(id) {
         return confirmDialog.show(t("dialog.revert_explain"))
             .then(() => this.storage.revert(id))
-            .then(() => { toast(t("message.reverted")); this.filePane.reload() })
+            .then(() => { toast(t("message.reverted")); this.refreshFinders() })
             .catch((err) => { if (err) console.log(err) })
     }
 
@@ -114,7 +148,7 @@ export default class Application extends AppFrame{
     deleteById(id) {
         return confirmDialog.show(t("dialog.delete_explain"))
             .then(() => this.storage.remove(id))
-            .then(() => { toast(t("message.deleted")); this.filePane.reload() })
+            .then(() => { toast(t("message.deleted")); this.refreshFinders() })
             .catch((err) => { if (err) console.log(err) })
     }
 

@@ -16,7 +16,9 @@
 		"promote": "Promoten",
 		"copy": "Kopieren",
 		"publish": "Veröffentlichen",
-		"unpublish": "Zurückziehen"
+		"unpublish": "Zurückziehen",
+		"open_draft": "Eigene Kopie öffnen",
+		"open_original": "Original öffnen"
 	},
 	"dialog":{
 		"save": "Schaltung speichern",
@@ -30,21 +32,32 @@
 		"publish_explain": "Einen öffentlichen Link erstellen, den jeder ohne Anmeldung öffnen kann:",
 		"promote_explain": "Deine Version zur geteilten Version machen? Alle, die diese Schaltung unter derselben Gruppe \"Bereitgestellt von\" sehen, erhalten dann deine Änderungen.",
 		"revert_explain": "Deine persönlichen Änderungen verwerfen und wieder die offizielle Version anzeigen? Das kann nicht rückgängig gemacht werden.",
-		"delete_explain": "Diese Schaltung löschen? Es gibt keine geteilte Version, auf die zurückgefallen werden könnte — das kann nicht rückgängig gemacht werden."
+		"delete_explain": "Diese Schaltung löschen? Es gibt keine geteilte Version, auf die zurückgefallen werden könnte — das kann nicht rückgängig gemacht werden.",
+		"open_conflict": "Welche Version öffnen?",
+		"open_conflict_explain": "Du hast einen persönlichen Entwurf dieser Schaltung. Deine eigene Kopie öffnen oder das geteilte Original?"
 	},
 	"nav": {
 		"editor": "Editor",
+		"draft": "Entwürfe",
 		"files": "Dateien",
 		"help": "Hilfe"
 	},
 	"pane": {
+		"draft": {
+			"title": "Meine Entwürfe",
+			"col_name": "Dokumentpfad",
+			"col_provider": "Überschreibt Datei in"
+		},
 		"files": {
 			"title": "Gespeicherte Schaltungen",
 			"title_your": "Deine Schaltungen",
 			"title_global": "Beispiel Schaltungen",
 			"col_name": "Name",
+			"col_version": "Version",
+			"col_draft": "Entwurf",
 			"col_provider": "Bereitgestellt von",
 			"col_actions": "Aktionen",
+			"has_draft": "persönlicher Entwurf vorhanden",
 			"my_copy": "persönliche Kopie",
 			"personal": "privat"
 		},

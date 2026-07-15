@@ -74,7 +74,7 @@ class Application extends GenericApplication {
         this.hasUnsavedChanges = false
         toast(t("common:message.created"))
         $("#editorFileSave div").removeClass("highlight")
-        this.filePane.refresh()
+        this.markFindersDirty()
       })
       .catch((error) => { if (error) console.log(error) })
   }
@@ -101,7 +101,7 @@ class Application extends GenericApplication {
         this.hasUnsavedChanges = false
         toast(t("common:message.saved"))
         $("#editorFileSave div").removeClass("highlight")
-        this.filePane.refresh()
+        this.markFindersDirty()
       })
       .catch((err) => { if (err) console.log(err) })
   }

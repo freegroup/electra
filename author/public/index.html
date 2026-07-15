@@ -77,6 +77,14 @@
       </a>
     </li>
 
+    <li class="leftTabSeparator"><hr></li>
+
+    <li id="draft_tab">
+      <a href="#draft" class="leftTab draft" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+        <span class="leftTabLabel" data-i18n="nav.draft">Draft</span>
+      </a>
+    </li>
 
     <li id="files_tab" class="">
       <a href="#files" class="leftTab files" data-toggle="tab">
@@ -157,28 +165,20 @@
        </div>
     </div>
 
+    <div class="tab-pane" id="draft">
+      <div class="draftTeaser">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+        <div data-i18n="pane.draft.title" class="title">My Drafts</div>
+      </div>
+      <div class="draftFinder"></div>
+    </div>
+
     <div class="tab-pane" id="files">
       <div class="filesTeaser">
         <img class="icon svg" src="../common/images/navigation_file.svg"/>
         <div data-i18n="pane.files.title" class="title">Document Library</div>
       </div>
-
-      <div class="filesFinder">
-        <header>
-          <div id="material-tabs">
-            <span class="sliding-bar"></span>
-            <a data-i18n="pane.files.title_your" id="userFilesTab" href="#userFiles" class="active">Your Documents</a>
-            <a data-i18n="pane.files.title_global" id="globalFilesTab" href="#globalFiles">Public Documents</a>
-          </div>
-        </header>
-
-        <div class="material-tab-content">
-          <div id="userFiles">
-          </div>
-          <div id="globalFiles">
-          </div>
-        </div>
-      </div>
+      <div class="filesFinder"></div>
     </div>
 
 

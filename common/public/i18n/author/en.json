@@ -21,7 +21,9 @@
 		"add_chapter": "Add Chapter",
 		"paste_chapter": "Paste Chapter",
 		"revert": "Revert",
-		"promote": "Promote"
+		"promote": "Promote",
+		"open_draft": "Open my copy",
+		"open_original": "Open original"
 	},
 	"editor": {
 		"empty": {
@@ -41,21 +43,32 @@
 		"new_document": "New Document",
 		"promote_explain": "Make your version the shared version? Everyone who sees this document under the same \"Provided by\" group will then get your changes.",
 		"revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
-		"delete_explain": "Delete this document? There is no shared version to fall back to — this cannot be undone."
+		"delete_explain": "Delete this document? There is no shared version to fall back to — this cannot be undone.",
+		"open_conflict": "Open which version?",
+		"open_conflict_explain": "You have a personal draft of this document. Open your own copy, or the shared original?"
 	},
     "nav": {
 		"editor": "Editor",
+		"draft": "Drafts",
 		"files": "Files",
 		"help": "Help"
 	},
     "pane": {
+		"draft": {
+			"title": "My Drafts",
+			"col_name": "Document Path",
+			"col_provider": "Overrides file in"
+		},
 		"files": {
             "title": "Document Library",
 			"title_your": "Your Documents",
 			"title_global": "Public Documents",
 			"col_name": "Name",
+			"col_version": "Version",
+			"col_draft": "Draft",
 			"col_provider": "Provided by",
 			"col_actions": "Actions",
+			"has_draft": "has personal draft version",
 			"my_copy": "personal copy",
 			"personal": "personal"
 		}
