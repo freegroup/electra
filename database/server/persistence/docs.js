@@ -228,20 +228,22 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
          FROM matches
          ORDER BY doc_path, depth ASC, slot_rank ASC, version DESC
        ),
-       shared_winner AS (
-         -- the effective SHARED version (slot 1 only) — what the caller would
-         -- see if they dropped their own leaf copy (revert).
+       original AS (
+         -- the shared version the caller's personal copy overlays (slot 1 only)
+         -- — the "original". Also what a revert would restore.
          SELECT DISTINCT ON (doc_path)
-                doc_path, status AS shared_status, is_deletion AS shared_is_deletion
+                doc_path, status AS original_status, is_deletion AS original_is_deletion,
+                scope_id AS original_scope_id, version AS original_version
          FROM matches
          WHERE slot_rank = 1
          ORDER BY doc_path, depth ASC, version DESC
        )
        SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version,
               w.status, w.is_deletion,
-              COALESCE(sw.shared_status = 'committed' AND sw.shared_is_deletion = false, false) AS has_shared
+              COALESCE(o.original_status = 'committed' AND o.original_is_deletion = false, false) AS has_original,
+              o.original_scope_id, o.original_version
        FROM winner w
-       LEFT JOIN shared_winner sw USING (doc_path)
+       LEFT JOIN original o USING (doc_path)
        WHERE w.status = 'committed' AND w.is_deletion = false`,
       [opScopeId, personRef, prefix || null]
     )
@@ -272,9 +274,27 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
     //   inherit       — the effective version is a shared/inherited one
     let instanceType
     if (row.slot_rank === 0) {
-      instanceType = row.has_shared ? "personalCopy" : "personal"
+      instanceType = row.has_original ? "personalCopy" : "personal"
     } else {
       instanceType = "inherit"
+    }
+    // The shared "original" this row overlays — present only when the caller's
+    // own leaf shadows a shared version (personalCopy). For personal (no shared
+    // above) and inherit (the row IS the shared version) there is no separate
+    // original. Carries the concrete scope+version so the caller can open the
+    // original directly, bypassing the walk-up.
+    let original = null
+    if (instanceType === "personalCopy" && row.original_scope_id != null) {
+      let originalProvider = cache.get(row.original_scope_id)
+      if (originalProvider === undefined) {
+        originalProvider = await resolveOriginPath(row.original_scope_id)
+        cache.set(row.original_scope_id, originalProvider)
+      }
+      original = {
+        scopeRef: String(row.original_scope_id),
+        version: row.original_version,
+        provider: originalProvider,
+      }
     }
     out.push({
       path: row.doc_path,
@@ -282,6 +302,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       providerVersion: row.version,
       operatingScopeRef: String(opScopeId),
       instanceType,
+      original,
     })
   }
   out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))

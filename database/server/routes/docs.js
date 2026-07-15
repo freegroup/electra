@@ -8,7 +8,8 @@
 // root). Writes require explicit membership and provision the caller's leaf
 // under the operating scope on first write.
 
-const { getDoc, listDocs, globDocs, putDoc, deleteDoc, historyDocs } = require("../persistence/docs")
+const { getDoc, listDocs, globDocs, putDoc, deleteDoc, historyDocs, rowToDoc } = require("../persistence/docs")
+const { docAt } = require("../persistence/admin")
 const { promote } = require("../persistence/promote")
 const { distribute } = require("../persistence/distribute")
 const { NotFoundError, BadRequestError } = require("../utils/errors")
@@ -43,6 +44,28 @@ async function routes(fastify) {
       const scopeId = await requireRead(req.params.scopeRef, req.personRef)
       const q = req.query || {}
       if (q.path) {
+        // Version-pinned read: fetch EXACTLY this scope+version, bypassing the
+        // walk-up. Used to open the shared "original" of a doc even when the
+        // caller has a personal copy that the walk-up would otherwise prefer.
+        if (q.version != null && q.version !== "") {
+          const pinned = await docAt(scopeId, String(q.path), Number(q.version))
+          if (!pinned || pinned.isDeletion) {
+            throw new NotFoundError(`no document at ${q.path} v${q.version} in this scope`)
+          }
+          const originPath = await resolveOriginPath(scopeId)
+          return rowToDoc(
+            {
+              data: pinned.data,
+              meta: pinned.meta,
+              doc_path: pinned.path,
+              version: pinned.version,
+              status: pinned.status,
+              author: pinned.author,
+              created_at: pinned.createdAt,
+            },
+            originPath
+          )
+        }
         const doc = await getDoc({
           operatingScopeId: scopeId,
           personRef: req.personRef,
