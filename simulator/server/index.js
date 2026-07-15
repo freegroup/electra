@@ -24,18 +24,6 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 // Create Express Server
 const app = express();
 
-// Canonical trailing slash. index.html uses paths relative to a trailing slash
-// (./images/…, ./js/…) and the Google OAuth redirect_uri is derived from
-// window.location.pathname — both break when the app is reached as "/simulator"
-// instead of "/simulator/". express.static only auto-redirects for real
-// subdirectories, not for the mount root, so we handle the bare mount here.
-// The app owns this rule; the ingress stays a dumb proxy.
-app.get('/simulator', (req, res, next) => {
-    if (req.path.endsWith('/')) return next()
-    const query = req.originalUrl.slice(req.path.length) // preserve ?…
-    res.redirect(301, req.path + '/' + query)
-})
-
 app.use('/simulator', express.static(scriptPath+'/../public'));
 
 // Start Server

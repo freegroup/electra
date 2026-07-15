@@ -195,6 +195,31 @@ function prefixed(mount, port) {
     })
 }
 
+// Canonical trailing slash for top-level document navigations. A frontend app
+// reached as "/simulator" (no slash) makes the browser resolve the page's
+// relative asset paths (./images/…, ./js/…) against the PARENT, and it derives
+// the Google OAuth redirect_uri from window.location.pathname — both need the
+// trailing slash. The proxy is the only place that sees the ORIGINAL browser
+// URL (pathRewrite later appends the slash before forwarding, hiding it from
+// the backend), so the redirect has to live here.
+//
+// This is generic proxy behaviour, not app knowledge: redirect a bare
+// single-segment path (no dot, no deeper path) ONLY when the browser is
+// navigating to it as a top-level document (Sec-Fetch-Dest: document). Every
+// modern browser sets that header on page loads; API/XHR calls (fetch → the
+// single-segment /permissions, /userinfo, and all deeper paths) carry a
+// non-document value, and a missing header (non-browser client) is left alone
+// too — redirecting an XHR/POST could degrade it to GET.
+app.use((req, res, next) => {
+    const isDocument = req.headers['sec-fetch-dest'] === 'document'
+    const bareMount = /^\/[^/.]+$/.test(req.path) // "/simulator", not "/a/b" or "/x.js"
+    if (isDocument && bareMount) {
+        const query = req.originalUrl.slice(req.path.length) // preserve ?…
+        return res.redirect(301, req.path + '/' + query)
+    }
+    next()
+})
+
 app.use('/home',         prefixed('/home',         PORT_HOME))
 app.use('/legal',        prefixed('/legal',        PORT_LEGAL))
 app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
