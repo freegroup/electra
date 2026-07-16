@@ -36,13 +36,19 @@ export default class Application extends AppFrame{
             // Two panes: "Files" (shared originals) and "Draft" (the caller's
             // own personal copies). filePane stays the primary handle; draftPane
             // is refreshed alongside it after promote/revert/delete.
-            this.filePane = new StorageScreen(this, conf, permissions[this.objectType])
-            this.draftPane = new DraftScreen(this, conf, permissions[this.objectType])
+            this.filePane = new StorageScreen(this, conf)
+            this.draftPane = new DraftScreen(this, conf)
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
         }
-        this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`)
-        this.readmePane.render()
+        // The help/readme pane. Renders lazily on first show (onShow), like the
+        // other panes — no eager render here.
+        this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`, "#index_tab a")
+
+        // The editor "pane" has no screen class of its own (it's the canvas), but
+        // gets the same onShow() hook for consistency with the other panes.
+        // Currently a no-op; a later change could re-center/redraw here.
+        $("#editor_tab a").off("click.editor").on("click.editor", () => this.onEditorShow())
 
 
         // Show the user an alert if there are unsaved changes
@@ -74,6 +80,11 @@ export default class Application extends AppFrame{
         welcomeMessage.hide()
     }
 
+    // The editor pane's onShow hook (see init). No-op for now; kept so every
+    // pane — Editor, Drafts, Files, Help — has the same "became visible" entry.
+    onEditorShow(){
+    }
+
     showLoginHint(){
         new Anno([
             {
@@ -94,20 +105,13 @@ export default class Application extends AppFrame{
     // They are pure storage operations, so they live in the base rather than
     // each app.
 
-    // A promote/revert/delete changes what BOTH panes show (a draft may vanish,
-    // an original may gain/lose its "my copy" marker), so refresh both. Used by
-    // finder-internal actions where the user is looking at the list now, so it
-    // reloads immediately.
+    // A promote/revert/delete/save changes what BOTH panes show (a draft may
+    // appear/vanish, an original may gain/lose its "has draft" marker), so
+    // refresh both. Each pane's reload() decides for itself: reload now if it's
+    // the visible pane, otherwise mark stale and reload when next shown.
     refreshFinders() {
-        if (this.filePane) this.filePane.reload()
-        if (this.draftPane) this.draftPane.reload()
-    }
-
-    // Mark both panes stale without reloading now — used after a save/create,
-    // where the user stays in the editor and the lists reload lazily on show.
-    markFindersDirty() {
-        if (this.filePane) this.filePane.refresh()
-        if (this.draftPane) this.draftPane.refresh()
+        this.filePane?.reload()
+        this.draftPane?.reload()
     }
 
     // Ask the user whether to open their private draft or the shared original,
@@ -127,10 +131,8 @@ export default class Application extends AppFrame{
     promoteById(id) {
         return confirmDialog.show(t("dialog.promote_explain"))
             .then(() => this.storage.promote(id))
-            .then((res) => {
-                toast(res && res.status === "committed" ? t("message.promoted") : t("message.pending_review"))
-                this.refreshFinders()
-            })
+            .then((res) => toast(res && res.status === "committed" ? t("message.promoted") : t("message.pending_review")))
+            .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })
     }
 
@@ -139,7 +141,8 @@ export default class Application extends AppFrame{
     revertById(id) {
         return confirmDialog.show(t("dialog.revert_explain"))
             .then(() => this.storage.revert(id))
-            .then(() => { toast(t("message.reverted")); this.refreshFinders() })
+            .then(() => toast(t("message.reverted")))
+            .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })
     }
 
@@ -148,7 +151,8 @@ export default class Application extends AppFrame{
     deleteById(id) {
         return confirmDialog.show(t("dialog.delete_explain"))
             .then(() => this.storage.remove(id))
-            .then(() => { toast(t("message.deleted")); this.refreshFinders() })
+            .then(() => toast(t("message.deleted")))
+            .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })
     }
 

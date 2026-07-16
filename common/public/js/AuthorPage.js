@@ -5,9 +5,25 @@ let md = mdFactory()
 
 export default class AuthorPage {
 
-  constructor(containerId, file) {
+  constructor(containerId, file, tabSelector) {
     this.file = file
     this.containerId = containerId
+    this.rendered = false
+
+    // Every pane implements onShow() (called when its tab is shown). The help
+    // page renders lazily on first show; a later change could re-render here to
+    // pick up an updated help document from the backend.
+    if (tabSelector) {
+      $(tabSelector).off("click.readme").on("click.readme", this.onShow.bind(this))
+    }
+  }
+
+  // The pane was shown — render on first view. (Future: re-render to refresh.)
+  onShow() {
+    if (!this.rendered) {
+      this.rendered = true
+      this.render()
+    }
   }
 
   render( ) {

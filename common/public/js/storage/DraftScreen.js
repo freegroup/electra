@@ -15,10 +15,9 @@ import storageFactory from "./StorageClient"
 // the caller's own version directly (no conflict — this IS the personal copy).
 export default class DraftScreen {
 
-  constructor(app, conf, permissions) {
+  constructor(app, conf) {
     this.app = app
     this.conf = conf
-    this.permissions = permissions
     this.storage = storageFactory(conf)
     this.dirty = false // set on save/promote/revert; reloaded lazily on show
 
@@ -71,25 +70,23 @@ export default class DraftScreen {
     this.render()
   }
 
-  // The draft tab was opened — reload only if something changed since last view.
+  // The pane was shown — reload if something changed since the last view.
+  // onShow() is the shared "pane became visible" hook every screen implements.
   onShow() {
-    if (this.dirty) {
+    if (this.dirty) this.reload()
+  }
+
+  // Refresh the list. If the pane is currently visible, reload immediately;
+  // otherwise just mark it stale so it reloads the next time it's shown (via
+  // onShow). One entry point for both "the user is looking now" (row actions)
+  // and "something changed in the background" (save/promote elsewhere).
+  reload() {
+    if ($("#draft").hasClass("active")) {
       this.dirty = false
       this.loadDocs()
+    } else {
+      this.dirty = true
     }
-  }
-
-  // Marks the list stale; the actual reload happens lazily the next time the
-  // pane is shown.
-  refresh() {
-    this.dirty = true
-  }
-
-  // Force an immediate reload — used for actions triggered from within the pane
-  // itself (row buttons), where the user is looking at the list now.
-  reload() {
-    this.dirty = false
-    this.loadDocs()
   }
 
   render() {

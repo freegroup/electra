@@ -66,25 +66,24 @@ export default class StorageScreen {
     this.render()
   }
 
-  // The files tab was opened — reload only if something changed since last view.
+  // The pane was shown — reload if something changed since the last view.
+  // onShow() is the shared "pane became visible" hook every screen implements.
   onShow() {
-    if (this.dirty) {
+    if (this.dirty) this.reload()
+  }
+
+  // Refresh the list. If the pane is currently visible, reload immediately;
+  // otherwise just mark it stale so it reloads the next time it's shown (via
+  // onShow). One entry point for both "the user is looking now" (row actions)
+  // and "something changed in the background" (a promote in the Draft pane
+  // changes what "Files" shows).
+  reload() {
+    if ($("#files").hasClass("active")) {
       this.dirty = false
       this.loadDocs()
+    } else {
+      this.dirty = true
     }
-  }
-
-  // Marks the list stale; the actual reload happens lazily the next time the
-  // pane is shown.
-  refresh() {
-    this.dirty = true
-  }
-
-  // Force an immediate reload — used for actions triggered elsewhere (e.g. a
-  // promote in the Draft pane changes what "Files" shows).
-  reload() {
-    this.dirty = false
-    this.loadDocs()
   }
 
   render() {
