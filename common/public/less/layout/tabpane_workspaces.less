@@ -1,0 +1,139 @@
+// The Workspaces pane — a drill-down browser over the scope tree: breadcrumb +
+// sub-workspace tiles + a members side panel (admins only). Kept isolated from
+// the finder panes (tabpane_files/draft) so it can evolve independently.
+#workspaces {
+  overflow-y: scroll;
+  padding: 40px;
+
+  .filesTeaser {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 48px;
+
+    .title {
+      font-weight: var(--label-font-weight);
+      font-size: 2vw;
+      white-space: nowrap;
+    }
+    img, svg {
+      padding-right: 40px;
+      height: 100%;
+    }
+  }
+
+  .workspacesFinder {
+    .workspacesHeader {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: @buttonSpacing;
+      padding: @buttonSpacing @contentToEdgePadding;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+    }
+
+    // breadcrumb: clickable ancestors + current
+    .workspaceBreadcrumb {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 15px;
+
+      .wsCrumb {
+        cursor: pointer;
+        &.wsCrumbLink {
+          color: rgb(var(--tint-color));
+          text-decoration: underline;
+          &:hover { text-decoration: none; }
+        }
+        &.wsCrumbCurrent { cursor: default; font-weight: var(--label-font-weight); }
+      }
+      .wsCrumbSep { opacity: 0.4; }
+    }
+
+    .workspacesBody {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: @contentToEdgePadding;
+      padding: @contentToEdgePadding;
+    }
+
+    // sub-workspace tiles
+    .workspaceTiles {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .workspaceTile {
+        width: 180px;
+        height: 100px;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: @borderRadiusBig;
+        padding: 12px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .workspaceTileName {
+          font-size: 16px;
+          font-weight: var(--label-font-weight);
+          word-break: break-word;
+        }
+        .workspaceTileBadges { display: flex; gap: 6px; }
+      }
+
+      .workspaceEmpty {
+        opacity: 0.6;
+        padding: 20px 0;
+      }
+    }
+
+    // members side panel (admins only)
+    .workspaceSidePanel {
+      flex: 0 0 260px;
+
+      .wsPanelTitle {
+        font-size: 15px;
+        text-transform: uppercase;
+        opacity: 0.6;
+        margin: 0 0 8px;
+      }
+      .wsMember {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 6px 0;
+      }
+      .wsMemberName { word-break: break-all; flex: 1 1 auto; }
+      .wsRemoveMemberButton {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0.5;
+        font-size: 14px;
+        line-height: 1;
+        padding: 2px 6px;
+        &:hover { opacity: 1; }
+      }
+      .wsAddMemberButton { margin-top: 12px; }
+    }
+
+    // role badges (also used on tiles)
+    .wsBadge {
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 0.75em;
+      text-transform: uppercase;
+    }
+  }
+}

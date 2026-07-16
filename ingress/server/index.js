@@ -229,11 +229,12 @@ app.use('/designer',     prefixed('/designer',     PORT_DESIGNER))
 app.use('/author',       prefixed('/author',       PORT_AUTHOR))
 app.use('/sheets',       prefixed('/sheets',       PORT_SHEETS))
 app.use('/brains',       prefixed('/brains',       PORT_BRAINS))
-app.use('/database',     prefixed('/database',     process.env.PORT_DATABASE))
-// NOTE: the database admin explorer (database/admin, PORT_DB_ADMIN) is
-// intentionally NOT proxied here. It is a localhost-only dev/ops tool with a
-// god-view over all private data; exposing it publicly would defeat that.
-// Reach it via localhost or an SSH tunnel.
+// NOTE: the `database` service is intentionally NOT proxied here. It is the
+// internal, localhost-only scope/document store. Browser callers reach it only
+// through app backends (brains/sheets front their own docs, incl. public-read
+// and render-token) and the userinfo account BFF (/userinfo/workspaces). The
+// database admin explorer (database/admin, PORT_DB_ADMIN) is likewise not
+// exposed. Reach either via localhost or an SSH tunnel.
 app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
 app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
 app.use('/common',       prefixed('/common',       PORT_COMMON))

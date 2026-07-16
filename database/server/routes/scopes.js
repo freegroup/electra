@@ -21,8 +21,9 @@ const {
   resolveScopeIdByPath,
   createScope,
   isAdmin,
+  isMember,
   canRead,
-  addMemberWithLeaf,
+  addMember,
   removeMember,
   setAdmin,
   setReviewer,
@@ -35,6 +36,10 @@ const {
   setParentScope,
   myScopes,
   getScope,
+  listChildren,
+  listMembers,
+  childNameAvailable,
+  rootWorkspaces,
 } = require("../persistence/scopes")
 const {
   ForbiddenError,
@@ -95,6 +100,19 @@ async function routes(fastify) {
       if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
       const ok = await isAdmin(client, scopeId, personRef)
       if (!ok) throw new ForbiddenError(`caller is not admin of scope id ${scopeId}`)
+      return scope
+    } finally {
+      client.release()
+    }
+  }
+
+  async function requireMember(scopeId, personRef) {
+    const client = await pool.connect()
+    try {
+      const scope = await getScope(client, scopeId)
+      if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+      const ok = await isMember(client, scopeId, personRef)
+      if (!ok) throw new ForbiddenError(`caller is not a member of scope id ${scopeId}`)
       return scope
     } finally {
       client.release()
@@ -180,6 +198,61 @@ async function routes(fastify) {
     }
   )
 
+  // The Workspaces drill-down ROOTS — the fixed entry points (shared app root +
+  // the caller's personal workspace), decided server-side. The UI calls this
+  // when no scope is selected.
+  fastify.get(
+    "/database/scopes/roots",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const roots = await rootWorkspaces(req.personRef)
+      return { roots }
+    }
+  )
+
+  // Direct sub-workspaces of a scope — the Workspaces drill-down. A member of
+  // the scope sees ALL its direct children (name/existence), each annotated with
+  // the caller's own role there. Non-members are refused.
+  fastify.get(
+    "/database/scopes/:scopeRef/children",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireMember(scopeId, req.personRef)
+      const children = await listChildren({ parentId: scopeId, personRef: req.personRef })
+      return { children }
+    }
+  )
+
+  // Is a sub-workspace name free under this scope? Powers the UI's live hint
+  // while typing a new name. Members of the parent only.
+  fastify.get(
+    "/database/scopes/:scopeRef/children/available",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireMember(scopeId, req.personRef)
+      const name = String((req.query || {}).name || "")
+      if (!name || name.includes("/")) {
+        return { available: false, reason: "invalid" }
+      }
+      const available = await childNameAvailable({ parentId: scopeId, name })
+      return { available }
+    }
+  )
+
+  // The member roster of a workspace — admins only.
+  fastify.get(
+    "/database/scopes/:scopeRef/members",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      const members = await listMembers({ scopeId })
+      return { members }
+    }
+  )
+
   // ---- Administration ------------------------------------------------------
 
   // Called by the ingress after a successful login (and safely on every app
@@ -199,7 +272,10 @@ async function routes(fastify) {
     { schema: { body: createChildBody }, preHandler: [fastify.requireLogin] },
     async (req, reply) => {
       const parentId = parseScopeRef(req.params.scopeRef)
-      await requireAdmin(parentId, req.personRef)
+      // Any MEMBER of the parent may create a sub-workspace (createScope makes
+      // the creator its admin+member, and enforces the unique name). This is the
+      // "any member may create" rule — not admin-only.
+      await requireMember(parentId, req.personRef)
 
       const { name, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
       if (name.includes("/")) {
@@ -247,20 +323,15 @@ async function routes(fastify) {
       const scopeId = parseScopeRef(req.params.scopeRef)
       const { personRef } = req.body
 
-      // Admin adds anyone; anyone may self-enroll (personRef == caller). The
-      // latter lets services lazily create per-user leaves without granting
-      // them admin on every bucket scope.
+      // Admin adds anyone; anyone may self-enroll (personRef == caller).
       if (personRef !== req.personRef) {
         await requireAdmin(scopeId, req.personRef)
       }
 
-      const result = await addMemberWithLeaf({
-        scopeId,
-        personRef,
-        createdBy: req.personRef,
-      })
+      // Membership only — the personal leaf is provisioned lazily on first write.
+      const result = await addMember({ scopeId, personRef })
       reply.code(201)
-      return { scopeRef: String(result.scopeId), leafId: String(result.leafId) }
+      return { scopeRef: String(result.scopeId) }
     }
   )
 

@@ -6,7 +6,7 @@ const {
   pathOfScope,
   canRead,
   isMember,
-  addMemberWithLeaf,
+  ensureWriteLeaf,
   getScope,
 } = require("../persistence/scopes")
 const { ForbiddenError, NotFoundError, BadRequestError } = require("../utils/errors")
@@ -68,7 +68,7 @@ async function requireWriteLeaf(rawScopeRef, personRef) {
   if (!member) {
     throw new ForbiddenError(`caller is not an explicit member of scope id ${scopeId}`)
   }
-  const { leafId } = await addMemberWithLeaf({
+  const { leafId } = await ensureWriteLeaf({
     scopeId,
     personRef,
     createdBy: personRef,

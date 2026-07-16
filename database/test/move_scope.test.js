@@ -110,6 +110,8 @@ test("guard: moving a personal leaf → 409", async () => {
   // admin of the target — make them admin of docs for this check.
   const s = await createScope(ctx, appsId, "withleaf")
   await addMember(ctx, s, "leafy")
+  // leaf is provisioned lazily on first write
+  await writeDoc(ctx, s, "n.json", asPerson("leafy"), { data: { v: 1 } })
   await post(ctx, `/database/scopes/${targetId}/admins`, asRootAdmin(), { personRef: "leafy" })
   const leaf = await ctx.pool.query(
     `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = 'leafy'`, [s])

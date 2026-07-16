@@ -7,7 +7,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asPerson, asRootAdmin, asAnon, get, post, put, patch, del, createScope, scopeIdByPath,
+  asPerson, asRootAdmin, asAnon, get, post, put, patch, del, createScope, scopeIdByPath, writeDoc,
 } = require("./helpers")
 setupTestSchema("admin")
 
@@ -134,6 +134,8 @@ test("renaming a personal leaf is refused → 409", async () => {
   // The leaf owner is admin of their own leaf, so they pass the admin gate —
   // and then hit the 'a personal leaf cannot be renamed' guard.
   await post(ctx, `/database/scopes/${klasseId}/members`, asRootAdmin(), { personRef: "leafowner" })
+  // the leaf is provisioned lazily on first write, so write once to create it
+  await writeDoc(ctx, klasseId, "note.json", asPerson("leafowner"), { data: { v: 1 } })
   const leaf = await ctx.pool.query(
     `SELECT id FROM "${ctx.schema}".scopes WHERE parent_id = $1 AND name = 'leafowner'`,
     [klasseId]

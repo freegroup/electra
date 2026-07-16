@@ -40,9 +40,11 @@ $(window).load(function () {
 
   let url
   if (rtoken) {
-    url = `../database/render?token=${encodeURIComponent(rtoken)}`
+    // render-token read via the sheets backend (the ingress no longer exposes
+    // /database). This page is loaded by puppeteer on localhost.
+    url = `../sheets/render?token=${encodeURIComponent(rtoken)}`
   } else if (pub) {
-    url = `../database/public/${pub}`
+    url = `../sheets/public/${pub}`
   } else if (sha) {
     url = `../sheets/shared/get?sha=${sha}`
   } else if (global) {

@@ -40,9 +40,30 @@
 		"editor": "Editor",
 		"draft": "Drafts",
 		"files": "Files",
+		"workspaces": "Workspaces",
 		"help": "Help"
 	},
     "pane": {
+		"workspaces": {
+			"title": "Workspaces",
+			"intro": "Browse the workspaces you belong to and drill into their sub-workspaces. Any member may create a sub-workspace (you become its admin); admins can add members. A workspace groups all your documents — circuits, sheets, shapes — with one shared membership.",
+			"root": "My Workspaces",
+			"personal": "Personal",
+			"create": "New Workspace",
+			"create_needs_parent": "Open a workspace first, then create a sub-workspace inside it.",
+			"name_label": "Workspace name",
+			"created": "Workspace created",
+			"empty": "No sub-workspaces here yet.",
+			"members": "Members",
+			"add_member": "Add member",
+			"member_label": "Member email",
+			"member_added": "Member added",
+			"remove_member": "Remove member",
+			"remove_member_explain": "Remove {{person}} from this workspace?",
+			"member_removed": "Member removed",
+			"role_admin": "admin",
+			"role_member": "member"
+		},
 		"draft": {
 			"title": "My Drafts",
 			"intro": "Your private circuits and your personal versions of public ones. When you edit and save a public circuit, your changes land here — nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",

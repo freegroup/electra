@@ -5,6 +5,7 @@ import welcomeMessage from "./WelcomeMessage"
 import Files from "./FilesScreen"
 import StorageScreen from "./storage/StorageScreen"
 import DraftScreen from "./storage/DraftScreen"
+import WorkspaceScreen from "./workspace/WorkspaceScreen"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
 import openConflictDialog from "./storage/OpenConflictDialog"
@@ -33,11 +34,13 @@ export default class Application extends AppFrame{
         // scope-based finder; everyone else keeps the folder-based FilesScreen.
         if (conf.database) {
             this.storage = storageFactory(conf)
-            // Two panes: "Files" (shared originals) and "Draft" (the caller's
-            // own personal copies). filePane stays the primary handle; draftPane
-            // is refreshed alongside it after promote/revert/delete.
+            // Two document panes: "Files" (shared originals) and "Draft" (the
+            // caller's own personal copies). filePane stays the primary handle;
+            // draftPane is refreshed alongside it after promote/revert/delete.
             this.filePane = new StorageScreen(this, conf)
             this.draftPane = new DraftScreen(this, conf)
+            // The Workspaces browser (account-scoped, app-agnostic).
+            this.workspacePane = new WorkspaceScreen(this, conf)
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
         }

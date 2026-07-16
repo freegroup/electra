@@ -113,7 +113,7 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
 // Inserts a new scope under parentId and populates its closure rows in the
 // same transaction. The creator becomes the first admin + reviewer (score 10)
 // of the new scope. See ARCHITECTURE.md §2.3.
-async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy }) {
+async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy, grantCreatorAdmin = true }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -156,11 +156,16 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
     // Reviewer must be granted explicitly (so a scope with a required approval
     // score enforces real review; the creator can't self-approve by default).
     // A fresh scope therefore has no reviewer until an admin appoints one.
-    await client.query(
-      `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin)
-       VALUES ($1, $2, true, true)`,
-      [scope.id, createdBy]
-    )
+    // Skipped for structural container scopes (grantCreatorAdmin=false), which
+    // belong to nobody — e.g. the content/users bucket that only holds per-user
+    // workspaces.
+    if (grantCreatorAdmin) {
+      await client.query(
+        `INSERT INTO memberships (scope_id, person_ref, is_member, is_admin)
+         VALUES ($1, $2, true, true)`,
+        [scope.id, createdBy]
+      )
+    }
 
     await client.query("COMMIT")
     return scope
@@ -265,8 +270,46 @@ async function canRead(client, scopeId, personRef) {
 // Membership + auto-leaf provisioning
 // ---------------------------------------------------------------------------
 
-// Adds a person as an explicit member of scopeId and provisions their personal
-// leaf scope beneath it in the same transaction (README §3.2, §3.3).
+// Adds a person as an explicit member of scopeId — membership row ONLY, no
+// personal leaf. This is the write gate + read-up grant (README §3.2). Used on
+// join (adding a member, bootstrap enrollment): the personal leaf is NOT created
+// eagerly here — it is provisioned lazily on the first write (see
+// ensureWriteLeaf, called from the write path). Idempotent.
+async function addMember({ scopeId, personRef }) {
+  const client = await pool.connect()
+  try {
+    const scope = await getScope(client, scopeId)
+    if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    // Personal workspaces (electra/content/users/<email>) are single-owner by
+    // definition — you cannot invite anyone into someone's personal space. The
+    // owner is already its admin via provisioning; nobody else may be added.
+    if (await isPersonalWorkspace(client, scope)) {
+      throw new BadRequestError("cannot add members to a personal workspace")
+    }
+    await client.query(
+      `INSERT INTO memberships (scope_id, person_ref, is_member)
+       VALUES ($1, $2, true)
+       ON CONFLICT (scope_id, person_ref) DO UPDATE SET is_member = true`,
+      [scopeId, personRef]
+    )
+    return { scopeId }
+  } finally {
+    client.release()
+  }
+}
+
+// True iff `scope` is a personal workspace — a direct child of the structural
+// `electra/content/users` container (i.e. electra/content/users/<email>).
+async function isPersonalWorkspace(client, scope) {
+  if (!scope || scope.parent_id === null) return false
+  const usersId = await resolveScopeIdByPath(client, "electra/content/users")
+  return usersId !== null && String(scope.parent_id) === String(usersId)
+}
+
+// Ensures the person is a member of scopeId AND that their personal leaf scope
+// exists beneath it, in one transaction (README §3.2, §3.3). Called from the
+// WRITE path (requireWriteLeaf) so the leaf is provisioned lazily, on first
+// write — not eagerly on join.
 //
 //   - An explicit `is_member = true` row is written ON scopeId. This is the
 //     write gate: it lets the person write at scopeId and read every ancestor.
@@ -274,7 +317,7 @@ async function canRead(client, scopeId, personRef) {
 //     with its own membership row. The leaf holds the person's local overrides.
 //
 // Idempotent: re-adding an existing member just re-asserts is_member = true.
-async function addMemberWithLeaf({ scopeId, personRef, createdBy }) {
+async function ensureWriteLeaf({ scopeId, personRef, createdBy }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -477,17 +520,77 @@ async function setAnonymous({ scopeId, value }) {
   if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
 }
 
-// Enrolls a person as an explicit member of every bootstrap scope, provisioning
-// their personal leaf in each. Idempotent (addMemberWithLeaf upserts), so it is
-// safe to call on every login — for new and returning users alike. Returns the
-// scopeRefs the person is now a member of.
+// Ensures a child scope with the given name exists under parentId, returning
+// its id. Idempotent: if it already exists, returns the existing id without
+// touching it. `createdBy` becomes admin+member only when it is freshly created.
+async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin = true }) {
+  const client = await pool.connect()
+  let existing
+  try {
+    existing = await client.query(
+      `SELECT id FROM scopes WHERE parent_id = $1 AND name = $2`,
+      [parentId, name]
+    )
+  } finally {
+    client.release()
+  }
+  if (existing.rowCount > 0) return String(existing.rows[0].id)
+  try {
+    const scope = await createScope({ parentId, name, requiredApprovalScore: 0, createdBy, grantCreatorAdmin })
+    return String(scope.id)
+  } catch (err) {
+    // Lost a race with a concurrent login — the scope now exists; look it up.
+    if (err instanceof ConflictError) {
+      const c = await pool.connect()
+      try {
+        const r = await c.query(`SELECT id FROM scopes WHERE parent_id = $1 AND name = $2`, [parentId, name])
+        if (r.rowCount > 0) return String(r.rows[0].id)
+      } finally {
+        c.release()
+      }
+    }
+    throw err
+  }
+}
+
+// Provisions the caller's personal workspace: electra/content/users/<email>,
+// with the caller as its admin+member. Idempotent (safe on every login). This
+// is a real, browsable workspace the user owns — distinct from the per-scope
+// personal LEAVES (internal doc storage). Returns its scopeRef, or null if the
+// content root isn't present (should not happen post-bootstrap).
+async function provisionUserWorkspace(personRef) {
+  const client = await pool.connect()
+  let contentId
+  try {
+    contentId = await resolveScopeIdByPath(client, "electra/content")
+  } finally {
+    client.release()
+  }
+  if (!contentId) return null
+  // The "users" bucket is a structural container owned by nobody.
+  const usersId = await ensureChildScope({ parentId: contentId, name: "users", createdBy: personRef, grantCreatorAdmin: false })
+  // The user's own workspace under it — they are its admin.
+  const mineId = await ensureChildScope({ parentId: usersId, name: personRef, createdBy: personRef })
+  return mineId
+}
+
+// Enrolls a person as an explicit member of every bootstrap scope. Idempotent
+// (addMember upserts), so it is safe to call on every login — for new and
+// returning users alike. Personal leaves are NOT created here; they appear
+// lazily on first write. Also ensures the caller's personal workspace
+// (content/users/<email>) exists. Returns the scopeRefs the person is now a
+// member of.
 async function enrollBootstrap(personRef) {
   const res = await pool.query(`SELECT id FROM scopes WHERE is_bootstrap = true`)
   const enrolled = []
   for (const row of res.rows) {
-    await addMemberWithLeaf({ scopeId: row.id, personRef, createdBy: personRef })
+    await addMember({ scopeId: row.id, personRef })
     enrolled.push(String(row.id))
   }
+  // The user's own personal workspace (admin there). Not a bootstrap scope —
+  // it's per-user — so provisioned explicitly here.
+  const mineId = await provisionUserWorkspace(personRef)
+  if (mineId && !enrolled.includes(mineId)) enrolled.push(mineId)
   return enrolled
 }
 
@@ -609,9 +712,10 @@ async function setParentScope({ scopeId, newParentId }) {
 }
 
 // Returns every scope the caller is an explicit member of, with their roles
-// there (README §9.7). Feeds the UI's create-in / browse pickers. Excludes
-// the caller's own personal leaves — those are internal storage, not scopes a
-// user consciously "works in".
+// there (README §9.7). Feeds the UI's create-in / browse pickers. Excludes the
+// caller's own personal LEAVES (internal doc storage) — but NOT their personal
+// workspace (content/users/<email>), which is a real scope they work in and
+// happens to share the name.
 async function myScopes(personRef) {
   const res = await pool.query(
     `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score, s.promote_ceiling, s.is_bootstrap,
@@ -619,7 +723,7 @@ async function myScopes(personRef) {
        FROM memberships m
        JOIN scopes s ON s.id = m.scope_id
       WHERE m.person_ref = $1 AND m.is_member = true
-        AND NOT (s.name = $1)          -- hide the caller's own leaves
+        AND s.is_personal_leaf = false   -- hide internal per-scope leaves only
       ORDER BY m.scope_id`,
     [personRef]
   )
@@ -637,6 +741,112 @@ async function leafUnderScope(client, scopeId, personRef) {
   return res.rowCount === 0 ? null : res.rows[0].id
 }
 
+// Direct sub-workspaces of a scope, for the Workspaces drill-down. Consumer
+// (scoped) view — NOT the admin god-view: returns only the DIRECT children of
+// parentId, excludes personal leaves, and annotates each with the caller's own
+// role there (member/admin) so the UI can show "you're in" vs "visible only".
+// The membership check that the caller may see these children is done by the
+// route (isMember of parentId).
+async function listChildren({ parentId, personRef }) {
+  const res = await pool.query(
+    `SELECT s.id, s.name, s.is_bootstrap, s.is_anonymous,
+            (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
+            COALESCE(m.is_admin, false)                       AS is_admin
+       FROM scopes s
+       LEFT JOIN memberships m
+              ON m.scope_id = s.id AND m.person_ref = $2
+      WHERE s.parent_id = $1
+        AND s.is_personal_leaf = false
+      ORDER BY s.name`,
+    [parentId, personRef]
+  )
+  return res.rows.map((r) => ({
+    scopeRef: String(r.id),
+    name: r.name,
+    bootstrap: r.is_bootstrap,
+    anonymous: r.is_anonymous,
+    isMember: r.is_member,
+    isAdmin: r.is_admin,
+  }))
+}
+
+// The Workspaces drill-down ROOTS: the fixed entry points shown when no scope
+// is given. Exactly two, in the same item shape as listChildren, decided
+// server-side (no client filtering): the shared app root (electra/content/apps)
+// and the caller's own personal workspace (electra/content/users/<personRef>).
+// `kind` distinguishes them so the UI can label without parsing paths.
+async function rootWorkspaces(personRef) {
+  const client = await pool.connect()
+  try {
+    // The two fixed entry points, resolved by their exact paths (not pattern
+    // matching): the shared app root and the caller's own personal workspace.
+    const appsId = await resolveScopeIdByPath(client, "electra/content/apps")
+    const personalId = await resolveScopeIdByPath(client, `electra/content/users/${personRef}`)
+
+    const wanted = [
+      { id: appsId, kind: "apps" },
+      { id: personalId, kind: "personal" },
+    ].filter((w) => w.id != null)
+
+    const out = []
+    for (const w of wanted) {
+      const r = await client.query(
+        `SELECT s.id, s.name, s.is_bootstrap, s.is_anonymous,
+                (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
+                COALESCE(m.is_admin, false)                       AS is_admin
+           FROM scopes s
+           LEFT JOIN memberships m ON m.scope_id = s.id AND m.person_ref = $2
+          WHERE s.id = $1`,
+        [w.id, personRef]
+      )
+      if (r.rowCount === 0) continue
+      const s = r.rows[0]
+      if (!s.is_member) continue // only entry points the caller belongs to
+      out.push({
+        scopeRef: String(s.id),
+        name: s.name,
+        kind: w.kind, // "apps" | "personal"
+        bootstrap: s.is_bootstrap,
+        anonymous: s.is_anonymous,
+        isMember: s.is_member,
+        isAdmin: s.is_admin,
+      })
+    }
+    return out
+  } finally {
+    client.release()
+  }
+}
+
+// Is a child name free under this parent? Powers the UI's live "name available"
+// hint while typing. Scoped (route requires membership of the parent) so it
+// can't be used to probe names in foreign subtrees.
+async function childNameAvailable({ parentId, name }) {
+  const res = await pool.query(
+    `SELECT 1 FROM scopes WHERE parent_id = $1 AND name = $2`,
+    [parentId, name]
+  )
+  return res.rowCount === 0
+}
+
+// The member roster of ONE workspace (admin-only view, enforced by the route).
+// Scoped query on this scope's memberships — NOT the god-view's cross-scope
+// map. Personal leaves never appear here (they aren't members of the scope).
+async function listMembers({ scopeId }) {
+  const res = await pool.query(
+    `SELECT person_ref, is_admin, reviewer_score
+       FROM memberships
+      WHERE scope_id = $1 AND is_member = true
+      ORDER BY is_admin DESC, person_ref`,
+    [scopeId]
+  )
+  return res.rows.map((r) => ({
+    personRef: r.person_ref,
+    isAdmin: r.is_admin,
+    reviewerScore: r.reviewer_score,
+  }))
+}
+
 module.exports = {
   pathOfScope,
   resolveScopeIdByPath,
@@ -649,7 +859,8 @@ module.exports = {
   reviewerScore,
   isMember,
   canRead,
-  addMemberWithLeaf,
+  addMember,
+  ensureWriteLeaf,
   removeMember,
   setAdmin,
   setReviewer,
@@ -662,4 +873,8 @@ module.exports = {
   setParentScope,
   myScopes,
   leafUnderScope,
+  listChildren,
+  listMembers,
+  childNameAvailable,
+  rootWorkspaces,
 }

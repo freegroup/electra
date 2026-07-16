@@ -298,7 +298,7 @@ function init(app) {
         { authHeaders: auth, body }
       )
       // Return a ready-to-use public URL (through the ingress).
-      res.json({ url: `../database/public/${r.publicId}`, publicId: r.publicId, version: r.version })
+      res.json({ url: `../brains/public/${r.publicId}`, publicId: r.publicId, version: r.version })
     } catch (err) {
       fail(res, err)
     }
@@ -394,6 +394,19 @@ function init(app) {
     } catch (err) {
       // a missing preview is not an error worth logging loudly
       res.status(err.statusCode || 404).end()
+    }
+  })
+
+  // --- anonymous public read (published share link) -------------------------
+  // The /database service is NOT exposed by the ingress, so the public share
+  // link points here. No auth: publishing is the capability. Forwards to the
+  // database public-read (which enforces published/gone state).
+  app.get("/brains/public/:publicId", async (req, res) => {
+    try {
+      const doc = await db.call("GET", `/database/public/${encodeURIComponent(req.params.publicId)}`, {})
+      res.json(doc)
+    } catch (err) {
+      fail(res, err)
     }
   })
 }

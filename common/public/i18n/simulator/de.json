@@ -40,9 +40,30 @@
 		"editor": "Editor",
 		"draft": "Entwürfe",
 		"files": "Dateien",
+		"workspaces": "Workspaces",
 		"help": "Hilfe"
 	},
 	"pane": {
+		"workspaces": {
+			"title": "Workspaces",
+			"intro": "Durchsuche die Workspaces, in denen du Mitglied bist, und steige in ihre Unter-Workspaces ein. Jedes Mitglied darf einen Unter-Workspace anlegen (und wird dessen Admin); Admins können Mitglieder hinzufügen. Ein Workspace bündelt all deine Dokumente — Schaltungen, Arbeitsblätter, Formen — mit einer gemeinsamen Mitgliedschaft.",
+			"root": "Meine Workspaces",
+			"personal": "Persönlich",
+			"create": "Neuer Workspace",
+			"create_needs_parent": "Öffne zuerst einen Workspace und lege dann darin einen Unter-Workspace an.",
+			"name_label": "Workspace-Name",
+			"created": "Workspace angelegt",
+			"empty": "Hier gibt es noch keine Unter-Workspaces.",
+			"members": "Mitglieder",
+			"add_member": "Mitglied hinzufügen",
+			"member_label": "E-Mail des Mitglieds",
+			"member_added": "Mitglied hinzugefügt",
+			"remove_member": "Mitglied entfernen",
+			"remove_member_explain": "{{person}} aus diesem Workspace entfernen?",
+			"member_removed": "Mitglied entfernt",
+			"role_admin": "Admin",
+			"role_member": "Mitglied"
+		},
 		"draft": {
 			"title": "Meine Entwürfe",
 			"intro": "Deine privaten Schaltungen und deine persönlichen Versionen öffentlicher Schaltungen. Wenn du eine öffentliche Schaltung bearbeitest und speicherst, landen deine Änderungen hier — niemand sonst sieht sie. Zufrieden mit deiner Version? Mit <b>Promoten</b> schlägst du vor, sie für alle in der Gruppe zur geteilten Version zu machen.",

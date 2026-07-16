@@ -309,7 +309,7 @@ function init(app) {
       // Best-effort preview refresh (also covered by save; harmless here).
       generatePreview({ auth, scopeRef, path }).catch((e) =>
         console.log(`[sheets] preview generation failed: ${e && e.message}`))
-      res.json({ url: `../database/public/${r.publicId}`, publicId: r.publicId, version: r.version })
+      res.json({ url: `../sheets/public/${r.publicId}`, publicId: r.publicId, version: r.version })
     } catch (err) {
       fail(res, err)
     }
@@ -402,6 +402,49 @@ function init(app) {
     } catch (err) {
       // a missing preview is not an error worth logging loudly
       res.status(err.statusCode || 404).end()
+    }
+  })
+
+  // --- anonymous public read (published share link) -------------------------
+  // The /database service is NOT exposed by the ingress, so the public share
+  // link points here. No auth: publishing is the capability. Forwards to the
+  // database public-read (which enforces published/gone state).
+  app.get("/sheets/public/:publicId", async (req, res) => {
+    try {
+      const doc = await db.call("GET", `/database/public/${encodeURIComponent(req.params.publicId)}`, {})
+      res.json(doc)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // A published version's preview blob, anonymous.
+  app.get("/sheets/public/:publicId/blobs/:key", async (req, res) => {
+    try {
+      const dbRes = await db.raw(
+        "GET",
+        `/database/public/${encodeURIComponent(req.params.publicId)}/blobs/${encodeURIComponent(req.params.key)}`,
+        {}
+      )
+      const ct = dbRes.headers.get("content-type")
+      if (ct) res.set("content-type", ct)
+      res.send(Buffer.from(await dbRes.arrayBuffer()))
+    } catch (err) {
+      res.status(err.statusCode || 404).end()
+    }
+  })
+
+  // --- render-token read (puppeteer, localhost) -----------------------------
+  // page.html (loaded by puppeteer via the ingress) fetches the doc for a
+  // short-lived render token here, since /database is not exposed. Anonymous —
+  // the signed token is the capability.
+  app.get("/sheets/render", async (req, res) => {
+    try {
+      const token = encodeURIComponent(String((req.query || {}).token || ""))
+      const doc = await db.call("GET", `/database/render?token=${token}`, {})
+      res.json(doc)
+    } catch (err) {
+      fail(res, err)
     }
   })
 }
