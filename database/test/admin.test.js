@@ -15,7 +15,7 @@ let ctx, brainsId, klasseId
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   klasseId = await createScope(ctx, brainsId, "klasse8a")
 })
 
@@ -115,7 +115,7 @@ test("a scope can be renamed; path reflects it, docs are untouched", async () =>
   assert.equal(res.json().name, "klasse-8b")
 
   const meta = await get(ctx, `/database/scopes/${klasseId}`, asRootAdmin())
-  assert.equal(meta.json().name, "electra/apps/brains/klasse-8b")
+  assert.equal(meta.json().name, "electra/content/apps/klasse-8b")
 
   const doc = await ctx.pool.query(
     `SELECT data FROM "${ctx.schema}".versions WHERE scope_id = $1 AND doc_path = 'x.json'`,

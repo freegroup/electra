@@ -13,17 +13,18 @@ const {
 setupTestSchema("membership")
 
 let ctx
-let electraId, appsId, brainsId, shapesId, klasseId, klasse9bId
+let electraId, contentId, appsId, unrelatedId, klasseId, klasse9bId
 
 before(async () => {
   ctx = await newTestSchema()
   electraId = await scopeIdByPath(ctx.pool, ctx.schema, "electra")
-  appsId    = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps")
-  brainsId  = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
-  shapesId  = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/shapes")
+  contentId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content")
+  appsId    = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  // an unrelated branch anna has no membership in (directly under content)
+  unrelatedId = await createScope(ctx, contentId, "unrelated")
 
-  klasseId   = await createScope(ctx, brainsId, "klasse8a")
-  klasse9bId = await createScope(ctx, brainsId, "klasse9b")
+  klasseId   = await createScope(ctx, appsId, "klasse8a")
+  klasse9bId = await createScope(ctx, appsId, "klasse9b")
 
   await addMember(ctx, klasseId, "anna")
 })
@@ -50,8 +51,8 @@ test("anna reads her own scope klasse8a", async () => {
   assert.equal(res.json().data.src, "klasse")
 })
 
-test("read is transitive upward: anna reads brains, apps, and root", async () => {
-  for (const id of [brainsId, appsId, electraId]) {
+test("read is transitive upward: anna reads apps, content, and root", async () => {
+  for (const id of [appsId, contentId, electraId]) {
     const res = await get(ctx, `/database/scopes/${id}/docs`, asPerson("anna"))
     assert.equal(res.statusCode, 200)
   }
@@ -62,15 +63,15 @@ test("a sibling scope (klasse9b) is not readable — 403", async () => {
   assert.equal(res.statusCode, 403)
 })
 
-test("an unrelated branch (apps/shapes) is not readable — 403", async () => {
-  const res = await get(ctx, `/database/scopes/${shapesId}/docs`, asPerson("anna"))
+test("an unrelated branch (content/unrelated) is not readable — 403", async () => {
+  const res = await get(ctx, `/database/scopes/${unrelatedId}/docs`, asPerson("anna"))
   assert.equal(res.statusCode, 403)
 })
 
 test("write requires explicit membership: anna cannot write at an ancestor she only reads", async () => {
-  // anna is a member of klasse8a → reads brains transitively, but is NOT an
-  // explicit member of brains, so writing there is refused.
-  const res = await writeDoc(ctx, brainsId, "x.json", asPerson("anna"), { data: { a: 1 } })
+  // anna is a member of klasse8a → reads apps transitively, but is NOT an
+  // explicit member of apps, so writing there is refused.
+  const res = await writeDoc(ctx, appsId, "x.json", asPerson("anna"), { data: { a: 1 } })
   assert.equal(res.statusCode, 403)
 })
 

@@ -19,7 +19,7 @@ const promote = (scopeRef, path, person, version) =>
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   classId = await createScope(ctx, brainsId, "class", { requiredApprovalScore: 5 })
   subId = await createScope(ctx, classId, "sub", { requiredApprovalScore: 0 })
   await addMember(ctx, subId, "anna")

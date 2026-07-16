@@ -21,7 +21,7 @@ const distribute = (sourceRef, path, person, targetScopeRefs, version) =>
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   groupA = await createScope(ctx, brainsId, "groupA", { requiredApprovalScore: 5 })
   groupB = await createScope(ctx, brainsId, "groupB", { requiredApprovalScore: 5 })
   // anna is a member of both groups; she works in A and distributes to B.

@@ -21,7 +21,7 @@ const glob = (person) =>
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   klasseId = await createScope(ctx, brainsId, "klasse8a")
   await addMember(ctx, klasseId, "anna")
   await post(ctx, "/database/on_login", asPerson("anna"))
@@ -41,12 +41,12 @@ test("personalCopy row carries `original` with the shared scope + version", asyn
   assert.equal(row.instanceType, "personalCopy")
   assert.ok(row.original, "personalCopy must carry an original")
   assert.equal(row.original.version, 1)                 // the seeded shared version
-  assert.equal(row.original.provider, "electra/apps/brains/klasse8a")
+  assert.equal(row.original.provider, "electra/content/apps/klasse8a")
   assert.ok(row.original.scopeRef)
 })
 
 test("personalCopy at the APP ROOT (bootstrap scope) carries `original`", async () => {
-  // The live case: a shared doc lives on the app root itself (electra/apps/brains,
+  // The live case: a shared doc lives on the app root itself (electra/content/apps,
   // a bootstrap scope the user is auto-enrolled in), and the user edits it —
   // creating a personal copy in their leaf directly under the root. The Files
   // pane must still see the original beneath it.
@@ -56,7 +56,7 @@ test("personalCopy at the APP ROOT (bootstrap scope) carries `original`", async 
   const row = (await glob("anna")).json().docs.find((d) => d.path === "root-doc.brain")
   assert.equal(row.instanceType, "personalCopy", "must be a personal copy, not personal")
   assert.ok(row.original, "personalCopy at the root must still carry an original")
-  assert.equal(row.original.provider, "electra/apps/brains")
+  assert.equal(row.original.provider, "electra/content/apps")
 })
 
 test("personal row (no shared original) has original = null", async () => {

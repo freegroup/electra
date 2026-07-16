@@ -16,7 +16,7 @@ let ctx, electraId, appsId
 before(async () => {
   ctx = await newTestSchema()
   electraId = await scopeIdByPath(ctx.pool, ctx.schema, "electra")
-  appsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps")
+  appsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content")
   await seedSharedDoc(ctx, electraId, "welcome.json", { public: true })
   await seedSharedDoc(ctx, appsId, "internal.json", { public: false })
 })
@@ -58,7 +58,7 @@ test("a logged-in member also reads the root transitively", async () => {
 // ---- is_anonymous flag (non-transitive) ---------------------------------
 
 test("flagged scope becomes anonymous-readable; sibling stays private", async () => {
-  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   await seedSharedDoc(ctx, brainsId, "demo.json", { hello: "world" })
 
   // Before flagging: anonymous is denied.
@@ -85,7 +85,7 @@ test("flagged scope becomes anonymous-readable; sibling stays private", async ()
 })
 
 test("anonymous still cannot write to an anonymous-readable scope → 401", async () => {
-  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
   const res = await writeDoc(ctx, brainsId, "hack.json", asAnon(), { data: { x: 1 } })
   assert.equal(res.statusCode, 401)

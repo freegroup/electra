@@ -22,7 +22,7 @@ const byPath = (docs) => Object.fromEntries(docs.map((d) => [d.path, d]))
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   klasseId = await createScope(ctx, brainsId, "klasse8a")
   await addMember(ctx, klasseId, "anna")
 
@@ -41,8 +41,8 @@ test("effective view dedups to the nearest version per path", async () => {
   assert.equal(res.statusCode, 200)
   const docs = byPath(res.json().docs)
   assert.equal(Object.keys(docs).length, 2)
-  assert.equal(docs["math/quadratic.json"].scope, "electra/apps/brains/klasse8a") // nearest
-  assert.equal(docs["bio/photosynthesis.json"].scope, "electra/apps/brains")      // inherited
+  assert.equal(docs["math/quadratic.json"].scope, "electra/content/apps/klasse8a") // nearest
+  assert.equal(docs["bio/photosynthesis.json"].scope, "electra/content/apps")      // inherited
 })
 
 test("prefix filters the view", async () => {
@@ -56,6 +56,6 @@ test("a caller's own leaf override replaces the inherited entry", async () => {
   await writeDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"), { data: { level: "anna" } })
   const res = await list(klasseId)
   const docs = byPath(res.json().docs)
-  assert.equal(docs["math/quadratic.json"].scope, "electra/apps/brains/klasse8a/anna")
+  assert.equal(docs["math/quadratic.json"].scope, "electra/content/apps/klasse8a/anna")
   assert.equal(docs["math/quadratic.json"].data.level, "anna")
 })

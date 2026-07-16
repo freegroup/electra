@@ -49,8 +49,8 @@ test("canonical children exist: users, apps, apps/{brains,shapes,docs}", async (
      ORDER BY p.name NULLS FIRST, s.name`
   )
   const paths = rows.rows.map((r) => (r.parent_name ? `${r.parent_name}/${r.name}` : r.name))
-  // We expect the following six canonical scopes.
-  for (const expected of ["electra", "electra/users", "electra/apps", "apps/brains", "apps/shapes", "apps/docs"]) {
+  // We expect the canonical scopes from test-init.json.
+  for (const expected of ["electra", "electra/users", "electra/content", "content/apps"]) {
     assert.ok(paths.includes(expected), `expected ${expected} in ${JSON.stringify(paths)}`)
   }
 })

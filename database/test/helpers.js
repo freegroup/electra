@@ -60,7 +60,7 @@ async function newTestSchema() {
   await pool.query(`DROP SCHEMA IF EXISTS "${currentSchema}" CASCADE`)
 
   // build() runs migrate + bootstrap internally, so the root scope +
-  // canonical structure (users, apps/*) exist right after this returns.
+  // canonical structure (users, content/apps) exist right after this returns.
   const { build } = require("../server/index")
   const fastify = await build()
 
@@ -161,7 +161,7 @@ async function seedSharedDoc(ctx, scopeId, path, data, author = "seed") {
   return version
 }
 
-// Look up a scope id by its full human path (e.g. "electra/apps/brains").
+// Look up a scope id by its full human path (e.g. "electra/content/apps").
 // Uses direct SQL — the by-path API endpoint has been removed.
 async function scopeIdByPath(pool, schema, pathString) {
   const parts = pathString.split("/").filter(Boolean)
@@ -180,14 +180,15 @@ async function scopeIdByPath(pool, schema, pathString) {
 }
 
 // Common setup used by content-oriented tests: creates a klasse-scope under
-// apps/brains and adds the given member(s). Returns useful ids.
+// the shared content/apps root and adds the given member(s). Returns useful ids
+// (appsId = the content/apps root; also returned as rootId for older callers).
 async function makeKlasseScope(ctx, extraMembers = ["anna"], opts = {}) {
-  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
-  const klasseId = await createScope(ctx, brainsId, "klasse8a", opts)
+  const appsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  const klasseId = await createScope(ctx, appsId, "klasse8a", opts)
   for (const m of extraMembers) {
     await addMember(ctx, klasseId, m)
   }
-  return { brainsId, klasseId }
+  return { appsId, brainsId: appsId, klasseId }
 }
 
 module.exports = {

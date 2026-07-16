@@ -6,9 +6,29 @@
 // the frontend by an opaque handle (id); human-readable path/providedBy/version
 // ride along for display only.
 //
-// Uniform item: { id, name, path, providedBy, version, editable, published, thumbnailUrl }
+// Uniform item: { id, name, path, providedBy, version, editable, published,
+//                 instanceType, original, thumbnailUrl }
 
 const db = require("./db")
+const conf = require("./configuration")
+
+// This app backend owns exactly one document type, identified by file suffix
+// (.sheet). All app backends share ONE content scope, so the suffix — not the
+// scope — is what separates the types. We enforce it on BOTH sides:
+//   read  — the finder lists only matching docs; opening a foreign type 404s
+//   write — save/rename force the suffix so nothing else can land here
+const SUFFIX = conf.fileSuffix // e.g. ".sheet"
+
+function hasSuffix(docPath) {
+  return !SUFFIX || (typeof docPath === "string" && docPath.endsWith(SUFFIX))
+}
+
+// Force the app's suffix onto a document name (used on save/rename). Idempotent.
+function withSuffix(name) {
+  const n = sanitizeName(name)
+  if (!SUFFIX || n.endsWith(SUFFIX)) return n
+  return n + SUFFIX
+}
 
 // Build the uniform display item from a database doc/glob row.
 //   scopeRef     — the operating scope (where a save lands); goes into the handle
@@ -19,7 +39,7 @@ const db = require("./db")
 function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null }) {
   const id = db.encodeId(scopeRef, docPath)
   // For personal / personal-copy docs the provider path ends in the caller's
-  // own leaf (named after their hash — an ugly, meaningless segment). Show the
+  // own leaf (named after their email — a meaningless segment to show). Show the
   // owning group instead by dropping that last segment.
   const ownLeaf = instanceType === "personal" || instanceType === "personalCopy"
   let displayProvider = providedBy || null
@@ -65,16 +85,18 @@ function init(app) {
       const rootId = await db.appRootId(auth)
       const prefix = req.query.prefix ? `&prefix=${encodeURIComponent(req.query.prefix)}` : ""
       const j = await db.call("GET", `/database/scopes/${rootId}/docs?glob=true${prefix}`, { authHeaders: auth })
-      const items = (j.docs || []).map((d) =>
-        toItem({
-          scopeRef: d.operatingScopeRef,
-          docPath: d.path,
-          providedBy: d.provider,
-          version: d.providerVersion,
-          instanceType: d.instanceType,
-          original: d.original,
-        })
-      )
+      const items = (j.docs || [])
+        .filter((d) => hasSuffix(d.path)) // this app owns only its own suffix
+        .map((d) =>
+          toItem({
+            scopeRef: d.operatingScopeRef,
+            docPath: d.path,
+            providedBy: d.provider,
+            version: d.providerVersion,
+            instanceType: d.instanceType,
+            original: d.original,
+          })
+        )
       res.json({ items })
     } catch (err) {
       fail(res, err)
@@ -86,6 +108,9 @@ function init(app) {
     try {
       const auth = db.pickAuthHeaders(req)
       const { scopeRef, path } = db.decodeId(req.query.id)
+      if (!hasSuffix(path)) {
+        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+      }
       const v = req.query.version ? `&version=${encodeURIComponent(req.query.version)}` : ""
       const doc = await db.call(
         "GET",
@@ -125,13 +150,13 @@ function init(app) {
         if (name) {
           const slash = decoded.path.lastIndexOf("/")
           const dir = slash === -1 ? "" : decoded.path.slice(0, slash + 1)
-          path = dir + sanitizeName(name)
+          path = dir + withSuffix(name)
         } else {
           path = decoded.path
         }
       } else {
         scopeRef = await db.appRootId(auth)
-        path = sanitizeName(name) // e.g. "MyCircuit.brain"
+        path = withSuffix(name) // forces the app suffix, e.g. "MyDoc.sheet"
       }
       const stored = await db.call(
         "PUT",
@@ -153,10 +178,13 @@ function init(app) {
       const auth = db.pickAuthHeaders(req)
       const { id, name } = req.body || {}
       const { scopeRef, path } = db.decodeId(id)
+      if (!hasSuffix(path)) {
+        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+      }
       // keep any directory prefix; only the leaf name changes
       const slash = path.lastIndexOf("/")
       const dir = slash === -1 ? "" : path.slice(0, slash + 1)
-      const newPath = dir + sanitizeName(name)
+      const newPath = dir + withSuffix(name)
       const r = await db.call(
         "POST",
         `/database/scopes/${scopeRef}/docs/rename`,
@@ -264,10 +292,9 @@ function init(app) {
   })
 
   // --- publish / unpublish --------------------------------------------------
-  // On publish we also render a preview screenshot (puppeteer) of the now-public
-  // page and attach it as a "preview" blob on the published version. Author docs
-  // have no client-side preview, so this is the only moment a public URL exists
-  // to render — matching the legacy "screenshot on global save" behaviour.
+  // Publishing mints a public link. The preview is refreshed here too (best
+  // effort), though save/promote already keep it current via a render token —
+  // publishing no longer being the only moment a preview can be produced.
   app.post("/sheets/file/publish", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
@@ -356,8 +383,9 @@ function init(app) {
 
   // --- preview thumbnail ----------------------------------------------------
   // Author docs have no client-side preview; the preview is a puppeteer
-  // screenshot rendered at publish time and stored as a "preview" blob on the
-  // version (walk-up resolved by the DB). Stream it here.
+  // screenshot (generatePreview) refreshed on every save/promote/publish and
+  // stored as a "preview" blob on the version (walk-up resolved by the DB).
+  // Stream it here.
   app.get("/sheets/thumb", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
@@ -419,7 +447,8 @@ function withoutPreview(data) {
   return rest
 }
 
-// Strip unsafe chars; keep the app suffix untouched if already present.
+// Strip unsafe characters from a document name (path separators, control chars,
+// collapsed dot runs). Does NOT touch the suffix — that's withSuffix's job.
 function sanitizeName(name) {
   let n = String(name || "untitled").trim()
   n = n.replace(/[/\\\x00-\x1f]/g, "").replace(/\.\.+/g, ".")

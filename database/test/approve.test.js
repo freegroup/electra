@@ -35,7 +35,7 @@ const reject = (scopeId, path, person, version, reason) =>
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
 })
 
 after(async () => {

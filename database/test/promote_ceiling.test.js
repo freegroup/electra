@@ -9,7 +9,7 @@ const {
 } = require("./helpers")
 setupTestSchema("promote_ceiling")
 
-let ctx, electraId, appsId, brainsId
+let ctx, contentId, appsId, klasseId
 
 const promote = (scopeRef, path, person, version) =>
   post(ctx, `/database/scopes/${scopeRef}/docs/promote?path=${encodeURIComponent(path)}`,
@@ -27,9 +27,10 @@ async function versionsOn(scopeId, path) {
 
 before(async () => {
   ctx = await newTestSchema()
-  electraId = await scopeIdByPath(ctx.pool, ctx.schema, "electra")
-  appsId    = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps")
-  brainsId  = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  contentId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content")
+  appsId    = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  // a group under the shared apps root; the promote chain is klasse → apps → content
+  klasseId  = await createScope(ctx, appsId, "klasse8a")
 })
 
 after(async () => {
@@ -39,54 +40,54 @@ after(async () => {
 
 test("a ceiling halts the score-0 cascade — no copies rise above it", async () => {
   // Mark apps as a ceiling. All levels are score-0, so a promote would normally
-  // cascade to the root; the ceiling must stop it at apps.
+  // cascade to content; the ceiling must stop it at apps.
   const p = await patch(ctx, `/database/scopes/${appsId}`, asRootAdmin(), { promoteCeiling: true })
   assert.equal(p.statusCode, 200)
 
-  await addMember(ctx, brainsId, "anna")
-  await writeDoc(ctx, brainsId, "capped.json", asPerson("anna"), { data: { v: 1 } })
-  const res = await promote(brainsId, "capped.json", "anna", 1)
+  await addMember(ctx, klasseId, "anna")
+  await writeDoc(ctx, klasseId, "capped.json", asPerson("anna"), { data: { v: 1 } })
+  const res = await promote(klasseId, "capped.json", "anna", 1)
   assert.equal(res.statusCode, 200, res.body)
 
-  assert.equal(await versionsOn(brainsId, "capped.json"), 1, "committed on brains")
+  assert.equal(await versionsOn(klasseId, "capped.json"), 1, "committed on klasse")
   assert.equal(await versionsOn(appsId, "capped.json"), 1, "committed on apps (the ceiling)")
-  assert.equal(await versionsOn(electraId, "capped.json"), 0, "nothing above the ceiling")
+  assert.equal(await versionsOn(contentId, "capped.json"), 0, "nothing above the ceiling")
 })
 
 test("landing on the ceiling scope itself is allowed", async () => {
-  // brains is the ceiling; a member promotes a leaf doc up to brains' shared
+  // apps is the ceiling; a member promotes a leaf doc up to apps' shared
   // version — that lands ON the ceiling, which is fine.
-  await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { promoteCeiling: true })
-  await addMember(ctx, brainsId, "bob")
-  await writeDoc(ctx, brainsId, "onceiling.json", asPerson("bob"), { data: { v: 1 } })
-  const res = await promote(brainsId, "onceiling.json", "bob", 1)
+  await patch(ctx, `/database/scopes/${appsId}`, asRootAdmin(), { promoteCeiling: true })
+  await addMember(ctx, appsId, "bob")
+  await writeDoc(ctx, appsId, "onceiling.json", asPerson("bob"), { data: { v: 1 } })
+  const res = await promote(appsId, "onceiling.json", "bob", 1)
   assert.equal(res.statusCode, 200, res.body)
   assert.equal(res.json().status, "committed")
-  assert.equal(res.json().scopeRef, String(brainsId))
-  // Stopped at brains — did not rise to apps.
-  assert.equal(await versionsOn(appsId, "onceiling.json"), 0)
+  assert.equal(res.json().scopeRef, String(appsId))
+  // Stopped at apps — did not rise to content.
+  assert.equal(await versionsOn(contentId, "onceiling.json"), 0)
 })
 
 test("without the flag the cascade still reaches the root", async () => {
   // A fresh sub-tree with no ceiling anywhere.
-  const klasse = await createScope(ctx, brainsId, "klasse-open", { requiredApprovalScore: 0 })
+  const klasse = await createScope(ctx, appsId, "klasse-open", { requiredApprovalScore: 0 })
   await addMember(ctx, klasse, "carl")
   await writeDoc(ctx, klasse, "free.json", asPerson("carl"), { data: { v: 1 } })
   await promote(klasse, "free.json", "carl", 1)
-  // brains is a ceiling from the previous test, so this run stops at brains —
+  // apps may be a ceiling from a previous test, so this run stops at apps —
   // guard against test-order coupling by using a path only under klasse and
-  // asserting it climbed at least past klasse to brains.
+  // asserting it climbed at least past klasse to apps.
   assert.equal(await versionsOn(klasse, "free.json"), 1)
-  assert.equal(await versionsOn(brainsId, "free.json"), 1)
+  assert.equal(await versionsOn(appsId, "free.json"), 1)
 })
 
 test("PATCH toggles the ceiling and it shows up in scope metadata", async () => {
-  const shapes = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/shapes")
-  await patch(ctx, `/database/scopes/${shapes}`, asRootAdmin(), { promoteCeiling: true })
-  let meta = await get(ctx, `/database/scopes/${shapes}`, asRootAdmin())
+  const scope = await createScope(ctx, appsId, "ceiling-toggle")
+  await patch(ctx, `/database/scopes/${scope}`, asRootAdmin(), { promoteCeiling: true })
+  let meta = await get(ctx, `/database/scopes/${scope}`, asRootAdmin())
   assert.equal(meta.json().promoteCeiling, true)
 
-  await patch(ctx, `/database/scopes/${shapes}`, asRootAdmin(), { promoteCeiling: false })
-  meta = await get(ctx, `/database/scopes/${shapes}`, asRootAdmin())
+  await patch(ctx, `/database/scopes/${scope}`, asRootAdmin(), { promoteCeiling: false })
+  meta = await get(ctx, `/database/scopes/${scope}`, asRootAdmin())
   assert.equal(meta.json().promoteCeiling, false)
 })

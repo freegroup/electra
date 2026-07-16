@@ -7,5 +7,8 @@ const port = process.env.PORT_DATABASE || die("Environment Variable PORT_DATABAS
 
 module.exports = {
   database: `http://${host}:${port}`,
-  appScopePath: process.env.SCOPE_BRAINS || "electra/apps/brains",
+  // Shared content scope — all app backends point here; the .brain suffix filter
+  // (in files.js) is what makes this the "brains" view.
+  appScopePath: process.env.SCOPE_CONTENT || "electra/content/apps",
+  fileSuffix: ".brain",
 }

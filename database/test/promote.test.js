@@ -20,7 +20,7 @@ const promote = (scopeRef, path, person, version) =>
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   // klasse8a auto-approves (score 0) so a promote into it commits immediately.
   klasseId = await createScope(ctx, brainsId, "klasse8a", { requiredApprovalScore: 0 })
   await addMember(ctx, klasseId, "anna")
@@ -49,7 +49,7 @@ test("promoting an auto-approve level commits and drops the local copy", async (
   // Reading it back now resolves to the shared klasse8a version.
   const read = await readDoc(ctx, klasseId, "note.json", asPerson("anna"))
   assert.equal(read.json().data.v, "anna")
-  assert.equal(read.json().scope, "electra/apps/brains/klasse8a")
+  assert.equal(read.json().scope, "electra/content/apps/klasse8a")
 })
 
 test("promoted content becomes visible to other members", async () => {
@@ -62,7 +62,7 @@ test("promoted content becomes visible to other members", async () => {
 })
 
 test("cascade: two stacked score-0 levels both commit in one promote", async () => {
-  // klasse8a (score 0) → apps/brains (score 0) → ... anna promotes from a
+  // klasse8a (score 0) → content/apps (score 0) → ... anna promotes from a
   // sub-group of klasse8a so the promote climbs two auto-approve levels.
   const groupId = await createScope(ctx, klasseId, "gruppe", { requiredApprovalScore: 0 })
   await addMember(ctx, groupId, "anna")

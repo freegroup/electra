@@ -16,7 +16,7 @@ let ctx, brainsId, klasseId
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   klasseId = await createScope(ctx, brainsId, "klasse8a")
   await addMember(ctx, klasseId, "anna")
 })
@@ -46,7 +46,7 @@ test("editing a stale leaf version → 409 outdated", async () => {
   // Build on version 1 while the active leaf version is already 2.
   const stale = {
     data: { v: "c" },
-    scope: "electra/apps/brains/klasse8a/anna",
+    scope: "electra/content/apps/klasse8a/anna",
     version: 1,
   }
   const res = await writeDoc(ctx, klasseId, "n.json", asPerson("anna"), stale)
@@ -57,7 +57,7 @@ test("editing a stale leaf version → 409 outdated", async () => {
 test("editing an inherited version starts a fresh leaf v1, no conflict", async () => {
   await seedSharedDoc(ctx, brainsId, "inh.json", { level: "brains", version: 7 })
   const inherited = (await readDoc(ctx, klasseId, "inh.json", asPerson("anna"))).json()
-  assert.equal(inherited.scope, "electra/apps/brains")
+  assert.equal(inherited.scope, "electra/content/apps")
 
   // Pass the inherited doc as-is (its scope is brains, not the leaf).
   const res = await writeDoc(ctx, klasseId, "inh.json", asPerson("anna"), {
@@ -66,5 +66,5 @@ test("editing an inherited version starts a fresh leaf v1, no conflict", async (
   })
   assert.equal(res.statusCode, 201)
   assert.equal(res.json().version, 1)
-  assert.equal(res.json().scope, "electra/apps/brains/klasse8a/anna")
+  assert.equal(res.json().scope, "electra/content/apps/klasse8a/anna")
 })

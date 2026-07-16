@@ -13,12 +13,13 @@ const {
 } = require("./helpers")
 setupTestSchema("enroll")
 
-let ctx, brainsId, shapesId
+let ctx, appsId, extraId
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
-  shapesId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/shapes")
+  appsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  // a plain (non-bootstrap) scope, to prove on_login joins only bootstrap ones
+  extraId = await createScope(ctx, appsId, "extra")
 })
 
 after(async () => {
@@ -32,12 +33,12 @@ test("on_login enrolls a fresh user into every bootstrap scope", async () => {
 
   const res = await post(ctx, "/database/on_login", asPerson("newbie"))
   assert.equal(res.statusCode, 200)
-  assert.deepEqual(res.json().scopes, [String(brainsId)], "enrolled into the bootstrap scope only")
+  assert.deepEqual(res.json().scopes, [String(appsId)], "enrolled into the bootstrap scope only")
 
   const mine = await get(ctx, "/database/scopes/mine", asPerson("newbie"))
   const refs = mine.json().scopes.map((s) => s.scopeRef)
-  assert.ok(refs.includes(String(brainsId)), "brains now in myScopes")
-  assert.ok(!refs.includes(String(shapesId)), "non-bootstrap shapes not joined")
+  assert.ok(refs.includes(String(appsId)), "apps root now in myScopes")
+  assert.ok(!refs.includes(String(extraId)), "non-bootstrap scope not joined")
 })
 
 test("on_login is idempotent — no duplicate leaves on repeat", async () => {
@@ -49,37 +50,37 @@ test("on_login is idempotent — no duplicate leaves on repeat", async () => {
   const leaves = await ctx.pool.query(
     `SELECT count(*)::int AS n FROM "${ctx.schema}".scopes
       WHERE parent_id = $1 AND name = $2`,
-    [brainsId, "repeat"]
+    [appsId, "repeat"]
   )
   assert.equal(leaves.rows[0].n, 1, "leaf provisioned once")
 })
 
 test("PATCH toggles is_bootstrap; enrollment follows the flag", async () => {
   let mine = await post(ctx, "/database/on_login", asPerson("flagfollower"))
-  assert.ok(!mine.json().scopes.includes(String(shapesId)))
+  assert.ok(!mine.json().scopes.includes(String(extraId)))
 
-  const p = await patch(ctx, `/database/scopes/${shapesId}`, asRootAdmin(), { bootstrap: true })
+  const p = await patch(ctx, `/database/scopes/${extraId}`, asRootAdmin(), { bootstrap: true })
   assert.equal(p.statusCode, 200)
   assert.equal(p.json().bootstrap, true)
 
   const res = await post(ctx, "/database/on_login", asPerson("afterflip"))
-  assert.ok(res.json().scopes.includes(String(shapesId)), "joins newly-bootstrap shapes")
+  assert.ok(res.json().scopes.includes(String(extraId)), "joins newly-bootstrap scope")
 
-  const meta = await get(ctx, `/database/scopes/${shapesId}`, asRootAdmin())
+  const meta = await get(ctx, `/database/scopes/${extraId}`, asRootAdmin())
   assert.equal(meta.json().bootstrap, true)
 
-  // restore so later tests see shapes as non-bootstrap
-  await patch(ctx, `/database/scopes/${shapesId}`, asRootAdmin(), { bootstrap: false })
+  // restore so later tests see the extra scope as non-bootstrap
+  await patch(ctx, `/database/scopes/${extraId}`, asRootAdmin(), { bootstrap: false })
 })
 
 test("glob lists all docs under a root, one row per path, with provider", async () => {
-  await seedSharedDoc(ctx, brainsId, "shared.brain", { v: 1 })
-  const wgId = await createScope(ctx, brainsId, "wg")
+  await seedSharedDoc(ctx, appsId, "shared.brain", { v: 1 })
+  const wgId = await createScope(ctx, appsId, "wg")
   await addMember(ctx, wgId, "globber")
   await post(ctx, "/database/on_login", asPerson("globber"))
   await writeDoc(ctx, wgId, "mine.brain", asPerson("globber"), { data: { v: 1 } })
 
-  const res = await get(ctx, `/database/scopes/${brainsId}/docs?glob=true`, asPerson("globber"))
+  const res = await get(ctx, `/database/scopes/${appsId}/docs?glob=true`, asPerson("globber"))
   assert.equal(res.statusCode, 200)
   const docs = res.json().docs
   const byPath = Object.fromEntries(docs.map((d) => [d.path, d]))
@@ -88,7 +89,7 @@ test("glob lists all docs under a root, one row per path, with provider", async 
   assert.equal(new Set(paths).size, paths.length, "no duplicate paths")
 
   assert.ok(byPath["shared.brain"], "shared doc visible")
-  assert.equal(byPath["shared.brain"].provider, "electra/apps/brains")
+  assert.equal(byPath["shared.brain"].provider, "electra/content/apps")
 
   assert.ok(byPath["mine.brain"], "own doc visible")
   assert.equal(byPath["mine.brain"].operatingScopeRef, String(wgId))

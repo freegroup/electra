@@ -17,7 +17,7 @@ let ctx, brainsId, klasseId
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/apps/brains")
+  brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
   klasseId = await createScope(ctx, brainsId, "klasse8a")
   await addMember(ctx, klasseId, "anna")
 })
@@ -27,26 +27,26 @@ after(async () => {
   await dropSchema(ctx.pool, ctx.schema)
 })
 
-test("inherited: a version at apps/brains is visible from klasse8a", async () => {
+test("inherited: a version at content/apps is visible from klasse8a", async () => {
   await seedSharedDoc(ctx, brainsId, "math/quadratic.json", { level: "brains" })
   const res = await readDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"))
   assert.equal(res.statusCode, 200)
   assert.equal(res.json().data.level, "brains")
-  assert.equal(res.json().scope, "electra/apps/brains")
+  assert.equal(res.json().scope, "electra/content/apps")
 })
 
 test("nearer shared level shadows the farther one", async () => {
   await seedSharedDoc(ctx, klasseId, "math/quadratic.json", { level: "klasse" })
   const res = await readDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"))
   assert.equal(res.json().data.level, "klasse")
-  assert.equal(res.json().scope, "electra/apps/brains/klasse8a")
+  assert.equal(res.json().scope, "electra/content/apps/klasse8a")
 })
 
 test("the caller's own leaf shadows the shared version", async () => {
   await writeDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"), { data: { level: "anna" } })
   const res = await readDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"))
   assert.equal(res.json().data.level, "anna")
-  assert.equal(res.json().scope, "electra/apps/brains/klasse8a/anna")
+  assert.equal(res.json().scope, "electra/content/apps/klasse8a/anna")
 })
 
 test("a foreign leaf is never part of the walk-up", async () => {
@@ -58,7 +58,7 @@ test("a foreign leaf is never part of the walk-up", async () => {
 })
 
 test("an override made higher up shadows for the caller lower down (per-level leaf)", async () => {
-  // anna is also an explicit member of apps/brains and overrides there.
+  // anna is also an explicit member of content/apps and overrides there.
   await addMember(ctx, brainsId, "anna")
   await seedSharedDoc(ctx, brainsId, "bio/cell.json", { patched: false }) // shared stays unpatched
   await writeDoc(ctx, brainsId, "bio/cell.json", asPerson("anna"), { data: { patched: true } })
@@ -68,7 +68,7 @@ test("an override made higher up shadows for the caller lower down (per-level le
   const res = await readDoc(ctx, klasseId, "bio/cell.json", asPerson("anna"))
   assert.equal(res.statusCode, 200)
   assert.equal(res.json().data.patched, true)
-  assert.equal(res.json().scope, "electra/apps/brains/anna")
+  assert.equal(res.json().scope, "electra/content/apps/anna")
 })
 
 test("depth beats slot: a nearer shared version wins over a farther leaf", async () => {
@@ -77,7 +77,7 @@ test("depth beats slot: a nearer shared version wins over a farther leaf", async
   await seedSharedDoc(ctx, klasseId, "bio/cell.json", { patched: "klasse-shared" })
   const res = await readDoc(ctx, klasseId, "bio/cell.json", asPerson("anna"))
   assert.equal(res.json().data.patched, "klasse-shared")
-  assert.equal(res.json().scope, "electra/apps/brains/klasse8a")
+  assert.equal(res.json().scope, "electra/content/apps/klasse8a")
 })
 
 test("missing everywhere in the chain → 404", async () => {

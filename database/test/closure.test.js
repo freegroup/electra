@@ -1,6 +1,6 @@
 // Verifies scope_closure population + basic scope creation flow.
-// The canonical structure (electra, users, apps, apps/{brains,shapes,docs})
-// is auto-provisioned. Tests add further sub-scopes below it.
+// The canonical structure (electra, users, content, content/apps) is
+// auto-provisioned. Tests add further sub-scopes below it.
 
 const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
@@ -34,7 +34,7 @@ async function scopeIdByPath(pathString) {
 
 before(async () => {
   ctx = await newTestSchema()
-  brainsId = await scopeIdByPath("electra/apps/brains")
+  brainsId = await scopeIdByPath("electra/content/apps")
 })
 
 after(async () => {
@@ -43,21 +43,21 @@ after(async () => {
 })
 
 test("root closure contains the auto-provisioned scopes", async () => {
-  // 6 scopes: electra, users, apps, apps/brains, apps/shapes, apps/docs.
+  // 4 scopes: electra, users, content, content/apps.
   const rows = await ctx.pool.query(
     `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".scopes`
   )
-  assert.equal(rows.rows[0].n, 6)
+  assert.equal(rows.rows[0].n, 4)
 
   // Each of them has a self-row in the closure.
   const closureSelf = await ctx.pool.query(
     `SELECT COUNT(*)::int AS n FROM "${ctx.schema}".scope_closure
      WHERE ancestor_id = descendant_id AND depth = 0`
   )
-  assert.equal(closureSelf.rows[0].n, 6)
+  assert.equal(closureSelf.rows[0].n, 4)
 })
 
-test("closure for apps/brains contains itself + apps + electra", async () => {
+test("closure for content/apps contains itself + content + electra", async () => {
   const rows = await ctx.pool.query(
     `SELECT depth FROM "${ctx.schema}".scope_closure
      WHERE descendant_id = $1 ORDER BY depth`,
@@ -67,7 +67,7 @@ test("closure for apps/brains contains itself + apps + electra", async () => {
   assert.deepEqual(rows.rows.map((r) => r.depth), [0, 1, 2])
 })
 
-test("creating a sub-scope under apps/brains populates closure", async () => {
+test("creating a sub-scope under content/apps populates closure", async () => {
   const res = await ctx.fastify.inject({
     method: "POST",
     url: `/database/scopes/${brainsId}/scopes`,
@@ -75,7 +75,7 @@ test("creating a sub-scope under apps/brains populates closure", async () => {
     payload: { name: "klasse8a", requiredApprovalScore: 0 },
   })
   assert.equal(res.statusCode, 201, res.body)
-  assert.equal(res.json().path, "electra/apps/brains/klasse8a")
+  assert.equal(res.json().path, "electra/content/apps/klasse8a")
 
   const klasse8aId = res.json().id
   const rows = await ctx.pool.query(
@@ -83,12 +83,12 @@ test("creating a sub-scope under apps/brains populates closure", async () => {
      WHERE descendant_id = $1 ORDER BY depth`,
     [klasse8aId]
   )
-  // Self + apps/brains + apps + electra = 4 rows
+  // Self + content/apps + content + electra = 4 rows
   assert.equal(rows.rows.length, 4)
   assert.deepEqual(rows.rows.map((r) => r.depth), [0, 1, 2, 3])
 })
 
-test("non-admin cannot create sub-scopes under apps/brains", async () => {
+test("non-admin cannot create sub-scopes under content/apps", async () => {
   const res = await ctx.fastify.inject({
     method: "POST",
     url: `/database/scopes/${brainsId}/scopes`,
