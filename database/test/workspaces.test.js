@@ -6,7 +6,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asPerson, asRootAdmin, get, post, createScope, addMember, scopeIdByPath,
+  asPerson, asRootAdmin, get, post, del, createScope, addMember, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("workspaces")
 
@@ -129,6 +129,16 @@ test("roots returns exactly the two entry points: app root + personal workspace"
   assert.equal(again.json().roots.length, 2, "still exactly two roots after creating a sub-workspace")
 })
 
+test("the personal workspace is a promote ceiling (share via distribute, not promote)", async () => {
+  await post(ctx, "/database/on_login", asPerson("ceil"))
+  const roots = (await get(ctx, "/database/scopes/roots", asPerson("ceil"))).json().roots
+  const personal = roots.find((r) => r.kind === "personal")
+  assert.ok(personal, "personal workspace present")
+
+  const meta = (await get(ctx, `/database/scopes/${personal.scopeRef}`, asPerson("ceil"))).json()
+  assert.equal(meta.promoteCeiling, true)
+})
+
 test("members cannot be added to a personal workspace", async () => {
   await post(ctx, "/database/on_login", asPerson("solo"))
   const roots = (await get(ctx, "/database/scopes/roots", asPerson("solo"))).json().roots
@@ -142,6 +152,35 @@ test("members cannot be added to a personal workspace", async () => {
   // roster stays single-owner
   const members = (await get(ctx, `/database/scopes/${personal.scopeRef}/members`, asPerson("solo"))).json().members
   assert.deepEqual(members.map((m) => m.personRef).sort(), ["solo"])
+})
+
+test("an admin can delete an empty scope, but not one with children", async () => {
+  // anna (member of klasse8a) creates a sub-workspace — she is its admin
+  const created = await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { name: "temp-room" })
+  assert.equal(created.statusCode, 201)
+  const tempId = created.json().scopeRef
+
+  // a non-admin may not delete it
+  const forbidden = await del(ctx, `/database/scopes/${tempId}`, asPerson("stranger"))
+  assert.equal(forbidden.statusCode, 403)
+
+  // give it a child, then it cannot be deleted (has sub-scopes)
+  const child = await post(ctx, `/database/scopes/${tempId}/scopes`, asPerson("anna"), { name: "child-room" })
+  assert.equal(child.statusCode, 201)
+  const childId = child.json().scopeRef
+  const conflict = await del(ctx, `/database/scopes/${tempId}`, asPerson("anna"))
+  assert.equal(conflict.statusCode, 409)
+
+  // remove the child first (it is empty), then the parent — both succeed
+  const okChild = await del(ctx, `/database/scopes/${childId}`, asPerson("anna"))
+  assert.equal(okChild.statusCode, 200)
+  const okParent = await del(ctx, `/database/scopes/${tempId}`, asPerson("anna"))
+  assert.equal(okParent.statusCode, 200)
+  assert.equal(okParent.json().deleted, true)
+
+  // it is gone
+  const gone = await get(ctx, `/database/scopes/${tempId}`, asPerson("anna"))
+  assert.equal(gone.statusCode, 404)
 })
 
 

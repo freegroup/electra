@@ -92,16 +92,13 @@ export default class StorageScreen {
 
   render() {
     let $finder = $(".filesFinder")
+    // No "New" button here: the Library shows shared documents only. Creating a
+    // new document always lands in the caller's own Drafts, so the create action
+    // lives there (DraftScreen) — offering it here would be misleading.
     $finder.html(`
-      <header class="storageHeader">
-        <button class="storageNewButton electra-button electra-primary" data-i18n="button.create_file">${t("button.create_file")}</button>
-      </header>
+      <header class="storageHeader"></header>
       <div class="storageList"></div>
     `)
-
-    $(".filesFinder").off("click", ".storageNewButton").on("click", ".storageNewButton", () => {
-      this.app.fileCreateNew()
-    })
 
     this.loadDocs()
   }

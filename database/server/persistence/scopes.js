@@ -523,7 +523,7 @@ async function setAnonymous({ scopeId, value }) {
 // Ensures a child scope with the given name exists under parentId, returning
 // its id. Idempotent: if it already exists, returns the existing id without
 // touching it. `createdBy` becomes admin+member only when it is freshly created.
-async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin = true }) {
+async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin = true, promoteCeiling = false }) {
   const client = await pool.connect()
   let existing
   try {
@@ -536,7 +536,7 @@ async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin =
   }
   if (existing.rowCount > 0) return String(existing.rows[0].id)
   try {
-    const scope = await createScope({ parentId, name, requiredApprovalScore: 0, createdBy, grantCreatorAdmin })
+    const scope = await createScope({ parentId, name, requiredApprovalScore: 0, createdBy, grantCreatorAdmin, promoteCeiling })
     return String(scope.id)
   } catch (err) {
     // Lost a race with a concurrent login — the scope now exists; look it up.
@@ -569,8 +569,10 @@ async function provisionUserWorkspace(personRef) {
   if (!contentId) return null
   // The "users" bucket is a structural container owned by nobody.
   const usersId = await ensureChildScope({ parentId: contentId, name: "users", createdBy: personRef, grantCreatorAdmin: false })
-  // The user's own workspace under it — they are its admin.
-  const mineId = await ensureChildScope({ parentId: usersId, name: personRef, createdBy: personRef })
+  // The user's own workspace under it — they are its admin. It is a promote
+  // ceiling: content saved/promoted from here lands ON the personal workspace
+  // and never rises into shared scopes. Sharing outward is only via distribute.
+  const mineId = await ensureChildScope({ parentId: usersId, name: personRef, createdBy: personRef, promoteCeiling: true })
   return mineId
 }
 
@@ -631,6 +633,54 @@ async function renameScope({ scopeId, name }) {
       }
       throw err
     }
+  } finally {
+    client.release()
+  }
+}
+
+// Deletes an empty scope. Refuses if it still has sub-scopes/leaves or any
+// document versions — the caller must clear those first (this is a structural
+// delete, not a recursive purge). The root cannot be deleted. Removes the
+// scope's own membership/closure rows in one transaction.
+async function deleteScope({ scopeId }) {
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+
+    const cur = await getScope(client, scopeId)
+    if (!cur) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    if (cur.parent_id === null) {
+      throw new ConflictError("the root scope cannot be deleted")
+    }
+
+    const kids = await client.query(
+      `SELECT 1 FROM scopes WHERE parent_id = $1 LIMIT 1`,
+      [scopeId]
+    )
+    if (kids.rowCount > 0) {
+      throw new ConflictError("scope has sub-scopes/leaves; remove them first")
+    }
+
+    const vers = await client.query(
+      `SELECT 1 FROM versions WHERE scope_id = $1 LIMIT 1`,
+      [scopeId]
+    )
+    if (vers.rowCount > 0) {
+      throw new ConflictError("scope has document versions; remove them first")
+    }
+
+    await client.query(`DELETE FROM memberships WHERE scope_id = $1`, [scopeId])
+    await client.query(
+      `DELETE FROM scope_closure WHERE ancestor_id = $1 OR descendant_id = $1`,
+      [scopeId]
+    )
+    await client.query(`DELETE FROM scopes WHERE id = $1`, [scopeId])
+
+    await client.query("COMMIT")
+    return { deleted: true, scopeId: String(scopeId) }
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
   } finally {
     client.release()
   }
@@ -871,6 +921,7 @@ module.exports = {
   enrollBootstrap,
   renameScope,
   setParentScope,
+  deleteScope,
   myScopes,
   leafUnderScope,
   listChildren,

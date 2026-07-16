@@ -68,7 +68,10 @@
 			"title": "My Drafts",
 			"intro": "Your private circuits and your personal versions of public ones. When you edit and save a public circuit, your changes land here — nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",
 			"col_name": "Document Path",
-			"col_provider": "Overrides file in"
+			"col_provider": "Workspace",
+			"col_kind": "Type",
+			"kind_personal": "private",
+			"kind_personal_copy": "personal copy"
 		},
 		"files": {
 			"title": "Circuit Library",
@@ -78,7 +81,7 @@
 			"col_name": "Name",
 			"col_version": "Version",
 			"col_draft": "Draft",
-			"col_provider": "Provided by",
+			"col_provider": "Workspace",
 			"col_actions": "Actions",
 			"has_draft": "has personal draft version",
 			"my_copy": "personal copy",

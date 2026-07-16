@@ -18,12 +18,18 @@ class DatabaseError extends Error {
 }
 
 let BASE_URL = null      // e.g. "http://127.0.0.1:8095"
-let APP_SCOPE_PATH = null // e.g. "electra/apps/brains"
+let APP_SCOPE_PATH = null // e.g. "electra/content/apps"
+let CONTENT_SCOPE_PATH = null // e.g. "electra/content" — parent of apps + users
+let USERS_SCOPE_PATH = null // e.g. "electra/content/users" — personal workspaces
 const scopeIdCache = new Map()
 
 function init(conf) {
   BASE_URL = conf.database.replace(/\/+$/, "")
   APP_SCOPE_PATH = conf.appScopePath
+  // Derive the content root and users container from the app-root path
+  // (electra/content/apps → electra/content, electra/content/users).
+  CONTENT_SCOPE_PATH = APP_SCOPE_PATH.replace(/\/[^/]+$/, "")
+  USERS_SCOPE_PATH = `${CONTENT_SCOPE_PATH}/users`
 }
 
 // --- opaque handle codec ---------------------------------------------------
@@ -85,15 +91,38 @@ async function call(method, dbPath, opts) {
   return text ? JSON.parse(text) : {}
 }
 
-// --- app-root resolution ---------------------------------------------------
+// --- scope-path resolution -------------------------------------------------
 
-// Resolve the app-root scope path → scopeRef, cached. Uses the caller's auth
-// headers (by-path requires login).
-async function appRootId(authHeaders) {
-  if (scopeIdCache.has(APP_SCOPE_PATH)) return scopeIdCache.get(APP_SCOPE_PATH)
-  const j = await call("GET", `/database/scopes/by-path?name=${encodeURIComponent(APP_SCOPE_PATH)}`, { authHeaders })
-  scopeIdCache.set(APP_SCOPE_PATH, j.scopeRef)
+// Resolve any scope path → scopeRef, cached. Uses the caller's auth headers
+// (by-path requires login).
+async function scopeIdByPath(path, authHeaders) {
+  if (scopeIdCache.has(path)) return scopeIdCache.get(path)
+  const j = await call("GET", `/database/scopes/by-path?name=${encodeURIComponent(path)}`, { authHeaders })
+  scopeIdCache.set(path, j.scopeRef)
   return j.scopeRef
+}
+
+// The app-root scope (electra/content/apps) — the shared, app-owned content.
+async function appRootId(authHeaders) {
+  return scopeIdByPath(APP_SCOPE_PATH, authHeaders)
+}
+
+// The content root (electra/content) — parent of both `apps` and `users`.
+// The finder globs from here so a member sees ALL their content in one view:
+// the shared app root, their personal workspace, and any sub-workspaces they
+// belong to. globDocs is membership-filtered, so foreign scopes never leak.
+async function contentRootId(authHeaders) {
+  return scopeIdByPath(CONTENT_SCOPE_PATH, authHeaders)
+}
+
+// The caller's PERSONAL workspace (electra/content/users/<email>). A brand-new
+// document (no id) lands here: the caller is its member+admin, and the write
+// path provisions their personal leaf under it. The email comes from the
+// forwarded identity (x-mail). Provisioned on login, so it exists by save time.
+async function personalWorkspaceId(authHeaders) {
+  const email = authHeaders && (authHeaders["x-mail"] || authHeaders["X-Mail"])
+  if (!email) throw new DatabaseError("no caller identity (x-mail) for personal workspace", 401)
+  return scopeIdByPath(`${USERS_SCOPE_PATH}/${email}`, authHeaders)
 }
 
 module.exports = {
@@ -104,5 +133,7 @@ module.exports = {
   raw,
   call,
   appRootId,
+  contentRootId,
+  personalWorkspaceId,
   pickAuthHeaders,
 }

@@ -36,7 +36,7 @@ function withSuffix(name) {
 //   providedBy   — origin scope human path (the "Provided by" column)
 //   version      — effective version
 //   instanceType — "personal" | "personalCopy" | "inherit" (see globDocs)
-function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null }) {
+function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false }) {
   const id = db.encodeId(scopeRef, docPath)
   // For personal / personal-copy docs the provider path ends in the caller's
   // own leaf (named after their email — a meaningless segment to show). Show the
@@ -70,6 +70,9 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
     published,
     instanceType,
     original: originalItem,
+    // The operating scope is a promote ceiling (e.g. the personal workspace):
+    // promoting is a no-op; the UI hides the Promote action and offers distribute.
+    promoteCeiling,
     // `v` is a cache-buster: it changes when the document (and its embedded
     // preview) changes, so the browser's <img> cache re-fetches the new image
     // instead of reusing the identical-URL copy from memory.
@@ -82,7 +85,7 @@ function init(app) {
   app.get("/sheets/files", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const rootId = await db.appRootId(auth)
+      const rootId = await db.contentRootId(auth)
       const prefix = req.query.prefix ? `&prefix=${encodeURIComponent(req.query.prefix)}` : ""
       const j = await db.call("GET", `/database/scopes/${rootId}/docs?glob=true${prefix}`, { authHeaders: auth })
       const items = (j.docs || [])
@@ -95,6 +98,7 @@ function init(app) {
             version: d.providerVersion,
             instanceType: d.instanceType,
             original: d.original,
+            promoteCeiling: d.promoteCeiling,
           })
         )
       res.json({ items })
@@ -155,7 +159,9 @@ function init(app) {
           path = decoded.path
         }
       } else {
-        scopeRef = await db.appRootId(auth)
+        // No id → a brand-new document always lands in the caller's PERSONAL
+        // workspace (electra/content/users/<email>), where they are member+admin.
+        scopeRef = await db.personalWorkspaceId(auth)
         path = withSuffix(name) // forces the app suffix, e.g. "MyDoc.sheet"
       }
       const stored = await db.call(

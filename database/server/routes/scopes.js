@@ -34,6 +34,7 @@ const {
   enrollBootstrap,
   renameScope,
   setParentScope,
+  deleteScope,
   myScopes,
   getScope,
   listChildren,
@@ -313,6 +314,19 @@ async function routes(fastify) {
         createdAt: scope.created_at,
         createdBy: scope.created_by,
       }
+    }
+  )
+
+  // Delete an (empty) scope. Admin-gated; refuses if the scope still has
+  // sub-scopes/leaves or document versions (structural delete, not a recursive
+  // purge). Used by the admin explorer and the Workspaces UI.
+  fastify.delete(
+    "/database/scopes/:scopeRef",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      await requireAdmin(scopeId, req.personRef)
+      return await deleteScope({ scopeId })
     }
   )
 

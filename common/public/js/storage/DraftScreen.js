@@ -32,6 +32,7 @@ export default class DraftScreen {
             <tr>
               <th class="colName" data-i18n="pane.draft.col_name">${t("pane.draft.col_name")}</th>
               <th class="colProvider" data-i18n="pane.draft.col_provider">${t("pane.draft.col_provider")}</th>
+              <th class="colKind" data-i18n="pane.draft.col_kind">${t("pane.draft.col_kind")}</th>
               <th class="colActions" data-i18n="pane.files.col_actions">${t("pane.files.col_actions")}</th>
             </tr>
           </thead>
@@ -45,6 +46,10 @@ export default class DraftScreen {
               <td class="colProvider">
                 <span class="providerScope">{{providedBy}}</span>
                 <span class="providerVersion">v{{version}}</span>
+              </td>
+              <td class="colKind">
+                {{#isPersonal}}<span class="kindBadge kindPersonal" data-i18n="pane.draft.kind_personal">${t("pane.draft.kind_personal")}</span>{{/isPersonal}}
+                {{#isPersonalCopy}}<span class="kindBadge kindPersonalCopy" data-i18n="pane.draft.kind_personal_copy">${t("pane.draft.kind_personal_copy")}</span>{{/isPersonalCopy}}
               </td>
               <td class="colActions">
                 {{#canRevert}}
@@ -60,7 +65,7 @@ export default class DraftScreen {
             </tr>
           {{/items}}
           {{^items}}
-            <tr><td colspan="3" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
+            <tr><td colspan="4" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
           {{/items}}
           </tbody>
         </table>
@@ -130,8 +135,14 @@ export default class DraftScreen {
           // purely personal doc has nothing to revert to — delete instead.
           canRevert: it.instanceType === "personalCopy",
           canDelete: it.instanceType === "personal",
-          // Promote any of my own leaf versions (personal or personal copy).
-          canPromote: it.instanceType === "personal" || it.instanceType === "personalCopy",
+          // A personal copy always promotes — it lands on the shared scope above
+          // (e.g. apps), becoming the group's version, even if that scope is a
+          // promote ceiling (the ceiling only stops content rising ABOVE it, not
+          // landing ON it). A purely private doc promotes only when its scope
+          // isn't a ceiling: in the personal workspace there is nobody to share
+          // with, so it is distribute-only.
+          canPromote: it.instanceType === "personalCopy"
+            || (it.instanceType === "personal" && !it.promoteCeiling),
           thumbnailUrl: it.thumbnailUrl
         }))
 

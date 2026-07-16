@@ -190,7 +190,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
   //               shared versions surface (read-only, no personal copies).
   const opRes = personRef
     ? await pool.query(
-        `SELECT DISTINCT m.scope_id
+        `SELECT DISTINCT m.scope_id, s.promote_ceiling
            FROM memberships m
            JOIN scope_closure c ON c.descendant_id = m.scope_id
            JOIN scopes s        ON s.id = m.scope_id
@@ -201,13 +201,17 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
         [rootScopeId, personRef]
       )
     : await pool.query(
-        `SELECT s.id AS scope_id
+        `SELECT s.id AS scope_id, s.promote_ceiling
            FROM scopes s
            JOIN scope_closure c ON c.descendant_id = s.id
           WHERE c.ancestor_id = $1
             AND s.is_anonymous = true`,
         [rootScopeId]
       )
+
+  // scope_id → is that operating scope a promote ceiling? (content there may not
+  // rise into shared scopes; only distribute can move it out).
+  const ceilingByScope = new Map(opRes.rows.map((r) => [String(r.scope_id), !!r.promote_ceiling]))
 
   // best[doc_path] = { row, opScopeId } — nearest hit across all operating scopes
   const best = new Map()
@@ -303,6 +307,9 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       operatingScopeRef: String(opScopeId),
       instanceType,
       original,
+      // The operating scope is a promote ceiling → promoting here is a no-op
+      // (content can't rise into shared scopes); only distribute can share it.
+      promoteCeiling: ceilingByScope.get(String(opScopeId)) === true,
     })
   }
   out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))

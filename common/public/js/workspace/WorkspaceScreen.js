@@ -119,6 +119,7 @@ export default class WorkspaceScreen {
         isMember: !!it.isMember,
         isAdmin: !!it.isAdmin,
         isMemberOnly: !!it.isMember && !it.isAdmin,
+        isPersonal: !!it.isPersonal,
       }))
       let compiled = Hogan.compile($("#workspaceTilesTemplate").html())
       $tiles.removeClass("spinner").html(compiled.render({ items: view }))
@@ -153,7 +154,8 @@ export default class WorkspaceScreen {
 
     // The member roster — only meaningful (and only permitted) for admins of the
     // current workspace. Root level has no single scope, so no panel there.
-    if (current.scopeRef !== null) {
+    // Personal workspaces are single-owner: no members, no roster at all.
+    if (current.scopeRef !== null && !current.isPersonal) {
       // The roster is admin-only: members() returns 403 for non-admins, so if it
       // resolves the caller is an admin and may manage members. Everyone but the
       // caller themselves is removable.
@@ -161,16 +163,10 @@ export default class WorkspaceScreen {
         let me = (this.app && this.app.userinfo && this.app.userinfo.user && this.app.userinfo.user.email) || null
         let view = members.map((m) => ({ ...m, removable: !me || m.personRef !== me }))
         let compiled = Hogan.compile($("#workspaceMembersTemplate").html())
-        // Personal workspaces are single-owner: no inviting, no removing. Show
-        // the roster (just the owner) but not the management actions — the
-        // backend also rejects addMember/removeMember there.
-        let addButton = current.isPersonal
-          ? ""
-          : `<button class="wsAddMemberButton electra-button" data-i18n="pane.workspaces.add_member">${t("pane.workspaces.add_member")}</button>`
         $panel.html(`
           <h4 class="wsPanelTitle" data-i18n="pane.workspaces.members">${t("pane.workspaces.members")}</h4>
-          <div class="wsMemberList">${compiled.render({ members: current.isPersonal ? members.map((m) => ({ ...m, removable: false })) : view })}</div>
-          ${addButton}
+          <div class="wsMemberList">${compiled.render({ members: view })}</div>
+          <button class="wsAddMemberButton electra-button" data-i18n="pane.workspaces.add_member">${t("pane.workspaces.add_member")}</button>
         `)
         $panel.find(".wsAddMemberButton").off("click").on("click", () => _this.promptAddMember(current.scopeRef))
         $panel.find(".wsRemoveMemberButton").off("click").on("click", (e) => {
