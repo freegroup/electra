@@ -1,6 +1,7 @@
 import Hogan from "hogan.js"
 
 import clientFactory from "./WorkspaceClient"
+import { renderScopeTiles } from "./scopeTile"
 import inputPrompt from "../InputPrompt"
 import confirmDialog from "../ConfirmDialog"
 import toast from "../toast"
@@ -31,21 +32,6 @@ export default class WorkspaceScreen {
     $("#workspaces_tab a").off("click.workspaces").on("click.workspaces", this.onShow.bind(this))
 
     $("body").append(`
-      <script id="workspaceTilesTemplate" type="text/x-jsrender">
-        {{#items}}
-          <div class="workspaceTile" data-ref="{{scopeRef}}">
-            <div class="workspaceTileName">{{name}}</div>
-            {{#isAdmin}}<button class="workspaceTileRename" title="${t("pane.workspaces.rename")}" data-ref="{{scopeRef}}">✎</button>{{/isAdmin}}
-            <div class="workspaceTileBadges">
-              {{#isAdmin}}<span class="wsBadge wsBadgeAdmin" data-i18n="pane.workspaces.role_admin">${t("pane.workspaces.role_admin")}</span>{{/isAdmin}}
-              {{#isMemberOnly}}<span class="wsBadge wsBadgeMember" data-i18n="pane.workspaces.role_member">${t("pane.workspaces.role_member")}</span>{{/isMemberOnly}}
-            </div>
-          </div>
-        {{/items}}
-        {{^items}}
-          <div class="workspaceEmpty" data-i18n="pane.workspaces.empty">${t("pane.workspaces.empty")}</div>
-        {{/items}}
-      </script>
       <script id="workspaceMembersTemplate" type="text/x-jsrender">
         {{#members}}
           <div class="wsMember" data-ref="{{personRef}}">
@@ -112,12 +98,14 @@ export default class WorkspaceScreen {
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
           isPersonal: r.kind === "personal",
+          memberCount: r.memberCount,
         })))
       : this.client.children(current.scopeRef).then((rows) => rows.map((r) => ({
           scopeRef: r.scopeRef,
           name: r.label || r.name,
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
+          memberCount: r.memberCount,
         })))
 
     childrenP.then((items) => {
@@ -126,38 +114,30 @@ export default class WorkspaceScreen {
         name: it.name,
         isMember: !!it.isMember,
         isAdmin: !!it.isAdmin,
-        isMemberOnly: !!it.isMember && !it.isAdmin,
         isPersonal: !!it.isPersonal,
+        memberCount: it.memberCount,
       }))
-      let compiled = Hogan.compile($("#workspaceTilesTemplate").html())
-      $tiles.removeClass("spinner").html(compiled.render({ items: view }))
-
-      $tiles.find(".workspaceTile").off("click").on("click", (e) => {
-        // The rename pencil is inside the tile — don't drill in when it's clicked.
-        if ($(e.target).closest(".workspaceTileRename").length) return
-        let $el = $(e.currentTarget)
-        let ref = $el.data("ref")
-        let name = $el.find(".workspaceTileName").text()
-        // remember my membership so the level knows whether to offer create +
-        // whether the members panel applies
-        let item = view.find((v) => String(v.scopeRef) === String(ref))
-        _this.stack.push({
-          scopeRef: String(ref),
-          name,
-          isMember: !!(item && item.isMember),
-          isAdmin: !!(item && item.isAdmin),
-          isPersonal: !!(item && item.isPersonal),
-        })
-        _this.reload()
-      })
-
-      // Rename pencil (admins only — the button is only rendered for isAdmin
-      // tiles; the backend also enforces admin on PATCH). Sets the display label.
-      $tiles.find(".workspaceTileRename").off("click").on("click", (e) => {
-        e.stopPropagation()
-        let ref = $(e.currentTarget).data("ref")
-        let item = view.find((v) => String(v.scopeRef) === String(ref))
-        _this.promptRename(String(ref), item ? item.name : "")
+      $tiles.removeClass("spinner")
+      renderScopeTiles($tiles, view, {
+        emptyHtml: `<div class="workspaceEmpty" data-i18n="pane.workspaces.empty">${t("pane.workspaces.empty")}</div>`,
+        onOpen: (item) => {
+          if (!item) return
+          // remember my membership so the level knows whether to offer create +
+          // whether the members panel applies
+          _this.stack.push({
+            scopeRef: String(item.scopeRef),
+            name: item.name,
+            isMember: !!item.isMember,
+            isAdmin: !!item.isAdmin,
+            isPersonal: !!item.isPersonal,
+          })
+          _this.reload()
+        },
+        // Rename pencil is only rendered for admin tiles; backend also enforces
+        // admin on PATCH. Sets the display label.
+        onRename: (item) => {
+          if (item) _this.promptRename(String(item.scopeRef), item.name)
+        },
       })
     }).catch((exc) => {
       console.log(exc)

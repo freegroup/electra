@@ -202,6 +202,7 @@ async function routes(fastify) {
               type: "array",
               items: { type: "string", pattern: "^\\d+$" },
               minItems: 1,
+              uniqueItems: true,
             },
           },
           additionalProperties: false,

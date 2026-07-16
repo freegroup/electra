@@ -344,10 +344,14 @@ async function routes(fastify) {
       const scopeId = parseScopeRef(req.params.scopeRef)
       const { personRef } = req.body
 
-      // Admin adds anyone; anyone may self-enroll (personRef == caller).
-      if (personRef !== req.personRef) {
-        await requireAdmin(scopeId, req.personRef)
-      }
+      // Adding a member is an admin-only action — no self-enroll. A user reaches
+      // their scopes two ways, both handled elsewhere: bootstrap auto-enrollment
+      // on login (on_login → enrollBootstrap, limited to is_bootstrap scopes),
+      // and creating a sub-scope (createScope makes the creator admin+member).
+      // Joining any other existing scope always requires one of its admins to
+      // add you. Guarding self-add too closes the hole where anyone could grant
+      // themselves membership — hence full read/write — of any scope by id.
+      await requireAdmin(scopeId, req.personRef)
 
       // Membership only — the personal leaf is provisioned lazily on first write.
       const result = await addMember({ scopeId, personRef })

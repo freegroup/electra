@@ -63,6 +63,21 @@ async function copyBlobs(client, srcScope, srcVer, dstScope, dstVer, docPath) {
   )
 }
 
+// "The last is the winner": a fresh distribution from the same author to a
+// target supersedes their own still-open one there. Identical to promote's
+// amend rule (§6.5) — the prior pending row is rejected (kept for history), not
+// physically dropped, so append-only history stays intact. Also the reason the
+// versions_one_pending_per_author unique index can never be violated here.
+async function supersedeOwnPending(client, scopeId, docPath, author) {
+  await client.query(
+    `UPDATE versions
+        SET status = 'rejected', finalized_at = now(), finalized_by = $3,
+            rejection_reason = 'superseded by a newer version from the same author'
+      WHERE scope_id = $1 AND doc_path = $2 AND author = $3 AND status = 'pending'`,
+    [scopeId, docPath, author]
+  )
+}
+
 async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, targetScopeRefs }) {
   validateDocPath(docPath)
 
@@ -90,6 +105,11 @@ async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, 
       const active = await activeVersion(client, targetRef, docPath)
       const commit = !active || active.author === personRef
       const status = commit ? "committed" : "pending"
+
+      // Drop the caller's own prior open promotion at this target first, so a
+      // repeat distribute replaces it instead of colliding on the
+      // one-pending-per-author index (last-write-wins).
+      await supersedeOwnPending(client, targetRef, docPath, personRef)
 
       const version = await nextVersion(client, targetRef, docPath)
       const finalized = commit

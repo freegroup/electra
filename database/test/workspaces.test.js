@@ -6,7 +6,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asPerson, asRootAdmin, get, post, patch, del, createScope, addMember, scopeIdByPath,
+  asPerson, asRootAdmin, get, post, patch, del, createScope, addMember, writeDoc, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("workspaces")
 
@@ -39,8 +39,9 @@ test("a member sees the direct children of a scope, annotated with their role", 
 })
 
 test("children view excludes personal leaves", async () => {
-  // anna self-enrolls under klasse8a → a personal leaf is provisioned there
-  await post(ctx, `/database/scopes/${klasseId}/members`, asPerson("anna"), { personRef: "anna" })
+  // anna (member via setup) writes under klasse8a → her personal leaf is
+  // provisioned there. It must not surface as a browsable child scope.
+  await writeDoc(ctx, klasseId, "note.json", asPerson("anna"), { data: { hello: "world" } })
   const res = await get(ctx, `/database/scopes/${klasseId}/children`, asPerson("anna"))
   assert.ok(!res.json().children.some((c) => c.name === "anna"), "personal leaf hidden")
 })

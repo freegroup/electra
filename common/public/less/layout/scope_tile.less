@@ -1,0 +1,66 @@
+// scopeTile — a reusable Figma-style tile for one scope/workspace. Paired with
+// common/public/js/workspace/scopeTile.js. Kept standalone so any scope picker
+// can reuse the same look (name/label, member count, role badges, rename pencil).
+
+.scopeTile {
+  position: relative;
+  width: 180px;
+  height: 100px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: @borderRadiusBig;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .scopeTileName {
+    font-size: 16px;
+    font-weight: var(--label-font-weight);
+    word-break: break-word;
+  }
+
+  // Footer row: member count on the left, role badges on the right.
+  .scopeTileFoot {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .scopeTileMembers {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+  .scopeTileBadges {
+    display: flex;
+    gap: 6px;
+  }
+
+  // Role badge (pill). Colors come from the theme (.scopeBadgeAdmin).
+  .scopeBadge {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.72em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  // Rename pencil — top-right, revealed on tile hover (admins only).
+  .scopeTileRename {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 4px;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+  &:hover .scopeTileRename { opacity: 0.6; }
+  .scopeTileRename:hover { opacity: 1; }
+}

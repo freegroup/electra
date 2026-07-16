@@ -887,7 +887,9 @@ async function listChildren({ parentId, personRef }) {
   const res = await pool.query(
     `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
             (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
-            COALESCE(m.is_admin, false)                       AS is_admin
+            COALESCE(m.is_admin, false)                       AS is_admin,
+            (SELECT count(*)::int FROM memberships mc
+              WHERE mc.scope_id = s.id AND mc.is_member = true) AS member_count
        FROM scopes s
        LEFT JOIN memberships m
               ON m.scope_id = s.id AND m.person_ref = $2
@@ -904,6 +906,7 @@ async function listChildren({ parentId, personRef }) {
     anonymous: r.is_anonymous,
     isMember: r.is_member,
     isAdmin: r.is_admin,
+    memberCount: r.member_count,
   }))
 }
 
@@ -930,7 +933,9 @@ async function rootWorkspaces(personRef) {
       const r = await client.query(
         `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
                 (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
-                COALESCE(m.is_admin, false)                       AS is_admin
+                COALESCE(m.is_admin, false)                       AS is_admin,
+                (SELECT count(*)::int FROM memberships mc
+                  WHERE mc.scope_id = s.id AND mc.is_member = true) AS member_count
            FROM scopes s
            LEFT JOIN memberships m ON m.scope_id = s.id AND m.person_ref = $2
           WHERE s.id = $1`,
@@ -948,6 +953,7 @@ async function rootWorkspaces(personRef) {
         anonymous: s.is_anonymous,
         isMember: s.is_member,
         isAdmin: s.is_admin,
+        memberCount: s.member_count,
       })
     }
     return out

@@ -97,9 +97,15 @@ test("an anonymous caller cannot manage a scope → 401", async () => {
   assert.equal(res.statusCode, 401)
 })
 
-test("self-enrollment: a caller may add themselves without being admin", async () => {
+test("no self-enrollment: a non-admin cannot add themselves → 403", async () => {
   const res = await post(ctx, `/database/scopes/${klasseId}/members`, asPerson("selfie"), { personRef: "selfie" })
-  assert.equal(res.statusCode, 201)
+  assert.equal(res.statusCode, 403)
+  // ...and no membership row was created as a side effect.
+  const row = await ctx.pool.query(
+    `SELECT 1 FROM "${ctx.schema}".memberships WHERE scope_id = $1 AND person_ref = 'selfie'`,
+    [klasseId]
+  )
+  assert.equal(row.rowCount, 0, "self-enroll must not create a membership")
 })
 
 test("a scope can be renamed; path reflects it, docs are untouched", async () => {

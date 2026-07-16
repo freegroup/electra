@@ -82,6 +82,40 @@ test("distributing over someone else's active version needs review (pending)", a
   assert.equal((await readDoc(ctx, groupB, "contested.json", asPerson("bob"))).json().data.by, "bob")
 })
 
+test("re-distributing over a foreign version supersedes the caller's own prior pending (last wins)", async () => {
+  // carla owns the active version in B; anna needs review to overwrite it.
+  await addMember(ctx, groupB, "carla")
+  await seedSharedDoc(ctx, groupB, "twice.json", { by: "carla" }, "carla")
+
+  await writeDoc(ctx, groupA, "twice.json", asPerson("anna"), { data: { rev: 1 } })
+  const first = await distribute(groupA, "twice.json", "anna", [String(groupB)], 1)
+  assert.equal(first.statusCode, 200, first.body)
+  const firstPending = first.json().distributions[0].pendingVersion
+  assert.ok(firstPending)
+
+  // anna revises and distributes again before any reviewer acts. This must NOT
+  // 500 on the one-pending-per-author index — the second supersedes the first.
+  const cur = (await readDoc(ctx, groupA, "twice.json", asPerson("anna"))).json()
+  await writeDoc(ctx, groupA, "twice.json", asPerson("anna"), { ...cur, data: { rev: 2 } })
+  const second = await distribute(groupA, "twice.json", "anna", [String(groupB)], cur.version + 1)
+  assert.equal(second.statusCode, 200, second.body)
+  const secondPending = second.json().distributions[0].pendingVersion
+  assert.ok(secondPending && secondPending !== firstPending)
+
+  // Exactly one open pending from anna remains in B; the first was rejected.
+  const rows = await ctx.pool.query(
+    `SELECT version, status FROM "${ctx.schema}".versions
+      WHERE scope_id = $1 AND doc_path = 'twice.json' AND author = 'anna'
+      ORDER BY version`,
+    [groupB]
+  )
+  const byStatus = rows.rows.reduce((m, r) => ((m[r.status] = (m[r.status] || 0) + 1), m), {})
+  assert.equal(byStatus.pending, 1, "only the newest distribution is pending")
+  assert.equal(byStatus.rejected, 1, "the superseded distribution is rejected")
+  const stillPending = rows.rows.find((r) => r.status === "pending")
+  assert.equal(stillPending.version, secondPending, "the surviving pending is the latest")
+})
+
 test("distributing into a scope the caller is not a member of → 403", async () => {
   const groupC = await createScope(ctx, brainsId, "groupC", { requiredApprovalScore: 0 })
   await writeDoc(ctx, groupA, "x.json", asPerson("anna"), { data: {} })

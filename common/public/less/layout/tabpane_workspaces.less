@@ -63,51 +63,13 @@
       padding: @contentToEdgePadding;
     }
 
-    // sub-workspace tiles
+    // sub-workspace tiles (individual tile look lives in scopeTile.less)
     .workspaceTiles {
       flex: 1 1 auto;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       gap: 12px;
-
-      .workspaceTile {
-        position: relative;
-        width: 180px;
-        height: 100px;
-        border-width: 1px;
-        border-style: solid;
-        border-radius: @borderRadiusBig;
-        padding: 12px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        .workspaceTileName {
-          font-size: 16px;
-          font-weight: var(--label-font-weight);
-          word-break: break-word;
-        }
-        .workspaceTileBadges { display: flex; gap: 6px; }
-
-        // Rename pencil — top-right, revealed on tile hover (admins only).
-        .workspaceTileRename {
-          position: absolute;
-          top: 6px;
-          right: 6px;
-          border: 0;
-          background: transparent;
-          cursor: pointer;
-          font-size: 14px;
-          line-height: 1;
-          padding: 2px 4px;
-          opacity: 0;
-          transition: opacity 0.1s;
-        }
-        &:hover .workspaceTileRename { opacity: 0.6; }
-        .workspaceTileRename:hover { opacity: 1; }
-      }
 
       .workspaceEmpty {
         opacity: 0.6;

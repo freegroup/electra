@@ -467,19 +467,20 @@ body.light {
 
             .workspacesHeader { border-color: rgb(var(--border-color)); }
 
-            .workspaceTile {
+            .scopeTile {
                 border-color: rgb(var(--border-color));
                 background-color: rgb(var(--pane-bg-color));
                 &:hover { border-color: rgb(var(--tint-color)); }
-                .workspaceTileName { color: rgb(var(--tint-color)); }
+                .scopeTileName { color: rgb(var(--tint-color)); }
             }
 
-            // member badge = neutral; admin badge = accent
+            // member badge = neutral (members panel); admin badge = accent
             .wsBadgeMember {
                 background: rgba(var(--text-color), 0.08);
                 color: rgb(var(--text-color));
             }
-            .wsBadgeAdmin {
+            .wsBadgeAdmin,
+            .scopeBadgeAdmin {
                 background: rgb(var(--tint-color));
                 color: #fff;
             }
