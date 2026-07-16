@@ -317,6 +317,41 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
 }
 
 // ---------------------------------------------------------------------------
+// Serializable write transactions with retry
+// ---------------------------------------------------------------------------
+//
+// putDoc/deleteDoc run under SERIALIZABLE: both read MAX(version) and insert
+// MAX+1, so two concurrent writers race. Postgres resolves the race by
+// aborting one side — as 40001 (serialization failure, usually at COMMIT),
+// 40P01 (deadlock), or 23505 (unique violation when the competitor already
+// committed "our" version number). All three mean the same thing here: the
+// snapshot went stale mid-transaction. Re-running the whole transaction
+// recomputes MAX and re-checks expectedVersion, which yields either a clean
+// append or a proper OutdatedError — never a spurious 500.
+const RETRYABLE_SQLSTATES = new Set(["40001", "40P01", "23505"])
+
+async function withSerializableRetry(run) {
+  for (let attempt = 1; ; attempt++) {
+    const client = await pool.connect()
+    try {
+      await client.query("BEGIN ISOLATION LEVEL SERIALIZABLE")
+      const result = await run(client)
+      await client.query("COMMIT")
+      return result
+    } catch (err) {
+      // After a failed COMMIT the transaction is already gone — the extra
+      // ROLLBACK is a harmless no-op then, hence the swallowed rejection.
+      await client.query("ROLLBACK").catch(() => {})
+      if (!RETRYABLE_SQLSTATES.has(err.code) || attempt >= 5) throw err
+    } finally {
+      client.release()
+    }
+    // Brief jittered pause so the competing transaction can finish.
+    await new Promise((r) => setTimeout(r, 10 * attempt + Math.floor(Math.random() * 20)))
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Put (local override) — README §6.4, §6.12
 // ---------------------------------------------------------------------------
 //
@@ -328,10 +363,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
 async function putDoc({ leafScopeId, docPath, data, meta, author, expectedVersion }) {
   validateDocPath(docPath)
 
-  const client = await pool.connect()
-  try {
-    await client.query("BEGIN ISOLATION LEVEL SERIALIZABLE")
-
+  return withSerializableRetry(async (client) => {
     const maxRes = await client.query(
       `SELECT COALESCE(MAX(version), 0) AS max FROM versions
        WHERE scope_id = $1 AND doc_path = $2`,
@@ -382,14 +414,8 @@ async function putDoc({ leafScopeId, docPath, data, meta, author, expectedVersio
       [leafScopeId, docPath, nextVersion]
     )
 
-    await client.query("COMMIT")
     return insRes.rows[0]
-  } catch (err) {
-    await client.query("ROLLBACK")
-    throw err
-  } finally {
-    client.release()
-  }
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -419,10 +445,7 @@ async function revertDoc({ leafScopeId, docPath }) {
 async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
   validateDocPath(docPath)
 
-  const client = await pool.connect()
-  try {
-    await client.query("BEGIN ISOLATION LEVEL SERIALIZABLE")
-
+  return withSerializableRetry(async (client) => {
     const maxRes = await client.query(
       `SELECT COALESCE(MAX(version), 0) AS max FROM versions
        WHERE scope_id = $1 AND doc_path = $2`,
@@ -443,14 +466,8 @@ async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
        RETURNING scope_id, doc_path, version, status, is_deletion, author, created_at`,
       [leafScopeId, docPath, currentMax + 1, author]
     )
-    await client.query("COMMIT")
     return insRes.rows[0]
-  } catch (err) {
-    await client.query("ROLLBACK")
-    throw err
-  } finally {
-    client.release()
-  }
+  })
 }
 
 // ---------------------------------------------------------------------------

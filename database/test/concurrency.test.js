@@ -54,6 +54,43 @@ test("editing a stale leaf version → 409 outdated", async () => {
   assert.equal(res.json().error.code, "outdated")
 })
 
+test("parallel appends to the same doc all land — no serialization 500", async () => {
+  // Five writers hit the same new path at once, none claiming a base version.
+  // Under SERIALIZABLE they race on MAX(version)+1; the losers get 40001/23505
+  // from Postgres, which the persistence layer must retry — the API surface
+  // must show five clean 201s stacked as versions 1..5, never a 500.
+  const N = 5
+  const results = await Promise.all(
+    Array.from({ length: N }, (_, i) =>
+      writeDoc(ctx, klasseId, "race.json", asPerson("anna"), { data: { writer: i } })
+    )
+  )
+  for (const res of results) {
+    assert.equal(res.statusCode, 201, res.body)
+  }
+  const versions = results.map((r) => r.json().version).sort((a, b) => a - b)
+  assert.deepEqual(versions, [1, 2, 3, 4, 5], "each writer got its own version")
+})
+
+test("parallel edits of the same base version: one wins, the rest get 409 — not 500", async () => {
+  await writeDoc(ctx, klasseId, "contest.json", asPerson("anna"), { data: { v: 0 } })
+  const base = (await readDoc(ctx, klasseId, "contest.json", asPerson("anna"))).json()
+
+  // Three simultaneous edits all built on the same leaf version. Exactly one
+  // may commit; the others must surface as a clean optimistic-concurrency 409
+  // (outdated) even when the conflict is only detected mid-transaction.
+  const results = await Promise.all(
+    Array.from({ length: 3 }, (_, i) =>
+      writeDoc(ctx, klasseId, "contest.json", asPerson("anna"), { ...base, data: { v: i + 1 } })
+    )
+  )
+  const codes = results.map((r) => r.statusCode).sort()
+  assert.deepEqual(codes, [201, 409, 409], results.map((r) => r.body).join("\n"))
+  for (const res of results) {
+    if (res.statusCode === 409) assert.equal(res.json().error.code, "outdated")
+  }
+})
+
 test("editing an inherited version starts a fresh leaf v1, no conflict", async () => {
   await seedSharedDoc(ctx, brainsId, "inh.json", { level: "brains", version: 7 })
   const inherited = (await readDoc(ctx, klasseId, "inh.json", asPerson("anna"))).json()
