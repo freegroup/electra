@@ -70,16 +70,20 @@ export default class DraftScreen {
     this.render()
   }
 
-  // The pane was shown — reload if something changed since the last view.
-  // onShow() is the shared "pane became visible" hook every screen implements.
+  // The pane is being shown — reload now if something changed since last view.
+  // Called from the tab click, where the pane is about to become active, so it
+  // loads directly (the .active class isn't set yet at click time).
   onShow() {
-    if (this.dirty) this.reload()
+    if (this.dirty) {
+      this.dirty = false
+      this.loadDocs()
+    }
   }
 
   // Refresh the list. If the pane is currently visible, reload immediately;
   // otherwise just mark it stale so it reloads the next time it's shown (via
   // onShow). One entry point for both "the user is looking now" (row actions)
-  // and "something changed in the background" (save/promote elsewhere).
+  // and "something changed in the background" (save/promote/revert elsewhere).
   reload() {
     if ($("#draft").hasClass("active")) {
       this.dirty = false
