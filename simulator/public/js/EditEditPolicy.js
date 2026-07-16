@@ -89,8 +89,8 @@ export default draw2d.policy.canvas.BoundingboxSelectionPolicy.extend({
     }
 
     let hit =  emitter.getFigures().find( (figure) => {
-      // "cast" undefined to false
-      return false || (figure.getParameterSettings?.().length>0 && figure.hitTest(event.x, event.y, 40))
+      // cast a possibly undefined hitTest result to a real boolean
+      return !!(figure.getParameterSettings?.().length>0 && figure.hitTest(event.x, event.y, 40))
     })
 
     if (hit) {

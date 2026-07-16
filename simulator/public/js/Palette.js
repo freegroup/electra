@@ -9,10 +9,8 @@ import jsonStorage from "../../common/js/JsonStorage"
 export default class Palette {
   /**
    * @constructor
-   *
-   * @param {Object} permissions The permissions of the current loggedin user
    */
-  constructor(permissions) {
+  constructor() {
     this.CATEGORY_KEY = "simulator.palette.categories"
 
     this.refreshUI();
@@ -105,8 +103,8 @@ export default class Palette {
     })
 
     $('.draw2d_droppable')
-      .on('mouseover',() => { $(this).parent().addClass('glowBorder') })
-      .on('mouseout', () => { $(this).parent().removeClass('glowBorder') })
+      .on('mouseover', (e) => { $(e.currentTarget).parent().addClass('glowBorder') })
+      .on('mouseout',  (e) => { $(e.currentTarget).parent().removeClass('glowBorder') })
   }
 
   buildTree(data, selectedCategories) {

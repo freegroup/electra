@@ -51,7 +51,7 @@ class Application extends GenericApplication {
   // Publish the current document as an anonymous public link.
   fileShare() {
     if (!this.currentFile) return Promise.resolve()
-    return this.fileSave(t("message.save_before_share"))
+    return this.fileSave()
       .then(() => this.publishDialog.show(this.currentFile.id, this.currentFile.version))
       .catch((error) => { if (error) console.log(error) })
   }
@@ -86,7 +86,7 @@ class Application extends GenericApplication {
     commandStack.markSaveLocation()
   }
 
-  fileSave(description = "") {
+  fileSave() {
     this.view.onCommitEdit()
     if (!this.currentFile) {
       return this.fileCreateNew()
@@ -128,7 +128,7 @@ class Application extends GenericApplication {
     Promise.resolve()
       .then(() => {
         if (this.hasUnsavedChanges) {
-          return this.fileSave(t("message.save_before_pdf"))
+          return this.fileSave()
         }
         return true
       })

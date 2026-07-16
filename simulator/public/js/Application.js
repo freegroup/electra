@@ -33,7 +33,7 @@ class Application extends GenericApplication {
   init(permissions) {
     super.init(permissions, conf)
     return new Promise((resolve, reject) => {
-      this.palette = new Palette(permissions)
+      this.palette = new Palette()
       this.view    = new View("draw2dCanvas", permissions)
       this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
 
@@ -52,7 +52,7 @@ class Application extends GenericApplication {
   // Publish the current document version as an anonymous public link.
   fileShare() {
     if (!this.currentFile) return Promise.resolve()
-    return this.fileSave(t("message.save_before_share"))
+    return this.fileSave()
       .then(() => this.publishDialog.show(this.currentFile.id, this.currentFile.version))
       .catch((error) => { if (error) console.log(error) })
   }
@@ -88,7 +88,7 @@ class Application extends GenericApplication {
     this.view.centerDocument()
   }
 
-  fileSave(description = "") {
+  fileSave() {
     if (!this.currentFile) {
       return this.fileCreateNew()
     }

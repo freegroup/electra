@@ -58,8 +58,8 @@ let Reader = draw2d.io.json.Reader.extend({
                 canvas.add(o)
                 resolve()
               } catch (exc) {
-                debug.error(element, "Unable to instantiate figure type '" + element.type + "' with id '" + element.id + "' during unmarshal. Skipping figure..");
-                debug.error(exc)
+                console.error(element, "Unable to instantiate figure type '" + element.type + "' with id '" + element.id + "' during unmarshal. Skipping figure..");
+                console.error(exc)
                 resolve()
               }
             })

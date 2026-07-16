@@ -1,7 +1,6 @@
 import fs from "path-browserify"
 
 import conf from "../Configuration"
-import writer from '../io/Writer'
 
 import storageFactory from '../../../common/js/BackendStorage'
 let storage = storageFactory(conf)
