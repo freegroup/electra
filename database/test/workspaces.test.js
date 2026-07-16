@@ -6,7 +6,7 @@ const { test, before, after } = require("node:test")
 const assert = require("node:assert/strict")
 const {
   setupTestSchema, newTestSchema, dropSchema,
-  asPerson, asRootAdmin, get, post, del, createScope, addMember, scopeIdByPath,
+  asPerson, asRootAdmin, get, post, patch, del, createScope, addMember, scopeIdByPath,
 } = require("./helpers")
 setupTestSchema("workspaces")
 
@@ -89,24 +89,6 @@ test("member roster is admin-only", async () => {
   assert.ok(asAdmin.json().members.some((m) => m.personRef === "bob"))
 })
 
-test("name-available check: free vs taken vs invalid", async () => {
-  await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { name: "taken" })
-
-  const free = await get(ctx, `/database/scopes/${klasseId}/children/available?name=fresh`, asPerson("anna"))
-  assert.equal(free.statusCode, 200)
-  assert.equal(free.json().available, true)
-
-  const taken = await get(ctx, `/database/scopes/${klasseId}/children/available?name=taken`, asPerson("anna"))
-  assert.equal(taken.json().available, false)
-
-  const bad = await get(ctx, `/database/scopes/${klasseId}/children/available?name=a%2Fb`, asPerson("anna"))
-  assert.equal(bad.json().available, false)
-
-  // non-members can't probe names here
-  const stranger = await get(ctx, `/database/scopes/${klasseId}/children/available?name=x`, asPerson("stranger"))
-  assert.equal(stranger.statusCode, 403)
-})
-
 test("roots returns exactly the two entry points: app root + personal workspace", async () => {
   // a fresh login provisions the personal workspace and enrolls in apps
   await post(ctx, "/database/on_login", asPerson("rooty"))
@@ -120,11 +102,12 @@ test("roots returns exactly the two entry points: app root + personal workspace"
   assert.equal(byKind.apps.isMember, true)
 
   assert.ok(byKind.personal, "personal workspace present")
-  assert.equal(byKind.personal.name, "rooty")
+  assert.equal(byKind.personal.name, "rooty")        // identity = email
+  assert.equal(byKind.personal.label, "Personal")     // display name
   assert.equal(byKind.personal.isAdmin, true)
 
   // exactly two entry points — sub-workspaces do NOT leak into roots
-  await post(ctx, `/database/scopes/${byKind.personal.scopeRef}/children`, asPerson("rooty"), { name: "sub" })
+  await post(ctx, `/database/scopes/${byKind.personal.scopeRef}/children`, asPerson("rooty"), { label: "sub" })
   const again = await get(ctx, "/database/scopes/roots", asPerson("rooty"))
   assert.equal(again.json().roots.length, 2, "still exactly two roots after creating a sub-workspace")
 })
@@ -181,6 +164,41 @@ test("an admin can delete an empty scope, but not one with children", async () =
   // it is gone
   const gone = await get(ctx, `/database/scopes/${tempId}`, asPerson("anna"))
   assert.equal(gone.statusCode, 404)
+})
+
+test("label → sanitized lowercase name, with auto-suffix on collision", async () => {
+  const a = await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { label: "My Fancy Room!" })
+  assert.equal(a.statusCode, 201)
+  assert.equal(a.json().label, "My Fancy Room!")   // display kept verbatim
+  assert.equal(a.json().name, "my-fancy-room")      // identity sanitized + lowercase
+
+  // a second workspace with the SAME label keeps the label but auto-suffixes name
+  const b = await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { label: "My Fancy Room!" })
+  assert.equal(b.json().label, "My Fancy Room!")
+  assert.equal(b.json().name, "my-fancy-room-2")
+})
+
+test("empty / whitespace-only label is rejected", async () => {
+  const blank = await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { label: "   " })
+  assert.equal(blank.statusCode, 400)
+})
+
+test("relabel changes the display label only; identity name stays fixed", async () => {
+  const created = await post(ctx, `/database/scopes/${klasseId}/scopes`, asPerson("anna"), { label: "Original" })
+  const ref = created.json().scopeRef
+  const name = created.json().name
+
+  const patched = await patch(ctx, `/database/scopes/${ref}`, asPerson("anna"), { label: "Renamed Display" })
+  assert.equal(patched.statusCode, 200)
+  assert.equal(patched.json().label, "Renamed Display")
+
+  const meta = (await get(ctx, `/database/scopes/${ref}`, asPerson("anna"))).json()
+  assert.equal(meta.label, "Renamed Display")
+  assert.equal(meta.name, name, "identity name unchanged by relabel")
+
+  // an empty relabel is rejected
+  const blank = await patch(ctx, `/database/scopes/${ref}`, asPerson("anna"), { label: "  " })
+  assert.equal(blank.statusCode, 400)
 })
 
 

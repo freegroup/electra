@@ -33,13 +33,13 @@ const {
   setAnonymous,
   enrollBootstrap,
   renameScope,
+  relabelScope,
   setParentScope,
   deleteScope,
   myScopes,
   getScope,
   listChildren,
   listMembers,
-  childNameAvailable,
   rootWorkspaces,
 } = require("../persistence/scopes")
 const {
@@ -51,8 +51,12 @@ const { parseScopeRef } = require("./helpers")
 
 const createChildBody = {
   type: "object",
-  required: ["name"],
+  // The user supplies a display `label`; the identity `name` is derived from it
+  // (sanitized) server-side. `name` may still be passed directly for internal/
+  // power use. At least one is required.
+  anyOf: [{ required: ["label"] }, { required: ["name"] }],
   properties: {
+    label: { type: "string", minLength: 1 },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
     requiredApprovalScore: { type: "integer", minimum: 0, default: 0 },
     promoteCeiling: { type: "boolean", default: false },
@@ -87,6 +91,9 @@ const configBody = {
     promoteCeiling: { type: "boolean" },
     bootstrap: { type: "boolean" },
     anonymous: { type: "boolean" },
+    // `label` is the everyday display-name change (safe for any scope). `name`
+    // is the identity rename — a god-view power tool (blocked for leaves).
+    label: { type: "string", minLength: 1 },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
     parentRef: { type: "string", pattern: "^\\d+$" },
   },
@@ -136,7 +143,9 @@ async function routes(fastify) {
           if (r.reviewer_score !== null) roles.push("reviewer")
           scopes.push({
             scopeRef: String(r.scope_id),
-            name: await pathOfScope(client, r.scope_id),
+            name: r.name,
+            label: r.label,
+            path: await pathOfScope(client, r.scope_id),
             requiredApprovalScore: r.required_approval_score,
             promoteCeiling: r.promote_ceiling,
             bootstrap: r.is_bootstrap,
@@ -186,7 +195,9 @@ async function routes(fastify) {
         if (!ok) throw new ForbiddenError(`caller may not read scope id ${scopeId}`)
         return {
           scopeRef: String(scope.id),
-          name: await pathOfScope(client, scope.id),
+          name: scope.name,
+          label: scope.label,
+          path: await pathOfScope(client, scope.id),
           parent: scope.parent_id === null ? null : String(scope.parent_id),
           requiredApprovalScore: scope.required_approval_score,
           promoteCeiling: scope.promote_ceiling,
@@ -222,23 +233,6 @@ async function routes(fastify) {
       await requireMember(scopeId, req.personRef)
       const children = await listChildren({ parentId: scopeId, personRef: req.personRef })
       return { children }
-    }
-  )
-
-  // Is a sub-workspace name free under this scope? Powers the UI's live hint
-  // while typing a new name. Members of the parent only.
-  fastify.get(
-    "/database/scopes/:scopeRef/children/available",
-    { preHandler: [fastify.requireLogin] },
-    async (req) => {
-      const scopeId = parseScopeRef(req.params.scopeRef)
-      await requireMember(scopeId, req.personRef)
-      const name = String((req.query || {}).name || "")
-      if (!name || name.includes("/")) {
-        return { available: false, reason: "invalid" }
-      }
-      const available = await childNameAvailable({ parentId: scopeId, name })
-      return { available }
     }
   )
 
@@ -278,13 +272,25 @@ async function routes(fastify) {
       // "any member may create" rule — not admin-only.
       await requireMember(parentId, req.personRef)
 
-      const { name, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
-      if (name.includes("/")) {
-        throw new BadRequestError('scope name must not contain "/"')
+      const { label, name, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
+
+      // Prefer the user-supplied display label (name is derived from it). Reject
+      // an empty / whitespace-only label outright — a blank display name is not
+      // allowed. `name` (identity) may still be passed directly for power use.
+      let cleanLabel
+      if (label !== undefined) {
+        cleanLabel = String(label).trim()
+        if (cleanLabel === "") {
+          throw new BadRequestError("label must not be empty")
+        }
+      }
+      if (cleanLabel === undefined && (name == null || name.includes("/"))) {
+        throw new BadRequestError('scope name must be provided and must not contain "/"')
       }
 
       const scope = await createScope({
         parentId,
+        label: cleanLabel,
         name,
         requiredApprovalScore,
         promoteCeiling,
@@ -306,6 +312,7 @@ async function routes(fastify) {
         id: scope.id,
         scopeRef: String(scope.id),
         name: scope.name,
+        label: scope.label,
         path,
         requiredApprovalScore: scope.required_approval_score,
         promoteCeiling: scope.promote_ceiling,
@@ -426,6 +433,13 @@ async function routes(fastify) {
       if (req.body.anonymous !== undefined) {
         await setAnonymous({ scopeId, value: req.body.anonymous })
         out.anonymous = req.body.anonymous
+      }
+      if (req.body.label !== undefined) {
+        // Trim then reject an empty display label (a blank name is not allowed).
+        const label = String(req.body.label).trim()
+        if (label === "") throw new BadRequestError("label must not be empty")
+        const row = await relabelScope({ scopeId, label })
+        out.label = row.label
       }
       if (req.body.name !== undefined) {
         const row = await renameScope({ scopeId, name: req.body.name })

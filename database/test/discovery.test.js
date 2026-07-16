@@ -28,18 +28,18 @@ after(async () => {
 test("myScopes returns the caller's explicit memberships with roles", async () => {
   const res = await get(ctx, `/database/scopes/mine`, asPerson("anna"))
   assert.equal(res.statusCode, 200)
-  const byName = Object.fromEntries(res.json().scopes.map((s) => [s.name, s]))
+  const byPath = Object.fromEntries(res.json().scopes.map((s) => [s.path, s]))
 
-  assert.ok(byName["electra/content/apps/klasse8a"])
-  assert.ok(byName["electra/content/apps/klasse8a/robotics-ag"])
+  assert.ok(byPath["electra/content/apps/klasse8a"])
+  assert.ok(byPath["electra/content/apps/klasse8a/robotics-ag"])
   // Roles are reported; anna is a reviewer of klasse8a.
-  assert.ok(byName["electra/content/apps/klasse8a"].roles.includes("member"))
-  assert.ok(byName["electra/content/apps/klasse8a"].roles.includes("reviewer"))
+  assert.ok(byPath["electra/content/apps/klasse8a"].roles.includes("member"))
+  assert.ok(byPath["electra/content/apps/klasse8a"].roles.includes("reviewer"))
 })
 
 test("myScopes excludes the caller's personal leaves", async () => {
   const res = await get(ctx, `/database/scopes/mine`, asPerson("anna"))
-  assert.ok(res.json().scopes.every((s) => !s.name.endsWith("/anna")))
+  assert.ok(res.json().scopes.every((s) => !s.path.endsWith("/anna")))
 })
 
 test("by-path resolves a scope name to its ref", async () => {
@@ -51,7 +51,8 @@ test("by-path resolves a scope name to its ref", async () => {
 test("scope metadata is readable by a member", async () => {
   const res = await get(ctx, `/database/scopes/${klasseId}`, asPerson("anna"))
   assert.equal(res.statusCode, 200)
-  assert.equal(res.json().name, "electra/content/apps/klasse8a")
+  assert.equal(res.json().name, "klasse8a")                          // atomic segment
+  assert.equal(res.json().path, "electra/content/apps/klasse8a")     // full path
   assert.equal(res.json().parent, String(brainsId))
 })
 

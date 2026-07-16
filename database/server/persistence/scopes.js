@@ -4,6 +4,42 @@ const { pool } = require("./pool")
 const { NotFoundError, BadRequestError, ConflictError } = require("../utils/errors")
 
 // ---------------------------------------------------------------------------
+// Identity-name derivation (from a display label)
+// ---------------------------------------------------------------------------
+
+// Turn a free-form display label into a stable, path-safe identity name:
+// lowercase, whitespace → "-", only [a-z0-9._-], no repeated/edge separators.
+// Falls back to "scope" if nothing usable remains. Pure — no DB access.
+function sanitizeName(label) {
+  let s = String(label == null ? "" : label)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")        // whitespace runs → single dash
+    .replace(/[^a-z0-9._-]/g, "") // drop anything not path-safe
+    .replace(/-+/g, "-")         // collapse repeated dashes
+    .replace(/^[-.]+|[-.]+$/g, "") // trim leading/trailing dash or dot
+  return s.length ? s : "scope"
+}
+
+// Find a free sibling name under parentId: `base`, else `base-2`, `base-3`, …
+// Uses the same lookup as createScope's uniqueness check. Requires a live
+// client (called inside createScope's transaction).
+async function uniqueChildName(client, parentId, base) {
+  let candidate = base
+  let n = 1
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const res = await client.query(
+      `SELECT 1 FROM scopes WHERE parent_id = $1 AND name = $2 LIMIT 1`,
+      [parentId, candidate]
+    )
+    if (res.rowCount === 0) return candidate
+    n += 1
+    candidate = `${base}-${n}`
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Path rendering (id → human path)
 // ---------------------------------------------------------------------------
 
@@ -75,9 +111,9 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
     }
 
     const insRes = await client.query(
-      `INSERT INTO scopes (parent_id, name, required_approval_score, created_by)
-       VALUES (NULL, $1, $2, $3)
-       RETURNING id, name, required_approval_score, created_at, created_by`,
+      `INSERT INTO scopes (parent_id, name, label, required_approval_score, created_by)
+       VALUES (NULL, $1, $1, $2, $3)
+       RETURNING id, name, label, required_approval_score, created_at, created_by`,
       [name, requiredApprovalScore, createdBy]
     )
     const scope = insRes.rows[0]
@@ -113,7 +149,7 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
 // Inserts a new scope under parentId and populates its closure rows in the
 // same transaction. The creator becomes the first admin + reviewer (score 10)
 // of the new scope. See ARCHITECTURE.md §2.3.
-async function createScope({ parentId, name, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy, grantCreatorAdmin = true }) {
+async function createScope({ parentId, name, label, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy, grantCreatorAdmin = true }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -124,18 +160,43 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
       throw new NotFoundError(`unknown parent scope id ${parentId}`)
     }
 
+    // Two creation modes, decided by whether an explicit identity `name` is
+    // given:
+    //  • internal (explicit name): keep the name verbatim — used for the
+    //    personal workspace (name == email, load-bearing for the resolver) and
+    //    structural containers. An optional `label` sets the display name
+    //    (e.g. "Personal"); otherwise it defaults to the name.
+    //  • user-driven (no name, label given): the typed text is the display
+    //    label; the identity name is DERIVED from it (sanitized) and
+    //    auto-suffixed to stay unique under the parent.
+    let finalName, finalLabel
+    if (name != null) {
+      if (String(name).includes("/")) {
+        throw new BadRequestError('scope name must not contain "/"')
+      }
+      finalName = name
+      finalLabel = (label !== undefined && label !== null && String(label).trim() !== "")
+        ? String(label).trim()
+        : name
+    } else if (label !== undefined && label !== null && String(label).trim() !== "") {
+      finalLabel = String(label).trim()
+      finalName = await uniqueChildName(client, parentId, sanitizeName(finalLabel))
+    } else {
+      throw new BadRequestError("either a name or a non-empty label is required")
+    }
+
     let insRes
     try {
       insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, parent_id, name, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_at, created_by`,
-        [parentId, name, requiredApprovalScore, promoteCeiling, isBootstrap, isAnonymous, createdBy]
+        `INSERT INTO scopes (parent_id, name, label, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id, parent_id, name, label, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_at, created_by`,
+        [parentId, finalName, finalLabel, requiredApprovalScore, promoteCeiling, isBootstrap, isAnonymous, createdBy]
       )
     } catch (err) {
       // Unique (parent_id, name) violation
       if (err.code === "23505") {
-        throw new ConflictError(`scope "${name}" already exists under parent ${parentId}`)
+        throw new ConflictError(`scope "${finalName}" already exists under parent ${parentId}`)
       }
       throw err
     }
@@ -183,7 +244,7 @@ async function createScope({ parentId, name, requiredApprovalScore, promoteCeili
 
 async function getScope(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous, created_at, created_by
+    `SELECT id, parent_id, name, label, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous, created_at, created_by
      FROM scopes WHERE id = $1`,
     [scopeId]
   )
@@ -346,8 +407,8 @@ async function ensureWriteLeaf({ scopeId, personRef, createdBy }) {
       leafId = leafRes.rows[0].id
     } else {
       const insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, required_approval_score, created_by, is_personal_leaf)
-         VALUES ($1, $2, 0, $3, true)
+        `INSERT INTO scopes (parent_id, name, label, required_approval_score, created_by, is_personal_leaf)
+         VALUES ($1, $2, $2, 0, $3, true)
          RETURNING id`,
         [scopeId, personRef, createdBy]
       )
@@ -523,7 +584,7 @@ async function setAnonymous({ scopeId, value }) {
 // Ensures a child scope with the given name exists under parentId, returning
 // its id. Idempotent: if it already exists, returns the existing id without
 // touching it. `createdBy` becomes admin+member only when it is freshly created.
-async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin = true, promoteCeiling = false }) {
+async function ensureChildScope({ parentId, name, label, createdBy, grantCreatorAdmin = true, promoteCeiling = false }) {
   const client = await pool.connect()
   let existing
   try {
@@ -536,7 +597,9 @@ async function ensureChildScope({ parentId, name, createdBy, grantCreatorAdmin =
   }
   if (existing.rowCount > 0) return String(existing.rows[0].id)
   try {
-    const scope = await createScope({ parentId, name, requiredApprovalScore: 0, createdBy, grantCreatorAdmin, promoteCeiling })
+    // Internal caller: pass an explicit name (bypass sanitize) plus an optional
+    // display label (e.g. "Personal" for the user's own workspace).
+    const scope = await createScope({ parentId, name, label, requiredApprovalScore: 0, createdBy, grantCreatorAdmin, promoteCeiling })
     return String(scope.id)
   } catch (err) {
     // Lost a race with a concurrent login — the scope now exists; look it up.
@@ -572,7 +635,9 @@ async function provisionUserWorkspace(personRef) {
   // The user's own workspace under it — they are its admin. It is a promote
   // ceiling: content saved/promoted from here lands ON the personal workspace
   // and never rises into shared scopes. Sharing outward is only via distribute.
-  const mineId = await ensureChildScope({ parentId: usersId, name: personRef, createdBy: personRef, promoteCeiling: true })
+  // name == email (identity, load-bearing for the resolver); label = "Personal"
+  // so the user never sees their raw email as the workspace title.
+  const mineId = await ensureChildScope({ parentId: usersId, name: personRef, label: "Personal", createdBy: personRef, promoteCeiling: true })
   return mineId
 }
 
@@ -633,6 +698,27 @@ async function renameScope({ scopeId, name }) {
       }
       throw err
     }
+  } finally {
+    client.release()
+  }
+}
+
+// Sets a scope's display label (free-form: spaces, mixed case, unicode ok).
+// Unlike renameScope, this NEVER touches the identity `name`, so it is safe for
+// any scope including personal leaves. This is the everyday "rename" users and
+// admins see; renameScope (identity) stays a god-view power tool.
+async function relabelScope({ scopeId, label }) {
+  if (typeof label !== "string" || label.trim().length === 0) {
+    throw new BadRequestError("label must be a non-empty string")
+  }
+  const client = await pool.connect()
+  try {
+    const res = await client.query(
+      `UPDATE scopes SET label = $2 WHERE id = $1 RETURNING id, name, label`,
+      [scopeId, label.trim()]
+    )
+    if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    return res.rows[0]
   } finally {
     client.release()
   }
@@ -768,7 +854,7 @@ async function setParentScope({ scopeId, newParentId }) {
 // happens to share the name.
 async function myScopes(personRef) {
   const res = await pool.query(
-    `SELECT m.scope_id, s.parent_id, s.name, s.required_approval_score, s.promote_ceiling, s.is_bootstrap,
+    `SELECT m.scope_id, s.parent_id, s.name, s.label, s.required_approval_score, s.promote_ceiling, s.is_bootstrap,
             m.is_admin, m.reviewer_score
        FROM memberships m
        JOIN scopes s ON s.id = m.scope_id
@@ -799,7 +885,7 @@ async function leafUnderScope(client, scopeId, personRef) {
 // route (isMember of parentId).
 async function listChildren({ parentId, personRef }) {
   const res = await pool.query(
-    `SELECT s.id, s.name, s.is_bootstrap, s.is_anonymous,
+    `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
             (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
             COALESCE(m.is_admin, false)                       AS is_admin
        FROM scopes s
@@ -807,12 +893,13 @@ async function listChildren({ parentId, personRef }) {
               ON m.scope_id = s.id AND m.person_ref = $2
       WHERE s.parent_id = $1
         AND s.is_personal_leaf = false
-      ORDER BY s.name`,
+      ORDER BY s.label`,
     [parentId, personRef]
   )
   return res.rows.map((r) => ({
     scopeRef: String(r.id),
     name: r.name,
+    label: r.label,
     bootstrap: r.is_bootstrap,
     anonymous: r.is_anonymous,
     isMember: r.is_member,
@@ -841,7 +928,7 @@ async function rootWorkspaces(personRef) {
     const out = []
     for (const w of wanted) {
       const r = await client.query(
-        `SELECT s.id, s.name, s.is_bootstrap, s.is_anonymous,
+        `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
                 (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
                 COALESCE(m.is_admin, false)                       AS is_admin
            FROM scopes s
@@ -855,6 +942,7 @@ async function rootWorkspaces(personRef) {
       out.push({
         scopeRef: String(s.id),
         name: s.name,
+        label: s.label,
         kind: w.kind, // "apps" | "personal"
         bootstrap: s.is_bootstrap,
         anonymous: s.is_anonymous,
@@ -868,16 +956,6 @@ async function rootWorkspaces(personRef) {
   }
 }
 
-// Is a child name free under this parent? Powers the UI's live "name available"
-// hint while typing. Scoped (route requires membership of the parent) so it
-// can't be used to probe names in foreign subtrees.
-async function childNameAvailable({ parentId, name }) {
-  const res = await pool.query(
-    `SELECT 1 FROM scopes WHERE parent_id = $1 AND name = $2`,
-    [parentId, name]
-  )
-  return res.rowCount === 0
-}
 
 // The member roster of ONE workspace (admin-only view, enforced by the route).
 // Scoped query on this scope's memberships — NOT the god-view's cross-scope
@@ -920,12 +998,13 @@ module.exports = {
   setAnonymous,
   enrollBootstrap,
   renameScope,
+  relabelScope,
   setParentScope,
   deleteScope,
   myScopes,
   leafUnderScope,
   listChildren,
   listMembers,
-  childNameAvailable,
   rootWorkspaces,
+  sanitizeName,
 }

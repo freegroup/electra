@@ -343,11 +343,15 @@
     scope = state.scopes.find((s) => s.id === scope.id) || scope
     Detail.setTitle(`Scope: ${scopePath(scope)}`)
 
-    // config: name + score + ceiling (Save lives in the toolbar)
+    // config: label + name + score + ceiling (Save lives in the toolbar)
     const cfg = UI.el("div", "detail-section")
+    const labelInput = document.createElement("input")
+    labelInput.type = "text"; labelInput.value = scope.label != null ? scope.label : scope.name
+    const lRow = UI.el("div", "form-row"); lRow.append(UI.el("label", "form-label", "Display label"), labelInput)
+    cfg.appendChild(lRow)
     const nameInput = document.createElement("input")
     nameInput.type = "text"; nameInput.value = scope.name
-    const nRow = UI.el("div", "form-row"); nRow.append(UI.el("label", "form-label", "Name"), nameInput)
+    const nRow = UI.el("div", "form-row"); nRow.append(UI.el("label", "form-label", "Name (identity)"), nameInput)
     cfg.appendChild(nRow)
     const scoreInput = document.createElement("input")
     scoreInput.type = "number"; scoreInput.min = 0; scoreInput.value = scope.requiredApprovalScore || 0
@@ -366,6 +370,9 @@
 
     const saveConfig = async () => {
       const patch = {}
+      const newLabel = labelInput.value.trim()
+      const curLabel = scope.label != null ? scope.label : scope.name
+      if (newLabel && newLabel !== curLabel) patch.label = newLabel
       const newName = nameInput.value.trim()
       if (newName && newName !== scope.name) patch.name = newName
       if (Number(scoreInput.value) !== (scope.requiredApprovalScore || 0)) patch.requiredApprovalScore = Number(scoreInput.value)

@@ -12,7 +12,7 @@ const { pool } = require("./pool")
 // comes straight from the scopes.is_personal_leaf column.
 async function fullTree() {
   const scopeRes = await pool.query(
-    `SELECT id, parent_id, name, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous
+    `SELECT id, parent_id, name, label, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous
        FROM scopes
       ORDER BY id`
   )
@@ -37,6 +37,7 @@ async function fullTree() {
     id: String(s.id),
     parentId: s.parent_id == null ? null : String(s.parent_id),
     name: s.name,
+    label: s.label,
     requiredApprovalScore: s.required_approval_score,
     promoteCeiling: s.promote_ceiling,
     isLeaf: s.is_personal_leaf,

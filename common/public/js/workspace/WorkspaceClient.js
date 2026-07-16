@@ -44,16 +44,16 @@ class WorkspaceClient {
       .then((r) => r.data.members || [])
   }
 
-  // Live "is this sub-workspace name free?" check. -> boolean
-  nameAvailable(ref, name) {
-    return axios.get(`${this.base}/${ref}/name-available`, {
-      params: { name, _: Date.now() },
-    }).then((r) => !!r.data.available)
+  // Create a sub-workspace under ref (any member may). `label` is the display
+  // name; the server derives the identity name from it. -> { scopeRef, ... }
+  createChild(ref, label) {
+    return axios.post(`${this.base}/${ref}/children`, { label })
+      .then((r) => r.data)
   }
 
-  // Create a sub-workspace under ref (any member may). -> { scopeRef, ... }
-  createChild(ref, name) {
-    return axios.post(`${this.base}/${ref}/children`, { name })
+  // Rename a workspace's display label (admin only). -> { label, ... }
+  rename(ref, label) {
+    return axios.patch(`${this.base}/${ref}`, { label })
       .then((r) => r.data)
   }
 

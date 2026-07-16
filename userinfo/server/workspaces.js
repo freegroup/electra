@@ -63,15 +63,16 @@ function init(app) {
     }
   })
 
-  // Live "is this sub-workspace name free?" check.
-  app.get("/userinfo/workspaces/:ref/name-available", async (req, res) => {
+  // Rename a workspace's DISPLAY LABEL (admin only — database enforces). Only
+  // the label is editable here; the identity name is immutable.
+  app.patch("/userinfo/workspaces/:ref", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const name = encodeURIComponent(String(req.query.name || ""))
+      const { label } = req.body || {}
       const j = await db.call(
-        "GET",
-        `/database/scopes/${encodeURIComponent(req.params.ref)}/children/available?name=${name}`,
-        { authHeaders: auth }
+        "PATCH",
+        `/database/scopes/${encodeURIComponent(req.params.ref)}`,
+        { authHeaders: auth, body: { label } }
       )
       res.json(j)
     } catch (err) {
@@ -79,15 +80,16 @@ function init(app) {
     }
   })
 
-  // Create a sub-workspace (any member may — database enforces + names it).
+  // Create a sub-workspace (any member may). The user supplies a display
+  // `label`; database derives the identity name from it.
   app.post("/userinfo/workspaces/:ref/children", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { name } = req.body || {}
+      const { label } = req.body || {}
       const j = await db.call(
         "POST",
         `/database/scopes/${encodeURIComponent(req.params.ref)}/scopes`,
-        { authHeaders: auth, body: { name } }
+        { authHeaders: auth, body: { label } }
       )
       res.json(j)
     } catch (err) {

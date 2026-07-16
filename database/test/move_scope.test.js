@@ -52,7 +52,7 @@ test("moving a scope rebuilds its closure and updates its path", async () => {
   assert.ok(after.some((a) => a.depth === 0 && a.id === String(klasseId)), "self row kept")
 
   const meta = await get(ctx, `/database/scopes/${klasseId}`, asRootAdmin())
-  assert.equal(meta.json().name, "electra/content/target/klasse8a")
+  assert.equal(meta.json().path, "electra/content/target/klasse8a")
 })
 
 test("content and members survive the move (identity is the id)", async () => {

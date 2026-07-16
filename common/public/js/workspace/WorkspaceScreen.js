@@ -35,6 +35,7 @@ export default class WorkspaceScreen {
         {{#items}}
           <div class="workspaceTile" data-ref="{{scopeRef}}">
             <div class="workspaceTileName">{{name}}</div>
+            {{#isAdmin}}<button class="workspaceTileRename" title="${t("pane.workspaces.rename")}" data-ref="{{scopeRef}}">✎</button>{{/isAdmin}}
             <div class="workspaceTileBadges">
               {{#isAdmin}}<span class="wsBadge wsBadgeAdmin" data-i18n="pane.workspaces.role_admin">${t("pane.workspaces.role_admin")}</span>{{/isAdmin}}
               {{#isMemberOnly}}<span class="wsBadge wsBadgeMember" data-i18n="pane.workspaces.role_member">${t("pane.workspaces.role_member")}</span>{{/isMemberOnly}}
@@ -105,12 +106,19 @@ export default class WorkspaceScreen {
     let childrenP = current.scopeRef === null
       ? this.client.roots().then((rows) => rows.map((r) => ({
           scopeRef: r.scopeRef,
-          name: r.kind === "personal" ? t("pane.workspaces.personal") : r.name.split("/").pop(),
+          // Display the workspace's label. Personal workspace: server sends
+          // label "Personal" already, but keep the i18n fallback for safety.
+          name: r.kind === "personal" ? (r.label || t("pane.workspaces.personal")) : (r.label || r.name),
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
           isPersonal: r.kind === "personal",
         })))
-      : this.client.children(current.scopeRef)
+      : this.client.children(current.scopeRef).then((rows) => rows.map((r) => ({
+          scopeRef: r.scopeRef,
+          name: r.label || r.name,
+          isMember: !!r.isMember,
+          isAdmin: !!r.isAdmin,
+        })))
 
     childrenP.then((items) => {
       let view = items.map((it) => ({
@@ -125,6 +133,8 @@ export default class WorkspaceScreen {
       $tiles.removeClass("spinner").html(compiled.render({ items: view }))
 
       $tiles.find(".workspaceTile").off("click").on("click", (e) => {
+        // The rename pencil is inside the tile — don't drill in when it's clicked.
+        if ($(e.target).closest(".workspaceTileRename").length) return
         let $el = $(e.currentTarget)
         let ref = $el.data("ref")
         let name = $el.find(".workspaceTileName").text()
@@ -139,6 +149,15 @@ export default class WorkspaceScreen {
           isPersonal: !!(item && item.isPersonal),
         })
         _this.reload()
+      })
+
+      // Rename pencil (admins only — the button is only rendered for isAdmin
+      // tiles; the backend also enforces admin on PATCH). Sets the display label.
+      $tiles.find(".workspaceTileRename").off("click").on("click", (e) => {
+        e.stopPropagation()
+        let ref = $(e.currentTarget).data("ref")
+        let item = view.find((v) => String(v.scopeRef) === String(ref))
+        _this.promptRename(String(ref), item ? item.name : "")
       })
     }).catch((exc) => {
       console.log(exc)
@@ -202,7 +221,8 @@ export default class WorkspaceScreen {
   }
 
   // Create a sub-workspace under the current scope (any member may). Only makes
-  // sense below the root level, where there is a concrete parent scope.
+  // sense below the root level, where there is a concrete parent scope. The
+  // user types a display label; the server derives the identity name.
   promptCreate() {
     let current = this.stack[this.stack.length - 1]
     if (current.scopeRef === null) {
@@ -210,11 +230,23 @@ export default class WorkspaceScreen {
       return
     }
     inputPrompt.show(t("pane.workspaces.create"), t("pane.workspaces.name_label"))
-      .then((name) => {
-        name = (name || "").trim()
-        if (!name) return
-        return this.client.createChild(current.scopeRef, name)
+      .then((label) => {
+        label = (label || "").trim()
+        if (!label) return
+        return this.client.createChild(current.scopeRef, label)
           .then(() => { toast(t("pane.workspaces.created")); this.reload() })
+      })
+      .catch((err) => { if (err) console.log(err) })
+  }
+
+  // Rename a workspace's display label (admin only). Reloads to reflect it.
+  promptRename(scopeRef, currentLabel) {
+    inputPrompt.show(t("pane.workspaces.rename"), t("pane.workspaces.name_label"), currentLabel || "")
+      .then((label) => {
+        label = (label || "").trim()
+        if (!label || label === currentLabel) return
+        return this.client.rename(scopeRef, label)
+          .then(() => { toast(t("pane.workspaces.renamed")); this.reload() })
       })
       .catch((err) => { if (err) console.log(err) })
   }

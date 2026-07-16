@@ -72,6 +72,7 @@
       gap: 12px;
 
       .workspaceTile {
+        position: relative;
         width: 180px;
         height: 100px;
         border-width: 1px;
@@ -89,6 +90,23 @@
           word-break: break-word;
         }
         .workspaceTileBadges { display: flex; gap: 6px; }
+
+        // Rename pencil — top-right, revealed on tile hover (admins only).
+        .workspaceTileRename {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          border: 0;
+          background: transparent;
+          cursor: pointer;
+          font-size: 14px;
+          line-height: 1;
+          padding: 2px 4px;
+          opacity: 0;
+          transition: opacity 0.1s;
+        }
+        &:hover .workspaceTileRename { opacity: 0.6; }
+        .workspaceTileRename:hover { opacity: 1; }
       }
 
       .workspaceEmpty {

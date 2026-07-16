@@ -172,8 +172,17 @@ const Tree = (() => {
     const tw = twisty(open)
     row.appendChild(tw)
     const nameCls = scope.isLeaf ? "leaf-name" : "scope-name"
-    const displayName = scope.isLeaf ? "👤 " + short(scope.name) : short(scope.name)
-    row.appendChild(el("span", nameCls, displayName))
+    // Show the display label; append the identity name in parens when it differs
+    // (god-view cares about identity). Leaves stay keyed by their name (email).
+    const label = scope.label != null ? scope.label : scope.name
+    let text
+    if (scope.isLeaf) {
+      text = "👤 " + short(scope.name)
+    } else {
+      text = short(label)
+      if (label !== scope.name) text += " (" + short(scope.name) + ")"
+    }
+    row.appendChild(el("span", nameCls, text))
     if (scope.promoteCeiling) {
       row.appendChild(el("span", "badge ceiling", "⛔ ceiling"))
     }
