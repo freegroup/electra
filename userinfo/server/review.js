@@ -18,6 +18,18 @@ function init(app) {
     }
   })
 
+  // The author's own still-open promotions with their score progress —
+  // powers the "in review" column of the Draft pane.
+  app.get("/userinfo/review/mine", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const j = await db.call("GET", `/database/review/mine`, { authHeaders: auth })
+      res.json({ mine: j.mine || [] })
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
   // A concrete pending version with full content (version-pinned read) so an
   // editor can display what is up for review. Reviewer/member — database
   // enforces the read gate.

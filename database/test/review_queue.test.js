@@ -133,6 +133,24 @@ test("a promote description travels to the queue; a fresh promote without one cl
   assert.equal(entry.description, null, "stale description must not stick")
 })
 
+test("review/mine: the author sees their own open promotions with score progress", async () => {
+  // anna authored the pendings staged above; klaus voted 2 on alpha earlier.
+  const res = await get(ctx, `/database/review/queue`, asPerson("anna"))
+  assert.deepEqual(res.json().queue, [], "anna is no reviewer — her QUEUE is empty")
+
+  const mine = await get(ctx, `/database/review/mine`, asPerson("anna"))
+  assert.equal(mine.statusCode, 200, mine.body)
+  const alpha = mine.json().mine.find((e) => e.path === "alpha.json")
+  assert.ok(alpha, "author sees her open promotion")
+  assert.equal(alpha.scopePath, "electra/content/apps/classA")
+  assert.equal(alpha.requiredScore, 5)
+  assert.equal(alpha.approvedScore, 2, "collected points visible to the author")
+
+  // rita has authored nothing — her author view is empty.
+  const rita = await get(ctx, `/database/review/mine`, asPerson("rita"))
+  assert.deepEqual(rita.json().mine, [])
+})
+
 test("members without a reviewer score get an empty queue; anonymous → 401", async () => {
   assert.deepEqual(await queueOf("anna"), [])
   const anon = await get(ctx, `/database/review/queue`, {})

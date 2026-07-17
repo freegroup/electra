@@ -1,6 +1,7 @@
 import Hogan from "hogan.js"
 
 import storageFactory from "./StorageClient"
+import reviewClientFactory from "../review/ReviewClient"
 
 // The "Draft" pane of the finder: the documents the caller currently has in
 // their OWN personal leaf — instanceType "personal" (a doc only they have) or
@@ -19,6 +20,7 @@ export default class DraftScreen {
     this.app = app
     this.conf = conf
     this.storage = storageFactory(conf)
+    this.review = reviewClientFactory()
     this.dirty = false // set on save/promote/revert; reloaded lazily on show
 
     // Reload the list only when the draft tab is (re)opened AND something
@@ -33,6 +35,7 @@ export default class DraftScreen {
               <th class="colName" data-i18n="pane.draft.col_name">${t("pane.draft.col_name")}</th>
               <th class="colProvider" data-i18n="pane.draft.col_provider">${t("pane.draft.col_provider")}</th>
               <th class="colKind" data-i18n="pane.draft.col_kind">${t("pane.draft.col_kind")}</th>
+              <th class="colReview" data-i18n="pane.draft.col_review">${t("pane.draft.col_review")}</th>
               <th class="colActions" data-i18n="pane.files.col_actions">${t("pane.files.col_actions")}</th>
             </tr>
           </thead>
@@ -51,6 +54,12 @@ export default class DraftScreen {
                 {{#isPersonal}}<span class="kindBadge kindPersonal" data-i18n="pane.draft.kind_personal">${t("pane.draft.kind_personal")}</span>{{/isPersonal}}
                 {{#isPersonalCopy}}<span class="kindBadge kindPersonalCopy" data-i18n="pane.draft.kind_personal_copy">${t("pane.draft.kind_personal_copy")}</span>{{/isPersonalCopy}}
               </td>
+              <td class="colReview">
+                {{#inReview}}
+                  <span class="reviewPendingBadge" title="{{reviewDescription}}" data-i18n="pane.draft.in_review">${t("pane.draft.in_review")}</span>
+                  <span class="reviewPendingScore">{{reviewHave}} / {{reviewNeed}}</span>
+                {{/inReview}}
+              </td>
               <td class="colActions">
                 {{#canRevert}}
                   <button class="electra-button storageRevertButton" data-id="{{id}}" data-i18n="button.revert">${t("button.revert")}</button>
@@ -65,7 +74,7 @@ export default class DraftScreen {
             </tr>
           {{/items}}
           {{^items}}
-            <tr><td colspan="4" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
+            <tr><td colspan="5" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
           {{/items}}
           </tbody>
         </table>
@@ -119,7 +128,13 @@ export default class DraftScreen {
     let $host = $("#draft .draftFinder .storageList")
     $host.addClass("spinner")
 
-    this.storage.files().then((items) => {
+    // The review status comes from the caller's own open promotions (author
+    // view) and is matched onto the draft rows by document path. Best-effort:
+    // a failing review lookup must not break the Draft pane.
+    let mineP = this.review.mine().catch(() => [])
+
+    Promise.all([this.storage.files(), mineP]).then(([items, mine]) => {
+      let reviewByPath = new Map(mine.map((m) => [m.path, m]))
       items = items
         // Draft = documents living in the caller's own leaf.
         .filter((it) => it.instanceType === "personal" || it.instanceType === "personalCopy")
@@ -143,7 +158,12 @@ export default class DraftScreen {
           // with, so it is distribute-only.
           canPromote: it.instanceType === "personalCopy"
             || (it.instanceType === "personal" && !it.promoteCeiling),
-          thumbnailUrl: it.thumbnailUrl
+          thumbnailUrl: it.thumbnailUrl,
+          // Promote already sent, approval still open → show the progress.
+          inReview: reviewByPath.has(it.path),
+          reviewHave: reviewByPath.get(it.path)?.approvedScore,
+          reviewNeed: reviewByPath.get(it.path)?.requiredScore,
+          reviewDescription: reviewByPath.get(it.path)?.description || "",
         }))
 
       let compiled = Hogan.compile($("#draftListTemplate").html())

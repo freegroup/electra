@@ -17,6 +17,14 @@ class ReviewClient {
       .then((r) => r.data.queue || [])
   }
 
+  // The caller's own still-open promotions with score progress (author view).
+  // -> [{ scopeRef, scopePath, scopeLabel, path, version, requiredScore,
+  // approvedScore, description }]
+  mine() {
+    return axios.get(`${this.base}/mine`, { params: { _: Date.now() } })
+      .then((r) => r.data.mine || [])
+  }
+
   // Full content of one pending version (version-pinned read) so an editor
   // can show what is up for review. -> { data, meta, path, version, ... }
   doc(scopeRef, path, version) {

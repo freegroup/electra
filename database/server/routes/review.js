@@ -11,7 +11,7 @@
 
 const { pool } = require("../persistence/pool")
 const { getScope, reviewerScore } = require("../persistence/scopes")
-const { listPending, reviewQueue, approve, reject } = require("../persistence/promote")
+const { listPending, reviewQueue, myPendingPromotions, approve, reject } = require("../persistence/promote")
 const {
   ForbiddenError,
   NotFoundError,
@@ -57,6 +57,17 @@ async function routes(fastify) {
     async (req) => {
       const queue = await reviewQueue({ personRef: req.personRef })
       return { queue }
+    }
+  )
+
+  // The author's side: the caller's own still-open promotions with their
+  // score progress — powers the "in review" column of the Draft pane.
+  fastify.get(
+    "/database/review/mine",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const mine = await myPendingPromotions({ personRef: req.personRef })
+      return { mine }
     }
   )
 

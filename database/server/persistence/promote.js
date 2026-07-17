@@ -392,6 +392,47 @@ async function reviewQueue({ personRef }) {
   return out
 }
 
+// The author's view of the same data: every still-open promotion the caller
+// has authored, with the score situation. Lets the Draft pane show "in
+// review, 2 of 5 points" on the rows whose promote is awaiting approval.
+async function myPendingPromotions({ personRef }) {
+  const res = await pool.query(
+    `SELECT v.scope_id, v.doc_path, v.version, v.created_at,
+            v.meta->'_review'->>'description' AS description,
+            s.label, s.required_approval_score,
+            COALESCE((SELECT SUM(vt.score_snapshot)::int FROM votes vt
+                       WHERE vt.scope_id = v.scope_id AND vt.doc_path = v.doc_path
+                         AND vt.version = v.version AND vt.kind = 'approve'), 0) AS approved_score
+       FROM versions v
+       JOIN scopes s ON s.id = v.scope_id
+      WHERE v.status = 'pending' AND v.author = $1
+      ORDER BY v.created_at ASC`,
+    [personRef]
+  )
+
+  const pathCache = new Map()
+  const out = []
+  for (const r of res.rows) {
+    let scopePath = pathCache.get(r.scope_id)
+    if (scopePath === undefined) {
+      scopePath = await pathOfScope(pool, r.scope_id)
+      pathCache.set(r.scope_id, scopePath)
+    }
+    out.push({
+      scopeRef: String(r.scope_id),
+      scopePath,
+      scopeLabel: r.label,
+      path: r.doc_path,
+      version: r.version,
+      createdAt: r.created_at,
+      description: r.description || null,
+      requiredScore: r.required_approval_score,
+      approvedScore: r.approved_score,
+    })
+  }
+  return out
+}
+
 async function approve({ scopeId, personRef, docPath, version, score }) {
   const client = await pool.connect()
   try {
@@ -459,4 +500,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, reviewQueue, approve, reject }
+module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject }
