@@ -1,7 +1,6 @@
-import Hogan from "hogan.js"
-
 import storageFactory from "./StorageClient"
 import reviewClientFactory from "../review/ReviewClient"
+import DraftFactSheet from "./DraftFactSheet"
 
 // The "Draft" pane of the finder: the documents the caller currently has in
 // their OWN personal leaf — instanceType "personal" (a doc only they have) or
@@ -26,60 +25,6 @@ export default class DraftScreen {
     // Reload the list only when the draft tab is (re)opened AND something
     // changed — not on every save.
     $("#draft_tab a").off("click.draft").on("click.draft", this.onShow.bind(this))
-
-    $("body").append(`
-      <script id="draftListTemplate" type="text/x-jsrender">
-        <table class="storageTable">
-          <thead>
-            <tr>
-              <th class="colName" data-i18n="pane.draft.col_name">${t("pane.draft.col_name")}</th>
-              <th class="colProvider" data-i18n="pane.draft.col_provider">${t("pane.draft.col_provider")}</th>
-              <th class="colKind" data-i18n="pane.draft.col_kind">${t("pane.draft.col_kind")}</th>
-              <th class="colReview" data-i18n="pane.draft.col_review">${t("pane.draft.col_review")}</th>
-              <th class="colActions" data-i18n="pane.files.col_actions">${t("pane.files.col_actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-          {{#items}}
-            <tr class="storageRow" data-id="{{id}}">
-              <td class="colName">
-                <img class="storageThumb" src="{{thumbnailUrl}}">
-                <span class="storageTitle">{{title}}</span>
-              </td>
-              <td class="colProvider">
-                <span class="providerScope">{{providedBy}}</span>
-                <span class="providerVersion">v{{version}}</span>
-              </td>
-              <td class="colKind">
-                {{#isPersonal}}<span class="kindBadge kindPersonal" data-i18n="pane.draft.kind_personal">${t("pane.draft.kind_personal")}</span>{{/isPersonal}}
-                {{#isPersonalCopy}}<span class="kindBadge kindPersonalCopy" data-i18n="pane.draft.kind_personal_copy">${t("pane.draft.kind_personal_copy")}</span>{{/isPersonalCopy}}
-              </td>
-              <td class="colReview">
-                {{#inReview}}
-                  <span class="reviewPendingBadge" title="{{reviewDescription}}" data-i18n="pane.draft.in_review">${t("pane.draft.in_review")}</span>
-                  <span class="reviewPendingScore">{{reviewHave}} / {{reviewNeed}}</span>
-                {{/inReview}}
-              </td>
-              <td class="colActions">
-                {{#canRevert}}
-                  <button class="electra-button storageRevertButton" data-id="{{id}}" data-i18n="button.revert">${t("button.revert")}</button>
-                {{/canRevert}}
-                {{#canDelete}}
-                  <button class="electra-button storageDeleteButton" data-id="{{id}}" data-i18n="common:button.delete">${t("common:button.delete")}</button>
-                {{/canDelete}}
-                {{#canPromote}}
-                  <button class="electra-button electra-primary storagePromoteButton" data-id="{{id}}" data-i18n="button.promote">${t("button.promote")}</button>
-                {{/canPromote}}
-              </td>
-            </tr>
-          {{/items}}
-          {{^items}}
-            <tr><td colspan="5" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
-          {{/items}}
-          </tbody>
-        </table>
-      </script>
-    `)
 
     this.render()
   }
@@ -166,30 +111,22 @@ export default class DraftScreen {
           reviewDescription: reviewByPath.get(it.path)?.description || "",
         }))
 
-      let compiled = Hogan.compile($("#draftListTemplate").html())
-      $host.removeClass("spinner").html(compiled.render({ items }))
-
-      // A draft row always opens the caller's own version directly.
-      $host.find(".storageRow").off("click").on("click", (event) => {
-        let $el = $(event.currentTarget)
-        let id = $el.data("id")
-        $el.addClass("spinner")
-        _this.app.open(id).then(() => $el.removeClass("spinner"))
-      })
-
-      // Action buttons must not also open the document.
-      $host.find(".storagePromoteButton").off("click").on("click", (event) => {
-        event.stopPropagation()
-        _this.app.promoteById($(event.currentTarget).data("id"))
-      })
-      $host.find(".storageRevertButton").off("click").on("click", (event) => {
-        event.stopPropagation()
-        _this.app.revertById($(event.currentTarget).data("id"))
-      })
-      $host.find(".storageDeleteButton").off("click").on("click", (event) => {
-        event.stopPropagation()
-        _this.app.deleteById($(event.currentTarget).data("id"))
-      })
+      let $grid = $(`<div class="factSheetGrid"></div>`)
+      if (items.length === 0) {
+        $grid.append(`<div class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</div>`)
+      }
+      for (let it of items) {
+        $grid.append(new DraftFactSheet(it, {
+          onOpen: (item, $sheet) => {
+            $sheet.addClass("spinner")
+            _this.app.open(item.id).then(() => $sheet.removeClass("spinner"))
+          },
+          onPromote: (item) => _this.app.promoteById(item.id),
+          onRevert: (item) => _this.app.revertById(item.id),
+          onDelete: (item) => _this.app.deleteById(item.id),
+        }).render())
+      }
+      $host.removeClass("spinner").empty().append($grid)
     }).catch((exc) => {
       console.log(exc)
       $host.removeClass("spinner").html(

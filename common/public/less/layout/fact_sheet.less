@@ -1,0 +1,138 @@
+// fact_sheet — Figma-style card for one document.
+// Paired with FileFactSheet.js / DraftFactSheet.js.
+// The .factSheetGrid uses display:flex so cards wrap naturally.
+
+.factSheetGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-content: flex-start;
+}
+
+.factSheet {
+  width: 240px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: @borderRadiusBig;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.12s, box-shadow 0.12s;
+
+  .factSheetThumb {
+    position: relative;
+    width: 100%;
+    min-height: 160px;
+    overflow: hidden;
+    flex: 0 0 auto;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+    }
+
+    // status icon — bottom-right of thumbnail (lock = private, globe = copy)
+    .factSheetStatusIcon {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      padding: 2px;
+      pointer-events: auto;
+      cursor: pointer;
+      display: block;
+    }
+    .factSheetOverlay {
+      display: none;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.68em;
+      font-weight: 600;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .factSheetOverlayReview { display: inline-block; }
+  }
+
+  // --- body below thumb ------------------------------------------------
+  .factSheetBody {
+    flex: 1;                    // pushes button bar to card bottom
+    padding: 8px 10px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .factSheetTitle {
+    font-size: 13px;
+    font-weight: var(--label-font-weight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .factSheetWorkspace {
+    font-size: 11px;
+    opacity: 0.55;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .factSheetBadges {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .factSheetBadge {
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 0.68em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  // --- button bar — always pinned at card bottom ----------------------
+  .factSheetButtonBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 6px 8px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    flex-wrap: wrap;
+    min-height: 34px;         // stable height even when empty
+  }
+  .factSheetButtonBarEmpty { border-top-color: transparent; }
+
+  // ghost action buttons
+  .factSheetBtn {
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 11px;
+    padding: 3px 8px;
+    cursor: pointer;
+    line-height: 1.4;
+    transition: background 0.1s, border-color 0.1s, color 0.1s;
+    white-space: nowrap;
+  }
+}

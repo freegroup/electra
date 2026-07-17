@@ -1,0 +1,38 @@
+// PopoverTooltip — generic speech-bubble popover, paired with PopoverTooltip.js.
+// Appended to <body>, positioned below an anchor with an upward-pointing arrow.
+// Arrow position set via --arrow-left CSS variable from JS.
+
+.popoverTooltip {
+  position: absolute;
+  z-index: 9999;
+  width: 210px;
+  padding: 10px 12px;
+  border-radius: @borderRadiusBig;
+  pointer-events: none;
+
+  // upward-pointing speech arrow, tip position driven by JS
+  &::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: var(--arrow-left, 18px);
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom-width: 7px;
+    border-bottom-style: solid;
+  }
+
+  .popoverTooltipTitle {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .popoverTooltipBody {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0.8;
+  }
+}
