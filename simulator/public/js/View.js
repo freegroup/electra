@@ -34,6 +34,10 @@ export default draw2d.Canvas.extend({
 
     this.permissions = permissions
     this.simulate = false
+    // read-only viewing mode (set when a document is opened for review):
+    // the canvas can be panned/simulated but not edited. Decided at each
+    // edit-policy install site (initial below + simulationStop).
+    this.readOnly = false
     this.animationFrameFunc = this._calculate.bind(this)
     this.timerBase = 10 // ms calculate every 10ms all elements
 
@@ -97,7 +101,11 @@ export default draw2d.Canvas.extend({
     this.installEditPolicy(new draw2d.policy.canvas.SnapToGeometryEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToCenterEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToInBetweenEditPolicy())
-    this.installEditPolicy(new EditEditPolicy())
+    // Selection policy depends on the document: read-only for review, editable
+    // otherwise. Same decision is repeated in simulationStop.
+    this.installEditPolicy(this.readOnly
+      ? new draw2d.policy.canvas.ReadOnlySelectionPolicy()
+      : new EditEditPolicy())
 
     // Enable Copy&Paste for figures
     //
@@ -494,9 +502,17 @@ export default draw2d.Canvas.extend({
     this.commonPorts.each( (i, p) => {
       p.setVisible(true)
     })
-    this.installEditPolicy(new EditEditPolicy())
-    this.installEditPolicy(this.connectionPolicy)
-    this.installEditPolicy(this.coronaFeedback)
+    // Restore the edit policy that matches the document: a read-only document
+    // (opened for review) must stay read-only after simulation, not become
+    // editable.
+    if (this.readOnly) {
+      
+      this.installEditPolicy(new draw2d.policy.canvas.ReadOnlySelectionPolicy())
+    } else {
+      this.installEditPolicy(new EditEditPolicy())
+      this.installEditPolicy(this.connectionPolicy)
+      this.installEditPolicy(this.coronaFeedback)
+    }
 
     this.getFigures().each( (index, shape) =>{
       shape.onStop?.(this.simulationContext)

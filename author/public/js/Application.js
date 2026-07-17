@@ -69,6 +69,14 @@ class Application extends GenericApplication {
         this.setDocument(new Document(doc.data), 0)
         commandStack.markSaveLocation()
         this.hasUnsavedChanges = false
+        // Reflect review mode in the URL so a page reload re-enters review
+        // (read-only) instead of showing the document normally.
+        history.pushState(
+          { id: "editor", review: scopeRef + ":" + version, path },
+          conf.application + " | " + this.currentFile.name,
+          window.location.href.split("?")[0]
+            + "?review=" + encodeURIComponent(scopeRef + ":" + version)
+            + "&path=" + encodeURIComponent(path))
         reviewBar.show({
           scopeRef, path, version,
           onDone: () => {
@@ -123,6 +131,11 @@ class Application extends GenericApplication {
   }
 
   fileSave() {
+    // A document opened for review is read-only — never save it (that would fork
+    // a pending version into the reviewer's personal workspace).
+    if (this.currentFile && this.currentFile.editable === false) {
+      return Promise.resolve()
+    }
     this.view.onCommitEdit()
     if (!this.currentFile) {
       return this.fileCreateNew()

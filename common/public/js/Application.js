@@ -69,8 +69,13 @@ export default class Application extends AppFrame{
         window.addEventListener('popstate', (event) => {
             if (event.state && event.state.id === 'editor') {
                 // New scope-model apps push { doc:<opaque id> } and open(id);
-                // legacy folder apps push { file, scope } and load(name, scope).
-                if (event.state.doc !== undefined && typeof this.open === 'function') {
+                // review state pushes { review:"<scopeRef>:<version>", path } and
+                // re-enters read-only review mode; legacy folder apps push
+                // { file, scope } and load(name, scope).
+                if (event.state.review !== undefined && typeof this.openReview === 'function') {
+                    let [scopeRef, version] = String(event.state.review).split(':')
+                    this.openReview(scopeRef, event.state.path, Number(version))
+                } else if (event.state.doc !== undefined && typeof this.open === 'function') {
                     this.open(event.state.doc)
                 } else if (typeof this.load === 'function') {
                     this.load(event.state.file, event.state.scope)

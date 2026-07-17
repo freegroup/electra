@@ -102,6 +102,18 @@
   }
 }
 
+// Review mode: the document is read-only, so hide the editing toolbar groups
+// (New/Save, Delete, Undo/Redo, Share). Simulation + view controls stay.
+#editor.reviewMode .toolbar {
+  #editorgroup_fileoperations,
+  #editDelete,
+  #editUndo,
+  #editRedo,
+  #editorgroup_share {
+    display: none;
+  }
+}
+
 // Banner across the top of the editor while a pending version is loaded for
 // review. Sits above the toolbar; colors come from the theme.
 #editor .reviewBar {

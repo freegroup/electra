@@ -20,6 +20,9 @@ class ReviewBar {
     this.current = { scopeRef, path, version, onDone }
     this.hide()
 
+    // review mode: hide the editing toolbar groups (save/undo/redo/…) via CSS
+    $("#editor").addClass("reviewMode")
+
     $("#editor").prepend(`
       <div class="reviewBar">
         <div class="reviewBarMain">
@@ -29,7 +32,6 @@ class ReviewBar {
           <span class="reviewBarActions">
             <button class="reviewBarApprove electra-button electra-primary" data-i18n="pane.review.approve" style="display:none">${t("pane.review.approve")}</button>
             <button class="reviewBarReject electra-button" data-i18n="pane.review.reject" style="display:none">${t("pane.review.reject")}</button>
-            <button class="reviewBarClose electra-button" data-i18n="pane.review.back">${t("pane.review.back")}</button>
           </span>
         </div>
         <div class="reviewBarDescription" style="display:none"></div>
@@ -38,7 +40,6 @@ class ReviewBar {
 
     $("#editor .reviewBarApprove").on("click", () => this.approve())
     $("#editor .reviewBarReject").on("click", () => this.reject())
-    $("#editor .reviewBarClose").on("click", () => this.done())
 
     this.client.queue().then((entries) => {
       let entry = entries.find((e) =>
@@ -60,6 +61,7 @@ class ReviewBar {
 
   hide() {
     $("#editor .reviewBar").remove()
+    $("#editor").removeClass("reviewMode")
   }
 
   approve() {

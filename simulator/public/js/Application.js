@@ -66,6 +66,9 @@ class Application extends GenericApplication {
     this.hideWelcomeMessage()
     return reviewClientFactory().doc(scopeRef, path, version)
       .then((doc) => {
+        // A document opened for review is read-only — set before clear() so the
+        // view (via simulationStop) installs the read-only edit policy.
+        this.view.readOnly = true
         this.view.clear()
         progress.show()
         return reader.unmarshal(this.view, doc.data, progress.update.bind(progress)).then(() => {
@@ -74,6 +77,14 @@ class Application extends GenericApplication {
           this.view.centerDocument()
           this.hasUnsavedChanges = false
           this.currentFile = { id: null, name: path.split("/").pop(), version: doc.version, editable: false }
+          // Reflect review mode in the URL so a page reload re-enters review
+          // (read-only) instead of showing the document normally.
+          history.pushState(
+            { id: "editor", review: scopeRef + ":" + version, path },
+            conf.application + " | " + this.currentFile.name,
+            window.location.href.split("?")[0]
+              + "?review=" + encodeURIComponent(scopeRef + ":" + version)
+              + "&path=" + encodeURIComponent(path))
           reviewBar.show({
             scopeRef, path, version,
             onDone: () => {
@@ -125,12 +136,18 @@ class Application extends GenericApplication {
   fileNew(name) {
     $("#leftTabStrip .editor").click()
     this.currentFile = { id: null, name: name ?? "MyNewCircuit", version: undefined, editable: true }
+    this.view.readOnly = false
     this.view.clear()
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
   }
 
   fileSave() {
+    // A document opened for review is read-only — never save it (that would fork
+    // a pending version into the reviewer's personal workspace).
+    if (this.currentFile && this.currentFile.editable === false) {
+      return Promise.resolve()
+    }
     if (!this.currentFile) {
       return this.fileCreateNew()
     }
@@ -168,6 +185,9 @@ class Application extends GenericApplication {
   }
 
   open(id, version) {
+    // A normally-opened document is always editable (edits become the caller's
+    // personal copy); only the review path is read-only.
+    this.view.readOnly = false
     this.view.clear()
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
