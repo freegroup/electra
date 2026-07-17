@@ -1,13 +1,13 @@
 {
-  "app":{
-	"name": "Author",
-	"icon": "../common/images/app_author.svg",
-    "loading": "Loading the <i>Electra.Author</i>...",
-    "title": "Documentation Author",
-    "slogan": "Create exciting educational content using Electra Academy.",
-    "description": "With Documentation Author, you can easily create and share documents, worksheets, and course materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more engaging and informative. Sharing your work with others has never been easier.<br><br><b>I hope you'll give it a try!</b>"
+	"app": {
+		"name": "Author",
+		"icon": "../common/images/app_author.svg",
+		"loading": "Loading the <i>Electra.Author</i>...",
+		"title": "Documentation Author",
+		"slogan": "Create exciting educational content using Electra Academy.",
+		"description": "With Documentation Author, you can easily create and share documents, worksheets, and course materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more engaging and informative. Sharing your work with others has never been easier.<br><br><b>I hope you'll give it a try!</b>"
 	},
-	"button" :{
+	"button": {
 		"create_folder": "New Folder",
 		"create_file": "New Document",
 		"add_text": "Text",
@@ -27,14 +27,14 @@
 	},
 	"editor": {
 		"empty": {
-			"header":"Welcome to your new page!",
-			"description":"Start by adding your first content to make it feel more alive in here!"
+			"header": "Welcome to your new page!",
+			"description": "Start by adding your first content to make it feel more alive in here!"
 		},
 		"image": {
-			"dragdrop":"Drag & Drop image or click to upload"
+			"dragdrop": "Drag & Drop image or click to upload"
 		}
 	},
-	"dialog":{
+	"dialog": {
 		"add_chapter": "Add new Chapter",
 		"create": "Create new Docment",
 		"share": "Share worksheet with other",
@@ -48,7 +48,7 @@
 		"open_conflict": "Open which version?",
 		"open_conflict_explain": "You have a personal draft of this document. Open your own copy, or the shared original?"
 	},
-    "nav": {
+	"nav": {
 		"editor": "Editor",
 		"draft": "Drafts",
 		"files": "Files",
@@ -56,7 +56,7 @@
 		"review": "Review",
 		"help": "Help"
 	},
-    "pane": {
+	"pane": {
 		"review": {
 			"title": "Review",
 			"intro": "Documents waiting for your approval. You vote with the reviewer points the workspace admin granted you; a document is committed once the approving points reach the workspace's threshold. A single reject closes the request.",
@@ -79,7 +79,10 @@
 			"back": "Back",
 			"not_open": "This review is no longer open",
 			"score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
-			"load_failed": "Could not load the review document"
+			"load_failed": "Could not load the review document",
+			"no_change_comment": "No change comment — the author did not describe what changed.",
+			"change_comment_title": "Change Comment",
+			"change_comment_intro": "{{author}} submitted «{{doc}}» for review."
 		},
 		"workspaces": {
 			"title": "Workspaces",
@@ -114,19 +117,15 @@
 		"draft": {
 			"title": "My Drafts",
 			"intro": "Your private documents and your personal versions of public ones. When you edit and save a public document, your changes land here — nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",
-			"col_name": "Document Path",
-			"col_provider": "Workspace",
-			"col_kind": "Type",
-			"col_review": "Review",
-			"in_review": "in review",
 			"review_points": "Review points",
+			"review_points_explain": "{{have}} of {{need}} approval points collected. Once the threshold is reached the document is committed as the public version.",
 			"kind_personal": "private",
 			"kind_personal_explain": "This document exists only in your personal workspace — nobody else can see it.",
 			"kind_personal_copy": "personal copy",
 			"kind_personal_copy_explain": "You have a personal version of a public document. Promote your changes to submit them for review — once approved they become the public version."
 		},
 		"files": {
-            "title": "Document Library",
+			"title": "Document Library",
 			"intro": "The shared documents available to you. Open one to use it; editing and saving creates your own draft (see <b>Drafts</b>) without touching the original.",
 			"title_your": "Your Documents",
 			"title_global": "Public Documents",

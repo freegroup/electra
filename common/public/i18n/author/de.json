@@ -1,5 +1,5 @@
 {
-	"app":{
+	"app": {
 		"name": "Author",
 		"icon": "../common/images/app_author.svg",
 		"loading": "Lade den <i>Electra.Autor</i>...",
@@ -7,7 +7,7 @@
 		"slogan": "Erstellen Sie inspirierende Bildungsinhalte mit Electra Academy.",
 		"description": "Mit der Dokumentations-Author können Sie einfach Dokumente, Arbeitsblätter und Kursmaterialien online erstellen und teilen. Sie können Schaltkreise, mathematische Formeln, Lückentexte, Bilder und vieles mehr zu Ihren Dokumenten hinzufügen, um sie ansprechender und informativer zu gestalten. Das Teilen Ihrer Arbeit mit anderen war noch nie einfacher.<br><br><b>Probier's aus - es wird dich begeistern!</b>"
 	},
-	"button" :{
+	"button": {
 		"create_folder": "Neuer Ordner",
 		"create_file": "Neues Dokument",
 		"add_text": "Text",
@@ -27,14 +27,14 @@
 	},
 	"editor": {
 		"empty": {
-			"header":"Willkommen zu deiner neu erstellten Seite!",
-			"description":"Beginne damit diese mit Leben zu füllen, indem Du die gewünschten Inhalte auswählst."
+			"header": "Willkommen zu deiner neu erstellten Seite!",
+			"description": "Beginne damit diese mit Leben zu füllen, indem Du die gewünschten Inhalte auswählst."
 		},
 		"image": {
-			"dragdrop":"Bilder hochladen indem diese hier abgelegt werden oder mit einem klick lokale Bilder auswählen"
+			"dragdrop": "Bilder hochladen indem diese hier abgelegt werden oder mit einem klick lokale Bilder auswählen"
 		}
 	},
-	"dialog":{
+	"dialog": {
 		"add_chapter": "Neues Kapitel anlegen",
 		"create": "Neues Dokument anlegen",
 		"share": "Arbeitsblatt mit anderen teilen",
@@ -79,7 +79,10 @@
 			"back": "Zurück",
 			"not_open": "Dieses Review ist nicht mehr offen",
 			"score_status": "{{have}} von {{need}} Punkten · deine Stimme: +{{mine}}",
-			"load_failed": "Review-Dokument konnte nicht geladen werden"
+			"load_failed": "Review-Dokument konnte nicht geladen werden",
+			"no_change_comment": "Kein Änderungskommentar — der Autor hat keine Beschreibung hinterlassen.",
+			"change_comment_title": "Änderungskommentar",
+			"change_comment_intro": "{{author}} hat «{{doc}}» zur Review eingereicht."
 		},
 		"workspaces": {
 			"title": "Workspaces",
@@ -114,12 +117,8 @@
 		"draft": {
 			"title": "Meine Entwürfe",
 			"intro": "Deine privaten Dokumente und deine persönlichen Versionen öffentlicher Dokumente. Wenn du ein öffentliches Dokument bearbeitest und speicherst, landen deine Änderungen hier — niemand sonst sieht sie. Zufrieden mit deiner Version? Mit <b>Promoten</b> schlägst du vor, sie für alle in der Gruppe zur geteilten Version zu machen.",
-			"col_name": "Dokumentpfad",
-			"col_provider": "Workspace",
-			"col_kind": "Typ",
-			"col_review": "Review",
-			"in_review": "im Review",
 			"review_points": "Reviewpunkte",
+			"review_points_explain": "{{have}} von {{need}} Freigabepunkten gesammelt. Sobald der Schwellwert erreicht ist, wird das Dokument als öffentliche Version übernommen.",
 			"kind_personal": "privat",
 			"kind_personal_explain": "Dieses Dokument existiert nur in deinem persönlichen Workspace — niemand sonst kann es sehen.",
 			"kind_personal_copy": "persönliche Kopie",

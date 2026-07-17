@@ -1,13 +1,13 @@
 {
-  "app":{
-	"name": "Simulator",
-	"icon": "../common/images/app_simulator.svg",
-    "loading": "Loading the <i>Electra.Simulator</i>...",
-    "title": "Circuit Simulator",
-    "slogan": "Circuits are better animated",
-    "description": "When you build an arbitrary circuit, <b>Electra.Academy</b> shows you how it works, even if you have just invented a new design. This is made possible by a custom-built circuit simulation engine under the hood.<br><br><b>I hope you'll give it a try!</b>"
+	"app": {
+		"name": "Simulator",
+		"icon": "../common/images/app_simulator.svg",
+		"loading": "Loading the <i>Electra.Simulator</i>...",
+		"title": "Circuit Simulator",
+		"slogan": "Circuits are better animated",
+		"description": "When you build an arbitrary circuit, <b>Electra.Academy</b> shows you how it works, even if you have just invented a new design. This is made possible by a custom-built circuit simulation engine under the hood.<br><br><b>I hope you'll give it a try!</b>"
 	},
-	"button" :{
+	"button": {
 		"create_folder": "New Folder",
 		"create_file": "New Circuit",
 		"new_document": "Create new circuit",
@@ -20,7 +20,7 @@
 		"open_draft": "Open my copy",
 		"open_original": "Open original"
 	},
-	"dialog":{
+	"dialog": {
 		"save": "Save the Circuit",
 		"create": "Create new Circuit",
 		"share": "Share circuit with other",
@@ -37,7 +37,7 @@
 		"open_conflict": "Open which version?",
 		"open_conflict_explain": "You have a personal draft of this circuit. Open your own copy, or the shared original?"
 	},
-    "nav": {
+	"nav": {
 		"editor": "Editor",
 		"draft": "Drafts",
 		"files": "Files",
@@ -45,7 +45,7 @@
 		"review": "Review",
 		"help": "Help"
 	},
-    "pane": {
+	"pane": {
 		"review": {
 			"title": "Review",
 			"intro": "Documents waiting for your approval. You vote with the reviewer points the workspace admin granted you; a document is committed once the approving points reach the workspace's threshold. A single reject closes the request.",
@@ -68,7 +68,10 @@
 			"back": "Back",
 			"not_open": "This review is no longer open",
 			"score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
-			"load_failed": "Could not load the review document"
+			"load_failed": "Could not load the review document",
+			"no_change_comment": "No change comment — the author did not describe what changed.",
+			"change_comment_title": "Change Comment",
+			"change_comment_intro": "{{author}} submitted «{{doc}}» for review."
 		},
 		"workspaces": {
 			"title": "Workspaces",
@@ -103,12 +106,8 @@
 		"draft": {
 			"title": "My Drafts",
 			"intro": "Your private circuits and your personal versions of public ones. When you edit and save a public circuit, your changes land here — nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",
-			"col_name": "Document Path",
-			"col_provider": "Workspace",
-			"col_kind": "Type",
-			"col_review": "Review",
-			"in_review": "in review",
 			"review_points": "Review points",
+			"review_points_explain": "{{have}} of {{need}} approval points collected. Once the threshold is reached the document is committed as the public version.",
 			"kind_personal": "private",
 			"kind_personal_explain": "This document exists only in your personal workspace — nobody else can see it.",
 			"kind_personal_copy": "personal copy",
@@ -132,7 +131,7 @@
 			"components": "Components"
 		}
 	},
-	"contextmenu":{
+	"contextmenu": {
 		"add_segment": "Insert Segment",
 		"delete_segment": "Delete Segment",
 		"add_probe": "Add Probe",
@@ -149,12 +148,11 @@
 	"message": {
 		"loading": "Loading...",
 		"unable_to_load_element": "Unable to load element of type [{{name}}]",
-		"probe_hint":"Right click on a connection to add a probe signal to this logic analyzer window",
+		"probe_hint": "Right click on a connection to add a probe signal to this logic analyzer window",
 		"promoted": "Promoted to the shared version",
 		"pending_review": "Sent for review",
 		"reverted": "Personal changes discarded",
 		"deleted": "Deleted"
 	},
-	"error": {
-	}
+	"error": {}
 }

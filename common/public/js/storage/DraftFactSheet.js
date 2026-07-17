@@ -12,8 +12,15 @@ export default class DraftFactSheet extends FileFactSheet {
     if (!it.inReview) return null
     return {
       cls: "factSheetOverlayReview",
-      text: `${t("pane.draft.review_points")} ${it.reviewHave} / ${it.reviewNeed}`,
-      title: it.reviewDescription,
+      text: `${it.reviewHave} / ${it.reviewNeed}`,
+      popover: ($anchor) => PopoverTooltip.show({
+        anchor: $anchor,
+        title: t("pane.draft.review_points"),
+        body: t("pane.draft.review_points_explain", {
+          have: it.reviewHave,
+          need: it.reviewNeed,
+        }),
+      }),
     }
   }
 
@@ -25,7 +32,7 @@ export default class DraftFactSheet extends FileFactSheet {
     let $thumb = $sheet.find(".factSheetThumb")
 
     const makeIcon = (src, titleKey, bodyKey) => {
-      let $icon = $(`<img class="factSheetStatusIcon" src="${src}" width="30" height="30">`)
+      let $icon = $(`<img class="factSheetStatusIcon" src="${src}">`)
       $icon.on("click", (e) => {
         e.stopPropagation()
         PopoverTooltip.show({

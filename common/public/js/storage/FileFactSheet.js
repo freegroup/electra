@@ -50,8 +50,16 @@ export default class FileFactSheet {
     // top-right overlay pill (e.g. "in review")
     let overlay = this.overlayBadge()
     if (overlay) {
-      $sheet.find(".factSheetOverlay").addClass(overlay.cls).text(overlay.text)
-      if (overlay.title) $sheet.find(".factSheetOverlay").attr("title", overlay.title)
+      let $ov = $sheet.find(".factSheetOverlay").addClass(overlay.cls).text(overlay.text)
+      if (overlay.popover) {
+        // click → PopoverTooltip; import lazily to keep FileFactSheet generic
+        $ov.addClass("factSheetOverlayClickable").on("click", (e) => {
+          e.stopPropagation()
+          overlay.popover($ov)
+        })
+      } else if (overlay.title) {
+        $ov.attr("title", overlay.title)
+      }
     }
 
     // footer badges (below title/workspace in body)
