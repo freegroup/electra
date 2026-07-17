@@ -9,6 +9,7 @@ import WorkspaceScreen from "./workspace/WorkspaceScreen"
 import ReviewScreen from "./review/ReviewScreen"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
+import promoteDialog from "./storage/PromoteDialog"
 import openConflictDialog from "./storage/OpenConflictDialog"
 import toast from "./toast"
 
@@ -133,10 +134,11 @@ export default class Application extends AppFrame{
     }
 
     // Promote: make the caller's version the shared one for everyone who sees
-    // the document under the same "provided by" group. Confirms first.
+    // the document under the same "provided by" group. Confirms first; the
+    // optional description travels to the reviewers when approval is needed.
     promoteById(id) {
-        return confirmDialog.show(t("dialog.promote_explain"))
-            .then(() => this.storage.promote(id))
+        return promoteDialog.show(t("dialog.promote_explain"))
+            .then((description) => this.storage.promote(id, description))
             .then((res) => toast(res && res.status === "committed" ? t("message.promoted") : t("message.pending_review")))
             .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })

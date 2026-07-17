@@ -258,14 +258,16 @@ function init(app) {
   })
 
   // --- promote (vertical) ---------------------------------------------------
+  // Body: { id, description? } — the optional note travels to the reviewers.
   app.post("/brains/file/promote", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { scopeRef, path } = db.decodeId((req.body || {}).id)
+      const { id, description } = req.body || {}
+      const { scopeRef, path } = db.decodeId(id)
       const r = await db.call(
         "POST",
         `/database/scopes/${scopeRef}/docs/promote?path=${encodeURIComponent(path)}`,
-        { authHeaders: auth, body: {} }
+        { authHeaders: auth, body: description ? { description } : {} }
       )
       res.json({ status: r.status })
     } catch (err) {

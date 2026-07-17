@@ -55,6 +55,16 @@
         .reviewTitle { font-size: 16px; }
         .reviewVersion { margin-left: 8px; opacity: 0.5; }
 
+        // The author's promote note ("what changed and why").
+        .reviewDescription {
+          margin-top: 4px;
+          font-size: 13px;
+          opacity: 0.65;
+          max-width: 480px;
+          white-space: pre-line;
+          word-break: break-word;
+        }
+
         .reviewDeletionBadge {
           margin-left: 8px;
           padding: 1px 8px;
@@ -94,13 +104,25 @@
 // Banner across the top of the editor while a pending version is loaded for
 // review. Sits above the toolbar; colors come from the theme.
 #editor .reviewBar {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
   padding: 8px @contentToEdgePadding;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+
+  .reviewBarMain {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  // The author's promote note, below the action row.
+  .reviewBarDescription {
+    margin-top: 6px;
+    font-size: 13px;
+    opacity: 0.7;
+    white-space: pre-line;
+    word-break: break-word;
+  }
 
   .reviewBarBadge {
     padding: 1px 8px;

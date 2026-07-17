@@ -17,9 +17,9 @@ let ctx, brainsId, classA, classB, subA, subB
 
 const setReviewer = (scopeId, personRef, score) =>
   post(ctx, `/database/scopes/${scopeId}/reviewers`, asRootAdmin(), { personRef, score })
-const promote = (scopeId, path, person, version) =>
+const promote = (scopeId, path, person, version, description) =>
   post(ctx, `/database/scopes/${scopeId}/docs/promote?path=${encodeURIComponent(path)}`,
-    asPerson(person), version ? { version } : {})
+    asPerson(person), { ...(version ? { version } : {}), ...(description ? { description } : {}) })
 const approve = (scopeId, path, person, version) =>
   post(ctx, `/database/scopes/${scopeId}/pending/approve`, asPerson(person), { path, version })
 const queueOf = async (person) => {
@@ -112,6 +112,25 @@ test("a committed entry leaves the queue", async () => {
   const queue = await queueOf("rita")
   assert.ok(!queue.some((e) => e.path === "beta.json"), "committed entry gone")
   assert.ok(queue.some((e) => e.path === "alpha.json"), "open entry remains")
+})
+
+test("a promote description travels to the queue; a fresh promote without one clears it", async () => {
+  const w = await writeDoc(ctx, subA, "note.json", asPerson("anna"), { data: { rev: 1 } })
+  const p = await promote(subA, "note.json", "anna", w.json().version, "fixed the carry logic of the adder")
+  assert.equal(p.json().status, "pending", p.body)
+
+  let entry = (await queueOf("rita")).find((e) => e.path === "note.json")
+  assert.equal(entry.description, "fixed the carry logic of the adder")
+
+  // anna revises and promotes again WITHOUT a note — the new pending
+  // supersedes the old one and must not inherit the stale description.
+  const w2 = await writeDoc(ctx, subA, "note.json", asPerson("anna"), { data: { rev: 2 } })
+  const p2 = await promote(subA, "note.json", "anna", w2.json().version)
+  assert.equal(p2.json().status, "pending", p2.body)
+
+  entry = (await queueOf("rita")).find((e) => e.path === "note.json")
+  assert.equal(entry.version, p2.json().version)
+  assert.equal(entry.description, null, "stale description must not stick")
 })
 
 test("members without a reviewer score get an empty queue; anonymous → 401", async () => {

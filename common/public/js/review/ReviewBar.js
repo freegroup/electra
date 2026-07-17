@@ -22,14 +22,17 @@ class ReviewBar {
 
     $("#editor").prepend(`
       <div class="reviewBar">
-        <span class="reviewBarBadge" data-i18n="pane.review.badge">${t("pane.review.badge")}</span>
-        <span class="reviewBarTitle">${$("<span>").text(path).html()} · v${Number(version)}</span>
-        <span class="reviewBarScore"></span>
-        <span class="reviewBarActions">
-          <button class="reviewBarApprove electra-button electra-primary" data-i18n="pane.review.approve" style="display:none">${t("pane.review.approve")}</button>
-          <button class="reviewBarReject electra-button" data-i18n="pane.review.reject" style="display:none">${t("pane.review.reject")}</button>
-          <button class="reviewBarClose electra-button" data-i18n="pane.review.back">${t("pane.review.back")}</button>
-        </span>
+        <div class="reviewBarMain">
+          <span class="reviewBarBadge" data-i18n="pane.review.badge">${t("pane.review.badge")}</span>
+          <span class="reviewBarTitle">${$("<span>").text(path).html()} · v${Number(version)}</span>
+          <span class="reviewBarScore"></span>
+          <span class="reviewBarActions">
+            <button class="reviewBarApprove electra-button electra-primary" data-i18n="pane.review.approve" style="display:none">${t("pane.review.approve")}</button>
+            <button class="reviewBarReject electra-button" data-i18n="pane.review.reject" style="display:none">${t("pane.review.reject")}</button>
+            <button class="reviewBarClose electra-button" data-i18n="pane.review.back">${t("pane.review.back")}</button>
+          </span>
+        </div>
+        <div class="reviewBarDescription" style="display:none"></div>
       </div>
     `)
 
@@ -48,6 +51,10 @@ class ReviewBar {
         t("pane.review.score_status", { have: entry.approvedScore, need: entry.requiredScore, mine: entry.myScore }))
       if (!entry.alreadyVoted) $("#editor .reviewBarApprove").show()
       $("#editor .reviewBarReject").show()
+      // The author's note ("what changed and why"), attached at promote time.
+      if (entry.description) {
+        $("#editor .reviewBarDescription").text(entry.description).show()
+      }
     }).catch((err) => console.log(err))
   }
 

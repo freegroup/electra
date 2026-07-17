@@ -62,9 +62,10 @@ class StorageClient {
   }
 
   // Make the caller's personal version the shared version for everyone who
-  // sees this document under the same "provided by" group.
-  promote(id) {
-    return axios.post(`${this.base}/file/promote`, { id })
+  // sees this document under the same "provided by" group. The optional
+  // description is shown to the reviewers when the promote needs approval.
+  promote(id, description) {
+    return axios.post(`${this.base}/file/promote`, description ? { id, description } : { id })
       .then((response) => response.data)
   }
 

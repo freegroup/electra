@@ -174,17 +174,32 @@ async function routes(fastify) {
 
   fastify.post(
     "/database/scopes/:scopeRef/docs/promote",
-    { preHandler: [fastify.requireLogin] },
+    {
+      schema: {
+        body: {
+          type: "object",
+          properties: {
+            version: { type: "integer", minimum: 1 },
+            // Free-text note for the reviewers ("what changed and why") —
+            // shown in the review queue; capped so meta stays lightweight.
+            description: { type: "string", maxLength: 2000 },
+          },
+          additionalProperties: false,
+        },
+      },
+      preHandler: [fastify.requireLogin],
+    },
     async (req) => {
       const docPath = requirePathQuery(req)
       // Must be an explicit member of the operating scope to promote from it.
       await requireWriteLeaf(req.params.scopeRef, req.personRef)
-      const version = req.body && req.body.version
+      const { version, description } = req.body || {}
       return promote({
         operatingScopeId: req.params.scopeRef,
         personRef: req.personRef,
         docPath,
         expectedVersion: version,
+        description: (description || "").trim() || undefined,
       })
     }
   )

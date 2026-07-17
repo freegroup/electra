@@ -149,7 +149,7 @@ async function insertVersion(client, {
 // Promote
 // ---------------------------------------------------------------------------
 
-async function promote({ operatingScopeId, personRef, docPath, expectedVersion }) {
+async function promote({ operatingScopeId, personRef, docPath, expectedVersion, description }) {
   validateDocPath(docPath)
 
   const client = await pool.connect()
@@ -170,9 +170,16 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion }
 
     const operating = await getScopeRow(client, operatingScopeId)
 
+    // Base meta travels with the document, but the review note (_review) is
+    // per-promote: a stale description from an earlier round must never stick
+    // to a new promotion, so it is always dropped and only re-set when the
+    // caller provided one this time.
+    const baseMeta = { ...(leaf.meta || {}) }
+    delete baseMeta._review
     const lineageMeta = {
-      ...(leaf.meta || {}),
+      ...baseMeta,
       _lineage: { fromScope: String(leafId), fromVersion: leaf.version },
+      ...(description ? { _review: { description } } : {}),
     }
 
     // The leaf's version is promoted to the shared version of the operating
@@ -341,6 +348,7 @@ async function listPending({ scopeId }) {
 async function reviewQueue({ personRef }) {
   const res = await pool.query(
     `SELECT v.scope_id, v.doc_path, v.version, v.is_deletion, v.author, v.created_at,
+            v.meta->'_review'->>'description' AS description,
             s.label, s.required_approval_score,
             m.reviewer_score AS my_score,
             COALESCE((SELECT SUM(vt.score_snapshot)::int FROM votes vt
@@ -374,6 +382,7 @@ async function reviewQueue({ personRef }) {
       isDeletion: r.is_deletion,
       author: r.author,
       createdAt: r.created_at,
+      description: r.description || null,
       requiredScore: r.required_approval_score,
       approvedScore: r.approved_score,
       myScore: r.my_score,

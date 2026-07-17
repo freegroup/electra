@@ -45,6 +45,7 @@ export default class ReviewScreen {
                 <span class="reviewTitle">{{title}}</span>
                 {{#isDeletion}}<span class="reviewDeletionBadge" data-i18n="pane.review.deletion">${t("pane.review.deletion")}</span>{{/isDeletion}}
                 <span class="reviewVersion">v{{version}}</span>
+                {{#description}}<div class="reviewDescription">{{description}}</div>{{/description}}
               </td>
               <td class="colWorkspace"><span title="{{scopePath}}">{{workspace}}</span></td>
               <td class="colAuthor">{{author}}</td>
@@ -114,6 +115,7 @@ export default class ReviewScreen {
           key: `${e.scopeRef}:${e.version}:${e.path}`,
           title: suffix && base.endsWith(suffix) ? base.slice(0, -suffix.length) : base,
           version: e.version,
+          description: e.description || null,
           isDeletion: !!e.isDeletion,
           workspace: e.scopeLabel || e.scopePath.split("/").pop(),
           scopePath: e.scopePath,
