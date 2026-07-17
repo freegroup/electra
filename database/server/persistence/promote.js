@@ -12,6 +12,7 @@
 
 const { pool } = require("./pool")
 const { validateDocPath } = require("./docs")
+const { pathOfScope } = require("./scopes")
 const {
   NotFoundError,
   BadRequestError,
@@ -332,6 +333,56 @@ async function listPending({ scopeId }) {
   return out
 }
 
+// Aggregated review queue: every pending version in every scope where
+// personRef is a reviewer, annotated with the score situation (required vs.
+// already approved vs. what the caller's own vote would add) so a UI can
+// render the whole inbox without further roundtrips. Content (data) is
+// deliberately excluded — the editor fetches it via the version-pinned read.
+async function reviewQueue({ personRef }) {
+  const res = await pool.query(
+    `SELECT v.scope_id, v.doc_path, v.version, v.is_deletion, v.author, v.created_at,
+            s.label, s.required_approval_score,
+            m.reviewer_score AS my_score,
+            COALESCE((SELECT SUM(vt.score_snapshot)::int FROM votes vt
+                       WHERE vt.scope_id = v.scope_id AND vt.doc_path = v.doc_path
+                         AND vt.version = v.version AND vt.kind = 'approve'), 0) AS approved_score,
+            EXISTS (SELECT 1 FROM votes vt
+                     WHERE vt.scope_id = v.scope_id AND vt.doc_path = v.doc_path
+                       AND vt.version = v.version AND vt.voter = $1) AS already_voted
+       FROM memberships m
+       JOIN scopes s   ON s.id = m.scope_id
+       JOIN versions v ON v.scope_id = m.scope_id AND v.status = 'pending'
+      WHERE m.person_ref = $1 AND m.reviewer_score IS NOT NULL
+      ORDER BY v.created_at ASC, v.scope_id ASC, v.doc_path ASC`,
+    [personRef]
+  )
+
+  const pathCache = new Map()
+  const out = []
+  for (const r of res.rows) {
+    let scopePath = pathCache.get(r.scope_id)
+    if (scopePath === undefined) {
+      scopePath = await pathOfScope(pool, r.scope_id)
+      pathCache.set(r.scope_id, scopePath)
+    }
+    out.push({
+      scopeRef: String(r.scope_id),
+      scopePath,
+      scopeLabel: r.label,
+      path: r.doc_path,
+      version: r.version,
+      isDeletion: r.is_deletion,
+      author: r.author,
+      createdAt: r.created_at,
+      requiredScore: r.required_approval_score,
+      approvedScore: r.approved_score,
+      myScore: r.my_score,
+      alreadyVoted: r.already_voted,
+    })
+  }
+  return out
+}
+
 async function approve({ scopeId, personRef, docPath, version, score }) {
   const client = await pool.connect()
   try {
@@ -399,4 +450,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, approve, reject }
+module.exports = { promote, listPending, reviewQueue, approve, reject }

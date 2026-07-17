@@ -63,16 +63,20 @@ function init(app) {
     }
   })
 
-  // Rename a workspace's DISPLAY LABEL (admin only — database enforces). Only
-  // the label is editable here; the identity name is immutable.
+  // Update a workspace (admin only — database enforces): the DISPLAY LABEL
+  // and/or the review threshold (requiredApprovalScore). The identity name is
+  // immutable here.
   app.patch("/userinfo/workspaces/:ref", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { label } = req.body || {}
+      const { label, requiredApprovalScore } = req.body || {}
+      const body = {}
+      if (label !== undefined) body.label = label
+      if (requiredApprovalScore !== undefined) body.requiredApprovalScore = requiredApprovalScore
       const j = await db.call(
         "PATCH",
         `/database/scopes/${encodeURIComponent(req.params.ref)}`,
-        { authHeaders: auth, body: { label } }
+        { authHeaders: auth, body }
       )
       res.json(j)
     } catch (err) {

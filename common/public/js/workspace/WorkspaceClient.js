@@ -57,6 +57,13 @@ class WorkspaceClient {
       .then((r) => r.data)
   }
 
+  // Set the review threshold (admin only): the approval points a pending
+  // document must collect before it commits in this workspace.
+  setRequiredScore(ref, score) {
+    return axios.patch(`${this.base}/${ref}`, { requiredApprovalScore: score })
+      .then((r) => r.data)
+  }
+
   // Add a member to a workspace (admin only). personRef is an email.
   addMember(ref, personRef) {
     return axios.post(`${this.base}/${ref}/members`, { personRef })

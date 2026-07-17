@@ -1,15 +1,17 @@
 // Review routes (README §9.4).
 //
+//   GET  /database/review/queue                       — aggregated review inbox
 //   GET  /database/scopes/:scopeRef/pending           — pending versions here
 //   POST /database/scopes/:scopeRef/pending/approve   — record an approve vote
 //   POST /database/scopes/:scopeRef/pending/reject    — reject (ends the request)
 //
-// All three require the caller to be a reviewer of the scope. The reviewer's
-// current score is snapshotted onto the vote.
+// The scope-bound routes require the caller to be a reviewer of the scope;
+// the queue spans exactly those scopes. The reviewer's current score is
+// snapshotted onto the vote.
 
 const { pool } = require("../persistence/pool")
 const { getScope, reviewerScore } = require("../persistence/scopes")
-const { listPending, approve, reject } = require("../persistence/promote")
+const { listPending, reviewQueue, approve, reject } = require("../persistence/promote")
 const {
   ForbiddenError,
   NotFoundError,
@@ -45,6 +47,18 @@ async function routes(fastify) {
       client.release()
     }
   }
+
+  // The caller's review inbox: every pending version in every scope where
+  // they hold a reviewer score. Membership alone is not enough — a non-
+  // reviewer simply gets an empty queue.
+  fastify.get(
+    "/database/review/queue",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const queue = await reviewQueue({ personRef: req.personRef })
+      return { queue }
+    }
+  )
 
   fastify.get(
     "/database/scopes/:scopeRef/pending",

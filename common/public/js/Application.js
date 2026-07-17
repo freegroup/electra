@@ -6,6 +6,7 @@ import Files from "./FilesScreen"
 import StorageScreen from "./storage/StorageScreen"
 import DraftScreen from "./storage/DraftScreen"
 import WorkspaceScreen from "./workspace/WorkspaceScreen"
+import ReviewScreen from "./review/ReviewScreen"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
 import openConflictDialog from "./storage/OpenConflictDialog"
@@ -41,6 +42,8 @@ export default class Application extends AppFrame{
             this.draftPane = new DraftScreen(this, conf)
             // The Workspaces browser (account-scoped, app-agnostic).
             this.workspacePane = new WorkspaceScreen(this, conf)
+            // The Review inbox (account-scoped, app-agnostic).
+            this.reviewPane = new ReviewScreen(this, conf)
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
         }

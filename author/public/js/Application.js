@@ -14,6 +14,8 @@ import storageFactory from "../../common/js/storage/StorageClient"
 import SaveDialog from "../../common/js/storage/SaveDialog"
 import NewDocumentDialog from "../../common/js/storage/NewDocumentDialog"
 import PublishDialog from "../../common/js/storage/PublishDialog"
+import reviewClientFactory from "../../common/js/review/ReviewClient"
+import reviewBar from "../../common/js/review/ReviewBar"
 
 let storage = storageFactory(conf)
 
@@ -37,15 +39,49 @@ class Application extends GenericApplication {
       this.view    = new View(this, "#editor .content", permissions)
       this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
 
-      // deep-link: ?doc=<id> opens a document by its opaque handle.
+      // deep-links: ?doc=<id> opens a document by its opaque handle;
+      // ?review=<scopeRef>:<version>&path=<docPath> loads a pending version
+      // read-only for review (the ReviewScreen mints these URLs).
       let doc = this.getParam("doc")
-      if (doc) {
+      let review = this.getParam("review")
+      let reviewPath = this.getParam("path")
+      if (review && reviewPath) {
+        let [scopeRef, version] = decodeURIComponent(review).split(":")
+        this.openReview(scopeRef, decodeURIComponent(reviewPath), Number(version))
+      } else if (doc) {
         this.open(doc)
       } else {
         this.showWelcomeMessage("/basic/math/binary-addition.sheet")
       }
       resolve(this)
     })
+  }
+
+  // Load a pending version read-only for review and show the Approve/Reject
+  // bar. Content comes over the review BFF (version-pinned read) — pending
+  // versions are invisible to the normal open() walk-up.
+  openReview(scopeRef, path, version) {
+    $("#leftTabStrip .editor").click()
+    this.hideWelcomeMessage()
+    return reviewClientFactory().doc(scopeRef, path, version)
+      .then((doc) => {
+        this.currentFile = { id: null, name: path.split("/").pop(), version: doc.version, editable: false }
+        this.setDocument(new Document(doc.data), 0)
+        commandStack.markSaveLocation()
+        this.hasUnsavedChanges = false
+        reviewBar.show({
+          scopeRef, path, version,
+          onDone: () => {
+            this.fileNew()
+            $("#review_tab a").click()
+            this.reviewPane?.reload()
+          },
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        toast(t("pane.review.load_failed"))
+      })
   }
 
   // Publish the current document as an anonymous public link.

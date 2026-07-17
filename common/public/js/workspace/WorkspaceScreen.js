@@ -151,10 +151,30 @@ export default class WorkspaceScreen {
     let canCreate = current.scopeRef !== null && current.isMember === true
     $("#workspaces .workspaceCreateButton").toggle(canCreate)
 
-    // The member roster — only meaningful (and only permitted) for admins of the
-    // current workspace. Root level has no single scope, so no panel there.
-    // Personal workspaces are single-owner: no members, no roster at all.
+    // Side panel: review settings (every member) + member roster (admins).
+    // Root level has no single scope, so no panel there. Personal workspaces
+    // are single-owner: no members, no review, no panel at all.
     if (current.scopeRef !== null && !current.isPersonal) {
+      // Two fixed slots so the async loads below can't clobber each other.
+      $panel.html(`<div class="wsReviewSettings"></div><div class="wsMembersBlock"></div>`)
+
+      // Review threshold — visible to everyone who can see the workspace;
+      // the edit pencil only for admins (backend enforces admin on PATCH).
+      this.client.scope(current.scopeRef).then((meta) => {
+        let score = meta.requiredApprovalScore ?? 0
+        let $sec = $panel.find(".wsReviewSettings")
+        $sec.html(`
+          <h4 class="wsPanelTitle" data-i18n="pane.workspaces.review_settings">${t("pane.workspaces.review_settings")}</h4>
+          <div class="wsReviewScore" title="${t("pane.workspaces.required_score_hint")}">
+            <span class="wsReviewScoreValue">${t("pane.workspaces.required_score", { count: score })}</span>
+            ${current.isAdmin ? `<button class="wsEditScoreButton" title="${t("pane.workspaces.edit_required_score")}">✎</button>` : ""}
+          </div>
+        `)
+        $sec.find(".wsEditScoreButton").off("click").on("click", () => {
+          _this.promptRequiredScore(current.scopeRef, score)
+        })
+      }).catch((err) => console.log(err))
+
       // The roster is admin-only: members() returns 403 for non-admins, so if it
       // resolves the caller is an admin and may manage members. Everyone but the
       // caller themselves is removable.
@@ -162,20 +182,34 @@ export default class WorkspaceScreen {
         let me = (this.app && this.app.userinfo && this.app.userinfo.user && this.app.userinfo.user.email) || null
         let view = members.map((m) => ({ ...m, removable: !me || m.personRef !== me }))
         let compiled = Hogan.compile($("#workspaceMembersTemplate").html())
-        $panel.html(`
+        let $block = $panel.find(".wsMembersBlock")
+        $block.html(`
           <h4 class="wsPanelTitle" data-i18n="pane.workspaces.members">${t("pane.workspaces.members")}</h4>
           <div class="wsMemberList">${compiled.render({ members: view })}</div>
           <button class="wsAddMemberButton electra-button" data-i18n="pane.workspaces.add_member">${t("pane.workspaces.add_member")}</button>
         `)
-        $panel.find(".wsAddMemberButton").off("click").on("click", () => _this.promptAddMember(current.scopeRef))
-        $panel.find(".wsRemoveMemberButton").off("click").on("click", (e) => {
+        $block.find(".wsAddMemberButton").off("click").on("click", () => _this.promptAddMember(current.scopeRef))
+        $block.find(".wsRemoveMemberButton").off("click").on("click", (e) => {
           _this.promptRemoveMember(current.scopeRef, $(e.currentTarget).data("ref"))
         })
       }).catch(() => {
         // Non-admins get 403 — simply show no roster/manage actions.
-        $panel.empty()
+        $panel.find(".wsMembersBlock").empty()
       })
     }
+  }
+
+  // Edit the review threshold (admin only): how many approval points a pending
+  // document needs before it commits in this workspace. 0 = no review.
+  promptRequiredScore(scopeRef, currentScore) {
+    inputPrompt.show(t("pane.workspaces.edit_required_score"), t("pane.workspaces.required_score_label"), String(currentScore))
+      .then((value) => {
+        let score = parseInt((value || "").trim(), 10)
+        if (!Number.isFinite(score) || score < 0 || score === currentScore) return
+        return this.client.setRequiredScore(scopeRef, score)
+          .then(() => { toast(t("pane.workspaces.required_score_saved")); this.reload() })
+      })
+      .catch((err) => { if (err) console.log(err) })
   }
 
   renderBreadcrumb() {

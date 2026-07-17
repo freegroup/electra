@@ -301,6 +301,9 @@ async function isMember(client, scopeId, personRef) {
 // scopeId if they are an explicit member of scopeId or of any descendant of
 // scopeId (their own point of presence lies within the sub-tree). The root
 // scope is world-readable by everyone, including anonymous (personRef null).
+// A reviewer role counts like membership here: the reviewer of a scope must
+// be able to read the pending versions they are asked to judge, even when
+// they were never added as a member (the roles are orthogonal).
 async function canRead(client, scopeId, personRef) {
   // Root is world-readable (§3.6); an is_anonymous scope is readable by anyone
   // too (non-transitive — only the flagged scope itself).
@@ -320,7 +323,7 @@ async function canRead(client, scopeId, personRef) {
        JOIN scope_closure c ON c.descendant_id = m.scope_id
       WHERE c.ancestor_id = $1
         AND m.person_ref  = $2
-        AND m.is_member   = true
+        AND (m.is_member = true OR m.reviewer_score IS NOT NULL)
       LIMIT 1`,
     [scopeId, personRef]
   )

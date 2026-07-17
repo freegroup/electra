@@ -1,0 +1,129 @@
+// The Review pane (ReviewScreen) + the editor's review banner (ReviewBar).
+// The list reuses the .storageTable look of the Files/Draft panes.
+
+#review {
+  overflow-y: scroll;
+  padding: 40px;
+
+  .filesTeaser {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 48px;
+
+    .title {
+      font-weight: var(--label-font-weight);
+      font-size: 2vw;
+      white-space: nowrap;
+    }
+    img, svg {
+      padding-right: 40px;
+      height: 100%;
+    }
+  }
+
+  .paneIntro {
+    max-width: 900px;
+    margin: 4px 0 24px;
+    line-height: 1.5;
+    opacity: 0.75;
+    font-size: 14px;
+  }
+
+  .reviewFinder {
+    .storageTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead th {
+        text-align: left;
+        font-weight: var(--label-font-weight);
+        text-transform: uppercase;
+        font-size: var(--label-font-size);
+        padding: 10px @contentToEdgePadding;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        opacity: 0.6;
+      }
+
+      .reviewRow {
+        td {
+          padding: 10px @contentToEdgePadding;
+          vertical-align: middle;
+        }
+
+        .reviewTitle { font-size: 16px; }
+        .reviewVersion { margin-left: 8px; opacity: 0.5; }
+
+        .reviewDeletionBadge {
+          margin-left: 8px;
+          padding: 1px 8px;
+          border-radius: 10px;
+          font-size: 0.75em;
+          text-transform: uppercase;
+          background: var(--electra-primary, #e91e63);
+          color: #fff;
+        }
+
+        .colWorkspace span { opacity: 0.75; }
+        .colAuthor { opacity: 0.75; }
+
+        // "3 / 5  +2" — collected vs. required points, plus what my vote adds.
+        .colScore {
+          white-space: nowrap;
+          .reviewScore { font-weight: var(--label-font-weight); }
+          .reviewMyScore { margin-left: 6px; opacity: 0.6; }
+        }
+
+        .colActions {
+          text-align: right;
+          white-space: nowrap;
+          button { margin-left: 8px; }
+          .reviewVoted { margin-left: 8px; opacity: 0.6; font-size: 0.85em; }
+        }
+      }
+    }
+
+    .fileListEmpty {
+      padding: 20px @contentToEdgePadding;
+      opacity: 0.6;
+    }
+  }
+}
+
+// Banner across the top of the editor while a pending version is loaded for
+// review. Sits above the toolbar; colors come from the theme.
+#editor .reviewBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 8px @contentToEdgePadding;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+
+  .reviewBarBadge {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    background: var(--electra-primary, #e91e63);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .reviewBarTitle {
+    font-weight: var(--label-font-weight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .reviewBarScore { opacity: 0.7; white-space: nowrap; }
+
+  .reviewBarActions {
+    margin-left: auto;
+    white-space: nowrap;
+    button { margin-left: 8px; }
+  }
+}
