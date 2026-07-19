@@ -1,0 +1,47 @@
+// FolderCard — a virtual-folder tile in the Files grid. Identical dimensions to
+// the FileFactSheet cards (.factSheet: 300px, 300:230 ratio) so the grid stays
+// uniform; the content (icon + name + count) is simply centred.
+.folderCard {
+  box-sizing: border-box;
+  width: 300px;
+  aspect-ratio: 300 / 230;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid rgb(var(--border-color));
+  border-radius: @borderRadiusBig;
+  background: rgb(var(--pane-bg-color));
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s;
+
+  &:hover {
+    border-color: rgb(var(--tint-color));
+  }
+
+  .folderCardIcon {
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+  }
+
+  .folderCardBody {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .folderCardName {
+    font-weight: var(--label-font-weight);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .folderCardCount {
+    margin-top: 4px;
+    font-size: 13px;
+    opacity: 0.6;
+  }
+}
