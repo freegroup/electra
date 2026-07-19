@@ -12,7 +12,7 @@
 
 const { pool } = require("./pool")
 const { validateDocPath } = require("./docs")
-const { pathOfScope } = require("./scopes")
+const { pathOfScope, stripPrefix } = require("./scopes")
 const {
   NotFoundError,
   BadRequestError,
@@ -127,12 +127,13 @@ async function insertVersion(client, {
 }) {
   const version = await nextVersion(client, scopeId, docPath)
   const finalized = status !== "pending"
-  await client.query(
+  const ins = await client.query(
     `INSERT INTO versions
        (scope_id, doc_path, version, status, is_deletion, data, meta, author,
         finalized_at, finalized_by)
      VALUES ($1, $2, $3, $4::version_status, $5, $6::jsonb, $7::jsonb, $8,
-             $9, $10)`,
+             $9, $10)
+     RETURNING uuid`,
     [
       scopeId, docPath, version, status, isDeletion, data, meta, author,
       finalized ? new Date() : null,
@@ -142,7 +143,50 @@ async function insertVersion(client, {
   if (srcScope != null) {
     await copyBlobs(client, srcScope, srcVersion, scopeId, version, docPath)
   }
-  return version
+  return { version, uuid: ins.rows[0].uuid }
+}
+
+// Deliver a source version's payload into ONE target scope, applying that
+// scope's review rules — the shared core of promote (one level at a time) and
+// distribute (each chosen target). This is the single place the "goes live vs.
+// needs review" decision lives:
+//   - required_approval_score === 0 → committed at once (trivial quorum),
+//   - otherwise → a pending version, plus the caller's own self-approval (§6.6)
+//     if they are a reviewer here (their vote may reach the threshold alone).
+// `cleanupLeafId` is the caller's source leaf to physically drop once the
+// delivery commits: promote passes it (the personal copy is consumed as it rises
+// one level), distribute passes null (a horizontal share into a *different*
+// scope must keep the distributor's own draft). Returns
+// { status: "committed"|"deleted"|"pending", scopeRef, version }.
+async function deliverToScope(client, {
+  targetScope, docPath, isDeletion, data, meta, author,
+  srcScope, srcVersion, cleanupLeafId = null,
+}) {
+  await supersedeOwnPending(client, targetScope.id, docPath, author)
+
+  if (targetScope.required_approval_score === 0) {
+    const { version, uuid } = await insertVersion(client, {
+      scopeId: targetScope.id, docPath,
+      status: isDeletion ? "deleted" : "committed",
+      isDeletion, data, meta, author, srcScope, srcVersion,
+    })
+    await autoRejectOthers(client, targetScope.id, docPath, version)
+    if (isDeletion && !targetScope.parent_id) {
+      await cascadeRootDelete(client, targetScope.id, docPath)
+    }
+    if (cleanupLeafId != null) await cleanupLeaf(client, cleanupLeafId, docPath)
+    return { status: isDeletion ? "deleted" : "committed", scopeRef: String(targetScope.id), version, uuid }
+  }
+
+  const { version, uuid } = await insertVersion(client, {
+    scopeId: targetScope.id, docPath,
+    status: "pending", isDeletion, data, meta, author, srcScope, srcVersion,
+  })
+  const committed = await maybeSelfApprove(
+    client, targetScope, docPath, version, author, isDeletion, cleanupLeafId)
+  return committed
+    ? { status: isDeletion ? "deleted" : "committed", scopeRef: String(targetScope.id), version, uuid }
+    : { status: "pending", scopeRef: String(targetScope.id), version, uuid }
 }
 
 // ---------------------------------------------------------------------------
@@ -196,7 +240,7 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
       await supersedeOwnPending(client, target.id, docPath, personRef)
 
       if (target.required_approval_score === 0) {
-        const version = await insertVersion(client, {
+        const { version, uuid } = await insertVersion(client, {
           scopeId: target.id, docPath,
           status: leaf.is_deletion ? "deleted" : "committed",
           isDeletion: leaf.is_deletion,
@@ -207,7 +251,7 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
         if (leaf.is_deletion && !target.parent_id) {
           await cascadeRootDelete(client, target.id, docPath)
         }
-        result = { status: leaf.is_deletion ? "deleted" : "committed", scopeRef: String(target.id), version }
+        result = { status: leaf.is_deletion ? "deleted" : "committed", scopeRef: String(target.id), version, uuid }
         if (isImmediate) committedAtImmediateParent = true
 
         src = { scope: target.id, version }
@@ -221,19 +265,19 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
       }
 
       // Level requires review → create a pending version.
-      const version = await insertVersion(client, {
+      const { version, uuid } = await insertVersion(client, {
         scopeId: target.id, docPath,
         status: "pending", isDeletion: leaf.is_deletion,
         data: leaf.data, meta: lineageMeta, author: personRef,
         srcScope: src.scope, srcVersion: src.version,
       })
-      result = { status: "pending", scopeRef: String(target.id), version }
+      result = { status: "pending", scopeRef: String(target.id), version, uuid }
 
       // Self-approval (§6.6): if the caller is a reviewer here, cast their vote
       // straight away — it may reach the threshold on its own.
       const committed = await maybeSelfApprove(client, target, docPath, version, personRef, leaf.is_deletion, leafId)
       if (committed) {
-        result = { status: leaf.is_deletion ? "deleted" : "committed", scopeRef: String(target.id), version }
+        result = { status: leaf.is_deletion ? "deleted" : "committed", scopeRef: String(target.id), version, uuid }
         if (isImmediate) committedAtImmediateParent = true
       }
       break
@@ -347,10 +391,11 @@ async function listPending({ scopeId }) {
 // deliberately excluded — the editor fetches it via the version-pinned read.
 async function reviewQueue({ personRef }) {
   const res = await pool.query(
-    `SELECT v.scope_id, v.doc_path, v.version, v.is_deletion, v.author, v.created_at,
+    `SELECT v.scope_id, v.doc_path, v.version, v.uuid, v.is_deletion, v.author, v.created_at,
             v.meta->'_review'->>'description' AS description,
             s.label, s.required_approval_score,
             m.reviewer_score AS my_score,
+            m.is_admin       AS is_admin,
             COALESCE((SELECT SUM(vt.score_snapshot)::int FROM votes vt
                        WHERE vt.scope_id = v.scope_id AND vt.doc_path = v.doc_path
                          AND vt.version = v.version AND vt.kind = 'approve'), 0) AS approved_score,
@@ -360,7 +405,7 @@ async function reviewQueue({ personRef }) {
        FROM memberships m
        JOIN scopes s   ON s.id = m.scope_id
        JOIN versions v ON v.scope_id = m.scope_id AND v.status = 'pending'
-      WHERE m.person_ref = $1 AND m.reviewer_score IS NOT NULL
+      WHERE m.person_ref = $1 AND (m.reviewer_score IS NOT NULL OR m.is_admin = true)
       ORDER BY v.created_at ASC, v.scope_id ASC, v.doc_path ASC`,
     [personRef]
   )
@@ -370,15 +415,16 @@ async function reviewQueue({ personRef }) {
   for (const r of res.rows) {
     let scopePath = pathCache.get(r.scope_id)
     if (scopePath === undefined) {
-      scopePath = await pathOfScope(pool, r.scope_id)
+      scopePath = stripPrefix(await pathOfScope(pool, r.scope_id))
       pathCache.set(r.scope_id, scopePath)
     }
     out.push({
       scopeRef: String(r.scope_id),
-      scopePath,
+      scopePath: scopePath,
       scopeLabel: r.label,
       path: r.doc_path,
       version: r.version,
+      uuid: r.uuid,
       isDeletion: r.is_deletion,
       author: r.author,
       createdAt: r.created_at,
@@ -387,6 +433,7 @@ async function reviewQueue({ personRef }) {
       approvedScore: r.approved_score,
       myScore: r.my_score,
       alreadyVoted: r.already_voted,
+      isAdmin: r.is_admin,
     })
   }
   return out
@@ -397,7 +444,7 @@ async function reviewQueue({ personRef }) {
 // review, 2 of 5 points" on the rows whose promote is awaiting approval.
 async function myPendingPromotions({ personRef }) {
   const res = await pool.query(
-    `SELECT v.scope_id, v.doc_path, v.version, v.created_at,
+    `SELECT v.scope_id, v.doc_path, v.version, v.uuid, v.created_at,
             v.meta->'_review'->>'description' AS description,
             s.label, s.required_approval_score,
             COALESCE((SELECT SUM(vt.score_snapshot)::int FROM votes vt
@@ -415,15 +462,16 @@ async function myPendingPromotions({ personRef }) {
   for (const r of res.rows) {
     let scopePath = pathCache.get(r.scope_id)
     if (scopePath === undefined) {
-      scopePath = await pathOfScope(pool, r.scope_id)
+      scopePath = stripPrefix(await pathOfScope(pool, r.scope_id))
       pathCache.set(r.scope_id, scopePath)
     }
     out.push({
       scopeRef: String(r.scope_id),
-      scopePath,
+      scopePath: scopePath,
       scopeLabel: r.label,
       path: r.doc_path,
       version: r.version,
+      uuid: r.uuid,
       createdAt: r.created_at,
       description: r.description || null,
       requiredScore: r.required_approval_score,
@@ -466,6 +514,16 @@ async function reject({ scopeId, personRef, docPath, version, score, reason }) {
     const pending = await pendingRow(client, scopeId, docPath, version)
     if (!pending) throw new OutdatedError("this promotion is no longer open")
 
+    // Once you've cast a vote you can't reject — approving and then rejecting the
+    // same version is contradictory (the UI hides Reject too).
+    const voted = await client.query(
+      `SELECT 1 FROM votes WHERE scope_id = $1 AND doc_path = $2 AND version = $3 AND voter = $4 LIMIT 1`,
+      [scopeId, docPath, version, personRef]
+    )
+    if (voted.rowCount > 0) {
+      throw new ForbiddenError("you have already voted on this version and cannot reject it")
+    }
+
     await castVote(client, scopeId, docPath, version, personRef, "reject", score)
     await client.query(
       `UPDATE versions
@@ -477,6 +535,44 @@ async function reject({ scopeId, personRef, docPath, version, score, reason }) {
 
     await client.query("COMMIT")
     return { rejected: true }
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
+// Admin force-commit: an admin of the scope commits a pending version outright,
+// overriding the reviewer-point threshold. Distinct from approve (a vote that
+// only commits once the quorum is reached). The route enforces admin; this just
+// commits and records who accepted it.
+async function accept({ scopeId, personRef, docPath, version }) {
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+
+    const scope = await getScopeRow(client, scopeId)
+    if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+
+    const pending = await pendingRow(client, scopeId, docPath, version)
+    if (!pending) throw new OutdatedError("this promotion is no longer open")
+
+    await client.query(
+      `UPDATE versions
+          SET status = $4, finalized_at = now(), finalized_by = $5
+        WHERE scope_id = $1 AND doc_path = $2 AND version = $3`,
+      [scopeId, docPath, version, pending.is_deletion ? "deleted" : "committed", personRef]
+    )
+    await autoRejectOthers(client, scopeId, docPath, version)
+    if (pending.is_deletion && !scope.parent_id) {
+      await cascadeRootDelete(client, scopeId, docPath)
+    }
+    const leafId = lineageLeaf(pending.meta)
+    if (leafId != null) await cleanupLeaf(client, leafId, docPath)
+
+    await client.query("COMMIT")
+    return { committed: true, status: pending.is_deletion ? "deleted" : "committed" }
   } catch (err) {
     await client.query("ROLLBACK")
     throw err
@@ -500,4 +596,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject }
+module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, accept, deliverToScope, getScopeRow }

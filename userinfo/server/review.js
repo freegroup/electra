@@ -30,6 +30,21 @@ function init(app) {
     }
   })
 
+  // UUID-based doc fetch — direct access bypassing walk-up (works for pending).
+  app.get("/userinfo/review/doc", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const j = await db.call(
+        "GET",
+        `/database/docs/${encodeURIComponent(req.query.uuid || "")}`,
+        { authHeaders: auth }
+      )
+      res.json(j)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
   // A concrete pending version with full content (version-pinned read) so an
   // editor can display what is up for review. Reviewer/member — database
   // enforces the read gate.
@@ -58,6 +73,23 @@ function init(app) {
       const j = await db.call(
         "POST",
         `/database/scopes/${encodeURIComponent(req.params.ref)}/pending/approve`,
+        { authHeaders: auth, body: { path, version } }
+      )
+      res.json(j)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // Admin force-commit: overrides the reviewer-point threshold (database
+  // enforces admin of the scope).
+  app.post("/userinfo/review/:ref/accept", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const { path, version } = req.body || {}
+      const j = await db.call(
+        "POST",
+        `/database/scopes/${encodeURIComponent(req.params.ref)}/pending/accept`,
         { authHeaders: auth, body: { path, version } }
       )
       res.json(j)

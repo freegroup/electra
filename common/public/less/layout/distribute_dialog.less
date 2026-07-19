@@ -1,0 +1,44 @@
+// distribute_dialog — the target-scope picker in the distribute modal.
+// Paired with DistributeDialog.js. A scrollable list of checkbox rows, each a
+// scope the caller is a member of (label + dim path). Colors come from the theme.
+
+#distributeDialog {
+
+  .distributeTargets {
+    max-height: 240px;
+    overflow-y: auto;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: @borderRadiusSmall;
+  }
+
+  .distributeTarget {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-weight: normal;
+
+    input { margin: 0; flex: 0 0 auto; align-self: center; }
+
+    .distributeTargetLabel {
+      flex: 0 0 auto;
+      font-weight: var(--label-font-weight);
+    }
+    .distributeTargetPath {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      opacity: 0.5;
+    }
+  }
+
+  .distributeEmpty { opacity: 0.7; }
+  .distributeNote { margin-top: 12px; }
+}

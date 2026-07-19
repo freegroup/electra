@@ -37,6 +37,15 @@ export default class ReviewFactSheet extends FileFactSheet {
     let $sheet = super.render()
     let it = this.item
     $sheet.addClass("reviewFactSheet")
+
+    // A reviewer who already voted has no actions (admins keep the Accept
+    // override) — show a "voted" indicator instead of empty buttons.
+    if (it.alreadyVoted && !it.isAdmin) {
+      $sheet.find(".factSheetButtonBar")
+        .removeClass("factSheetButtonBarEmpty")
+        .append(`<span class="reviewVotedIndicator">✓ ${t("pane.review.voted")}</span>`)
+    }
+
     // author line with globe icon — click shows the author's change comment
     let $author = $(`<div class="factSheetAuthor"></div>`)
     let $authorText = $(`<span class="reviewAuthorName"></span>`).text(it.author || "")
@@ -57,13 +66,17 @@ export default class ReviewFactSheet extends FileFactSheet {
   actions() {
     let it = this.item
     let out = []
-    if (it.canOpen) {
-      out.push({ label: t("pane.review.open"), onClick: (item) => this.opts.onOpen(item) })
-    }
-    if (!it.alreadyVoted) {
+    // Admin of the scope: force-commit (Accept) overrides the vote threshold.
+    // Reviewer: approve (a vote). Both may reject while they haven't voted yet.
+    // Opening the document is via card click, not a button.
+    if (it.isAdmin) {
+      out.push({ label: t("pane.review.accept"), primary: true, onClick: (item) => this.opts.onAccept(item) })
+    } else if (!it.alreadyVoted) {
       out.push({ label: t("pane.review.approve"), primary: true, onClick: (item) => this.opts.onApprove(item) })
     }
-    out.push({ label: t("pane.review.reject"), onClick: (item) => this.opts.onReject(item) })
+    if (!it.alreadyVoted) {
+      out.push({ label: t("pane.review.reject"), onClick: (item) => this.opts.onReject(item) })
+    }
     return out
   }
 }

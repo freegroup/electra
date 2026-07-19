@@ -61,11 +61,15 @@ async function routes(fastify) {
       const scopeId = await requireRead(req.params.scopeRef, req.personRef)
       const docPath = requirePathQuery(req)
       const key = req.params.key
+      // Optional version pin — used to serve blobs for pending (review-queue)
+      // versions that the walk-up would otherwise skip.
+      const version = req.query.version != null ? Number(req.query.version) : null
       const blob = await getBlob({
         operatingScopeId: scopeId,
         personRef: req.personRef,
         docPath,
         key,
+        version,
       })
       if (!blob) {
         throw new NotFoundError(`no blob '${key}' visible for ${docPath}`)

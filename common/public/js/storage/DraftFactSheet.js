@@ -72,6 +72,9 @@ export default class DraftFactSheet extends FileFactSheet {
     if (it.canPromote) {
       out.push({ label: t("button.promote"), primary: true, onClick: (item) => this.opts.onPromote(item) })
     }
+    if (it.canDistribute) {
+      out.push({ label: t("button.distribute"), onClick: (item) => this.opts.onDistribute(item) })
+    }
     return out
   }
 }

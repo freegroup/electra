@@ -4,6 +4,7 @@
 const { pool } = require("../persistence/pool")
 const {
   pathOfScope,
+  stripPrefix,
   canRead,
   isMember,
   ensureWriteLeaf,
@@ -26,11 +27,11 @@ function requirePathQuery(req) {
   return p
 }
 
-// Resolves a scope id to its full human path (e.g. "electra/apps/brains").
+// Resolves a scope id to its stripped human path (e.g. "apps/brains").
 async function resolveOriginPath(scopeId) {
   const client = await pool.connect()
   try {
-    return await pathOfScope(client, scopeId)
+    return stripPrefix(await pathOfScope(client, scopeId))
   } finally {
     client.release()
   }
@@ -46,6 +47,28 @@ async function requireRead(rawScopeRef, personRef) {
     if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
     const ok = await canRead(client, scopeId, personRef)
     if (!ok) throw new ForbiddenError(`caller may not read scope id ${scopeId}`)
+    return scopeId
+  } finally {
+    client.release()
+  }
+}
+
+// Read guard for GLOB aggregation. Glob returns one row per doc-path across a
+// whole subtree, and globDocs itself limits what surfaces to scopes the caller
+// may read — their membership scopes when logged in, the is_anonymous scopes
+// when anonymous. The visibility is therefore intrinsic to the aggregation, not
+// the root: a logged-in caller still needs the normal read grant on the root
+// (unchanged), but an anonymous caller does not — requiring read on a
+// non-public ancestor (e.g. the content root) would wrongly refuse them even
+// though their results can only ever be public content. For anonymous we check
+// existence only and let globDocs do the filtering.
+async function requireGlobRead(rawScopeRef, personRef) {
+  if (personRef) return requireRead(rawScopeRef, personRef)
+  const scopeId = parseScopeRef(rawScopeRef)
+  const client = await pool.connect()
+  try {
+    const scope = await getScope(client, scopeId)
+    if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
     return scopeId
   } finally {
     client.release()
@@ -81,5 +104,6 @@ module.exports = {
   requirePathQuery,
   resolveOriginPath,
   requireRead,
+  requireGlobRead,
   requireWriteLeaf,
 }

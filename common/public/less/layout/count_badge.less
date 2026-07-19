@@ -1,0 +1,24 @@
+// count_badge — a small numeric badge pinned to the top-right of its host.
+// Paired with CountBadge.js. The host gets .countBadgeHost (position:relative)
+// so the absolutely-positioned badge anchors to it. Color comes from the theme.
+
+.countBadgeHost {
+  position: relative;
+}
+
+.countBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 24px;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  box-sizing: border-box;
+}

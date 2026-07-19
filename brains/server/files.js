@@ -36,7 +36,7 @@ function withSuffix(name) {
 //   providedBy   — origin scope human path (the "Provided by" column)
 //   version      — effective version
 //   instanceType — "personal" | "personalCopy" | "inherit" (see globDocs)
-function toItem({ scopeRef, docPath, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false }) {
+function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false }) {
   const id = db.encodeId(scopeRef, docPath)
   // For personal / personal-copy docs the provider path ends in the caller's
   // own leaf (named after their email — a meaningless segment to show). Show the
@@ -48,8 +48,6 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
     if (slash !== -1) displayProvider = displayProvider.slice(0, slash)
   }
   // The shared "original" this personal copy overlays (personalCopy rows only).
-  // Its own handle + version let the finder open the original directly, and its
-  // provider is shown as-is (a shared scope, no personal leaf to strip).
   let originalItem = null
   if (original) {
     const originalId = db.encodeId(original.scopeRef, docPath)
@@ -57,11 +55,12 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
       id: originalId,
       version: original.version ?? null,
       providedBy: original.provider || null,
-      thumbnailUrl: `../brains/thumb?id=${encodeURIComponent(originalId)}${original.version != null ? `&v=${original.version}` : ""}`,
+      thumbnailUrl: original.uuid ? `../brains/thumb?uuid=${encodeURIComponent(original.uuid)}` : null,
     }
   }
   return {
     id,
+    uuid: uuid || null,
     name: docPath.split("/").pop(),
     path: docPath,
     providedBy: displayProvider,
@@ -70,13 +69,8 @@ function toItem({ scopeRef, docPath, providedBy, version, editable = true, publi
     published,
     instanceType,
     original: originalItem,
-    // The operating scope is a promote ceiling (e.g. the personal workspace):
-    // promoting is a no-op; the UI hides the Promote action and offers distribute.
     promoteCeiling,
-    // `v` is a cache-buster: it changes when the document (and its embedded
-    // preview) changes, so the browser's <img> cache re-fetches the new image
-    // instead of reusing the identical-URL copy from memory.
-    thumbnailUrl: `../brains/thumb?id=${encodeURIComponent(id)}${version != null ? `&v=${version}` : ""}`,
+    thumbnailUrl: uuid ? `../brains/thumb?uuid=${encodeURIComponent(uuid)}` : null,
   }
 }
 
@@ -94,6 +88,7 @@ function init(app) {
           toItem({
             scopeRef: d.operatingScopeRef,
             docPath: d.path,
+            uuid: d.uuid,
             providedBy: d.provider,
             version: d.providerVersion,
             instanceType: d.instanceType,
@@ -124,6 +119,7 @@ function init(app) {
       const item = toItem({
         scopeRef,
         docPath: path,
+        uuid: doc.uuid,
         providedBy: doc.scope,
         version: doc.version,
       })
@@ -276,16 +272,19 @@ function init(app) {
   })
 
   // --- distribute (horizontal) ---------------------------------------------
-  // Body: { id, targets: [groupId…] } — groupId is a plain scopeRef from /groups.
+  // Body: { id, targets: [groupId…], description? } — groupId is a plain scopeRef
+  // from /groups; the optional note travels to reviewers of pending targets.
   app.post("/brains/file/distribute", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, targets } = req.body || {}
+      const { id, targets, description } = req.body || {}
       const { scopeRef, path } = db.decodeId(id)
+      const body = { path, targetScopeRefs: targets || [] }
+      if (description) body.description = description
       const r = await db.call(
         "POST",
         `/database/scopes/${scopeRef}/docs/distribute`,
-        { authHeaders: auth, body: { path, targetScopeRefs: targets || [] } }
+        { authHeaders: auth, body }
       )
       res.json({ results: r.distributions || [] })
     } catch (err) {
@@ -329,13 +328,19 @@ function init(app) {
     }
   })
 
-  // --- groups (for the distribute picker) ----------------------------------
-  app.get("/brains/groups", async (req, res) => {
+  // --- distribute targets (for the distribute picker) ----------------------
+  // The valid destination scopes for this document — decided server-side by the
+  // database (excludes personal workspaces and the doc's own scope). Query: id.
+  app.get("/brains/file/distribute/targets", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const j = await db.call("GET", `/database/scopes/mine`, { authHeaders: auth })
-      const groups = (j.scopes || []).map((s) => ({ id: s.scopeRef, name: s.name }))
-      res.json({ groups })
+      const { scopeRef } = db.decodeId(req.query.id)
+      const j = await db.call(
+        "GET",
+        `/database/scopes/${scopeRef}/docs/distribute/targets`,
+        { authHeaders: auth }
+      )
+      res.json({ targets: j.targets || [] })
     } catch (err) {
       fail(res, err)
     }
@@ -378,29 +383,38 @@ function init(app) {
     }
   }
 
+  // --- fetch one document by UUID (for review + thumbnail) ----------------
+  app.get("/brains/file/doc", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const doc = await db.call(
+        "GET",
+        `/database/docs/${encodeURIComponent(req.query.uuid)}`,
+        { authHeaders: auth }
+      )
+      res.json(doc)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
   // --- preview thumbnail ----------------------------------------------------
-  // The preview is embedded in the document (content.image, a data URL) so it
-  // never drifts from the doc on promote/delete/distribute. Here we read the
-  // effective document (walk-up resolved by the DB), decode content.image and
-  // stream it as an image. This is the ONLY endpoint that ships the preview.
+  // Fetch by UUID: the preview image is embedded in the document (data.image),
+  // accessible for any status (pending/committed) with a single read.
   app.get("/brains/thumb", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { scopeRef, path } = db.decodeId(req.query.id)
       const doc = await db.call(
         "GET",
-        `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
+        `/database/docs/${encodeURIComponent(req.query.uuid)}`,
         { authHeaders: auth }
       )
       const decoded = decodeDataUrl(doc.data && doc.data.image)
       if (!decoded) return res.status(404).end()
-      // Force the browser to revalidate so a saved edit's new preview is never
-      // served stale from cache.
       res.set("cache-control", "no-cache, no-store, must-revalidate")
       res.set("content-type", decoded.contentType)
       res.send(decoded.buffer)
     } catch (err) {
-      // a missing preview is not an error worth logging loudly
       res.status(err.statusCode || 404).end()
     }
   })

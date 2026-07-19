@@ -90,3 +90,45 @@ test("anonymous still cannot write to an anonymous-readable scope → 401", asyn
   const res = await writeDoc(ctx, brainsId, "hack.json", asAnon(), { data: { x: 1 } })
   assert.equal(res.statusCode, 401)
 })
+
+// ---- anonymous discovery: public browsing (roots, glob, children) --------
+
+test("anonymous roots returns the public scopes as entry points", async () => {
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
+
+  const res = await get(ctx, `/database/scopes/roots`, asAnon())
+  assert.equal(res.statusCode, 200)
+  const roots = res.json().roots
+  assert.ok(roots.some((r) => r.scopeRef === String(brainsId)))
+  // An anonymous caller holds no membership, so no root is flagged as such.
+  assert.ok(roots.every((r) => r.isMember === false))
+})
+
+test("anonymous glob from a non-public ancestor still returns the public scope's docs", async () => {
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
+  await seedSharedDoc(ctx, brainsId, "public-demo.json", { visible: true })
+
+  // appsId (electra/content) is NOT itself anonymous — a per-scope read 403s —
+  // but glob aggregates only the public content beneath it, so it must not 403.
+  const res = await get(ctx, `/database/scopes/${appsId}/docs?glob=true`, asAnon())
+  assert.equal(res.statusCode, 200)
+  assert.ok(res.json().docs.some((d) => d.path === "public-demo.json"))
+})
+
+test("anonymous children of a public scope never leak a private child", async () => {
+  const brainsId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/apps")
+  await patch(ctx, `/database/scopes/${brainsId}`, asRootAdmin(), { anonymous: true })
+
+  const res = await get(ctx, `/database/scopes/${brainsId}/children`, asAnon())
+  assert.equal(res.statusCode, 200)
+  // Whatever surfaces must itself be public — private sub-workspaces stay hidden.
+  assert.ok(res.json().children.every((c) => c.anonymous === true))
+})
+
+test("anonymous cannot list children of a non-public scope → 403", async () => {
+  // appsId (electra/content) is not flagged anonymous.
+  const res = await get(ctx, `/database/scopes/${appsId}/children`, asAnon())
+  assert.equal(res.statusCode, 403)
+})

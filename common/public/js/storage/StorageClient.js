@@ -69,6 +69,24 @@ class StorageClient {
       .then((response) => response.data)
   }
 
+  // The scopes this document may be distributed INTO — decided server-side
+  // (excludes personal workspaces and the doc's own scope).
+  // -> [{ scopeRef, name, label, path }]
+  distributeTargets(id) {
+    return axios.get(`${this.base}/file/distribute/targets`, { params: { id } })
+      .then((response) => response.data.targets || [])
+  }
+
+  // Distribute (horizontal): deliver the caller's draft into each target scope.
+  // Each target applies the same review rules as promote. The optional note is
+  // shown to reviewers of targets that need approval. -> { results: [...] }
+  distribute(id, targets, description) {
+    let body = { id, targets }
+    if (description) body.description = description
+    return axios.post(`${this.base}/file/distribute`, body)
+      .then((response) => response.data)
+  }
+
   publish(id, version) {
     return axios.post(`${this.base}/file/publish`, { id, version })
       .then((response) => response.data)

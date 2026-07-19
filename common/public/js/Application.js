@@ -7,9 +7,11 @@ import StorageScreen from "./storage/StorageScreen"
 import DraftScreen from "./storage/DraftScreen"
 import WorkspaceScreen from "./workspace/WorkspaceScreen"
 import ReviewScreen from "./review/ReviewScreen"
+import session from "./session"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
 import promoteDialog from "./storage/PromoteDialog"
+import distributeDialog from "./storage/DistributeDialog"
 import openConflictDialog from "./storage/OpenConflictDialog"
 import toast from "./toast"
 
@@ -36,15 +38,22 @@ export default class Application extends AppFrame{
         // scope-based finder; everyone else keeps the folder-based FilesScreen.
         if (conf.database) {
             this.storage = storageFactory(conf)
-            // Two document panes: "Files" (shared originals) and "Draft" (the
-            // caller's own personal copies). filePane stays the primary handle;
-            // draftPane is refreshed alongside it after promote/revert/delete.
+            // Files (all docs in the public/anonymous scopes) and Workspaces
+            // (the public workspaces) are readable without an identity, so they
+            // load for anonymous visitors too.
             this.filePane = new StorageScreen(this, conf)
-            this.draftPane = new DraftScreen(this, conf)
-            // The Workspaces browser (account-scoped, app-agnostic).
             this.workspacePane = new WorkspaceScreen(this, conf)
-            // The Review inbox (account-scoped, app-agnostic).
-            this.reviewPane = new ReviewScreen(this, conf)
+            // Draft (the caller's own personal copies) and the Review inbox are
+            // account-scoped — meaningless without an identity, and their
+            // requests need one. For an anonymous visitor, hide those tabs and
+            // skip the panes so no account-scoped request is ever issued. Both
+            // stay undefined then — every use of them is optional-chained.
+            if (session.isLoggedIn()) {
+              this.draftPane = new DraftScreen(this, conf)
+              this.reviewPane = new ReviewScreen(this, conf)
+            } else {
+              $("#draft_tab, #review_tab").hide()
+            }
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
         }
@@ -69,12 +78,10 @@ export default class Application extends AppFrame{
         window.addEventListener('popstate', (event) => {
             if (event.state && event.state.id === 'editor') {
                 // New scope-model apps push { doc:<opaque id> } and open(id);
-                // review state pushes { review:"<scopeRef>:<version>", path } and
-                // re-enters read-only review mode; legacy folder apps push
-                // { file, scope } and load(name, scope).
+                // review state pushes { review:"<uuid>", path } and re-enters
+                // read-only review mode; legacy folder apps push { file, scope }.
                 if (event.state.review !== undefined && typeof this.openReview === 'function') {
-                    let [scopeRef, version] = String(event.state.review).split(':')
-                    this.openReview(scopeRef, event.state.path, Number(version))
+                    this.openReview(String(event.state.review))
                 } else if (event.state.doc !== undefined && typeof this.open === 'function') {
                     this.open(event.state.doc)
                 } else if (typeof this.load === 'function') {
@@ -124,6 +131,8 @@ export default class Application extends AppFrame{
     refreshFinders() {
         this.filePane?.reload()
         this.draftPane?.reload()
+        // keep the Review-tab pending count in sync with document activity
+        this.reviewPane?.refreshCount()
     }
 
     // Ask the user whether to open their private draft or the shared original,
@@ -145,6 +154,27 @@ export default class Application extends AppFrame{
         return promoteDialog.show(t("dialog.promote_explain"))
             .then((description) => this.storage.promote(id, description))
             .then((res) => toast(res && res.status === "committed" ? t("message.promoted") : t("message.pending_review")))
+            .then(() => this.refreshFinders())
+            .catch((err) => { if (err) console.log(err) })
+    }
+
+    // Distribute (horizontal): pick scopes the caller is a member of and deliver
+    // this draft into each. Every target applies the same review rules as promote
+    // (no target goes live immediately unless its threshold is 0 / self-approval).
+    // Takes the whole draft item so the picker can exclude its own scope.
+    distributeById(item) {
+        return this.storage.distributeTargets(item.id)
+            .then((scopes) => distributeDialog.show({
+                scopes,
+                explain: t("dialog.distribute_explain"),
+            }))
+            .then(({ targets, description }) => this.storage.distribute(item.id, targets, description))
+            .then((res) => {
+                let results = (res && res.results) || []
+                let live = results.filter((r) => r.status === "committed" || r.status === "deleted").length
+                let review = results.filter((r) => r.status === "pending").length
+                toast(t("message.distributed", { total: results.length, live, review }))
+            })
             .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })
     }

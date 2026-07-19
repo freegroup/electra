@@ -1,0 +1,42 @@
+// ScreenHeader — the shared heading at the top of a finder pane: the pane icon
+// standing alone on the left, with the title (row 1) and the description (row 2)
+// stacked beside it. Replaces the old per-pane .filesTeaser/.draftTeaser +
+// .paneIntro. One component, used by Files, Workspaces, Draft and Review.
+// Transparent for now — a surface/border can be layered on here later without
+// touching any markup.
+.screenHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 4px 0 30px;
+
+  // Icon: stands alone on the left, spanning both text rows. Coloured to the
+  // tint via the shared icon rule in theme_light (see .screenHeader there).
+  .screenHeaderIcon {
+    flex: 0 0 auto;
+    height: 90px;
+    width: 90px;
+  }
+
+  .screenHeaderText {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .screenHeaderTitle {
+    font-weight: var(--label-font-weight);
+    font-size: 1.5vw;
+    line-height: 1.1;
+    color: rgb(var(--tint-color));
+    white-space: nowrap;
+  }
+
+  .screenHeaderDescription {
+    max-width: 900px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgb(var(--text-color));
+  }
+}

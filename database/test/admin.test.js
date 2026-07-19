@@ -122,7 +122,7 @@ test("a scope can be renamed; path reflects it, docs are untouched", async () =>
 
   const meta = await get(ctx, `/database/scopes/${klasseId}`, asRootAdmin())
   assert.equal(meta.json().name, "klasse-8b")                              // atomic segment
-  assert.equal(meta.json().path, "electra/content/apps/klasse-8b")         // full path
+  assert.equal(meta.json().path, "apps/klasse-8b")         // full path
 
   const doc = await ctx.pool.query(
     `SELECT data FROM "${ctx.schema}".versions WHERE scope_id = $1 AND doc_path = 'x.json'`,

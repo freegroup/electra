@@ -103,6 +103,10 @@ export default class DraftScreen {
           // with, so it is distribute-only.
           canPromote: it.instanceType === "personalCopy"
             || (it.instanceType === "personal" && !it.promoteCeiling),
+          // Distribute (horizontal) is available for every draft — it is the
+          // caller's own leaf version and can be shared into any scope they are
+          // a member of. Unlike promote it is not gated by the ceiling.
+          canDistribute: true,
           thumbnailUrl: it.thumbnailUrl,
           // Promote already sent, approval still open → show the progress.
           inReview: reviewByPath.has(it.path),
@@ -122,6 +126,7 @@ export default class DraftScreen {
             _this.app.open(item.id).then(() => $sheet.removeClass("spinner"))
           },
           onPromote: (item) => _this.app.promoteById(item.id),
+          onDistribute: (item) => _this.app.distributeById(item),
           onRevert: (item) => _this.app.revertById(item.id),
           onDelete: (item) => _this.app.deleteById(item.id),
         }).render())

@@ -40,9 +40,9 @@ test("on_login enrolls a fresh user into bootstrap + their personal workspace", 
 
   const mine = await get(ctx, "/database/scopes/mine", asPerson("newbie"))
   const byPath = Object.fromEntries(mine.json().scopes.map((s) => [s.path, s]))
-  assert.ok(byPath["electra/content/apps"], "apps root now in myScopes")
-  assert.ok(byPath["electra/content/users/newbie"], "personal workspace provisioned")
-  assert.ok(byPath["electra/content/users/newbie"].roles.includes("admin"), "admin of own workspace")
+  assert.ok(byPath["apps"], "apps root now in myScopes")
+  assert.ok(byPath["users/newbie"], "personal workspace provisioned")
+  assert.ok(byPath["users/newbie"].roles.includes("admin"), "admin of own workspace")
   const refs = mine.json().scopes.map((s) => s.scopeRef)
   assert.ok(!refs.includes(String(extraId)), "non-bootstrap scope not joined")
 })
@@ -131,7 +131,7 @@ test("glob lists all docs under a root, one row per path, with provider", async 
   assert.equal(new Set(paths).size, paths.length, "no duplicate paths")
 
   assert.ok(byPath["shared.brain"], "shared doc visible")
-  assert.equal(byPath["shared.brain"].provider, "electra/content/apps")
+  assert.equal(byPath["shared.brain"].provider, "apps")
 
   assert.ok(byPath["mine.brain"], "own doc visible")
   assert.equal(byPath["mine.brain"].operatingScopeRef, String(wgId))

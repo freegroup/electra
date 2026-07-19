@@ -25,10 +25,9 @@ class ReviewClient {
       .then((r) => r.data.mine || [])
   }
 
-  // Full content of one pending version (version-pinned read) so an editor
-  // can show what is up for review. -> { data, meta, path, version, ... }
-  doc(scopeRef, path, version) {
-    return axios.get(`${this.base}/${scopeRef}/doc`, { params: { path, version, _: Date.now() } })
+  // Full content of one version by UUID — direct access, any status.
+  doc(uuid) {
+    return axios.get(`${this.base}/doc`, { params: { uuid, _: Date.now() } })
       .then((r) => r.data)
   }
 
@@ -42,6 +41,12 @@ class ReviewClient {
   // Reject ends the review request (a single reject suffices).
   reject(scopeRef, path, version, reason) {
     return axios.post(`${this.base}/${scopeRef}/reject`, { path, version, reason })
+      .then((r) => r.data)
+  }
+
+  // Admin force-commit: overrides the reviewer-point threshold (admin only).
+  accept(scopeRef, path, version) {
+    return axios.post(`${this.base}/${scopeRef}/accept`, { path, version })
       .then((r) => r.data)
   }
 }

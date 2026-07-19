@@ -9,14 +9,17 @@
 // under the operating scope on first write.
 
 const { getDoc, listDocs, globDocs, putDoc, deleteDoc, historyDocs, rowToDoc } = require("../persistence/docs")
+const { pool } = require("../persistence/pool")
 const { docAt } = require("../persistence/admin")
 const { promote } = require("../persistence/promote")
 const { distribute } = require("../persistence/distribute")
+const { distributeTargets } = require("../persistence/scopes")
 const { NotFoundError, BadRequestError } = require("../utils/errors")
 const {
   requirePathQuery,
   resolveOriginPath,
   requireRead,
+  requireGlobRead,
   requireWriteLeaf,
 } = require("./helpers")
 
@@ -41,8 +44,15 @@ async function routes(fastify) {
     "/database/scopes/:scopeRef/docs",
     { preHandler: [fastify.resolvePrincipal] },
     async (req) => {
-      const scopeId = await requireRead(req.params.scopeRef, req.personRef)
       const q = req.query || {}
+      const isGlob = q.glob === "true" || q.glob === "1"
+      // Glob is a filtered subtree aggregation (see requireGlobRead): an
+      // anonymous caller may run it without a read grant on the root, since its
+      // results are limited to public scopes inside globDocs. Every other read
+      // mode keeps the normal per-scope read gate.
+      const scopeId = isGlob
+        ? await requireGlobRead(req.params.scopeRef, req.personRef)
+        : await requireRead(req.params.scopeRef, req.personRef)
       if (q.path) {
         // Version-pinned read: fetch EXACTLY this scope+version, bypassing the
         // walk-up. Used to open the shared "original" of a doc even when the
@@ -80,7 +90,7 @@ async function routes(fastify) {
       const prefix = q.prefix ? String(q.prefix) : null
       // Glob mode: aggregate every doc visible under this scope (as root) across
       // all the caller's groups, one row per path with its provider.
-      if (q.glob === "true" || q.glob === "1") {
+      if (isGlob) {
         const docs = await globDocs({
           rootScopeId: scopeId,
           personRef: req.personRef,
@@ -213,6 +223,7 @@ async function routes(fastify) {
           properties: {
             path: { type: "string", minLength: 1 },
             version: { type: "integer", minimum: 1 },
+            description: { type: "string" },
             targetScopeRefs: {
               type: "array",
               items: { type: "string", pattern: "^\\d+$" },
@@ -226,7 +237,7 @@ async function routes(fastify) {
       preHandler: [fastify.requireLogin],
     },
     async (req) => {
-      const { path, version, targetScopeRefs } = req.body
+      const { path, version, targetScopeRefs, description } = req.body
       // Caller must be an explicit member of the source scope.
       await requireWriteLeaf(req.params.scopeRef, req.personRef)
       return distribute({
@@ -235,7 +246,58 @@ async function routes(fastify) {
         docPath: path,
         expectedVersion: version,
         targetScopeRefs,
+        description: (description || "").trim() || undefined,
       })
+    }
+  )
+
+  // The scopes this caller may distribute the source scope's docs INTO — the
+  // truthful target list for the distribute picker (excludes personal
+  // workspaces and the source scope itself). Same membership gate as distribute.
+  fastify.get(
+    "/database/scopes/:scopeRef/docs/distribute/targets",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      await requireWriteLeaf(req.params.scopeRef, req.personRef)
+      const targets = await distributeTargets(req.personRef, req.params.scopeRef)
+      return { targets }
+    }
+  )
+
+  // Direct access by UUID — bypasses walk-up and status filter, but still
+  // checks that the caller may read the scope the version lives in.
+  fastify.get(
+    "/database/docs/:uuid",
+    { preHandler: [fastify.resolvePrincipal] },
+    async (req) => {
+      const { uuid } = req.params
+      const res = await pool.query(
+        `SELECT scope_id, doc_path, version, uuid, status, is_deletion,
+                data, meta, author, created_at
+           FROM versions WHERE uuid = $1`,
+        [uuid]
+      )
+      if (res.rowCount === 0) throw new NotFoundError(`no version with uuid ${uuid}`)
+      const row = res.rows[0]
+      // Auth: can the caller read the scope this version belongs to?
+      await requireRead(String(row.scope_id), req.personRef)
+      const originPath = await resolveOriginPath(row.scope_id)
+      return {
+        ...rowToDoc(
+          {
+            uuid: row.uuid,
+            data: row.data,
+            meta: row.meta,
+            doc_path: row.doc_path,
+            version: row.version,
+            status: row.status,
+            author: row.author,
+            created_at: row.created_at,
+          },
+          originPath
+        ),
+        scopeRef: String(row.scope_id),
+      }
     }
   )
 }

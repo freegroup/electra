@@ -16,7 +16,8 @@ import SaveDialog from "../../common/js/storage/SaveDialog"
 import NewDocumentDialog from "../../common/js/storage/NewDocumentDialog"
 import PublishDialog from "../../common/js/storage/PublishDialog"
 import reviewClientFactory from "../../common/js/review/ReviewClient"
-import reviewBar from "../../common/js/review/ReviewBar"
+import reviewEditorHeader from "../../common/js/editor/ReviewEditorHeader"
+import defaultEditorHeader from "../../common/js/editor/DefaultEditorHeader"
 
 let storage = storageFactory(conf)
 
@@ -40,14 +41,11 @@ class Application extends GenericApplication {
       this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
 
       // deep-links: ?doc=<id> opens a document by its opaque handle;
-      // ?review=<scopeRef>:<version>&path=<docPath> loads a pending version
-      // read-only for review (the ReviewScreen mints these URLs).
+      // ?review=<uuid>&path=<docPath> loads a pending version read-only for review.
       let doc = this.getParam("doc")
       let review = this.getParam("review")
-      let reviewPath = this.getParam("path")
-      if (review && reviewPath) {
-        let [scopeRef, version] = decodeURIComponent(review).split(":")
-        this.openReview(scopeRef, decodeURIComponent(reviewPath), Number(version))
+      if (review) {
+        this.openReview(decodeURIComponent(review))
       } else if (doc) {
         this.open(doc)
       } else {
@@ -61,13 +59,11 @@ class Application extends GenericApplication {
   // Load a pending version read-only for review and show the Approve/Reject
   // bar. Content comes over the review BFF (version-pinned read) — pending
   // versions are invisible to the normal open() walk-up.
-  openReview(scopeRef, path, version) {
+  openReview(uuid) {
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
-    return reviewClientFactory().doc(scopeRef, path, version)
+    return reviewClientFactory().doc(uuid)
       .then((doc) => {
-        // A document opened for review is read-only — set before clear() so the
-        // view (via simulationStop) installs the read-only edit policy.
         this.view.readOnly = true
         this.view.clear()
         progress.show()
@@ -76,17 +72,15 @@ class Application extends GenericApplication {
           this.view.getCommandStack().markSaveLocation()
           this.view.centerDocument()
           this.hasUnsavedChanges = false
-          this.currentFile = { id: null, name: path.split("/").pop(), version: doc.version, editable: false }
-          // Reflect review mode in the URL so a page reload re-enters review
-          // (read-only) instead of showing the document normally.
+          this.currentFile = { id: null, name: doc.path.split("/").pop(), version: doc.version, editable: false }
           history.pushState(
-            { id: "editor", review: scopeRef + ":" + version, path },
+            { id: "editor", review: uuid, path: doc.path },
             conf.application + " | " + this.currentFile.name,
             window.location.href.split("?")[0]
-              + "?review=" + encodeURIComponent(scopeRef + ":" + version)
-              + "&path=" + encodeURIComponent(path))
-          reviewBar.show({
-            scopeRef, path, version,
+              + "?review=" + encodeURIComponent(uuid)
+              + "&path=" + encodeURIComponent(doc.path))
+          reviewEditorHeader.show({
+            uuid,
             onDone: () => {
               this.fileNew()
               $("#review_tab a").click()
@@ -140,6 +134,7 @@ class Application extends GenericApplication {
     this.view.clear()
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
+    defaultEditorHeader.update(this.currentFile)
   }
 
   fileSave() {
@@ -161,6 +156,7 @@ class Application extends GenericApplication {
         toast(t("common:message.saved"))
         $("#editorFileSave div").removeClass("highlight")
         this.refreshFinders()
+        defaultEditorHeader.update(this.currentFile)
       })
       .catch((err) => { if (err) console.log(err) })
   }
@@ -204,6 +200,7 @@ class Application extends GenericApplication {
           this.hasUnsavedChanges = false
           $("#editorFileSave div").removeClass("highlight")
           this.currentFile = { id: doc.id, name: doc.name, version: doc.version, editable: doc.editable }
+          defaultEditorHeader.update(this.currentFile)
           return doc
         })
       })

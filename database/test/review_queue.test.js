@@ -71,7 +71,7 @@ test("queue aggregates pending versions across all scopes I review", async () =>
   assert.ok(a && b, "one entry per review scope")
 
   assert.equal(a.scopeRef, String(classA))
-  assert.equal(a.scopePath, "electra/content/apps/classA")
+  assert.equal(a.scopePath, "apps/classA")
   assert.equal(a.version, vA)
   assert.equal(a.author, "anna")
   assert.equal(a.requiredScore, 5)
@@ -142,7 +142,7 @@ test("review/mine: the author sees their own open promotions with score progress
   assert.equal(mine.statusCode, 200, mine.body)
   const alpha = mine.json().mine.find((e) => e.path === "alpha.json")
   assert.ok(alpha, "author sees her open promotion")
-  assert.equal(alpha.scopePath, "electra/content/apps/classA")
+  assert.equal(alpha.scopePath, "apps/classA")
   assert.equal(alpha.requiredScore, 5)
   assert.equal(alpha.approvedScore, 2, "collected points visible to the author")
 

@@ -1,15 +1,17 @@
 // Distribute — horizontal delivery to several target scopes. README §6.16.
 //
-// Takes one of the caller's own leaf versions and creates one delivery per
-// target scope, each decided by that target's current state:
-//   - no active version there                       → committed
-//   - active version exists, caller authored it      → committed
-//   - active version exists, someone else authored it → pending (review)
-// The distributor is recorded as author on every created entry. Blobs are
-// copied from the source version. The path is unchanged.
+// Takes one of the caller's own leaf versions and delivers it into each chosen
+// target scope, applying the SAME review rules as promote per target (via the
+// shared deliverToScope): required_approval_score===0 commits at once, otherwise
+// a pending version is created (plus the caller's self-approval §6.6 if they are
+// a reviewer there). A distribution is never immediately visible outside those
+// two paths. The distributor is recorded as author; blobs are copied from the
+// source version; the path is unchanged. Unlike promote, the source draft is
+// KEPT (cleanupLeafId=null) — horizontal sharing into a different scope.
 
 const { pool } = require("./pool")
 const { validateDocPath } = require("./docs")
+const { deliverToScope, getScopeRow } = require("./promote")
 const {
   NotFoundError,
   ForbiddenError,
@@ -44,41 +46,7 @@ async function isMember(client, scopeId, personRef) {
   return res.rowCount > 0
 }
 
-async function nextVersion(client, scopeId, docPath) {
-  const res = await client.query(
-    `SELECT COALESCE(MAX(version), 0) + 1 AS v FROM versions
-      WHERE scope_id = $1 AND doc_path = $2`,
-    [scopeId, docPath]
-  )
-  return res.rows[0].v
-}
-
-async function copyBlobs(client, srcScope, srcVer, dstScope, dstVer, docPath) {
-  await client.query(
-    `INSERT INTO blobs (scope_id, doc_path, version, key, content_type, size_bytes, data)
-     SELECT $3::bigint, $5, $4, key, content_type, size_bytes, data
-     FROM blobs
-     WHERE scope_id = $1 AND doc_path = $5 AND version = $2`,
-    [srcScope, srcVer, dstScope, dstVer, docPath]
-  )
-}
-
-// "The last is the winner": a fresh distribution from the same author to a
-// target supersedes their own still-open one there. Identical to promote's
-// amend rule (§6.5) — the prior pending row is rejected (kept for history), not
-// physically dropped, so append-only history stays intact. Also the reason the
-// versions_one_pending_per_author unique index can never be violated here.
-async function supersedeOwnPending(client, scopeId, docPath, author) {
-  await client.query(
-    `UPDATE versions
-        SET status = 'rejected', finalized_at = now(), finalized_by = $3,
-            rejection_reason = 'superseded by a newer version from the same author'
-      WHERE scope_id = $1 AND doc_path = $2 AND author = $3 AND status = 'pending'`,
-    [scopeId, docPath, author]
-  )
-}
-
-async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, targetScopeRefs }) {
+async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, targetScopeRefs, description }) {
   validateDocPath(docPath)
 
   const client = await pool.connect()
@@ -96,40 +64,40 @@ async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, 
       )
     }
 
+    // Build the delivered meta once, mirroring promote: drop any stale review
+    // note, record the lineage, and (re)attach the review note only when the
+    // caller supplied one this time (shown to reviewers of pending targets).
+    const baseMeta = { ...(source.meta || {}) }
+    delete baseMeta._review
+    const meta = {
+      ...baseMeta,
+      _lineage: { fromScope: String(leafId), fromVersion: source.version },
+      ...(description ? { _review: { description } } : {}),
+    }
+
     const distributions = []
     for (const targetRef of targetScopeRefs) {
       if (!(await isMember(client, targetRef, personRef))) {
         throw new ForbiddenError(`caller is not a member of target scope id ${targetRef}`)
       }
+      const targetScope = await getScopeRow(client, targetRef)
+      if (!targetScope) throw new NotFoundError(`target scope id ${targetRef} not found`)
 
-      const active = await activeVersion(client, targetRef, docPath)
-      const commit = !active || active.author === personRef
-      const status = commit ? "committed" : "pending"
-
-      // Drop the caller's own prior open promotion at this target first, so a
-      // repeat distribute replaces it instead of colliding on the
-      // one-pending-per-author index (last-write-wins).
-      await supersedeOwnPending(client, targetRef, docPath, personRef)
-
-      const version = await nextVersion(client, targetRef, docPath)
-      const finalized = commit
-      await client.query(
-        `INSERT INTO versions
-           (scope_id, doc_path, version, status, is_deletion, data, meta, author,
-            finalized_at, finalized_by)
-         VALUES ($1, $2, $3, $4::version_status, false, $5::jsonb, $6::jsonb, $7, $8, $9)`,
-        [
-          targetRef, docPath, version, status, source.data, source.meta, personRef,
-          finalized ? new Date() : null,
-          finalized ? personRef : null,
-        ]
-      )
-      await copyBlobs(client, leafId, source.version, targetRef, version, docPath)
-
+      const r = await deliverToScope(client, {
+        targetScope,
+        docPath,
+        isDeletion: source.is_deletion,
+        data: source.data,
+        meta,
+        author: personRef,
+        srcScope: leafId,
+        srcVersion: source.version,
+        cleanupLeafId: null, // keep the distributor's own draft
+      })
       distributions.push(
-        commit
-          ? { targetScopeRef: String(targetRef), status: "committed", version }
-          : { targetScopeRef: String(targetRef), status: "pending", pendingVersion: version }
+        r.status === "pending"
+          ? { targetScopeRef: r.scopeRef, status: "pending", pendingVersion: r.version, uuid: r.uuid }
+          : { targetScopeRef: r.scopeRef, status: r.status, version: r.version, uuid: r.uuid }
       )
     }
 

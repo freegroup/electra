@@ -43,6 +43,25 @@ async function uniqueChildName(client, parentId, base) {
 // Path rendering (id → human path)
 // ---------------------------------------------------------------------------
 
+// The structural prefix that is never meaningful to external callers — read from
+// the SCOPE_PREFIX env var (settings.ini). All response paths are stripped of
+// this prefix before leaving the server.
+const SCOPE_PREFIX = process.env.SCOPE_PREFIX || ""
+
+// Canonical internal paths derived from SCOPE_PREFIX — used only for DB lookups.
+const PATH_CONTENT = SCOPE_PREFIX                        // e.g. "electra/content"
+const PATH_APPS    = `${SCOPE_PREFIX}/apps`              // e.g. "electra/content/apps"
+const PATH_USERS   = `${SCOPE_PREFIX}/users`             // e.g. "electra/content/users"
+
+// Strip the structural prefix from a path that will appear in a REST response.
+// Leaves internal lookup strings (used as DB keys) untouched — only call this
+// when building an object that travels over the wire to a BFF or browser.
+function stripPrefix(path) {
+  if (!SCOPE_PREFIX || !path) return path
+  if (path === SCOPE_PREFIX) return ""
+  return path.startsWith(SCOPE_PREFIX + "/") ? path.slice(SCOPE_PREFIX.length + 1) : path
+}
+
 // Reverse: given a scope id, produces the human path (e.g. "electra/school/class-8a").
 async function pathOfScope(client, scopeId) {
   const res = await client.query(
@@ -366,7 +385,7 @@ async function addMember({ scopeId, personRef }) {
 // `electra/content/users` container (i.e. electra/content/users/<email>).
 async function isPersonalWorkspace(client, scope) {
   if (!scope || scope.parent_id === null) return false
-  const usersId = await resolveScopeIdByPath(client, "electra/content/users")
+  const usersId = await resolveScopeIdByPath(client, PATH_USERS)
   return usersId !== null && String(scope.parent_id) === String(usersId)
 }
 
@@ -628,7 +647,7 @@ async function provisionUserWorkspace(personRef) {
   const client = await pool.connect()
   let contentId
   try {
-    contentId = await resolveScopeIdByPath(client, "electra/content")
+    contentId = await resolveScopeIdByPath(client, PATH_CONTENT)
   } finally {
     client.release()
   }
@@ -869,6 +888,44 @@ async function myScopes(personRef) {
   return res.rows
 }
 
+// The scopes a member may distribute a document INTO (README §6.16): every scope
+// they belong to, minus internal personal leaves, minus personal workspaces
+// (electra/content/users/<email> — single-owner spaces you never share into),
+// minus the source scope the document already lives in. This is the truthful
+// target list for the distribute picker — computed on the server so no client
+// decides which scopes are valid destinations.
+async function distributeTargets(personRef, sourceScopeId) {
+  const client = await pool.connect()
+  try {
+    // The structural container that holds every personal workspace; its direct
+    // children are the personal workspaces to exclude.
+    const usersId = await resolveScopeIdByPath(client, PATH_USERS)
+    const res = await client.query(
+      `SELECT m.scope_id, s.name, s.label
+         FROM memberships m
+         JOIN scopes s ON s.id = m.scope_id
+        WHERE m.person_ref = $1 AND m.is_member = true
+          AND s.is_personal_leaf = false
+          AND s.parent_id IS DISTINCT FROM $2   -- exclude personal workspaces
+          AND m.scope_id <> $3                  -- exclude the source scope
+        ORDER BY m.scope_id`,
+      [personRef, usersId, sourceScopeId]
+    )
+    const out = []
+    for (const r of res.rows) {
+      out.push({
+        scopeRef: String(r.scope_id),
+        name: r.name,
+        label: r.label,
+        path: stripPrefix(await pathOfScope(client, r.scope_id)),
+      })
+    }
+    return out
+  } finally {
+    client.release()
+  }
+}
+
 // Returns the person's personal-leaf scope id directly under scopeId, or null
 // if they have none there yet. Mutating operations resolve their target leaf
 // through this — a leaf is provisioned on first write (see docs.putDoc).
@@ -898,6 +955,9 @@ async function listChildren({ parentId, personRef }) {
               ON m.scope_id = s.id AND m.person_ref = $2
       WHERE s.parent_id = $1
         AND s.is_personal_leaf = false
+        -- Anonymous (personRef null): only public children are visible, so
+        -- private sub-workspace names never leak. Logged-in: all children.
+        AND ($2::text IS NOT NULL OR s.is_anonymous = true)
       ORDER BY s.label`,
     [parentId, personRef]
   )
@@ -921,9 +981,34 @@ async function listChildren({ parentId, personRef }) {
 async function rootWorkspaces(personRef) {
   const client = await pool.connect()
   try {
+    // Anonymous callers have no membership entry points. Their roots are the
+    // public (is_anonymous) scopes themselves, each surfaced read-only. Keeps
+    // the same item shape as the logged-in path below.
+    if (!personRef) {
+      const r = await client.query(
+        `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
+                (SELECT count(*)::int FROM memberships mc
+                  WHERE mc.scope_id = s.id AND mc.is_member = true) AS member_count
+           FROM scopes s
+          WHERE s.is_anonymous = true
+            AND s.is_personal_leaf = false
+          ORDER BY s.label`
+      )
+      return r.rows.map((s) => ({
+        scopeRef: String(s.id),
+        name: s.name,
+        label: s.label,
+        kind: "apps",
+        bootstrap: s.is_bootstrap,
+        anonymous: s.is_anonymous,
+        isMember: false,
+        isAdmin: false,
+        memberCount: s.member_count,
+      }))
+    }
     // The two fixed entry points, resolved by their exact paths (not pattern
     // matching): the shared app root and the caller's own personal workspace.
-    const appsId = await resolveScopeIdByPath(client, "electra/content/apps")
+    const appsId = await resolveScopeIdByPath(client, PATH_APPS)
     const personalId = await resolveScopeIdByPath(client, `electra/content/users/${personRef}`)
 
     const wanted = [
@@ -985,6 +1070,7 @@ async function listMembers({ scopeId }) {
 }
 
 module.exports = {
+  stripPrefix,
   pathOfScope,
   resolveScopeIdByPath,
   getRoot,
@@ -1011,6 +1097,7 @@ module.exports = {
   setParentScope,
   deleteScope,
   myScopes,
+  distributeTargets,
   leafUnderScope,
   listChildren,
   listMembers,

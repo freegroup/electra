@@ -141,6 +141,14 @@ export default class StorageScreen {
           }
         })
 
+      // Empty is a normal state (e.g. an anonymous visitor with no public docs,
+      // or a fresh workspace) — show a quiet "no files" note, not the error box.
+      if (items.length === 0) {
+        $host.removeClass("spinner").html(
+          `<div class="fileListEmpty" data-i18n="pane.files.empty">${t("pane.files.empty")}</div>`)
+        return
+      }
+
       let compiled = Hogan.compile($("#storageListTemplate").html())
       $host.removeClass("spinner").html(compiled.render({ items }))
 

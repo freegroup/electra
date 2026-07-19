@@ -8,8 +8,7 @@ const port = process.env.PORT_DATABASE || die("Environment Variable PORT_DATABAS
 
 module.exports = {
   database: `http://${host}:${port}`,
-  // Shared content scope — all app backends point here; the .sheet suffix filter
-  // (in files.js) is what makes this the "sheets" view.
-  appScopePath: process.env.SCOPE_CONTENT || "electra/content/apps",
+  // Derived from SCOPE_PREFIX: the shared content root for sheets documents.
+  appScopePath: `${process.env.SCOPE_PREFIX || "electra/content"}/apps`,
   fileSuffix: ".sheet",
 }

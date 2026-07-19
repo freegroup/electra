@@ -49,7 +49,7 @@ test("promoting an auto-approve level commits and drops the local copy", async (
   // Reading it back now resolves to the shared klasse8a version.
   const read = await readDoc(ctx, klasseId, "note.json", asPerson("anna"))
   assert.equal(read.json().data.v, "anna")
-  assert.equal(read.json().scope, "electra/content/apps/klasse8a")
+  assert.equal(read.json().scope, "apps/klasse8a")
 })
 
 test("promoted content becomes visible to other members", async () => {

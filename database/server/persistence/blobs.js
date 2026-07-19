@@ -97,8 +97,22 @@ async function putBlob({ leafScopeId, docPath, key, buffer, contentType }) {
 // version first (per-level leaf-then-shared, README §6.2), then look up the
 // blob on THAT specific version. A missing blob on that version returns null.
 // The walk-up does not continue upward for the blob.
-async function getBlob({ operatingScopeId, personRef, docPath, key }) {
+// When `version` is given, the walk-up is bypassed and the blob is fetched
+// from the exact (scopeId=operatingScopeId, version) row — used to serve
+// preview thumbnails for pending (review-queue) versions.
+async function getBlob({ operatingScopeId, personRef, docPath, key, version = null }) {
   validateKey(key)
+
+  if (version != null) {
+    const res = await pool.query(
+      `SELECT b.content_type, b.size_bytes, b.data
+         FROM blobs b
+        WHERE b.scope_id = $1 AND b.doc_path = $2 AND b.version = $3 AND b.key = $4`,
+      [operatingScopeId, docPath, version, key]
+    )
+    if (res.rowCount === 0) return null
+    return { contentType: res.rows[0].content_type, sizeBytes: res.rows[0].size_bytes, buffer: res.rows[0].data }
+  }
 
   const res = await pool.query(
     `${WALKUP_SLOTS},

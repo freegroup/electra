@@ -9,6 +9,7 @@ class Dialog {
                   <h4 class="media-heading">Input Prompt</h4>
                 </div>
                 <div class="modal-body">
+                    <p class="inputPromptDescription" style="display:none"></p>
                     <div class="controlWithHeader">
                       <label class="promptValueLabel">Value</label>
                       <input type="text" class="inputPromptValue" value="" >
@@ -26,7 +27,7 @@ class Dialog {
 
   /**
    */
-  show(title, label, defaultValue="") {
+  show(title, label, defaultValue="", description="") {
     return new Promise (( resolve, reject) => {
       let promiseAlreadyHandled = false
       Mousetrap.pause()
@@ -34,6 +35,9 @@ class Dialog {
       $("#inputPromptDialog .media-heading").html(title)
       $("#inputPromptDialog .promptValueLabel").html(label)
       $('#inputPromptDialog .inputPromptValue').val(defaultValue)
+      // Optional explanatory text above the input (backward compatible).
+      let $desc = $("#inputPromptDialog .inputPromptDescription")
+      if (description) { $desc.text(description).show() } else { $desc.hide() }
 
       $('#inputPromptDialog').one('shown.bs.modal', (event) => {
         $(event.currentTarget).find('input:first').focus()

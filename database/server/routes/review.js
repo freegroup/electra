@@ -4,14 +4,16 @@
 //   GET  /database/scopes/:scopeRef/pending           — pending versions here
 //   POST /database/scopes/:scopeRef/pending/approve   — record an approve vote
 //   POST /database/scopes/:scopeRef/pending/reject    — reject (ends the request)
+//   POST /database/scopes/:scopeRef/pending/accept    — admin force-commit
 //
-// The scope-bound routes require the caller to be a reviewer of the scope;
+// The approve/reject routes require the caller to be a reviewer of the scope;
+// accept requires admin of the scope (overrides the threshold);
 // the queue spans exactly those scopes. The reviewer's current score is
 // snapshotted onto the vote.
 
 const { pool } = require("../persistence/pool")
-const { getScope, reviewerScore } = require("../persistence/scopes")
-const { listPending, reviewQueue, myPendingPromotions, approve, reject } = require("../persistence/promote")
+const { getScope, reviewerScore, isAdmin } = require("../persistence/scopes")
+const { listPending, reviewQueue, myPendingPromotions, approve, reject, accept } = require("../persistence/promote")
 const {
   ForbiddenError,
   NotFoundError,
@@ -43,6 +45,21 @@ async function routes(fastify) {
         throw new ForbiddenError(`caller is not a reviewer of scope id ${scopeId}`)
       }
       return { scopeId, score }
+    } finally {
+      client.release()
+    }
+  }
+
+  // Force-commit is admin-only: verify the caller is an admin of the scope.
+  async function requireAdmin(rawScopeRef, personRef) {
+    const scopeId = parseScopeRef(rawScopeRef)
+    const client = await pool.connect()
+    try {
+      const scope = await getScope(client, scopeId)
+      if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+      const ok = await isAdmin(client, scopeId, personRef)
+      if (!ok) throw new ForbiddenError(`caller is not an admin of scope id ${scopeId}`)
+      return { scopeId }
     } finally {
       client.release()
     }
@@ -108,6 +125,22 @@ async function routes(fastify) {
         version: req.body.version,
         score,
         reason: req.body.reason,
+      })
+    }
+  )
+
+  // Admin force-commit: overrides the reviewer-point threshold. Admin of the
+  // scope only (not just a reviewer).
+  fastify.post(
+    "/database/scopes/:scopeRef/pending/accept",
+    { schema: { body: decideBody }, preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const { scopeId } = await requireAdmin(req.params.scopeRef, req.personRef)
+      return accept({
+        scopeId,
+        personRef: req.personRef,
+        docPath: req.body.path,
+        version: req.body.version,
       })
     }
   )

@@ -154,9 +154,20 @@ body.light {
         }
     }
 
-    // All pane teaser icons are inlineSVG — color them with tint so they
+    // All pane header icons are inlineSVG — color them with tint so they
     // match their pane title. Uses .inlined-svg (set by inlineSVG.js) to
     // beat the global svg.inlined-svg text-color rule in specificity.
+    .screenHeader {
+        svg.inlined-svg.icon {
+            path[stroke], rect[stroke], g[stroke], line[stroke],
+            circle[stroke], polyline[stroke] {
+                stroke: rgb(var(--tint-color)) !important;
+            }
+            path[fill], circle[fill] {
+                fill: rgb(var(--tint-color)) !important;
+            }
+        }
+    }
     .filesTeaser, .draftTeaser {
         svg.inlined-svg.icon {
             path[stroke], rect[stroke], g[stroke], line[stroke],
@@ -170,11 +181,12 @@ body.light {
     }
 
     // PopoverTooltip — appended to <body>, must be top-level (not inside a pane)
-    .popoverTooltip {        background: rgb(var(--pane-bg-color));
+    .popoverTooltip {
+        background: rgb(var(--pane-bg-color));
         border: 1px solid rgb(var(--border-color));
-        box-shadow: var(--box-shadow-1);
         color: rgb(var(--text-color));
         &::before { border-bottom-color: rgb(var(--border-color)); }
+        &::after  { border-bottom-color: rgb(var(--pane-bg-color)); }
     }
 
     .spinner:before {
@@ -603,10 +615,33 @@ body.light {
         }
     }
 
-    #editor .reviewBar {
+    #editor .editorHeader {
         background-color: rgb(var(--pane-bg-color));
         border-color: rgb(var(--border-color));
-        .reviewBarBadge { background: rgb(var(--tint-color)); }
+        .editorHeaderBadge { background: rgb(var(--tint-color)); color: #fff; }
+        // red "Review Requested" attention tag on the left
+        .editorHeaderTag { background: #d64545; color: #fff; }
+        // bold instruction line = accent color
+        .editorHeaderInstruction { color: rgb(var(--tint-color)); }
+    }
+
+    // distribute dialog target picker
+    #distributeDialog {
+        .distributeTargets { border-color: rgb(var(--border-color)); }
+        .distributeTarget:hover { background-color: rgba(0, 0, 0, 0.04); }
+    }
+
+    // count badge (e.g. pending reviews on the Review tab)
+    .countBadge {
+        background: rgb(var(--tint-color));
+        color: #fff;
+        // on a tint-colored host (e.g. the active Review tab) flip to white so
+        // the number stays legible; a tint border keeps it visible elsewhere too
+        &.countBadgeOnTint {
+            background: #fff;
+            color: rgb(var(--tint-color));
+            border: 1px solid rgb(var(--tint-color));
+        }
     }
 
     #figureConfigDialog{

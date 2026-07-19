@@ -18,6 +18,7 @@
 const { pool } = require("../persistence/pool")
 const {
   pathOfScope,
+  stripPrefix,
   resolveScopeIdByPath,
   createScope,
   isAdmin,
@@ -145,7 +146,7 @@ async function routes(fastify) {
             scopeRef: String(r.scope_id),
             name: r.name,
             label: r.label,
-            path: await pathOfScope(client, r.scope_id),
+            path: stripPrefix(await pathOfScope(client, r.scope_id)),
             requiredApprovalScore: r.required_approval_score,
             promoteCeiling: r.promote_ceiling,
             bootstrap: r.is_bootstrap,
@@ -197,7 +198,7 @@ async function routes(fastify) {
           scopeRef: String(scope.id),
           name: scope.name,
           label: scope.label,
-          path: await pathOfScope(client, scope.id),
+          path: stripPrefix(await pathOfScope(client, scope.id)),
           parent: scope.parent_id === null ? null : String(scope.parent_id),
           requiredApprovalScore: scope.required_approval_score,
           promoteCeiling: scope.promote_ceiling,
@@ -212,10 +213,11 @@ async function routes(fastify) {
 
   // The Workspaces drill-down ROOTS — the fixed entry points (shared app root +
   // the caller's personal workspace), decided server-side. The UI calls this
-  // when no scope is selected.
+  // when no scope is selected. Anonymous callers get the public (is_anonymous)
+  // scopes as their entry points; rootWorkspaces decides by personRef.
   fastify.get(
     "/database/scopes/roots",
-    { preHandler: [fastify.requireLogin] },
+    { preHandler: [fastify.resolvePrincipal] },
     async (req) => {
       const roots = await rootWorkspaces(req.personRef)
       return { roots }
@@ -224,13 +226,28 @@ async function routes(fastify) {
 
   // Direct sub-workspaces of a scope — the Workspaces drill-down. A member of
   // the scope sees ALL its direct children (name/existence), each annotated with
-  // the caller's own role there. Non-members are refused.
+  // the caller's own role there. An anonymous caller may drill into a public
+  // (is_anonymous) scope and sees only its public children — listChildren
+  // filters by personRef so private child names never leak.
   fastify.get(
     "/database/scopes/:scopeRef/children",
-    { preHandler: [fastify.requireLogin] },
+    { preHandler: [fastify.resolvePrincipal] },
     async (req) => {
       const scopeId = parseScopeRef(req.params.scopeRef)
-      await requireMember(scopeId, req.personRef)
+      if (req.personRef) {
+        await requireMember(scopeId, req.personRef)
+      } else {
+        const client = await pool.connect()
+        try {
+          const scope = await getScope(client, scopeId)
+          if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+          if (!(await canRead(client, scopeId, null))) {
+            throw new ForbiddenError(`caller may not read scope id ${scopeId}`)
+          }
+        } finally {
+          client.release()
+        }
+      }
       const children = await listChildren({ parentId: scopeId, personRef: req.personRef })
       return { children }
     }
@@ -302,7 +319,7 @@ async function routes(fastify) {
       const client = await pool.connect()
       let path
       try {
-        path = await pathOfScope(client, scope.id)
+        path = stripPrefix(await pathOfScope(client, scope.id))
       } finally {
         client.release()
       }

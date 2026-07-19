@@ -7,6 +7,7 @@
 
 const { pool } = require("./pool")
 const { NotFoundError, BadRequestError, OutdatedError } = require("../utils/errors")
+const { stripPrefix } = require("./scopes")
 
 // ---------------------------------------------------------------------------
 // Doc path validation
@@ -31,9 +32,10 @@ function validateDocPath(docPath) {
 // Maps a versions row + a resolved origin path to the API's doc shape.
 function rowToDoc(row, originScopePath) {
   return {
+    uuid: row.uuid,
     data: row.data,
     meta: row.meta,
-    scope: originScopePath,
+    scope: stripPrefix(originScopePath),
     path: row.doc_path,
     version: row.version,
     status: row.status,
@@ -84,7 +86,7 @@ async function getDoc({ operatingScopeId, personRef, docPath, resolveOriginPath 
      active AS (
        SELECT DISTINCT ON (s.depth, s.slot_rank)
               s.depth, s.slot_rank,
-              v.scope_id, v.doc_path, v.version, v.status, v.is_deletion,
+              v.scope_id, v.doc_path, v.version, v.uuid, v.status, v.is_deletion,
               v.data, v.meta, v.author, v.created_at
        FROM slots s
        JOIN versions v ON v.scope_id = s.scope_id
@@ -141,7 +143,7 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
      ranked AS (
        SELECT DISTINCT ON (v.doc_path)
               v.doc_path, s.depth, s.slot_rank,
-              v.scope_id, v.version, v.status, v.is_deletion,
+              v.scope_id, v.version, v.uuid, v.status, v.is_deletion,
               v.data, v.meta, v.author, v.created_at
        FROM slots s
        JOIN versions v ON v.scope_id = s.scope_id
@@ -220,7 +222,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       `${WALKUP_SLOTS},
        matches AS (
          SELECT v.doc_path, s.depth, s.slot_rank,
-                v.scope_id, v.version, v.status, v.is_deletion
+                v.scope_id, v.version, v.uuid, v.status, v.is_deletion
          FROM slots s
          JOIN versions v ON v.scope_id = s.scope_id
                         AND v.status IN ('committed', 'deleted')
@@ -228,7 +230,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
        ),
        winner AS (
          SELECT DISTINCT ON (doc_path)
-                doc_path, depth, slot_rank, scope_id, version, status, is_deletion
+                doc_path, depth, slot_rank, scope_id, version, uuid, status, is_deletion
          FROM matches
          ORDER BY doc_path, depth ASC, slot_rank ASC, version DESC
        ),
@@ -242,7 +244,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
          WHERE slot_rank = 1
          ORDER BY doc_path, depth ASC, version DESC
        )
-       SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version,
+       SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version, w.uuid,
               w.status, w.is_deletion,
               COALESCE(o.original_status = 'committed' AND o.original_is_deletion = false, false) AS has_original,
               o.original_scope_id, o.original_version
@@ -297,12 +299,13 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       original = {
         scopeRef: String(row.original_scope_id),
         version: row.original_version,
-        provider: originalProvider,
+        provider: stripPrefix(originalProvider),
       }
     }
     out.push({
       path: row.doc_path,
-      provider: providerPath,
+      uuid: row.uuid,
+      provider: stripPrefix(providerPath),
       providerVersion: row.version,
       operatingScopeRef: String(opScopeId),
       instanceType,
@@ -389,7 +392,7 @@ async function putDoc({ leafScopeId, docPath, data, meta, author, expectedVersio
       `INSERT INTO versions
          (scope_id, doc_path, version, status, is_deletion, data, meta, author)
        VALUES ($1, $2, $3, 'committed', false, $4::jsonb, $5::jsonb, $6)
-       RETURNING scope_id, doc_path, version, status,
+       RETURNING scope_id, doc_path, version, uuid, status,
                  data, meta, author, created_at`,
       [leafScopeId, docPath, nextVersion, data || {}, meta || {}, author]
     )
@@ -463,7 +466,7 @@ async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
       `INSERT INTO versions
          (scope_id, doc_path, version, status, is_deletion, data, meta, author)
        VALUES ($1, $2, $3, 'committed', true, '{}'::jsonb, '{}'::jsonb, $4)
-       RETURNING scope_id, doc_path, version, status, is_deletion, author, created_at`,
+       RETURNING scope_id, doc_path, version, uuid, status, is_deletion, author, created_at`,
       [leafScopeId, docPath, currentMax + 1, author]
     )
     return insRes.rows[0]
@@ -482,7 +485,7 @@ async function historyDocs({ operatingScopeId, personRef, docPath, resolveOrigin
 
   const res = await pool.query(
     `${WALKUP_SLOTS}
-     SELECT v.scope_id, v.doc_path, v.version, v.status, v.is_deletion,
+     SELECT v.scope_id, v.doc_path, v.version, v.uuid, v.status, v.is_deletion,
             v.author, v.created_at, v.finalized_at, v.rejection_reason
      FROM slots s
      JOIN versions v ON v.scope_id = s.scope_id AND v.doc_path = $3
@@ -504,6 +507,7 @@ async function historyDocs({ operatingScopeId, personRef, docPath, resolveOrigin
       [row.scope_id, row.doc_path, row.version]
     )
     out.push({
+      uuid: row.uuid,
       scope: originPath,
       path: row.doc_path,
       version: row.version,

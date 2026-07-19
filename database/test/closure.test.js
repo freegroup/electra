@@ -75,7 +75,7 @@ test("creating a sub-scope under content/apps populates closure", async () => {
     payload: { name: "klasse8a", requiredApprovalScore: 0 },
   })
   assert.equal(res.statusCode, 201, res.body)
-  assert.equal(res.json().path, "electra/content/apps/klasse8a")
+  assert.equal(res.json().path, "apps/klasse8a")
 
   const klasse8aId = res.json().id
   const rows = await ctx.pool.query(

@@ -41,7 +41,7 @@ test("personalCopy row carries `original` with the shared scope + version", asyn
   assert.equal(row.instanceType, "personalCopy")
   assert.ok(row.original, "personalCopy must carry an original")
   assert.equal(row.original.version, 1)                 // the seeded shared version
-  assert.equal(row.original.provider, "electra/content/apps/klasse8a")
+  assert.equal(row.original.provider, "apps/klasse8a")
   assert.ok(row.original.scopeRef)
 })
 
@@ -56,7 +56,7 @@ test("personalCopy at the APP ROOT (bootstrap scope) carries `original`", async 
   const row = (await glob("anna")).json().docs.find((d) => d.path === "root-doc.brain")
   assert.equal(row.instanceType, "personalCopy", "must be a personal copy, not personal")
   assert.ok(row.original, "personalCopy at the root must still carry an original")
-  assert.equal(row.original.provider, "electra/content/apps")
+  assert.equal(row.original.provider, "apps")
 })
 
 test("personal row (no shared original) has original = null", async () => {

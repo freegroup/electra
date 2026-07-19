@@ -41,8 +41,8 @@ test("effective view dedups to the nearest version per path", async () => {
   assert.equal(res.statusCode, 200)
   const docs = byPath(res.json().docs)
   assert.equal(Object.keys(docs).length, 2)
-  assert.equal(docs["math/quadratic.json"].scope, "electra/content/apps/klasse8a") // nearest
-  assert.equal(docs["bio/photosynthesis.json"].scope, "electra/content/apps")      // inherited
+  assert.equal(docs["math/quadratic.json"].scope, "apps/klasse8a") // nearest
+  assert.equal(docs["bio/photosynthesis.json"].scope, "apps")      // inherited
 })
 
 test("prefix filters the view", async () => {
@@ -56,6 +56,6 @@ test("a caller's own leaf override replaces the inherited entry", async () => {
   await writeDoc(ctx, klasseId, "math/quadratic.json", asPerson("anna"), { data: { level: "anna" } })
   const res = await list(klasseId)
   const docs = byPath(res.json().docs)
-  assert.equal(docs["math/quadratic.json"].scope, "electra/content/apps/klasse8a/anna")
+  assert.equal(docs["math/quadratic.json"].scope, "apps/klasse8a/anna")
   assert.equal(docs["math/quadratic.json"].data.level, "anna")
 })
