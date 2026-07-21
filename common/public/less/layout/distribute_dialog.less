@@ -4,8 +4,36 @@
 
 #distributeDialog {
 
+  .modal-dialog { width: 880px; }
+
+  .distributeExplain { margin-bottom: 50px; }
+
+  .distributeBody {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 40px;
+  }
+
+  .distributeImage {
+    flex: 0 0 280px;
+    width: 280px;
+    height: auto;
+    align-self: center;
+  }
+
+  // The list column stretches to the image's height; the scroll area is pinned
+  // to fill it (position:absolute), so the list never grows taller than the
+  // image — it scrolls instead once the workspaces overflow.
+  .distributeTargetsBlock {
+    flex: 1 1 auto;
+    min-width: 0;
+    position: relative;
+  }
+
   .distributeTargets {
-    max-height: 240px;
+    position: absolute;
+    inset: 0;
     overflow-y: auto;
     border-width: 1px;
     border-style: solid;
@@ -40,5 +68,5 @@
   }
 
   .distributeEmpty { opacity: 0.7; }
-  .distributeNote { margin-top: 12px; }
+  .distributeNote { margin-top: 50px; }
 }

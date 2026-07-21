@@ -13,7 +13,7 @@
     "new_document": "Neue Simulation",
     "open_example": "Beispiel öffnen",
     "revert": "Verwerfen",
-    "promote": "Promoten",
+    "promote": "Promote",
     "copy": "Kopieren",
     "publish": "Veröffentlichen",
     "unpublish": "Zurückziehen",
@@ -32,14 +32,14 @@
     "publish": "Veröffentlichen",
     "publish_explain": "Einen öffentlichen Link erstellen, den jeder ohne Anmeldung öffnen kann:",
     "promote_explain": "Deine Version zur geteilten Version machen? Alle, die diese Schaltung unter derselben Gruppe \"Bereitgestellt von\" sehen, erhalten dann deine Änderungen.",
-    "promote_description_label": "Beschreibung für die Reviewer (optional) — was hast du geändert und warum?",
+    "promote_description_label": "Beschreibung für die Reviewer (optional) - was hast du geändert und warum?",
     "revert_explain": "Deine persönlichen Änderungen verwerfen und wieder die offizielle Version anzeigen? Das kann nicht rückgängig gemacht werden.",
-    "delete_explain": "Diese Schaltung löschen? Es gibt keine geteilte Version, auf die zurückgefallen werden könnte — das kann nicht rückgängig gemacht werden.",
+    "delete_explain": "Diese Schaltung löschen? Es gibt keine geteilte Version, auf die zurückgefallen werden könnte - das kann nicht rückgängig gemacht werden.",
     "open_conflict": "Welche Version öffnen?",
     "open_conflict_explain": "Du hast einen persönlichen Entwurf dieser Schaltung. Deine eigene Kopie öffnen oder das geteilte Original?",
-    "distribute_explain": "Sende deine aktuelle Version an andere Workspaces, in denen du Mitglied bist. In jedem Workspace gelten dieselben Review-Regeln wie beim Promoten — sie wird dort zur öffentlichen Version, sobald sie genug Zustimmung sammelt (oder sofort, wo keine nötig ist).",
-    "distribute_targets_label": "Workspaces zum Verteilen",
-    "distribute_description_label": "Beschreibung für die Reviewer (optional) — was hast du geändert und warum?",
+    "distribute_explain": "Du schickst deine Draft-Version in andere Workspaces, in denen du Mitglied bist. Hat ein Workspace ein Review eingestellt, wird sie dort zuerst geprüft - andernfalls ist sie sofort für alle Mitglieder dieses Workspaces und der darunterliegenden sichtbar.",
+    "distribute_title": "Workspaces zum Verteilen auswählen",
+    "distribute_description_label": "Beschreibung für die Reviewer (optional)",
     "distribute_empty": "Du bist noch in keinem weiteren Workspace Mitglied, in den du verteilen könntest."
   },
   "nav": {
@@ -65,8 +65,8 @@
       "empty": "Keine Reviews offen",
       "deletion": "Löschung",
       "my_points_hint": "Deine Stimme zählt so viele Punkte",
-      "approved_committed": "Freigegeben — Dokument übernommen",
-      "approved_pending": "Stimme gezählt — weitere Freigaben nötig",
+      "approved_committed": "Freigegeben - Dokument übernommen",
+      "approved_pending": "Stimme gezählt - weitere Freigaben nötig",
       "rejected": "Abgelehnt",
       "reject_reason": "Begründung (optional)",
       "badge": "Review",
@@ -74,7 +74,7 @@
       "not_open": "Dieses Review ist nicht mehr offen",
       "score_status": "{{have}} von {{need}} Punkten · deine Stimme: +{{mine}}",
       "load_failed": "Review-Dokument konnte nicht geladen werden",
-      "no_change_comment": "Kein Änderungskommentar — der Autor hat keine Beschreibung hinterlassen.",
+      "no_change_comment": "Kein Änderungskommentar - der Autor hat keine Beschreibung hinterlassen.",
       "change_comment_title": "Änderungskommentar",
       "change_comment_intro": "{{author}} hat «{{doc}}» zur Review eingereicht.",
       "reject_explain": "Ein Ablehnen schließt diese Review-Anfrage sofort. Der Autor muss das Dokument überarbeiten und erneut zur Review einreichen.",
@@ -82,12 +82,12 @@
       "accept_explain": "Als Admin kannst du dieses Dokument sofort übernehmen und den Review-Schwellwert überstimmen. Fortfahren?",
       "instruction_reviewer": "Der Autor dieses Dokuments bittet freundlich um deine Freigabe. Sobald genug Personen zustimmen, wird das Dokument öffentlich und alle im Workspace profitieren von der Änderung oder dem neuen Dokument.",
       "instruction_admin": "Als Admin dieses Workspace kannst du es sofort übernehmen.",
-      "instruction_voted": "Danke — du hast diese Änderung bereits angenommen. Sobald genug Personen das geänderte Dokument annehmen, kann es öffentlich werden.",
+      "instruction_voted": "Danke - du hast diese Änderung bereits angenommen. Sobald genug Personen das geänderte Dokument annehmen, kann es öffentlich werden.",
       "requested": "Review angefragt"
     },
     "workspaces": {
       "title": "Workspaces",
-      "intro": "Workspaces sind gemeinsame Bereiche für dich und dein Team. Öffne einen und schau, was drinsteckt — oder leg deinen eigenen an und lade andere ein. Alles, was du erstellst — Schaltungen, Arbeitsblätter, Formen — liegt hier beisammen.",
+      "intro": "Ein Workspace ist ein gemeinsamer Bereich für ein <b>Team oder eine Klasse</b> - füg die passenden Leute hinzu, und alles, was du <b>promotest</b>, wird nur mit ihnen geteilt. Änderungen können erst durch ein <b>Review</b> laufen, damit nichts dein Team - oder die Öffentlichkeit - erreicht, bevor es fertig ist. Und das Ganze lässt sich <b>hierarchisch</b> verschachteln - von der einzelnen Gruppe bis zur ganzen Organisation. Öffne einen zum Stöbern oder leg deinen eigenen an und lade andere ein.",
       "root": "Meine Workspaces",
       "personal": "Persönlich",
       "create": "Neuer Workspace",
@@ -117,13 +117,13 @@
     },
     "draft": {
       "title": "Meine Entwürfe",
-      "intro": "Deine privaten Schaltungen und deine persönlichen Versionen öffentlicher Schaltungen. Wenn du eine öffentliche Schaltung bearbeitest und speicherst, landen deine Änderungen hier — niemand sonst sieht sie. Zufrieden mit deiner Version? Mit <b>Promoten</b> schlägst du vor, sie für alle in der Gruppe zur geteilten Version zu machen.",
+      "intro": "Deine privaten Schaltungen und deine persönlichen Versionen öffentlicher Schaltungen. Wenn du eine öffentliche Schaltung bearbeitest und speicherst, landen deine Änderungen hier - niemand sonst sieht sie. Zufrieden mit deiner Version? Mit <b>Promoten</b> schlägst du vor, sie für alle in der Gruppe zur geteilten Version zu machen.",
       "review_points": "Review-Punkte",
       "review_points_explain": "{{have}} von {{need}} Freigabepunkten gesammelt. Sobald der Schwellwert erreicht ist, wird das Dokument als öffentliche Version übernommen.",
       "kind_personal": "Privat",
-      "kind_personal_explain": "Dieses Dokument existiert nur in deinem persönlichen Workspace — niemand sonst kann es sehen.",
+      "kind_personal_explain": "Dieses Dokument existiert nur in deinem persönlichen Workspace - niemand sonst kann es sehen.",
       "kind_personal_copy": "Persönliche Kopie",
-      "kind_personal_copy_explain": "Du hast eine persönliche Version eines öffentlichen Dokuments. Promoten reicht deine Änderungen zur Review ein — nach Freigabe werden sie die öffentliche Version."
+      "kind_personal_copy_explain": "Du hast eine persönliche Version eines öffentlichen Dokuments. Promoten reicht deine Änderungen zur Review ein - nach Freigabe werden sie die öffentliche Version."
     },
     "files": {
       "title": "Gespeicherte Schaltungen",
@@ -169,7 +169,7 @@
     "pending_review": "Zur Prüfung eingereicht",
     "reverted": "Persönliche Änderungen verworfen",
     "deleted": "Gelöscht",
-    "distributed": "In {{total}} Workspace(s) verteilt — {{live}} öffentlich, {{review}} im Review."
+    "distributed": "In {{total}} Workspace(s) verteilt - {{live}} öffentlich, {{review}} im Review."
   },
   "error": {}
 }

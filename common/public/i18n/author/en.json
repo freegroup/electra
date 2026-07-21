@@ -43,14 +43,14 @@
     "add_folder": "Neuen Ordner anlegen",
     "new_document": "New Document",
     "promote_explain": "Make your version the shared version? Everyone who sees this document under the same \"Provided by\" group will then get your changes.",
-    "promote_description_label": "Note for the reviewers (optional) — what changed and why?",
+    "promote_description_label": "Note for the reviewers (optional) - what changed and why?",
     "revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
-    "delete_explain": "Delete this document? There is no shared version to fall back to — this cannot be undone.",
+    "delete_explain": "Delete this document? There is no shared version to fall back to - this cannot be undone.",
     "open_conflict": "Open which version?",
     "open_conflict_explain": "You have a personal draft of this document. Open your own copy, or the shared original?",
-    "distribute_explain": "Send your current version to other workspaces you belong to. In each workspace the same review rules as promote apply — it becomes that workspace's public version once it collects enough approvals (or immediately where no approval is required).",
-    "distribute_targets_label": "Workspaces to distribute to",
-    "distribute_description_label": "Note for the reviewers (optional) — what changed and why?",
+    "distribute_explain": "You send your draft version into other workspaces you belong to. If a workspace has review enabled, it's checked there first - otherwise it becomes visible right away to everyone in that workspace and the ones below it.",
+    "distribute_title": "Select workspaces to distribute to",
+    "distribute_description_label": "Note for the reviewers (optional)",
     "distribute_empty": "You are not a member of any other workspace to distribute to yet."
   },
   "nav": {
@@ -76,8 +76,8 @@
       "empty": "No reviews waiting",
       "deletion": "deletion",
       "my_points_hint": "Your vote adds this many points",
-      "approved_committed": "Approved — document committed",
-      "approved_pending": "Vote counted — more approvals needed",
+      "approved_committed": "Approved - document committed",
+      "approved_pending": "Vote counted - more approvals needed",
       "rejected": "Rejected",
       "reject_reason": "Reason (optional)",
       "badge": "Review",
@@ -85,7 +85,7 @@
       "not_open": "This review is no longer open",
       "score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
       "load_failed": "Could not load the review document",
-      "no_change_comment": "No change comment — the author did not describe what changed.",
+      "no_change_comment": "No change comment - the author did not describe what changed.",
       "change_comment_title": "Change Comment",
       "change_comment_intro": "{{author}} submitted «{{doc}}» for review.",
       "reject_explain": "Rejecting immediately closes this review request. The author must revise the document and submit it for review again.",
@@ -93,12 +93,12 @@
       "accept_explain": "As an admin you can commit this document immediately, overriding the review threshold. Continue?",
       "instruction_reviewer": "The author of this document kindly asks for your approval. Once enough people accept it, the document goes public and everyone in the workspace benefits from the change or new document.",
       "instruction_admin": "As an admin of this workspace, you can accept it immediately.",
-      "instruction_voted": "Thank you — you have already accepted this change. Once enough people accept this changed document, it can go public.",
+      "instruction_voted": "Thank you - you have already accepted this change. Once enough people accept this changed document, it can go public.",
       "requested": "Review Requested"
     },
     "workspaces": {
       "title": "Workspaces",
-      "intro": "Workspaces are shared spaces for you and your team. Open one to see what's inside, or start your own and invite others along. Everything you make — sheets, circuits, shapes — lives together here.",
+      "intro": "A workspace is a shared space for a <b>team or class</b> - add the people who belong, and everything you <b>promote</b> is shared just with them. Changes can pass through <b>review</b> first, so nothing reaches your team, or the public, before it's ready. And it all nests <b>hierarchically</b> - from a single group to a whole organization. Open one to explore, or create your own and invite others.",
       "root": "My Workspaces",
       "personal": "Personal",
       "create": "New Workspace",
@@ -128,13 +128,13 @@
     },
     "draft": {
       "title": "My Drafts",
-      "intro": "Your private documents and your personal versions of public ones. When you edit and save a public document, your changes land here — nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",
+      "intro": "Your private documents and your personal versions of public ones. When you edit and save a public document, your changes land here - nobody else sees them. Happy with your version? <b>Promote</b> it to propose making it the shared version for everyone in the group.",
       "review_points": "Review Points",
       "review_points_explain": "{{have}} of {{need}} approval points collected. Once the threshold is reached the document is committed as the public version.",
       "kind_personal": "Private",
-      "kind_personal_explain": "This document exists only in your personal workspace — nobody else can see it.",
+      "kind_personal_explain": "This document exists only in your personal workspace - nobody else can see it.",
       "kind_personal_copy": "Personal Copy",
-      "kind_personal_copy_explain": "You have a personal version of a public document. Promote your changes to submit them for review — once approved they become the public version."
+      "kind_personal_copy_explain": "You have a personal version of a public document. Promote your changes to submit them for review - once approved they become the public version."
     },
     "files": {
       "title": "Document Library",
@@ -167,7 +167,7 @@
     "pending_review": "Sent for review",
     "reverted": "Personal changes discarded",
     "deleted": "Deleted",
-    "distributed": "Distributed to {{total}} workspace(s) — {{live}} public, {{review}} in review."
+    "distributed": "Distributed to {{total}} workspace(s) - {{live}} public, {{review}} in review."
   },
   "error": {
     "clipboard_not_page": "Clipboard data is not an electra.academy page",

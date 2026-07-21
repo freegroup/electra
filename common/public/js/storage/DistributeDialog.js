@@ -12,14 +12,16 @@ class Dialog {
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="media-heading">${t("button.distribute")}</h4>
+              <h4 class="media-heading">${t("dialog.distribute_title")}</h4>
             </div>
             <div class="modal-body">
               <p class="distributeExplain"></p>
-              <div class="controlWithHeader">
-                <label>${t("dialog.distribute_targets_label")}</label>
-                <div class="distributeTargets"></div>
-                <p class="distributeEmpty" style="display:none">${t("dialog.distribute_empty")}</p>
+              <div class="distributeBody">
+                <img class="distributeImage" src="../common/images/dialog_distribute.svg">
+                <div class="controlWithHeader distributeTargetsBlock">
+                  <div class="distributeTargets"></div>
+                  <p class="distributeEmpty" style="display:none">${t("dialog.distribute_empty")}</p>
+                </div>
               </div>
               <div class="controlWithHeader distributeNote">
                 <label>${t("dialog.distribute_description_label")}</label>
