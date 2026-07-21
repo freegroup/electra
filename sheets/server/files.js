@@ -25,7 +25,7 @@ function hasSuffix(docPath) {
 
 // Force the app's suffix onto a document name (used on save/rename). Idempotent.
 function withSuffix(name) {
-  const n = sanitizeName(name)
+  const n = sanitizePath(name)
   if (!SUFFIX || n.endsWith(SUFFIX)) return n
   return n + SUFFIX
 }
@@ -143,13 +143,10 @@ function init(app) {
       if (id) {
         const decoded = db.decodeId(id)
         scopeRef = decoded.scopeRef
-        if (name) {
-          const slash = decoded.path.lastIndexOf("/")
-          const dir = slash === -1 ? "" : decoded.path.slice(0, slash + 1)
-          path = dir + withSuffix(name)
-        } else {
-          path = decoded.path
-        }
+        // name (when given) is the FULL, user-editable document path — doc_path
+        // is a virtual DB key, so changing it saves under the new path. Empty
+        // name keeps the current path.
+        path = name ? withSuffix(name) : decoded.path
       } else {
         // No id → a brand-new document always lands in the caller's PERSONAL
         // workspace (electra/content/users/<email>), where they are member+admin.
@@ -521,10 +518,19 @@ function withoutPreview(data) {
 
 // Strip unsafe characters from a document name (path separators, control chars,
 // collapsed dot runs). Does NOT touch the suffix — that's withSuffix's job.
+// Sanitize ONE path segment (no "/"): strip separators / control chars, collapse
+// dot runs.
+function sanitizeSegment(seg) {
+  return String(seg || "").trim().replace(/[/\\\x00-\x1f]/g, "").replace(/\.\.+/g, ".")
+}
 function sanitizeName(name) {
-  let n = String(name || "untitled").trim()
-  n = n.replace(/[/\\\x00-\x1f]/g, "").replace(/\.\.+/g, ".")
-  return n || "untitled"
+  return sanitizeSegment(name) || "untitled"
+}
+// Path-aware: doc_path is a virtual DB key, so keep "/" as a separator and clean
+// each segment, dropping empty ones (leading/trailing/double slashes).
+function sanitizePath(name) {
+  const segs = String(name || "").split("/").map(sanitizeSegment).filter(Boolean)
+  return segs.join("/") || "untitled"
 }
 
 function fail(res, err) {

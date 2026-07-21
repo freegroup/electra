@@ -99,14 +99,20 @@ class StorageClient {
 
   // --- helpers -------------------------------------------------------------
 
-  // Strip the file suffix and unsafe characters from a document name.
+  // Clean a document path. doc_path is a virtual DB key (not a filesystem path),
+  // so "/" is kept as a segment separator and each segment is sanitized like a
+  // file name. The app suffix is stripped (the caller re-adds it); empty / ".."
+  // segments are dropped so no broken path reaches the DB.
   sanitize(name) {
-    let sanitize = require("sanitize-filename")
-    name = sanitize(name)
-    if (this.conf.database.fileSuffix) {
-      name = name.replace(this.conf.database.fileSuffix, "")
-    }
-    return name.replace(RegExp("[.]", "g"), "")
+    let sanitizeFilename = require("sanitize-filename")
+    let suffix = this.conf.database.fileSuffix
+    name = String(name || "")
+    if (suffix && name.endsWith(suffix)) name = name.slice(0, -suffix.length)
+    return name
+      .split("/")
+      .map((seg) => sanitizeFilename(seg).replace(/[.]/g, "").trim())
+      .filter((seg) => seg.length > 0)
+      .join("/")
   }
 }
 

@@ -72,7 +72,7 @@ class Application extends GenericApplication {
           this.view.getCommandStack().markSaveLocation()
           this.view.centerDocument()
           this.hasUnsavedChanges = false
-          this.currentFile = { id: null, name: doc.path.split("/").pop(), version: doc.version, editable: false }
+          this.currentFile = { id: null, name: doc.path, version: doc.version, editable: false }
           history.pushState(
             { id: "editor", review: uuid, path: doc.path },
             conf.application + " | " + this.currentFile.name,
@@ -170,7 +170,7 @@ class Application extends GenericApplication {
         .then((res) => {
           this.currentFile.id = res.id
           this.currentFile.version = res.version
-          if (res.path) this.currentFile.name = res.path.split("/").pop()
+          if (res.path) this.currentFile.name = res.path
           history.pushState(
             { id: "editor", doc: res.id },
             conf.application + " | " + this.currentFile.name,
@@ -199,7 +199,7 @@ class Application extends GenericApplication {
           this.view.centerDocument()
           this.hasUnsavedChanges = false
           $("#editorFileSave div").removeClass("highlight")
-          this.currentFile = { id: doc.id, name: doc.name, version: doc.version, editable: doc.editable }
+          this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable }
           defaultEditorHeader.update(this.currentFile)
           return doc
         })

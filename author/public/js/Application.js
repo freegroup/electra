@@ -64,7 +64,7 @@ class Application extends GenericApplication {
     return reviewClientFactory().doc(uuid)
       .then((doc) => {
         let path = doc.path
-        this.currentFile = { id: null, name: path.split("/").pop(), version: doc.version, editable: false }
+        this.currentFile = { id: null, name: path, version: doc.version, editable: false }
         this.setDocument(new Document(doc.data), 0)
         commandStack.markSaveLocation()
         this.hasUnsavedChanges = false
@@ -162,7 +162,7 @@ class Application extends GenericApplication {
       .then((res) => {
         this.currentFile.id = res.id
         this.currentFile.version = res.version
-        if (res.path) this.currentFile.name = res.path.split("/").pop()
+        if (res.path) this.currentFile.name = res.path
         history.pushState(
           { id: "editor", doc: res.id },
           conf.application + " | " + this.currentFile.name,
@@ -199,7 +199,7 @@ class Application extends GenericApplication {
     this.hideWelcomeMessage()
     return storage.open(id, version)
       .then((doc) => {
-        this.currentFile = { id: doc.id, name: doc.name, version: doc.version, editable: doc.editable }
+        this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable }
         this.setDocument(new Document(doc.content), 0)
         commandStack.markSaveLocation()
         defaultEditorHeader.update(this.currentFile)

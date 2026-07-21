@@ -15,12 +15,42 @@ let Reader = draw2d.io.json.Reader.extend({
 
       let total = json.length
       let current = 0
+      let skipped = []
+
+      // Human-readable list of the ports a figure actually exposes — the key
+      // info when a connection can't find the port it was serialized with.
+      let portNames = (node) => {
+        try { return node.getPorts().asArray().map((p) => `${p.getName()}(${p.NAME.split('.').pop()})`).join(", ") }
+        catch (e) { return "?" }
+      }
+
+      // Resolve a serialized {node, port} endpoint to a live draw2d port, with
+      // loud, specific diagnostics on failure (which is otherwise swallowed).
+      let resolveEnd = (element, role, val) => {
+        let node = canvas.getFigure(val.node)
+        if (node === null) {
+          // The referenced figure isn't on the canvas (yet). Because figures are
+          // added in array order, this usually means the connection is listed
+          // BEFORE one of its endpoint figures in the JSON.
+          console.warn(`[load] connection ${element.id}: ${role} figure "${val.node}" not found `
+            + `(not on canvas — likely listed after this connection in the file).`)
+          throw `${role} figure '${val.node}' not found`
+        }
+        let port = node.getPort(val.port)
+        if (port === null) {
+          console.warn(`[load] connection ${element.id}: ${role} port "${val.port}" `
+            + `does not exist on figure "${val.node}" (type ${node.NAME}). `
+            + `Available ports: [${portNames(node)}]`)
+          throw `${role} port '${val.port}' not found at figure '${val.node}'`
+        }
+        return port
+      }
+
       let nextElement = (element) => {
         return new Promise( (resolve,reject) => {
             requestIdleCallback( ()=> {
               ++current
               try {
-                let node = null
                 let o = this.createFigureFromType(element.type)
                 let source = null;
                 let target = null;
@@ -28,23 +58,9 @@ let Reader = draw2d.io.json.Reader.extend({
                 for (let key in element) {
                   let val = element[key]
                   if (key === "source") {
-                    node = canvas.getFigure(val.node)
-                    if (node === null) {
-                      throw "Source figure with id '" + val.node + "' not found"
-                    }
-                    source = node.getPort(val.port)
-                    if (source === null) {
-                      throw "Unable to find source port '" + val.port + "' at figure '" + val.node + "' to unmarschal '" + element.type + "'"
-                    }
+                    source = resolveEnd(element, "source", val)
                   } else if (key === "target") {
-                    node = canvas.getFigure(val.node)
-                    if (node === null) {
-                      throw "Target figure with id '" + val.node + "' not found"
-                    }
-                    target = node.getPort(val.port)
-                    if (target === null) {
-                      throw "Unable to find target port '" + val.port + "' at figure '" + val.node + "' to unmarschal '" + element.type + "'"
-                    }
+                    target = resolveEnd(element, "target", val)
                   }
                 }
                 if (source !== null && target !== null) {
@@ -58,8 +74,12 @@ let Reader = draw2d.io.json.Reader.extend({
                 canvas.add(o)
                 resolve()
               } catch (exc) {
-                console.error(element, "Unable to instantiate figure type '" + element.type + "' with id '" + element.id + "' during unmarshal. Skipping figure..");
-                console.error(exc)
+                skipped.push({ type: element.type, id: element.id, reason: String(exc) })
+                // Print the stack as TEXT (React DevTools swallows Error objects
+                // into a collapsed "Object"). The repeating frames reveal which
+                // function recurses over the feedback loop.
+                console.error(`[load] SKIPPED ${element.type} "${element.id}":\n`
+                  + (exc && exc.stack ? exc.stack : String(exc)));
                 resolve()
               }
             })
@@ -68,6 +88,13 @@ let Reader = draw2d.io.json.Reader.extend({
 
       let promisses = json.map( element => nextElement(element));
       return Promise.all(promisses).then( ()=>{
+        // Loud summary so a partially-loaded circuit (skipped connections =
+        // "ports not connected") is never silent.
+        if (skipped.length) {
+          console.warn(`[load] ${skipped.length} of ${total} element(s) SKIPPED — the drawing is incomplete:`)
+          console.table(skipped)
+        }
+
         // restore group assignment
         //
         json.forEach(element => {

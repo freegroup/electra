@@ -6,13 +6,15 @@
 # The file's JSON (draw2d/image/view) is stored verbatim as the document data;
 # the embedded `image` is the preview, so no separate blob is needed.
 #
-# Idempotent: a document already present at (scope, path) is left untouched.
-# Content is passed via a psql variable (:'content') so quoting/escaping is
-# handled by psql, not the shell.
+# Sync semantics (safe to re-run): a new path is imported as v1; a path whose
+# file content CHANGED gets a new committed version (max(version)+1); an
+# unchanged path is skipped — so re-running never creates duplicate versions but
+# does pick up edits. Comparison is on normalized jsonb (key order / whitespace
+# don't matter).
 #
 # Usage:
-#   ./data/import-brains.sh                 # import every *.brain under $ROOT
-#   ./data/import-brains.sh <file> [file…]  # import just those files
+#   ./data/import_brains.sh                 # sync every *.brain under $ROOT
+#   ./data/import_brains.sh <file> [file…]  # sync just those files
 set -euo pipefail
 
 ROOT="data/brains/global"
@@ -32,25 +34,41 @@ import_one() {
   [ -f "$f" ] || { echo "skip (not a file): $f"; return; }
   local doc_path="${f#"$ROOT"/}"
   # The JSON is piped in via STDIN (not a CLI arg → no ARG_MAX limit) and wrapped
-  # in a $brain$…$brain$ dollar-quote so quotes/newlines need no escaping. The
-  # path is dollar-quoted the same way. content is streamed with `cat`, so it is
-  # never held in a shell variable or subject to expansion.
+  # in a $brain$…$brain$ dollar-quote so quotes/newlines need no escaping; the
+  # path is dollar-quoted ($p$…$p$) the same way. content is streamed with `cat`,
+  # so it is never held in a shell variable or subject to expansion.
+  #
+  # Insert a new committed version ONLY when the incoming content differs from the
+  # current committed one (a missing doc counts as different → v1). version is
+  # max(version)+1. RETURNING version tells us what happened: a number = the
+  # version written, empty = unchanged (skipped).
   local out
   out=$( {
-    printf 'INSERT INTO docstore.versions (scope_id, doc_path, version, status, is_deletion, data, author, finalized_at, finalized_by)\n'
-    printf 'SELECT %s, $p$%s$p$, 1, %s, false,\n' "$SCOPE_ID" "$doc_path" "'committed'"
-    printf '$brain$'
+    printf 'WITH incoming AS (SELECT $brain$'
     cat "$f"
-    printf '$brain$::jsonb, %s, now(), %s\n' "'import@electra.academy'" "'import@electra.academy'"
-    printf 'WHERE NOT EXISTS (SELECT 1 FROM docstore.versions WHERE scope_id=%s AND doc_path=$p$%s$p$);\n' "$SCOPE_ID" "$doc_path"
-  } | "${PSQL[@]}" -v ON_ERROR_STOP=1 -f - 2>&1 )
+    printf '$brain$::jsonb AS data)\n'
+    printf 'INSERT INTO docstore.versions (scope_id, doc_path, version, status, is_deletion, data, author, finalized_at, finalized_by)\n'
+    printf 'SELECT %s, $p$%s$p$,\n' "$SCOPE_ID" "$doc_path"
+    printf '       COALESCE((SELECT max(version) FROM docstore.versions WHERE scope_id=%s AND doc_path=$p$%s$p$), 0) + 1,\n' "$SCOPE_ID" "$doc_path"
+    printf "       'committed', false, (SELECT data FROM incoming),\n"
+    printf "       'import@electra.academy', now(), 'import@electra.academy'\n"
+    printf 'WHERE (SELECT data FROM docstore.versions\n'
+    printf '        WHERE scope_id=%s AND doc_path=$p$%s$p$ AND status=%s\n' "$SCOPE_ID" "$doc_path" "'committed'"
+    printf '        ORDER BY version DESC LIMIT 1) IS DISTINCT FROM (SELECT data FROM incoming)\n'
+    printf 'RETURNING version;\n'
+  } | "${PSQL[@]}" -v ON_ERROR_STOP=1 -qtA -f - 2>&1 )
+  out=$(printf '%s' "$out" | tr -d '[:space:]')
 
-  if printf '%s' "$out" | grep -q 'INSERT 0 1'; then
-    echo "imported:        $doc_path"
-  elif printf '%s' "$out" | grep -q 'INSERT 0 0'; then
-    echo "skipped (exists): $doc_path"
+  if [ -z "$out" ]; then
+    echo "unchanged:      $doc_path"
+  elif printf '%s' "$out" | grep -qE '^[0-9]+$'; then
+    if [ "$out" = "1" ]; then
+      echo "imported (v1):  $doc_path"
+    else
+      echo "updated (v$out): $doc_path"
+    fi
   else
-    echo "ERROR:           $doc_path -> $out"
+    echo "ERROR:          $doc_path -> $out"
   fi
 }
 

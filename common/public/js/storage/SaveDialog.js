@@ -1,5 +1,3 @@
-import fs from "path-browserify"
-
 // Save the current document. This dialog only confirms/adjusts the name; the
 // caller owns canvas serialization and the actual save. Saving is never a scope
 // decision — the backend writes into the caller's leaf for the document's group.
@@ -45,7 +43,12 @@ export default class SaveDialog {
     return new Promise((resolve, reject) => {
       let handled = false
       Mousetrap.pause()
-      $("#storageSaveDialog .fileName").val(fs.basename(currentFile.name, this.conf.fileSuffix))
+      // The whole document path is editable — doc_path is just a virtual DB key,
+      // not a filesystem path. Show it without the app suffix; sanitize() cleans
+      // each path segment before save.
+      let full = currentFile.name || ""
+      if (full.endsWith(this.conf.fileSuffix)) full = full.slice(0, -this.conf.fileSuffix.length)
+      $("#storageSaveDialog .fileName").val(full)
       $("#storageSaveDialog").one("shown.bs.modal", (event) => $(event.currentTarget).find("input:first").focus())
       $("#storageSaveDialog").modal("show")
 

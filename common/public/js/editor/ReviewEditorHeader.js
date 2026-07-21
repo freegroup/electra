@@ -58,7 +58,7 @@ class ReviewEditorHeader extends EditorHeader {
       // Store the entry so approve/reject/accept can use scopeRef+path+version.
       this.current = { uuid, onDone, entry }
 
-      $header.find(".editorHeaderName").text(entry.path.split("/").pop())
+      $header.find(".editorHeaderName").text(entry.path)
       $header.find(".editorHeaderVersion").text("· v" + entry.version)
 
       $("#editor .editorHeaderScore").text(
