@@ -78,7 +78,6 @@ export default class WorkspaceScreen {
   // Load the current level (top of the stack) and paint breadcrumb + tiles +
   // side panel.
   reload() {
-    let _this = this
     let current = this.stack[this.stack.length - 1]
     this.renderBreadcrumb()
 
@@ -123,17 +122,27 @@ export default class WorkspaceScreen {
         emptyHtml: `<div class="workspaceEmpty" data-i18n="pane.workspaces.empty">${t("pane.workspaces.empty")}</div>`,
         onOpen: (item) => {
           if (!item) return
-          _this.stack.push({
+          this.stack.push({
             scopeRef: String(item.scopeRef),
             name: item.name,
             isMember: !!item.isMember,
             isAdmin: !!item.isAdmin,
             isPersonal: !!item.isPersonal,
           })
-          _this.reload()
+          this.reload()
         },
         onAddMember: (item) => {
-          if (item) _this.promptAddMember(String(item.scopeRef))
+          if (item) this.promptAddMember(String(item.scopeRef))
+        },
+        // Filter Files by this workgroup's PATH (e.g. "apps/gammel") — unique
+        // and exactly what the Files "provided by" column shows. Fetched from the
+        // scope meta (same pathOfScope source) so a bare, ambiguous name is
+        // never used.
+        onFiles: (item) => {
+          if (!item) return
+          this.client.scope(item.scopeRef).then((meta) => {
+            this.app.navigate({ tab: "files", workgroup: meta.path })
+          })
         },
       })
     }).catch((exc) => {
@@ -168,7 +177,7 @@ export default class WorkspaceScreen {
           </div>
         `)
         $sec.find(".wsEditScoreButton").off("click").on("click", () => {
-          _this.promptRequiredScore(current.scopeRef, score)
+          this.promptRequiredScore(current.scopeRef, score)
         })
 
         if (current.isAdmin) {
@@ -185,10 +194,10 @@ export default class WorkspaceScreen {
             </div>
           `)
           $info.find(".wsEditInfoButton[data-field='label']").off("click").on("click", () => {
-            _this.promptRename(current.scopeRef, meta.label || "")
+            this.promptRename(current.scopeRef, meta.label || "")
           })
           $info.find(".wsEditInfoButton[data-field='description']").off("click").on("click", () => {
-            _this.promptDescription(current.scopeRef, meta.description || "")
+            this.promptDescription(current.scopeRef, meta.description || "")
           })
         }
       }).catch((err) => console.log(err))
@@ -206,9 +215,9 @@ export default class WorkspaceScreen {
           <div class="wsMemberList">${compiled.render({ members: view })}</div>
           <button class="wsAddMemberButton electra-button" data-i18n="pane.workspaces.add_member">${t("pane.workspaces.add_member")}</button>
         `)
-        $block.find(".wsAddMemberButton").off("click").on("click", () => _this.promptAddMember(current.scopeRef))
+        $block.find(".wsAddMemberButton").off("click").on("click", () => this.promptAddMember(current.scopeRef))
         $block.find(".wsRemoveMemberButton").off("click").on("click", (e) => {
-          _this.promptRemoveMember(current.scopeRef, $(e.currentTarget).data("ref"))
+          this.promptRemoveMember(current.scopeRef, $(e.currentTarget).data("ref"))
         })
       }).catch(() => {
         // Non-admins get 403 — simply show no roster/manage actions.
@@ -231,20 +240,17 @@ export default class WorkspaceScreen {
   }
 
   renderBreadcrumb() {
-    let _this = this
     let $bc = $("#workspaces .workspaceBreadcrumb").empty()
     this.stack.forEach((entry, i) => {
       let last = i === this.stack.length - 1
-      // Ancestors render as links (clickable affordance); the current level is
-      // plain text.
       let $crumb = last
         ? $(`<span class="wsCrumb wsCrumbCurrent"></span>`).text(entry.name)
         : $(`<a class="wsCrumb wsCrumbLink" href="#"></a>`).text(entry.name)
       if (!last) {
         $crumb.on("click", (e) => {
           e.preventDefault()
-          _this.stack = _this.stack.slice(0, i + 1)
-          _this.reload()
+          this.stack = this.stack.slice(0, i + 1)
+          this.reload()
         })
       }
       $bc.append($crumb)

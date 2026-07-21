@@ -32,10 +32,13 @@ const TILE_TEMPLATE = `
           {{#isAdmin}}<span class="factSheetBadge scopeBadge scopeBadgeAdmin">{{adminLabel}}</span>{{/isAdmin}}
         </div>
       </div>
-      <div class="factSheetButtonBar{{^showActions}} factSheetButtonBarEmpty{{/showActions}}">
-        {{#showActions}}
+      <div class="factSheetButtonBar">
+        {{#showAddMember}}
           <button class="factSheetBtn scopeCardAddMember" data-ref="{{scopeRef}}">{{addMemberLabel}}</button>
-        {{/showActions}}
+        {{/showAddMember}}
+        {{#showFiles}}
+          <button class="factSheetBtn scopeCardFiles" data-ref="{{scopeRef}}">{{filesLabel}}</button>
+        {{/showFiles}}
       </div>
     </div>
   {{/items}}
@@ -66,10 +69,12 @@ export function renderScopeTiles($container, items, opts = {}) {
     name: it.name,
     description: it.description || null,
     isAdmin: !!it.isAdmin,
-    showActions: !!it.isAdmin && typeof opts.onAddMember === "function",
+    showAddMember: !!it.isAdmin && typeof opts.onAddMember === "function",
+    showFiles: typeof opts.onFiles === "function",
     memberLabel: memberCountLabel(it.memberCount),
     adminLabel: label("pane.workspaces.role_admin", "admin"),
     addMemberLabel: label("pane.workspaces.add_member", "Add member"),
+    filesLabel: label("nav.files", "Files"),
     emptyHint: label("pane.workspaces.description_empty", ""),
   }))
 
@@ -91,6 +96,13 @@ export function renderScopeTiles($container, items, opts = {}) {
     e.stopPropagation()
     if (typeof opts.onAddMember === "function") {
       opts.onAddMember(byRef($(e.currentTarget).data("ref")))
+    }
+  })
+
+  $container.find(".scopeCardFiles").off("click").on("click", (e) => {
+    e.stopPropagation()
+    if (typeof opts.onFiles === "function") {
+      opts.onFiles(byRef($(e.currentTarget).data("ref")))
     }
   })
 }

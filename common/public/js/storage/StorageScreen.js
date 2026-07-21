@@ -34,9 +34,10 @@ export default class StorageScreen {
     this.stack = []       // current folder path segments (breadcrumb)
     this.filter = ""      // current search text; non-empty => flat list mode
 
-    // Reload the list only when the files tab is (re)opened AND something
-    // changed — not on every save.
-    $("#files_tab a").off("click.storage").on("click.storage", this.onShow.bind(this))
+    // React whenever the Files tab becomes visible — by user click OR by a
+    // programmatic navigate() (.tab('show')). shown.bs.tab covers both; a plain
+    // click handler would miss deep-link navigations.
+    $('#files_tab a').off("shown.bs.tab.storage").on("shown.bs.tab.storage", this.onShow.bind(this))
 
     $("body").append(`
       <script id="storageListTemplate" type="text/x-jsrender">
@@ -78,11 +79,16 @@ export default class StorageScreen {
     this.render()
   }
 
-  // The pane is being shown — reload now if something changed since last view.
+  // The pane is being shown — sync the scope filter from the URL (the workspace
+  // "Files" button navigates with a fresh ?scope=), then reload if something
+  // changed since last view.
   onShow() {
+    this.syncFilterFromUrl()
     if (this.dirty) {
       this.dirty = false
       this.loadDocs()
+    } else {
+      this.renderBody()
     }
   }
 
@@ -98,7 +104,6 @@ export default class StorageScreen {
   }
 
   render() {
-    let _this = this
     let $finder = $(".filesFinder")
     // No "New" button here: the Library shows shared documents only. Creating a
     // new document always lands in the caller's own Drafts.
@@ -116,9 +121,16 @@ export default class StorageScreen {
     let $input = $finder.find(".filesFilterInput")
     let $filter = $finder.find(".filesFilter")
     let apply = (val) => {
-      _this.filter = val.trim()
-      $filter.toggleClass("hasText", _this.filter.length > 0)
-      _this.renderBody()
+      this.filter = val.trim()
+      $filter.toggleClass("hasText", this.filter.length > 0)
+      // Keep ?workgroup= in sync with the box so a reload restores the same view.
+      // replaceState (not push): typing must not spam the history stack.
+      let { scope } = this.parseFilter(this.filter)
+      let url = new URL(window.location.href)
+      if (scope) url.searchParams.set("workgroup", scope)
+      else url.searchParams.delete("workgroup")
+      history.replaceState(history.state, "", url.toString())
+      this.renderBody()
     }
     $input.off("input").on("input", (event) => apply(event.target.value))
     $finder.find(".filesFilterClear").off("click").on("click", () => {
@@ -127,7 +139,36 @@ export default class StorageScreen {
       $input.focus()
     })
 
+    // Deep link: ?workgroup=<path> pre-fills the box as "workgroup:<path>" so the
+    // Files pane opens already filtered to that workgroup (and stays on reload).
+    this.syncFilterFromUrl()
+
     this.loadDocs()
+  }
+
+  // Read ?workgroup= from the URL into the search box + filter state. Called on
+  // first render and whenever the Files tab is shown (e.g. via the workspace
+  // card's "Files" button, which navigates with a fresh ?workgroup=).
+  syncFilterFromUrl() {
+    let workgroup = new URL(window.location.href).searchParams.get("workgroup")
+    let $input = $(".filesFinder .filesFilterInput")
+    let $filter = $(".filesFinder .filesFilter")
+    this.filter = workgroup ? `workgroup:${workgroup}` : ""
+    $input.val(this.filter)
+    $filter.toggleClass("hasText", this.filter.length > 0)
+  }
+
+  // Split the raw filter string into an optional workgroup path and free text:
+  //   "workgroup:apps/gammel adder" -> { scope: "apps/gammel", text: "adder" }
+  parseFilter(raw) {
+    let scope = null
+    let text = (raw || "").trim()
+    let m = text.match(/(^|\s)workgroup:(\S+)/)
+    if (m) {
+      scope = m[2]
+      text = (text.slice(0, m.index) + text.slice(m.index + m[0].length)).trim()
+    }
+    return { scope, text }
   }
 
   loadDocs() {
@@ -183,18 +224,23 @@ export default class StorageScreen {
       return
     }
 
+    // Any active filter (free text and/or a scope: token) collapses the folder
+    // grid into a flat list of matches.
     if (this.filter) this.renderList($host)
     else this.renderGrid($host)
     this.renderBreadcrumb()
   }
 
-  // SEARCH mode: a flat list of every document whose path matches the filter,
-  // across all folders, each shown with its full path.
+  // SEARCH mode: a flat list of every document matching the filter, across all
+  // folders, each shown with its full path. The filter may carry a "scope:<path>"
+  // token (match on the provider path) plus free text (match on the doc path).
   renderList($host) {
-    let _this = this
-    let needle = this.filter.toLowerCase()
+    let { scope, text } = this.parseFilter(this.filter)
+    let needle = text.toLowerCase()
+    let scopeNeedle = scope ? scope.toLowerCase() : null
     let items = this.files
-      .filter((it) => it.title.toLowerCase().includes(needle))
+      .filter((it) => !scopeNeedle || (it.providedBy || "").toLowerCase().startsWith(scopeNeedle))
+      .filter((it) => !needle || it.title.toLowerCase().includes(needle))
       .sort((a, b) => a.title.localeCompare(b.title))
 
     let compiled = Hogan.compile($("#storageListTemplate").html())

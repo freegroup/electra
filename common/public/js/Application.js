@@ -69,10 +69,16 @@ export default class Application extends AppFrame{
         )
         const editorTab = 'editor'
         this._validTabs = validTabs
-        this._validTabs = validTabs
         $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
             const id = $(e.target).attr('href').replace('#', '')
             if (!validTabs.has(id)) return
+            // Editor keyboard shortcuts (move/copy figures, arrow keys) only make
+            // sense on the canvas. Pause Mousetrap on every other tab so those
+            // bindings don't swallow typing in inputs like the Files search box.
+            if (typeof Mousetrap !== 'undefined') {
+                if (id === editorTab) Mousetrap.unpause()
+                else Mousetrap.pause()
+            }
             const url = new URL(window.location.href)
             if (id === editorTab) {
                 url.searchParams.delete('tab')
@@ -133,8 +139,11 @@ export default class Application extends AppFrame{
     // not "do a pushState" — the history mechanics are an implementation detail.
     navigate(params, title) {
         const url = new URL(window.location.href)
-        for (const [k, v] of Object.entries(params)) url.searchParams.set(k, encodeURIComponent(v))
+        for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v)
         history.pushState({ id: "editor", ...params }, title || '', url.toString())
+        if (params.tab) {
+            $(`a[href="#${params.tab}"][data-toggle="tab"]`).tab('show')
+        }
     }
 
     restoreTab(tab) {
