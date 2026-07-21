@@ -44,14 +44,16 @@ class Application extends GenericApplication {
       // ?review=<uuid>&path=<docPath> loads a pending version read-only for review.
       let doc = this.getParam("doc")
       let review = this.getParam("review")
+      let tab = this.getParam("tab")
       if (review) {
         this.openReview(decodeURIComponent(review))
+        this.restoreTab(tab)
       } else if (doc) {
-        this.open(doc)
+        this.open(doc).then(() => this.restoreTab(tab))
       } else {
         this.showWelcomeMessage("guides/intro.brain")
+        this.restoreTab(tab)
       }
-
       resolve(this)
     })
   }
@@ -73,12 +75,8 @@ class Application extends GenericApplication {
           this.view.centerDocument()
           this.hasUnsavedChanges = false
           this.currentFile = { id: null, name: doc.path, version: doc.version, editable: false }
-          history.pushState(
-            { id: "editor", review: uuid, path: doc.path },
-            conf.application + " | " + this.currentFile.name,
-            window.location.href.split("?")[0]
-              + "?review=" + encodeURIComponent(uuid)
-              + "&path=" + encodeURIComponent(doc.path))
+          this.navigate({ review: uuid, path: doc.path },
+            conf.application + " | " + this.currentFile.name)
           reviewEditorHeader.show({
             uuid,
             onDone: () => {
@@ -171,10 +169,8 @@ class Application extends GenericApplication {
           this.currentFile.id = res.id
           this.currentFile.version = res.version
           if (res.path) this.currentFile.name = res.path
-          history.pushState(
-            { id: "editor", doc: res.id },
-            conf.application + " | " + this.currentFile.name,
-            window.location.href.split("?")[0] + "?doc=" + encodeURIComponent(res.id))
+          this.navigate({ doc: res.id },
+            conf.application + " | " + this.currentFile.name)
           return res
         })
     })
@@ -205,10 +201,8 @@ class Application extends GenericApplication {
         })
       })
       .then(() => {
-        history.pushState(
-          { id: "editor", doc: id },
-          conf.application + " | " + (this.currentFile ? this.currentFile.name : ""),
-          window.location.href.split("?")[0] + "?doc=" + encodeURIComponent(id))
+        this.navigate({ doc: id },
+          conf.application + " | " + (this.currentFile ? this.currentFile.name : ""))
       })
       .catch((error) => {
         console.log(error)

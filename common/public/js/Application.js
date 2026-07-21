@@ -61,6 +61,27 @@ export default class Application extends AppFrame{
         // other panes — no eager render here.
         this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`, "#index_tab a")
 
+        // Deep-link tab routing: update ?tab= on every tab switch so reloads
+        // land on the same pane; restore from ?tab= on initial load via
+        // restoreTab() — called by subclasses after doc/review is handled.
+        const validTabs = new Set(
+            $('a[data-toggle="tab"][href^="#"]').map((_i, el) => $(el).attr('href').slice(1)).get()
+        )
+        const editorTab = 'editor'
+        this._validTabs = validTabs
+        this._validTabs = validTabs
+        $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
+            const id = $(e.target).attr('href').replace('#', '')
+            if (!validTabs.has(id)) return
+            const url = new URL(window.location.href)
+            if (id === editorTab) {
+                url.searchParams.delete('tab')
+            } else {
+                url.searchParams.set('tab', id)
+            }
+            window.history.replaceState(window.history.state, '', url.toString())
+        })
+
         // The editor "pane" has no screen class of its own (it's the canvas), but
         // gets the same onShow() hook for consistency with the other panes.
         // Currently a no-op; a later change could re-center/redraw here.
@@ -102,6 +123,25 @@ export default class Application extends AppFrame{
     // The editor pane's onShow hook (see init). No-op for now; kept so every
     // pane — Editor, Drafts, Files, Help — has the same "became visible" entry.
     onEditorShow(){
+    }
+
+    // Activate the tab named by ?tab= in the URL (if any). Subclasses call this
+    // after loading the initial doc/review, so the document is in memory before
+    // the pane switch happens.
+    // Navigate to a new URL state, preserving all existing query params and
+    // merging in the given ones. The caller says "navigate to this doc/review",
+    // not "do a pushState" — the history mechanics are an implementation detail.
+    navigate(params, title) {
+        const url = new URL(window.location.href)
+        for (const [k, v] of Object.entries(params)) url.searchParams.set(k, encodeURIComponent(v))
+        history.pushState({ id: "editor", ...params }, title || '', url.toString())
+    }
+
+    restoreTab(tab) {
+        tab = tab || new URL(window.location.href).searchParams.get('tab')
+        if (tab && this._validTabs && this._validTabs.has(tab)) {
+            $(`a[href="#${tab}"][data-toggle="tab"]`).tab('show')
+        }
     }
 
     showLoginHint(){
