@@ -35,6 +35,7 @@ const {
   enrollBootstrap,
   renameScope,
   relabelScope,
+  setScopeDescription,
   setParentScope,
   deleteScope,
   myScopes,
@@ -59,6 +60,7 @@ const createChildBody = {
   properties: {
     label: { type: "string", minLength: 1 },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
+    description: { type: "string" },
     requiredApprovalScore: { type: "integer", minimum: 0, default: 0 },
     promoteCeiling: { type: "boolean", default: false },
     bootstrap: { type: "boolean", default: false },
@@ -96,6 +98,8 @@ const configBody = {
     // is the identity rename — a god-view power tool (blocked for leaves).
     label: { type: "string", minLength: 1 },
     name: { type: "string", minLength: 1, pattern: "^[^/]+$" },
+    // `description` is the optional workgroup blurb; "" clears it.
+    description: { type: "string" },
     parentRef: { type: "string", pattern: "^\\d+$" },
   },
   additionalProperties: false,
@@ -198,6 +202,7 @@ async function routes(fastify) {
           scopeRef: String(scope.id),
           name: scope.name,
           label: scope.label,
+          description: scope.description,
           path: stripPrefix(await pathOfScope(client, scope.id)),
           parent: scope.parent_id === null ? null : String(scope.parent_id),
           requiredApprovalScore: scope.required_approval_score,
@@ -289,7 +294,7 @@ async function routes(fastify) {
       // "any member may create" rule — not admin-only.
       await requireMember(parentId, req.personRef)
 
-      const { label, name, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
+      const { label, name, description, requiredApprovalScore = 0, promoteCeiling = false, bootstrap = false, anonymous = false } = req.body
 
       // Prefer the user-supplied display label (name is derived from it). Reject
       // an empty / whitespace-only label outright — a blank display name is not
@@ -309,6 +314,7 @@ async function routes(fastify) {
         parentId,
         label: cleanLabel,
         name,
+        description,
         requiredApprovalScore,
         promoteCeiling,
         isBootstrap: bootstrap,
@@ -330,6 +336,7 @@ async function routes(fastify) {
         scopeRef: String(scope.id),
         name: scope.name,
         label: scope.label,
+        description: scope.description,
         path,
         requiredApprovalScore: scope.required_approval_score,
         promoteCeiling: scope.promote_ceiling,
@@ -461,6 +468,11 @@ async function routes(fastify) {
         if (label === "") throw new BadRequestError("label must not be empty")
         const row = await relabelScope({ scopeId, label })
         out.label = row.label
+      }
+      if (req.body.description !== undefined) {
+        // Unlike the label, the description may be cleared ("" -> null).
+        const row = await setScopeDescription({ scopeId, description: req.body.description })
+        out.description = row.description
       }
       if (req.body.name !== undefined) {
         const row = await renameScope({ scopeId, name: req.body.name })

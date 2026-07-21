@@ -92,9 +92,8 @@ export default class WorkspaceScreen {
     let childrenP = current.scopeRef === null
       ? this.client.roots().then((rows) => rows.map((r) => ({
           scopeRef: r.scopeRef,
-          // Display the workspace's label. Personal workspace: server sends
-          // label "Personal" already, but keep the i18n fallback for safety.
           name: r.kind === "personal" ? (r.label || t("pane.workspaces.personal")) : (r.label || r.name),
+          description: r.description || null,
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
           isPersonal: r.kind === "personal",
@@ -103,6 +102,7 @@ export default class WorkspaceScreen {
       : this.client.children(current.scopeRef).then((rows) => rows.map((r) => ({
           scopeRef: r.scopeRef,
           name: r.label || r.name,
+          description: r.description || null,
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
           memberCount: r.memberCount,
@@ -112,6 +112,7 @@ export default class WorkspaceScreen {
       let view = items.map((it) => ({
         scopeRef: it.scopeRef,
         name: it.name,
+        description: it.description || null,
         isMember: !!it.isMember,
         isAdmin: !!it.isAdmin,
         isPersonal: !!it.isPersonal,
@@ -122,8 +123,6 @@ export default class WorkspaceScreen {
         emptyHtml: `<div class="workspaceEmpty" data-i18n="pane.workspaces.empty">${t("pane.workspaces.empty")}</div>`,
         onOpen: (item) => {
           if (!item) return
-          // remember my membership so the level knows whether to offer create +
-          // whether the members panel applies
           _this.stack.push({
             scopeRef: String(item.scopeRef),
             name: item.name,
@@ -133,10 +132,8 @@ export default class WorkspaceScreen {
           })
           _this.reload()
         },
-        // Rename pencil is only rendered for admin tiles; backend also enforces
-        // admin on PATCH. Sets the display label.
-        onRename: (item) => {
-          if (item) _this.promptRename(String(item.scopeRef), item.name)
+        onAddMember: (item) => {
+          if (item) _this.promptAddMember(String(item.scopeRef))
         },
       })
     }).catch((exc) => {
@@ -156,7 +153,7 @@ export default class WorkspaceScreen {
     // are single-owner: no members, no review, no panel at all.
     if (current.scopeRef !== null && !current.isPersonal) {
       // Two fixed slots so the async loads below can't clobber each other.
-      $panel.html(`<div class="wsReviewSettings"></div><div class="wsMembersBlock"></div>`)
+      $panel.html(`<div class="wsInfoBlock"></div><div class="wsReviewSettings"></div><div class="wsMembersBlock"></div>`)
 
       // Review threshold — visible to everyone who can see the workspace;
       // the edit pencil only for admins (backend enforces admin on PATCH).
@@ -164,7 +161,7 @@ export default class WorkspaceScreen {
         let score = meta.requiredApprovalScore ?? 0
         let $sec = $panel.find(".wsReviewSettings")
         $sec.html(`
-          <h4 class="wsPanelTitle" data-i18n="pane.workspaces.review_settings">${t("pane.workspaces.review_settings")}</h4>
+          <h4 class="wsPanelTitle">${t("pane.workspaces.review_settings")}</h4>
           <div class="wsReviewScore" title="${t("pane.workspaces.required_score_hint")}">
             <span class="wsReviewScoreValue">${t("pane.workspaces.required_score", { count: score })}</span>
             ${current.isAdmin ? `<button class="wsEditScoreButton" title="${t("pane.workspaces.edit_required_score")}">✎</button>` : ""}
@@ -173,6 +170,27 @@ export default class WorkspaceScreen {
         $sec.find(".wsEditScoreButton").off("click").on("click", () => {
           _this.promptRequiredScore(current.scopeRef, score)
         })
+
+        if (current.isAdmin) {
+          let $info = $panel.find(".wsInfoBlock")
+          $info.html(`
+            <h4 class="wsPanelTitle">${t("pane.workspaces.info_settings")}</h4>
+            <div class="wsInfoRow">
+              <span class="wsInfoValue wsInfoLabel">${meta.label || ""}</span>
+              <button class="wsEditInfoButton" data-field="label" title="${t("pane.workspaces.rename")}">✎</button>
+            </div>
+            <div class="wsInfoRow">
+              <span class="wsInfoValue wsInfoDescription">${meta.description || ""}</span>
+              <button class="wsEditInfoButton" data-field="description" title="${t("pane.workspaces.edit_description")}">✎</button>
+            </div>
+          `)
+          $info.find(".wsEditInfoButton[data-field='label']").off("click").on("click", () => {
+            _this.promptRename(current.scopeRef, meta.label || "")
+          })
+          $info.find(".wsEditInfoButton[data-field='description']").off("click").on("click", () => {
+            _this.promptDescription(current.scopeRef, meta.description || "")
+          })
+        }
       }).catch((err) => console.log(err))
 
       // The roster is admin-only: members() returns 403 for non-admins, so if it
@@ -260,6 +278,19 @@ export default class WorkspaceScreen {
         label = (label || "").trim()
         if (!label || label === currentLabel) return
         return this.client.rename(scopeRef, label)
+          .then(() => { toast(t("pane.workspaces.renamed")); this.reload() })
+      })
+      .catch((err) => { if (err) console.log(err) })
+  }
+
+  // Edit the description (admin only). Empty string clears it.
+  promptDescription(scopeRef, currentDescription) {
+    inputPrompt.show(t("pane.workspaces.edit_description"), t("pane.workspaces.description_label"), currentDescription || "")
+      .then((value) => {
+        if (value === null || value === undefined) return
+        value = String(value).trim()
+        if (value === (currentDescription || "").trim()) return
+        return this.client.setDescription(scopeRef, value)
           .then(() => { toast(t("pane.workspaces.renamed")); this.reload() })
       })
       .catch((err) => { if (err) console.log(err) })

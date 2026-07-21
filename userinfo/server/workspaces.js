@@ -69,9 +69,10 @@ function init(app) {
   app.patch("/userinfo/workspaces/:ref", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { label, requiredApprovalScore } = req.body || {}
+      const { label, description, requiredApprovalScore } = req.body || {}
       const body = {}
       if (label !== undefined) body.label = label
+      if (description !== undefined) body.description = description
       if (requiredApprovalScore !== undefined) body.requiredApprovalScore = requiredApprovalScore
       const j = await db.call(
         "PATCH",

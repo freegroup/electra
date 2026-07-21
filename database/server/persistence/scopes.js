@@ -168,7 +168,7 @@ async function createRootScope({ name, requiredApprovalScore, createdBy }) {
 // Inserts a new scope under parentId and populates its closure rows in the
 // same transaction. The creator becomes the first admin + reviewer (score 10)
 // of the new scope. See ARCHITECTURE.md §2.3.
-async function createScope({ parentId, name, label, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy, grantCreatorAdmin = true }) {
+async function createScope({ parentId, name, label, description = null, requiredApprovalScore, promoteCeiling = false, isBootstrap = false, isAnonymous = false, createdBy, grantCreatorAdmin = true }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -207,10 +207,10 @@ async function createScope({ parentId, name, label, requiredApprovalScore, promo
     let insRes
     try {
       insRes = await client.query(
-        `INSERT INTO scopes (parent_id, name, label, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING id, parent_id, name, label, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_at, created_by`,
-        [parentId, finalName, finalLabel, requiredApprovalScore, promoteCeiling, isBootstrap, isAnonymous, createdBy]
+        `INSERT INTO scopes (parent_id, name, label, description, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING id, parent_id, name, label, description, required_approval_score, promote_ceiling, is_bootstrap, is_anonymous, created_at, created_by`,
+        [parentId, finalName, finalLabel, description, requiredApprovalScore, promoteCeiling, isBootstrap, isAnonymous, createdBy]
       )
     } catch (err) {
       // Unique (parent_id, name) violation
@@ -263,7 +263,7 @@ async function createScope({ parentId, name, label, requiredApprovalScore, promo
 
 async function getScope(client, scopeId) {
   const res = await client.query(
-    `SELECT id, parent_id, name, label, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous, created_at, created_by
+    `SELECT id, parent_id, name, label, description, required_approval_score, promote_ceiling, is_personal_leaf, is_bootstrap, is_anonymous, created_at, created_by
      FROM scopes WHERE id = $1`,
     [scopeId]
   )
@@ -746,6 +746,26 @@ async function relabelScope({ scopeId, label }) {
   }
 }
 
+// Sets a scope's optional free-form description (shown on the workgroup card).
+// Unlike the label, this may be cleared: an empty string or null stores NULL.
+async function setScopeDescription({ scopeId, description }) {
+  const value =
+    description === undefined || description === null || String(description).trim() === ""
+      ? null
+      : String(description).trim()
+  const client = await pool.connect()
+  try {
+    const res = await client.query(
+      `UPDATE scopes SET description = $2 WHERE id = $1 RETURNING id, name, label, description`,
+      [scopeId, value]
+    )
+    if (res.rowCount === 0) throw new NotFoundError(`unknown scope id ${scopeId}`)
+    return res.rows[0]
+  } finally {
+    client.release()
+  }
+}
+
 // Deletes an empty scope. Refuses if it still has sub-scopes/leaves or any
 // document versions — the caller must clear those first (this is a structural
 // delete, not a recursive purge). The root cannot be deleted. Removes the
@@ -945,7 +965,7 @@ async function leafUnderScope(client, scopeId, personRef) {
 // route (isMember of parentId).
 async function listChildren({ parentId, personRef }) {
   const res = await pool.query(
-    `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
+    `SELECT s.id, s.name, s.label, s.description, s.is_bootstrap, s.is_anonymous,
             (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
             COALESCE(m.is_admin, false)                       AS is_admin,
             (SELECT count(*)::int FROM memberships mc
@@ -965,6 +985,7 @@ async function listChildren({ parentId, personRef }) {
     scopeRef: String(r.id),
     name: r.name,
     label: r.label,
+    description: r.description,
     bootstrap: r.is_bootstrap,
     anonymous: r.is_anonymous,
     isMember: r.is_member,
@@ -1094,6 +1115,7 @@ module.exports = {
   enrollBootstrap,
   renameScope,
   relabelScope,
+  setScopeDescription,
   setParentScope,
   deleteScope,
   myScopes,

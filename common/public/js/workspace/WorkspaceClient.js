@@ -57,6 +57,13 @@ class WorkspaceClient {
       .then((r) => r.data)
   }
 
+  // Set a workspace's optional description (admin only). Pass "" to clear it.
+  // -> { description, ... }
+  setDescription(ref, description) {
+    return axios.patch(`${this.base}/${ref}`, { description })
+      .then((r) => r.data)
+  }
+
   // Set the review threshold (admin only): the approval points a pending
   // document must collect before it commits in this workspace.
   setRequiredScore(ref, score) {
