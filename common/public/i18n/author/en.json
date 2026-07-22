@@ -24,7 +24,8 @@
     "promote": "Promote",
     "open_draft": "Open my copy",
     "open_original": "Open original",
-    "distribute": "Distribute"
+    "distribute": "Distribute",
+    "request_delete": "Request Deletion"
   },
   "editor": {
     "empty": {
@@ -46,6 +47,9 @@
     "promote_description_label": "Note for the reviewers (optional) - what changed and why?",
     "revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
     "delete_explain": "Delete this document? There is no group version to fall back to - this cannot be undone.",
+    "delete_shared_explain": "Delete this document for the whole group? It disappears for everyone who sees it here, and this cannot be undone.",
+    "delete_shared_request_explain": "Request deletion of this document? Your group's reviewers must approve it before it is removed for everyone.",
+    "delete_description_label": "Reason for deletion (optional)",
     "open_conflict": "Open which version?",
     "open_conflict_explain": "You have a personal copy of this document. Open your own copy, or the group's version?",
     "distribute_explain": "You send your version into other workspaces you belong to. If a workspace has review enabled, it's checked there first - otherwise it becomes visible right away to everyone in that workspace and the ones below it.",
@@ -75,10 +79,14 @@
       "voted": "voted",
       "empty": "No reviews waiting",
       "deletion": "deletion",
+      "deletion_notice": "This document is proposed for deletion - approving removes it for everyone here.",
       "my_points_hint": "Your vote adds this many points",
       "approved_committed": "Approved - document committed",
       "approved_pending": "Vote counted - more approvals needed",
       "rejected": "Rejected",
+      "withdraw": "Withdraw",
+      "withdraw_explain": "Withdraw this request? It will be removed as if you never submitted it.",
+      "withdrawn": "Request withdrawn",
       "reject_reason": "Reason (optional)",
       "badge": "Review",
       "back": "Back",
@@ -171,6 +179,7 @@
     "pending_review": "Sent for review",
     "reverted": "Personal changes discarded",
     "deleted": "Deleted",
+    "delete_requested": "Deletion sent for review",
     "distributed": "Distributed to {{total}} workspace(s) - {{live}} public, {{review}} in review."
   },
   "error": {

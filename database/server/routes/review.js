@@ -13,7 +13,7 @@
 
 const { pool } = require("../persistence/pool")
 const { getScope, reviewerScore, isAdmin } = require("../persistence/scopes")
-const { listPending, reviewQueue, myPendingPromotions, approve, reject, accept } = require("../persistence/promote")
+const { listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept } = require("../persistence/promote")
 const {
   ForbiddenError,
   NotFoundError,
@@ -45,6 +45,26 @@ async function routes(fastify) {
         throw new ForbiddenError(`caller is not a reviewer of scope id ${scopeId}`)
       }
       return { scopeId, score }
+    } finally {
+      client.release()
+    }
+  }
+
+  // Reject may come from a reviewer OR an admin (an admin can reject a request
+  // outright, even without reviewer points and even after voting). Returns the
+  // caller's reviewer score (may be null) and whether they are an admin.
+  async function requireReviewerOrAdmin(rawScopeRef, personRef) {
+    const scopeId = parseScopeRef(rawScopeRef)
+    const client = await pool.connect()
+    try {
+      const scope = await getScope(client, scopeId)
+      if (!scope) throw new NotFoundError(`unknown scope id ${scopeId}`)
+      const score = await reviewerScore(client, scopeId, personRef)
+      const admin = await isAdmin(client, scopeId, personRef)
+      if (score === null && !admin) {
+        throw new ForbiddenError(`caller is not a reviewer or admin of scope id ${scopeId}`)
+      }
+      return { scopeId, score, admin }
     } finally {
       client.release()
     }
@@ -117,14 +137,31 @@ async function routes(fastify) {
     "/database/scopes/:scopeRef/pending/reject",
     { schema: { body: decideBody }, preHandler: [fastify.requireLogin] },
     async (req) => {
-      const { scopeId, score } = await requireReviewer(req.params.scopeRef, req.personRef)
+      const { scopeId, score, admin } = await requireReviewerOrAdmin(req.params.scopeRef, req.personRef)
       return reject({
         scopeId,
         personRef: req.personRef,
         docPath: req.body.path,
         version: req.body.version,
-        score,
+        score: score || 0,
         reason: req.body.reason,
+        isAdmin: admin,
+      })
+    }
+  )
+
+  // Withdraw: the author cancels their own pending request. Author-only; the
+  // persistence enforces author === caller. No reviewer/admin role needed.
+  fastify.post(
+    "/database/scopes/:scopeRef/pending/withdraw",
+    { schema: { body: decideBody }, preHandler: [fastify.requireLogin] },
+    async (req) => {
+      const scopeId = parseScopeRef(req.params.scopeRef)
+      return withdraw({
+        scopeId,
+        personRef: req.personRef,
+        docPath: req.body.path,
+        version: req.body.version,
       })
     }
   )

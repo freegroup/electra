@@ -114,6 +114,23 @@ function init(app) {
       fail(res, err)
     }
   })
+
+  // Withdraw: the author cancels their own pending request (database enforces
+  // author === caller).
+  app.post("/userinfo/review/:ref/withdraw", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const { path, version } = req.body || {}
+      const j = await db.call(
+        "POST",
+        `/database/scopes/${encodeURIComponent(req.params.ref)}/pending/withdraw`,
+        { authHeaders: auth, body: { path, version } }
+      )
+      res.json(j)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
 }
 
 function fail(res, err) {

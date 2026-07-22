@@ -24,7 +24,8 @@
     "promote": "Promote",
     "open_draft": "Eigene Kopie öffnen",
     "open_original": "Original öffnen",
-    "distribute": "Verteilen"
+    "distribute": "Verteilen",
+    "request_delete": "Löschung anfragen"
   },
   "editor": {
     "empty": {
@@ -46,6 +47,9 @@
     "promote_description_label": "Beschreibung für die Reviewer (optional) - was hast du geändert und warum?",
     "revert_explain": "Deine persönlichen Änderungen verwerfen und wieder die offizielle Version anzeigen? Das kann nicht rückgängig gemacht werden.",
     "delete_explain": "Dieses Dokument löschen? Es gibt keine Version der Gruppe, auf die zurückgefallen werden könnte - das kann nicht rückgängig gemacht werden.",
+    "delete_shared_explain": "Dieses Dokument für die ganze Gruppe löschen? Es verschwindet für alle, die es hier sehen, und das kann nicht rückgängig gemacht werden.",
+    "delete_shared_request_explain": "Löschung dieses Dokuments anfragen? Die Reviewer deiner Gruppe müssen zustimmen, bevor es für alle entfernt wird.",
+    "delete_description_label": "Grund für die Löschung (optional)",
     "open_conflict": "Welche Version öffnen?",
     "open_conflict_explain": "Du hast eine persönliche Kopie dieses Dokuments. Deine eigene Kopie öffnen oder die Version der Gruppe?",
     "distribute_explain": "Du schickst deine Version in andere Workspaces, in denen du Mitglied bist. Hat ein Workspace ein Review eingestellt, wird sie dort zuerst geprüft - andernfalls ist sie sofort für alle Mitglieder dieses Workspaces und der darunterliegenden sichtbar.",
@@ -75,10 +79,14 @@
       "voted": "abgestimmt",
       "empty": "Keine Reviews offen",
       "deletion": "Löschung",
+      "deletion_notice": "Dieses Dokument soll gelöscht werden - eine Freigabe entfernt es für alle hier.",
       "my_points_hint": "Deine Stimme zählt so viele Punkte",
       "approved_committed": "Freigegeben - Dokument übernommen",
       "approved_pending": "Stimme gezählt - weitere Freigaben nötig",
       "rejected": "Abgelehnt",
+      "withdraw": "Zurücknehmen",
+      "withdraw_explain": "Diese Anfrage zurücknehmen? Sie wird entfernt, als hättest du sie nie gestellt.",
+      "withdrawn": "Anfrage zurückgenommen",
       "reject_reason": "Begründung (optional)",
       "badge": "Review",
       "back": "Zurück",
@@ -171,6 +179,7 @@
     "pending_review": "Zur Prüfung eingereicht",
     "reverted": "Persönliche Änderungen verworfen",
     "deleted": "Gelöscht",
+    "delete_requested": "Löschung zur Review geschickt",
     "distributed": "In {{total}} Workspace(s) verteilt - {{live}} öffentlich, {{review}} im Review."
   },
   "error": {

@@ -10,4 +10,13 @@ export default class FilesFactSheet extends FileFactSheet {
     if (!this.item.hasDraft) return []
     return [{ cls: "factSheetBadgeDraft", text: t("pane.files.has_draft") }]
   }
+
+  actions() {
+    let it = this.item
+    if (!it.canDelete) return []
+    // Admins delete the shared file outright; members raise a deletion review.
+    // Same action either way — the label just sets the right expectation.
+    let label = it.deleteImmediate ? t("common:button.delete") : t("button.request_delete")
+    return [{ label, onClick: (item) => this.opts.onDelete(item) }]
+  }
 }

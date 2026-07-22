@@ -192,7 +192,8 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
   //               shared versions surface (read-only, no personal copies).
   const opRes = personRef
     ? await pool.query(
-        `SELECT DISTINCT m.scope_id, s.promote_ceiling
+        `SELECT DISTINCT m.scope_id, s.promote_ceiling,
+                s.required_approval_score, m.reviewer_score
            FROM memberships m
            JOIN scope_closure c ON c.descendant_id = m.scope_id
            JOIN scopes s        ON s.id = m.scope_id
@@ -203,7 +204,8 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
         [rootScopeId, personRef]
       )
     : await pool.query(
-        `SELECT s.id AS scope_id, s.promote_ceiling
+        `SELECT s.id AS scope_id, s.promote_ceiling,
+                s.required_approval_score, NULL::int AS reviewer_score
            FROM scopes s
            JOIN scope_closure c ON c.descendant_id = s.id
           WHERE c.ancestor_id = $1
@@ -214,6 +216,16 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
   // scope_id → is that operating scope a promote ceiling? (content there may not
   // rise into shared scopes; only distribute can move it out).
   const ceilingByScope = new Map(opRes.rows.map((r) => [String(r.scope_id), !!r.promote_ceiling]))
+  // scope_id → would the caller's promote (e.g. a shared delete) commit right
+  // away? Mirrors maybeSelfApprove: true when the scope needs no review, or the
+  // caller's own reviewer points already reach the threshold. Otherwise the
+  // action opens a review. (Admin-ness alone does NOT auto-commit a promote.)
+  const immediateByScope = new Map(opRes.rows.map((r) => {
+    const required = r.required_approval_score
+    const score = r.reviewer_score
+    const immediate = required === 0 || (score != null && required != null && score >= required)
+    return [String(r.scope_id), immediate]
+  }))
 
   // best[doc_path] = { row, opScopeId } — nearest hit across all operating scopes
   const best = new Map()
@@ -315,6 +327,9 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       // The operating scope is a promote ceiling → promoting here is a no-op
       // (content can't rise into shared scopes); only distribute can share it.
       promoteCeiling: ceilingByScope.get(String(opScopeId)) === true,
+      // Would a shared delete here commit immediately (no review needed) or open
+      // a deletion review? Drives the Delete vs Request Deletion affordance.
+      deleteImmediate: immediateByScope.get(String(opScopeId)) === true,
     })
   }
   out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
@@ -445,9 +460,13 @@ async function revertDoc({ leafScopeId, docPath }) {
 //
 // A local delete writes a tombstone version into the caller's leaf: a new
 // version with is_deletion = true. The walk-up then treats the path as gone
-// for the caller only. Promoting this tombstone carries the deletion upward
+// for the caller only (it keys on is_deletion, not on the data) — so the
+// tombstone may carry a snapshot of the deleted document's `data`. We keep that
+// snapshot (the caller passes the effective version's data) so a deletion that
+// goes to review can still be previewed and opened read-only by reviewers.
+// Promoting this tombstone carries the deletion (and its snapshot) upward
 // (see promote.js), where a commit becomes the level's `deleted` tombstone.
-async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
+async function deleteDoc({ leafScopeId, docPath, author, expectedVersion, data }) {
   validateDocPath(docPath)
 
   return withSerializableRetry(async (client) => {
@@ -467,9 +486,9 @@ async function deleteDoc({ leafScopeId, docPath, author, expectedVersion }) {
     const insRes = await client.query(
       `INSERT INTO versions
          (scope_id, doc_path, version, status, is_deletion, data, meta, author)
-       VALUES ($1, $2, $3, 'committed', true, '{}'::jsonb, '{}'::jsonb, $4)
+       VALUES ($1, $2, $3, 'committed', true, $5::jsonb, '{}'::jsonb, $4)
        RETURNING scope_id, doc_path, version, uuid, status, is_deletion, author, created_at`,
-      [leafScopeId, docPath, currentMax + 1, author]
+      [leafScopeId, docPath, currentMax + 1, author, data || {}]
     )
     return insRes.rows[0]
   })

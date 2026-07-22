@@ -92,6 +92,9 @@ export default class ReviewScreen {
           version: e.version,
           uuid: e.uuid,
           providedBy: e.scopePath || e.scopeLabel,
+          // Deletions carry a snapshot of the deleted document, so the tombstone
+          // uuid resolves to a real preview like any other review. Older, empty
+          // tombstones fall back to a delete placeholder (see ReviewFactSheet).
           thumbnailUrl: thumbnail,
           description: e.description || null,
           isDeletion: !!e.isDeletion,
@@ -101,7 +104,8 @@ export default class ReviewScreen {
           myScore: e.myScore,
           alreadyVoted: !!e.alreadyVoted,
           isAdmin: !!e.isAdmin,
-          canOpen: !e.isDeletion && !!APP_BY_SUFFIX[suffix],
+          isAuthor: !!e.isAuthor,
+          canOpen: !!APP_BY_SUFFIX[suffix],
           _entry: e,
         }
 
@@ -110,6 +114,7 @@ export default class ReviewScreen {
           onApprove: () => _this.approveEntry(e),
           onReject: () => _this.rejectEntry(e),
           onAccept: () => _this.acceptEntry(e),
+          onWithdraw: () => _this.withdrawEntry(e),
         }).render())
       }
 
@@ -171,6 +176,19 @@ export default class ReviewScreen {
             toast(t("pane.review.rejected"))
             this.loadQueue()
           })
+      })
+      .catch((err) => { if (err) { console.log(err); toast(t("common:message.error")) } })
+  }
+
+  // The author cancels their own pending request (delete or change).
+  withdrawEntry(entry) {
+    if (!entry) return
+    confirmDialog.show(t("pane.review.withdraw_explain"))
+      .then(() => this.client.withdraw(entry.scopeRef, entry.path, entry.version))
+      .then(() => {
+        toast(t("pane.review.withdrawn"))
+        this.loadQueue()
+        this.app.refreshFinders?.()
       })
       .catch((err) => { if (err) { console.log(err); toast(t("common:message.error")) } })
   }

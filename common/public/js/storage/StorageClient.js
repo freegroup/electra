@@ -61,6 +61,15 @@ class StorageClient {
       .then((response) => response.data)
   }
 
+  // Delete a SHARED document for the whole group: writes a deletion and
+  // promotes it to the operating scope. Admins commit it right away; plain
+  // members open a deletion review, where the optional description is shown to
+  // the reviewers. -> { status: "deleted" | "pending" | ... }
+  deleteShared(id, description) {
+    return axios.post(`${this.base}/file/delete-shared`, description ? { id, description } : { id })
+      .then((response) => response.data)
+  }
+
   // Make the caller's personal version the shared version for everyone who
   // sees this document under the same "provided by" group. The optional
   // description is shown to the reviewers when the promote needs approval.

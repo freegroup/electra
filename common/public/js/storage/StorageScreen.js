@@ -1,5 +1,6 @@
 import Hogan from "hogan.js"
 
+import session from "../session"
 import storageFactory from "./StorageClient"
 import FilesFactSheet from "./FilesFactSheet"
 import FolderCard from "./FolderCard"
@@ -48,6 +49,7 @@ export default class StorageScreen {
               <th class="colVersion" data-i18n="pane.files.col_version">${t("pane.files.col_version")}</th>
               <th class="colDraft" data-i18n="pane.files.col_draft">${t("pane.files.col_draft")}</th>
               <th class="colProvider" data-i18n="pane.files.col_provider">${t("pane.files.col_provider")}</th>
+              <th class="colActions" data-i18n="pane.files.col_actions">${t("pane.files.col_actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -66,10 +68,13 @@ export default class StorageScreen {
               <td class="colProvider">
                 <span class="providerScope">{{providedBy}}</span>
               </td>
+              <td class="colActions">
+                {{#canDelete}}<button type="button" class="storageDeleteBtn factSheetBtn" data-id="{{id}}">{{deleteLabel}}</button>{{/canDelete}}
+              </td>
             </tr>
           {{/items}}
           {{^items}}
-            <tr><td colspan="4" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
+            <tr><td colspan="5" class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</td></tr>
           {{/items}}
           </tbody>
         </table>
@@ -200,6 +205,12 @@ export default class StorageScreen {
             hasDraft,
             draftId: hasDraft ? it.id : null,
             thumbnailUrl: orig.thumbnailUrl,
+            // Deleting a shared file is offered only to logged-in members and
+            // only for pure shared originals (no personal copy in play — those
+            // are Revert'ed from My Files first). Admins delete immediately;
+            // members raise a review (deleteImmediate decides which).
+            canDelete: session.isLoggedIn() && !hasDraft,
+            deleteImmediate: !!it.deleteImmediate,
           }
         })
       $host.removeClass("spinner")
@@ -242,6 +253,12 @@ export default class StorageScreen {
       .filter((it) => !scopeNeedle || (it.providedBy || "").toLowerCase().startsWith(scopeNeedle))
       .filter((it) => !needle || it.title.toLowerCase().includes(needle))
       .sort((a, b) => a.title.localeCompare(b.title))
+      // Same delete affordance as the grid cards, in the "Actions" column: an
+      // admin/no-review scope shows "Delete", otherwise "Request Deletion".
+      .map((it) => ({
+        ...it,
+        deleteLabel: it.deleteImmediate ? t("common:button.delete") : t("button.request_delete"),
+      }))
 
     let compiled = Hogan.compile($("#storageListTemplate").html())
     $host.empty().html(compiled.render({ items }))
@@ -290,8 +307,11 @@ export default class StorageScreen {
         version: f.version,
         thumbnailUrl: f.thumbnailUrl,
         hasDraft: f.hasDraft,
+        canDelete: f.canDelete,
+        deleteImmediate: f.deleteImmediate,
       }, {
         onOpen: () => _this.openFile(f),
+        onDelete: () => _this.app.deleteSharedById({ id: f.id, deleteImmediate: f.deleteImmediate }),
       }).render())
     })
 
@@ -335,6 +355,14 @@ export default class StorageScreen {
       $el.addClass("spinner")
       let done = () => $el.removeClass("spinner")
       _this.openFile(f, done)
+    })
+    // The "Actions" column's delete button — same action as the grid card.
+    // stopPropagation so clicking it never opens the row.
+    $host.find(".storageDeleteBtn").off("click").on("click", (event) => {
+      event.stopPropagation()
+      let f = meta[$(event.currentTarget).data("id")]
+      if (!f) return
+      _this.app.deleteSharedById({ id: f.id, deleteImmediate: f.deleteImmediate })
     })
   }
 

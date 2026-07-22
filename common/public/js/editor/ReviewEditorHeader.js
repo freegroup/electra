@@ -32,6 +32,7 @@ class ReviewEditorHeader extends EditorHeader {
             <img class="editorHeaderComment" src="../common/images/status_comment.svg" style="display:none">
             <span class="editorHeaderScore"></span>
             <span class="editorHeaderActions">
+              <button class="editorHeaderWithdraw electra-button" style="display:none">${t("pane.review.withdraw")}</button>
               <button class="editorHeaderAccept electra-button electra-primary" style="display:none">${t("pane.review.accept")}</button>
               <button class="editorHeaderApprove electra-button electra-primary" style="display:none">${t("pane.review.approve")}</button>
               <button class="editorHeaderReject electra-button" style="display:none">${t("pane.review.reject")}</button>
@@ -44,6 +45,7 @@ class ReviewEditorHeader extends EditorHeader {
     `)
     $("#editor").prepend($header)
 
+    $("#editor .editorHeaderWithdraw").on("click", () => this.withdraw())
     $("#editor .editorHeaderAccept").on("click", () => this.accept())
     $("#editor .editorHeaderApprove").on("click", () => this.approve())
     $("#editor .editorHeaderReject").on("click", () => this.reject())
@@ -64,15 +66,25 @@ class ReviewEditorHeader extends EditorHeader {
       $("#editor .editorHeaderScore").text(
         t("pane.review.score_status", { have: entry.approvedScore, need: entry.requiredScore, mine: entry.myScore }))
 
-      if (entry.isAdmin) {
-        $("#editor .editorHeaderAccept").show()
-      } else if (!entry.alreadyVoted) {
-        $("#editor .editorHeaderApprove").show()
+      if (entry.isAuthor) {
+        // Own request: withdraw it (and, as admin, commit it now).
+        $("#editor .editorHeaderWithdraw").show()
+        if (entry.isAdmin) $("#editor .editorHeaderAccept").show()
+      } else {
+        if (entry.isAdmin) {
+          $("#editor .editorHeaderAccept").show()
+        } else if (!entry.alreadyVoted) {
+          $("#editor .editorHeaderApprove").show()
+        }
+        // Reject ends the request; an admin may reject even after voting.
+        if (!entry.alreadyVoted || entry.isAdmin) $("#editor .editorHeaderReject").show()
+        if (entry.alreadyVoted && !entry.isAdmin) $("#editor .editorHeaderVoted").show()
       }
-      if (!entry.alreadyVoted) $("#editor .editorHeaderReject").show()
-      if (entry.alreadyVoted && !entry.isAdmin) $("#editor .editorHeaderVoted").show()
 
       let parts = []
+      // Make the destructive nature explicit: the loaded document is a snapshot
+      // of what this request would delete, not a proposed change.
+      if (entry.isDeletion) parts.push(t("pane.review.deletion_notice"))
       parts.push(entry.alreadyVoted
         ? t("pane.review.instruction_voted")
         : t("pane.review.instruction_reviewer"))
@@ -116,6 +128,14 @@ class ReviewEditorHeader extends EditorHeader {
       t("pane.review.reject_explain"))
       .then((reason) => this.client.reject(entry.scopeRef, entry.path, entry.version, (reason || "").trim())
         .then(() => { toast(t("pane.review.rejected")); this.done() }))
+      .catch((err) => { if (err) { console.log(err); toast(t("common:message.error")) } })
+  }
+
+  withdraw() {
+    let { entry } = this.current
+    confirmDialog.show(t("pane.review.withdraw_explain"))
+      .then(() => this.client.withdraw(entry.scopeRef, entry.path, entry.version))
+      .then(() => { toast(t("pane.review.withdrawn")); this.done() })
       .catch((err) => { if (err) { console.log(err); toast(t("common:message.error")) } })
   }
 

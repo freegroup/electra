@@ -38,9 +38,23 @@ export default class ReviewFactSheet extends FileFactSheet {
     let it = this.item
     $sheet.addClass("reviewFactSheet")
 
+    // A deletion carries a snapshot of the deleted document, so its thumbnail
+    // renders like any other review. Older tombstones have no snapshot - fall
+    // back to a delete placeholder icon if the preview image fails to load.
+    if (it.isDeletion) {
+      let $thumb = $sheet.find(".factSheetThumb")
+      let $img = $thumb.find("img")
+      let toPlaceholder = () => {
+        $thumb.addClass("factSheetThumbDeletion")
+        $img.replaceWith(`<img class="reviewDeletionIcon" src="../common/images/toolbar_delete.svg">`)
+      }
+      if (!it.thumbnailUrl) toPlaceholder()
+      else $img.on("error", toPlaceholder)
+    }
+
     // A reviewer who already voted has no actions (admins keep the Accept
-    // override) — show a "voted" indicator instead of empty buttons.
-    if (it.alreadyVoted && !it.isAdmin) {
+    // override, the author keeps Withdraw) — show a "voted" indicator instead.
+    if (it.alreadyVoted && !it.isAdmin && !it.isAuthor) {
       $sheet.find(".factSheetButtonBar")
         .removeClass("factSheetButtonBarEmpty")
         .append(`<span class="reviewVotedIndicator">✓ ${t("pane.review.voted")}</span>`)
@@ -66,15 +80,24 @@ export default class ReviewFactSheet extends FileFactSheet {
   actions() {
     let it = this.item
     let out = []
+    // The author's own request: they may always withdraw it, and (as admin)
+    // commit it now. No self approve/reject — Withdraw is the take-back.
+    if (it.isAuthor) {
+      out.push({ label: t("pane.review.withdraw"), onClick: (item) => this.opts.onWithdraw(item) })
+      if (it.isAdmin) {
+        out.push({ label: t("pane.review.accept"), primary: true, onClick: (item) => this.opts.onAccept(item) })
+      }
+      return out
+    }
     // Admin of the scope: force-commit (Accept) overrides the vote threshold.
-    // Reviewer: approve (a vote). Both may reject while they haven't voted yet.
-    // Opening the document is via card click, not a button.
+    // Reviewer: approve (a vote). Opening the document is via card click.
     if (it.isAdmin) {
       out.push({ label: t("pane.review.accept"), primary: true, onClick: (item) => this.opts.onAccept(item) })
     } else if (!it.alreadyVoted) {
       out.push({ label: t("pane.review.approve"), primary: true, onClick: (item) => this.opts.onApprove(item) })
     }
-    if (!it.alreadyVoted) {
+    // Reject ends the request; an admin may reject even after having voted.
+    if (!it.alreadyVoted || it.isAdmin) {
       out.push({ label: t("pane.review.reject"), onClick: (item) => this.opts.onReject(item) })
     }
     return out

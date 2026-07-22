@@ -49,6 +49,12 @@ class ReviewClient {
     return axios.post(`${this.base}/${scopeRef}/accept`, { path, version })
       .then((r) => r.data)
   }
+
+  // Withdraw: the author cancels their own pending request. -> { withdrawn }
+  withdraw(scopeRef, path, version) {
+    return axios.post(`${this.base}/${scopeRef}/withdraw`, { path, version })
+      .then((r) => r.data)
+  }
 }
 
 export default () => new ReviewClient()

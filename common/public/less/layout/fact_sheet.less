@@ -40,6 +40,21 @@
       object-position: center center;
     }
 
+    // deletion review — no preview to show; center a muted delete icon on a
+    // faint backdrop instead of a broken/empty image.
+    &.factSheetThumbDeletion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.03);
+
+      .reviewDeletionIcon {
+        width: 56px;
+        height: 56px;
+        opacity: 0.35;
+      }
+    }
+
     // status icon — bottom-right of thumbnail
     .factSheetStatusIcon {
       position: absolute;

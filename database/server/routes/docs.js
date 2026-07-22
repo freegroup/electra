@@ -169,6 +169,15 @@ async function routes(fastify) {
       const docPath = requirePathQuery(req)
       const { leafId } = await requireWriteLeaf(req.params.scopeRef, req.personRef)
       const version = req.body && req.body.version
+      // Snapshot the version being deleted (as the caller currently sees it) into
+      // the tombstone, so a deletion that goes to review can still be previewed
+      // and opened read-only. null when the path is already gone.
+      const effective = await getDoc({
+        operatingScopeId: req.params.scopeRef,
+        personRef: req.personRef,
+        docPath,
+        resolveOriginPath,
+      })
       // Local delete: a tombstone in the caller's own leaf hides the path from
       // their view immediately. Making it a group-wide delete is a separate
       // promote of this tombstone, which runs the normal review (README §6.9).
@@ -177,6 +186,7 @@ async function routes(fastify) {
         docPath,
         author: req.personRef,
         expectedVersion: version,
+        data: effective ? effective.data : undefined,
       })
       return { status: "deleted-local", version: row.version }
     }

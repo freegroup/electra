@@ -36,7 +36,7 @@ function withSuffix(name) {
 //   providedBy   — origin scope human path (the "Provided by" column)
 //   version      — effective version
 //   instanceType — "personal" | "personalCopy" | "inherit" (see globDocs)
-function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false }) {
+function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false, deleteImmediate = false }) {
   const id = db.encodeId(scopeRef, docPath)
   // For personal / personal-copy docs the provider path ends in the caller's
   // own leaf (named after their email — a meaningless segment to show). Show the
@@ -70,6 +70,9 @@ function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true,
     instanceType,
     original: originalItem,
     promoteCeiling,
+    // Whether a "delete this shared file" action would commit immediately or
+    // open a deletion review (decided by the operating scope's review rules).
+    deleteImmediate,
     thumbnailUrl: uuid ? `../brains/thumb?uuid=${encodeURIComponent(uuid)}` : null,
   }
 }
@@ -94,6 +97,7 @@ function init(app) {
             instanceType: d.instanceType,
             original: d.original,
             promoteCeiling: d.promoteCeiling,
+            deleteImmediate: d.deleteImmediate,
           })
         )
       res.json({ items })
@@ -203,6 +207,37 @@ function init(app) {
         { authHeaders: auth, body: {} }
       )
       res.json({ ok: true })
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // --- delete a SHARED doc for the group (tombstone + promote) --------------
+  // Body: { id }. Two server-side steps so the client can't leave a half-done
+  // state: (1) write a deletion into the caller's own leaf, (2) promote that
+  // tombstone to the operating scope. Admin / threshold-0 → commits as 'deleted'
+  // immediately; a plain member in a review scope → a pending deletion review
+  // (README §6.9). Membership + review rules are enforced by the database
+  // (requireWriteLeaf + quorum); this endpoint only sequences the two calls.
+  app.post("/brains/file/delete-shared", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const { id, description } = req.body || {}
+      const { scopeRef, path } = db.decodeId(id)
+      if (!hasSuffix(path)) {
+        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+      }
+      await db.call(
+        "DELETE",
+        `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
+        { authHeaders: auth, body: {} }
+      )
+      const r = await db.call(
+        "POST",
+        `/database/scopes/${scopeRef}/docs/promote?path=${encodeURIComponent(path)}`,
+        { authHeaders: auth, body: description ? { description } : {} }
+      )
+      res.json({ status: r.status })
     } catch (err) {
       fail(res, err)
     }

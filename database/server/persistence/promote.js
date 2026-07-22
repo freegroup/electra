@@ -434,6 +434,8 @@ async function reviewQueue({ personRef }) {
       myScore: r.my_score,
       alreadyVoted: r.already_voted,
       isAdmin: r.is_admin,
+      // The caller raised this request — they may withdraw it at any time.
+      isAuthor: String(r.author) === String(personRef),
     })
   }
   return out
@@ -506,7 +508,7 @@ async function approve({ scopeId, personRef, docPath, version, score }) {
   }
 }
 
-async function reject({ scopeId, personRef, docPath, version, score, reason }) {
+async function reject({ scopeId, personRef, docPath, version, score, reason, isAdmin }) {
   const client = await pool.connect()
   try {
     await client.query("BEGIN")
@@ -515,12 +517,13 @@ async function reject({ scopeId, personRef, docPath, version, score, reason }) {
     if (!pending) throw new OutdatedError("this promotion is no longer open")
 
     // Once you've cast a vote you can't reject — approving and then rejecting the
-    // same version is contradictory (the UI hides Reject too).
+    // same version is contradictory (the UI hides Reject too). An admin may
+    // override this: they can reject a request outright even after voting.
     const voted = await client.query(
       `SELECT 1 FROM votes WHERE scope_id = $1 AND doc_path = $2 AND version = $3 AND voter = $4 LIMIT 1`,
       [scopeId, docPath, version, personRef]
     )
-    if (voted.rowCount > 0) {
+    if (voted.rowCount > 0 && !isAdmin) {
       throw new ForbiddenError("you have already voted on this version and cannot reject it")
     }
 
@@ -535,6 +538,42 @@ async function reject({ scopeId, personRef, docPath, version, score, reason }) {
 
     await client.query("COMMIT")
     return { rejected: true }
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
+// Withdraw — the author cancels their own still-open request. Always allowed to
+// the author, whatever the votes so far (README §9.4). Deletes the pending
+// version (votes cascade). For a withdrawn DELETION we also drop the caller's
+// leaf tombstone so the document reappears for them; a withdrawn change leaves
+// the caller's personal copy in place.
+async function withdraw({ scopeId, personRef, docPath, version }) {
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+
+    const pending = await pendingRow(client, scopeId, docPath, version)
+    if (!pending) throw new OutdatedError("this request is no longer open")
+    if (String(pending.author) !== String(personRef)) {
+      throw new ForbiddenError("only the author can withdraw this request")
+    }
+
+    await client.query(
+      `DELETE FROM versions WHERE scope_id = $1 AND doc_path = $2 AND version = $3`,
+      [scopeId, docPath, version]
+    )
+
+    if (pending.is_deletion) {
+      const leafId = lineageLeaf(pending.meta)
+      if (leafId != null) await cleanupLeaf(client, leafId, docPath)
+    }
+
+    await client.query("COMMIT")
+    return { withdrawn: true }
   } catch (err) {
     await client.query("ROLLBACK")
     throw err
@@ -583,7 +622,7 @@ async function accept({ scopeId, personRef, docPath, version }) {
 
 async function pendingRow(client, scopeId, docPath, version) {
   const res = await client.query(
-    `SELECT scope_id, doc_path, version, is_deletion, meta
+    `SELECT scope_id, doc_path, version, is_deletion, meta, author
        FROM versions
       WHERE scope_id = $1 AND doc_path = $2 AND version = $3 AND status = 'pending'`,
     [scopeId, docPath, version]
@@ -596,4 +635,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, accept, deliverToScope, getScopeRow }
+module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept, deliverToScope, getScopeRow }

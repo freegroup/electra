@@ -11,6 +11,7 @@ import session from "./session"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
 import promoteDialog from "./storage/PromoteDialog"
+import deleteDialog from "./storage/DeleteDialog"
 import distributeDialog from "./storage/DistributeDialog"
 import openConflictDialog from "./storage/OpenConflictDialog"
 import toast from "./toast"
@@ -244,6 +245,24 @@ export default class Application extends AppFrame{
         return confirmDialog.show(t("dialog.delete_explain"))
             .then(() => this.storage.remove(id))
             .then(() => toast(t("message.deleted")))
+            .then(() => this.refreshFinders())
+            .catch((err) => { if (err) console.log(err) })
+    }
+
+    // Delete a SHARED document for the group. Admins commit it immediately;
+    // members open a deletion review — the confirm text and the resulting toast
+    // reflect which one applies (item.deleteImmediate). Like promote, the server
+    // has the final word: the toast keys off the returned status.
+    deleteSharedById(item) {
+        let label = item.deleteImmediate ? t("common:button.delete") : t("button.request_delete")
+        let explain = item.deleteImmediate
+            ? t("dialog.delete_shared_explain")
+            : t("dialog.delete_shared_request_explain")
+        return deleteDialog.show(explain, { title: label, okLabel: label })
+            .then((description) => this.storage.deleteShared(item.id, description))
+            .then((res) => toast(res && res.status === "deleted"
+                ? t("message.deleted")
+                : t("message.delete_requested")))
             .then(() => this.refreshFinders())
             .catch((err) => { if (err) console.log(err) })
     }
