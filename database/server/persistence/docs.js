@@ -239,7 +239,8 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
          -- — the "original". Also what a revert would restore.
          SELECT DISTINCT ON (doc_path)
                 doc_path, status AS original_status, is_deletion AS original_is_deletion,
-                scope_id AS original_scope_id, version AS original_version
+                scope_id AS original_scope_id, version AS original_version,
+                uuid AS original_uuid
          FROM matches
          WHERE slot_rank = 1
          ORDER BY doc_path, depth ASC, version DESC
@@ -247,7 +248,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
        SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version, w.uuid,
               w.status, w.is_deletion,
               COALESCE(o.original_status = 'committed' AND o.original_is_deletion = false, false) AS has_original,
-              o.original_scope_id, o.original_version
+              o.original_scope_id, o.original_version, o.original_uuid
        FROM winner w
        LEFT JOIN original o USING (doc_path)
        WHERE w.status = 'committed' AND w.is_deletion = false`,
@@ -299,6 +300,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       original = {
         scopeRef: String(row.original_scope_id),
         version: row.original_version,
+        uuid: row.original_uuid,
         provider: stripPrefix(originalProvider),
       }
     }
