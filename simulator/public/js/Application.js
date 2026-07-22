@@ -156,7 +156,15 @@ class Application extends GenericApplication {
         this.refreshFinders()
         defaultEditorHeader.update(this.currentFile)
       })
-      .catch((err) => { if (err) console.log(err) })
+      // err is falsy when the save dialog was simply cancelled; only a real
+      // failure (marshal/network) carries an error - surface that to the user
+      // instead of failing silently.
+      .catch((err) => {
+        if (err) {
+          console.log(err)
+          toast(t("common:message.save_failed"))
+        }
+      })
   }
 
   // Marshal the canvas and save it. A null id creates a new document; otherwise

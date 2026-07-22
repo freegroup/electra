@@ -537,6 +537,9 @@ export default draw2d.Canvas.extend({
     // transport the value from outputPort to inputPort
     //
     this.getLines().each( (i, line) => {
+      // getLines() also returns hand-drawn draw2d.shape.basic.Line figures,
+      // which have no source port - skip them, they carry no signal value.
+      if (!(line instanceof draw2d.Connection)) return
       line.value = line.getSource().getValue()
       if(line.value === undefined ||  line.value === null){
         // do not transfer the value if the source is "disconnected"
@@ -655,6 +658,9 @@ export default draw2d.Canvas.extend({
     // This is required after loading a brain. In this case an unpredictable state of the connections is visible.
     // Fix this by using the real values of the ports.
     this.getLines().each( (i, line) => {
+      // Only signal-carrying Connections have a source port; plain hand-drawn
+      // Lines (draw2d.shape.basic.Line) have none - leave their color alone.
+      if (!(line instanceof draw2d.Connection)) return
       let outPort = line.getSource()
       let value = outPort.getValue()
       if(value === undefined ||  value === null){
