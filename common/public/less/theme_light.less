@@ -441,10 +441,6 @@ body.light {
             }
         }
         .filesFinder {
-            background-color: rgb(var(--pane-bg-color));
-            border: 1px solid rgb(var(--border-color));
-            border-radius: @borderRadiusBig;
-            box-shadow: var(--box-shadow-1);
             header{
                 #material-tabs {
                     border: none;
@@ -481,12 +477,7 @@ body.light {
                 color: rgb(var(--tint-color));
             }
         }
-        .draftFinder {
-            background-color: rgb(var(--pane-bg-color));
-            border: 1px solid rgb(var(--border-color));
-            border-radius: @borderRadiusBig;
-            box-shadow: var(--box-shadow-1);
-        }
+        // .draftFinder chrome comes from .finderCard now (see above).
     }
 
     // fact-sheet grid — top-level so it works in #draft, #review, and anywhere
@@ -528,22 +519,36 @@ body.light {
             color: rgb(var(--text-color));
         }
         .factSheetButtonBar { border-top-color: rgb(var(--border-color)); }
+    }
 
-        .factSheetBtn {
-            color: rgba(var(--text-color), 0.5);
-            &:hover {
-                background: rgba(var(--text-color), 0.06);
-                border-color: rgba(var(--text-color), 0.18);
-                color: rgb(var(--text-color));
-            }
+    // Ghost buttons (layout/ghost_buttons.less) — colors live here so a theme
+    // can retint them in one place. Shared by card button bars, workspace
+    // tiles, and the file-list Actions column.
+    // Shared finder chrome (layout/finder.less) — card fill/border + the toolbar
+    // divider, so all finder panes (Shared Files, My Files, Workspaces) match.
+    // Retint here in one place.
+    .finderCard {
+        background-color: rgb(var(--pane-bg-color));
+        border: 1px solid rgb(var(--border-color));
+        box-shadow: var(--box-shadow-1);
+    }
+    .finderToolbar { border-bottom-color: rgb(var(--border-color)); }
+
+    .ghostButton {
+        color: rgba(var(--text-color), 0.5);
+        border-color: rgba(var(--text-color), 0.2);
+        &:hover {
+            background: rgba(var(--text-color), 0.06);
+            border-color: rgba(var(--text-color), 0.35);
+            color: rgb(var(--text-color));
         }
-        .factSheetBtnPrimary {
-            color: rgb(var(--tint-color));
-            border-color: rgba(var(--tint-color), 0.3);
-            &:hover {
-                background: rgba(var(--tint-color), 0.08);
-                border-color: rgb(var(--tint-color));
-            }
+    }
+    .ghostButtonPrimary {
+        color: rgb(var(--tint-color));
+        border-color: rgba(var(--tint-color), 0.3);
+        &:hover {
+            background: rgba(var(--tint-color), 0.08);
+            border-color: rgb(var(--tint-color));
         }
     }
 
@@ -553,12 +558,7 @@ body.light {
             .title { color: rgb(var(--tint-color)); }
         }
         .workspacesFinder {
-            background-color: rgb(var(--pane-bg-color));
-            border: 1px solid rgb(var(--border-color));
-            border-radius: @borderRadiusBig;
-            box-shadow: var(--box-shadow-1);
-
-            .workspacesHeader { border-color: rgb(var(--border-color)); }
+            // card chrome comes from .finderCard; toolbar from .finderToolbar.
 
             .scopeTile {
                 border-color: rgb(var(--border-color));
@@ -577,6 +577,10 @@ body.light {
                 background: rgb(var(--tint-color));
                 color: #fff;
             }
+
+            // roster role marks: a golden star for admins, a muted dot otherwise
+            .wsRoleAdmin { color: #e8a200; }
+            .wsRoleMember { color: rgba(var(--text-color), 0.35); }
 
             .workspaceSidePanel {
                 border-left: 1px solid rgb(var(--border-color));

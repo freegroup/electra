@@ -34,10 +34,10 @@ const TILE_TEMPLATE = `
       </div>
       <div class="factSheetButtonBar">
         {{#showAddMember}}
-          <button class="factSheetBtn scopeCardAddMember" data-ref="{{scopeRef}}">{{addMemberLabel}}</button>
+          <button class="ghostButton scopeCardAddMember" data-ref="{{scopeRef}}">{{addMemberLabel}}</button>
         {{/showAddMember}}
         {{#showFiles}}
-          <button class="factSheetBtn scopeCardFiles" data-ref="{{scopeRef}}">{{filesLabel}}</button>
+          <button class="ghostButton scopeCardFiles" data-ref="{{scopeRef}}">{{filesLabel}}</button>
         {{/showFiles}}
       </div>
     </div>

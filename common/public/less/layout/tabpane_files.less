@@ -128,16 +128,8 @@
   // New scope-model finder (StorageScreen): a "+ New" header and a two-column
   // Name | Provided-by table listing everything visible under the app root.
   .filesFinder {
-    // Browser toolbar: the breadcrumb stacked directly above the search filter.
-    .storageHeader {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: @buttonSpacing;
-      padding: @buttonSpacing @contentToEdgePadding;
-      border-bottom-width: 1px;
-      border-bottom-style: solid;
-    }
+    // Toolbar chrome is shared — see layout/finder.less (.finderToolbar); the
+    // breadcrumb and the search box sit inline in the toolbar's left group.
 
     // Filter with a clear (×) button that appears once there is text.
     .filesFilter {

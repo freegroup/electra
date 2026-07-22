@@ -35,8 +35,9 @@ export default class WorkspaceScreen {
       <script id="workspaceMembersTemplate" type="text/x-jsrender">
         {{#members}}
           <div class="wsMember" data-ref="{{personRef}}">
+            {{#isAdmin}}<span class="wsRoleMark wsRoleAdmin" title="${t("pane.workspaces.role_admin")}">★</span>{{/isAdmin}}
+            {{^isAdmin}}<span class="wsRoleMark wsRoleMember" title="${t("pane.workspaces.role_member")}">•</span>{{/isAdmin}}
             <span class="wsMemberName">{{personRef}}</span>
-            {{#isAdmin}}<span class="wsBadge wsBadgeAdmin" data-i18n="pane.workspaces.role_admin">${t("pane.workspaces.role_admin")}</span>{{/isAdmin}}
             {{#removable}}<button class="wsRemoveMemberButton" title="${t("pane.workspaces.remove_member")}" data-ref="{{personRef}}">✕</button>{{/removable}}
           </div>
         {{/members}}
@@ -58,10 +59,12 @@ export default class WorkspaceScreen {
   }
 
   render() {
-    $("#workspaces .workspacesFinder").html(`
-      <header class="workspacesHeader">
-        <nav class="workspaceBreadcrumb"></nav>
-        <button class="workspaceCreateButton electra-button electra-primary" data-i18n="pane.workspaces.create">${t("pane.workspaces.create")}</button>
+    $("#workspaces .workspacesFinder").addClass("finderCard").html(`
+      <header class="finderToolbar">
+        <div class="finderToolbarMain"><nav class="workspaceBreadcrumb"></nav></div>
+        <div class="finderToolbarActions">
+          <button class="workspaceCreateButton electra-button electra-primary" data-i18n="pane.workspaces.create">${t("pane.workspaces.create")}</button>
+        </div>
       </header>
       <div class="workspacesBody">
         <div class="workspaceTiles"></div>

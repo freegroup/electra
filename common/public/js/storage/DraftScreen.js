@@ -1,6 +1,7 @@
 import storageFactory from "./StorageClient"
 import reviewClientFactory from "../review/ReviewClient"
 import DraftFactSheet from "./DraftFactSheet"
+import DraftToolbar from "./DraftToolbar"
 
 // The "Draft" pane of the finder: the documents the caller currently has in
 // their OWN personal leaf — instanceType "personal" (a doc only they have) or
@@ -21,17 +22,19 @@ export default class DraftScreen {
     this.storage = storageFactory(conf)
     this.review = reviewClientFactory()
     this.dirty = false // set on save/promote/revert; reloaded lazily on show
+    this.items = []    // loaded draft cards (pre-filter)
+    this.filter = ""   // current search text; filters by document path/name
 
-    // Reload the list only when the draft tab is (re)opened AND something
-    // changed — not on every save.
-    $("#draft_tab a").off("click.draft").on("click.draft", this.onShow.bind(this))
+    // Reload the list whenever the draft tab becomes visible AND something
+    // changed — by user click OR a programmatic navigate() (.tab('show')).
+    // shown.bs.tab covers both; a plain click handler misses deep-link nav.
+    $("#draft_tab a").off("shown.bs.tab.draft").on("shown.bs.tab.draft", this.onShow.bind(this))
 
     this.render()
   }
 
-  // The pane is being shown — reload now if something changed since last view.
-  // Called from the tab click, where the pane is about to become active, so it
-  // loads directly (the .active class isn't set yet at click time).
+  // The draft tab just became visible — reload if something changed since the
+  // last view (e.g. a document was created/promoted/reverted meanwhile).
   onShow() {
     if (this.dirty) {
       this.dirty = false
@@ -53,17 +56,14 @@ export default class DraftScreen {
   }
 
   render() {
-    let $pane = $("#draft .draftFinder")
-    $pane.html(`
-      <header class="storageHeader">
-        <button class="storageNewButton electra-button electra-primary" data-i18n="button.create_file">${t("button.create_file")}</button>
-      </header>
-      <div class="storageList"></div>
-    `)
+    let $pane = $("#draft .draftFinder").addClass("finderCard").empty()
 
-    $pane.off("click", ".storageNewButton").on("click", ".storageNewButton", () => {
-      this.app.fileCreateNew()
+    let toolbar = new DraftToolbar({
+      onNew: () => this.app.fileCreateNew(),
+      onFilter: (text) => { this.filter = text; this.renderGrid() },
     })
+    $pane.append(toolbar.render())
+    $pane.append(`<div class="storageList"></div>`)
 
     this.loadDocs()
   }
@@ -115,27 +115,42 @@ export default class DraftScreen {
           reviewDescription: reviewByPath.get(it.path)?.description || "",
         }))
 
-      let $grid = $(`<div class="factSheetGrid"></div>`)
-      if (items.length === 0) {
-        $grid.append(`<div class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</div>`)
-      }
-      for (let it of items) {
-        $grid.append(new DraftFactSheet(it, {
-          onOpen: (item, $sheet) => {
-            $sheet.addClass("spinner")
-            _this.app.open(item.id).then(() => $sheet.removeClass("spinner"))
-          },
-          onPromote: (item) => _this.app.promoteById(item.id),
-          onDistribute: (item) => _this.app.distributeById(item),
-          onRevert: (item) => _this.app.revertById(item.id),
-          onDelete: (item) => _this.app.deleteById(item.id),
-        }).render())
-      }
-      $host.removeClass("spinner").empty().append($grid)
+      _this.items = items
+      $host.removeClass("spinner")
+      _this.renderGrid()
     }).catch((exc) => {
       console.log(exc)
       $host.removeClass("spinner").html(
         `<div class="fileListEmpty" data-i18n="common:message.error">${t("common:message.error")}</div>`)
     })
+  }
+
+  // Render the cards for the current filter. Called after a load and on every
+  // keystroke in the toolbar search — no refetch, just re-filter this.items.
+  renderGrid() {
+    let _this = this
+    let $host = $("#draft .draftFinder .storageList")
+    let needle = this.filter.toLowerCase()
+    let items = needle
+      ? this.items.filter((it) => it.title.toLowerCase().includes(needle))
+      : this.items
+
+    let $grid = $(`<div class="factSheetGrid"></div>`)
+    if (items.length === 0) {
+      $grid.append(`<div class="fileListEmpty" data-i18n="common:message.no_files">${t("common:message.no_files")}</div>`)
+    }
+    for (let it of items) {
+      $grid.append(new DraftFactSheet(it, {
+        onOpen: (item, $sheet) => {
+          $sheet.addClass("spinner")
+          _this.app.open(item.id).then(() => $sheet.removeClass("spinner"))
+        },
+        onPromote: (item) => _this.app.promoteById(item.id),
+        onDistribute: (item) => _this.app.distributeById(item),
+        onRevert: (item) => _this.app.revertById(item.id),
+        onDelete: (item) => _this.app.deleteById(item.id),
+      }).render())
+    }
+    $host.empty().append($grid)
   }
 }

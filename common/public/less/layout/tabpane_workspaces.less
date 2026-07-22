@@ -8,16 +8,7 @@
   // Header is the shared ScreenHeader — see layout/screen_header.less.
 
   .workspacesFinder {
-    .workspacesHeader {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: @buttonSpacing;
-      padding: @buttonSpacing @contentToEdgePadding;
-      border-bottom-width: 1px;
-      border-bottom-style: solid;
-    }
+    // Toolbar chrome is shared — see layout/finder.less (.finderToolbar).
 
     // breadcrumb: clickable ancestors + current
     .workspaceBreadcrumb {
@@ -78,6 +69,14 @@
         justify-content: space-between;
         gap: 6px;
         padding: 6px 0;
+      }
+      // Leading role mark: a star for admins, a dot for members (colors themed).
+      .wsRoleMark {
+        flex: 0 0 auto;
+        width: 1em;
+        text-align: center;
+        font-size: 14px;
+        line-height: 1;
       }
       .wsMemberName { word-break: break-all; flex: 1 1 auto; }
       .wsRemoveMemberButton {

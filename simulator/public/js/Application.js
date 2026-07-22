@@ -127,6 +127,9 @@ class Application extends GenericApplication {
   // Reset to a fresh unsaved document with the given name.
   fileNew(name) {
     $("#leftTabStrip .editor").click()
+    // A fresh document replaces the intro splash — otherwise the welcome
+    // overlay stays up and the new (empty) canvas looks like nothing happened.
+    this.hideWelcomeMessage()
     this.currentFile = { id: null, name: name ?? "MyNewCircuit", version: undefined, editable: true }
     this.view.readOnly = false
     this.view.clear()

@@ -1007,7 +1007,7 @@ async function rootWorkspaces(personRef) {
     // the same item shape as the logged-in path below.
     if (!personRef) {
       const r = await client.query(
-        `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
+        `SELECT s.id, s.name, s.label, s.description, s.is_bootstrap, s.is_anonymous,
                 (SELECT count(*)::int FROM memberships mc
                   WHERE mc.scope_id = s.id AND mc.is_member = true) AS member_count
            FROM scopes s
@@ -1019,6 +1019,7 @@ async function rootWorkspaces(personRef) {
         scopeRef: String(s.id),
         name: s.name,
         label: s.label,
+        description: s.description,
         kind: "apps",
         bootstrap: s.is_bootstrap,
         anonymous: s.is_anonymous,
@@ -1040,7 +1041,7 @@ async function rootWorkspaces(personRef) {
     const out = []
     for (const w of wanted) {
       const r = await client.query(
-        `SELECT s.id, s.name, s.label, s.is_bootstrap, s.is_anonymous,
+        `SELECT s.id, s.name, s.label, s.description, s.is_bootstrap, s.is_anonymous,
                 (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
                 COALESCE(m.is_admin, false)                       AS is_admin,
                 (SELECT count(*)::int FROM memberships mc
@@ -1057,6 +1058,7 @@ async function rootWorkspaces(personRef) {
         scopeRef: String(s.id),
         name: s.name,
         label: s.label,
+        description: s.description,
         kind: w.kind, // "apps" | "personal"
         bootstrap: s.is_bootstrap,
         anonymous: s.is_anonymous,

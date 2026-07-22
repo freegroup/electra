@@ -75,8 +75,8 @@ export default class FileFactSheet {
     let acts = this.actions()
     if (acts.length === 0) $bar.addClass("factSheetButtonBarEmpty")
     for (let a of acts) {
-      let $btn = $(`<button class="factSheetBtn"></button>`).text(a.label)
-      if (a.primary) $btn.addClass("factSheetBtnPrimary")
+      let $btn = $(`<button class="ghostButton"></button>`).text(a.label)
+      if (a.primary) $btn.addClass("ghostButtonPrimary")
       $btn.on("click", (event) => {
         event.stopPropagation()
         a.onClick(it)

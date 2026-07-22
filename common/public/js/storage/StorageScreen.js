@@ -69,7 +69,7 @@ export default class StorageScreen {
                 <span class="providerScope">{{providedBy}}</span>
               </td>
               <td class="colActions">
-                {{#canDelete}}<button type="button" class="storageDeleteBtn factSheetBtn" data-id="{{id}}">{{deleteLabel}}</button>{{/canDelete}}
+                {{#canDelete}}<button type="button" class="storageDeleteBtn ghostButton" data-id="{{id}}">{{deleteLabel}}</button>{{/canDelete}}
               </td>
             </tr>
           {{/items}}
@@ -112,12 +112,14 @@ export default class StorageScreen {
     let $finder = $(".filesFinder")
     // No "New" button here: the Library shows shared documents only. Creating a
     // new document always lands in the caller's own Drafts.
-    $finder.html(`
-      <header class="storageHeader">
-        <nav class="filesBreadcrumb"></nav>
-        <div class="filesFilter">
-          <input type="text" class="filesFilterInput" placeholder="${t("pane.files.filter")}">
-          <button type="button" class="filesFilterClear" aria-label="clear">×</button>
+    $finder.addClass("finderCard").html(`
+      <header class="finderToolbar">
+        <div class="finderToolbarMain">
+          <nav class="filesBreadcrumb"></nav>
+          <div class="filesFilter">
+            <input type="text" class="filesFilterInput" placeholder="${t("pane.files.filter")}">
+            <button type="button" class="filesFilterClear" aria-label="clear">×</button>
+          </div>
         </div>
       </header>
       <div class="storageList"></div>
@@ -319,11 +321,12 @@ export default class StorageScreen {
   }
 
   // The breadcrumb — root + one crumb per folder segment. Hidden while searching
-  // (the flat list is not tied to a folder). Ancestors are clickable.
+  // (the flat list is not tied to a folder) and at the top level (the root label
+  // would only echo the pane header). Ancestors are clickable.
   renderBreadcrumb() {
     let _this = this
     let $bc = $("#files .filesBreadcrumb").empty()
-    if (this.filter) { $bc.hide(); return }
+    if (this.filter || this.stack.length === 0) { $bc.hide(); return }
     $bc.show()
 
     let crumbs = [{ name: t("pane.files.root"), index: -1 }]
