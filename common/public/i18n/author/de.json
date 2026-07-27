@@ -63,9 +63,30 @@
     "files": "Shared Files",
     "workspaces": "Workspaces",
     "review": "Review",
+    "activity": "Aktivität",
     "help": "Hilfe"
   },
   "pane": {
+    "activity": {
+      "title": "Aktivität",
+      "intro": "Was in deinen Workspaces passiert ist - das Ergebnis deiner Entwürfe, Review-Anfragen für dich und deine eigenen Freigaben.",
+      "empty": "Noch keine Aktivität.",
+      "event": {
+        "review_requested": "{{actor}} bittet dich, <b>{{subject}}</b> in {{scope}} zu prüfen",
+        "i_submitted": "Du hast <b>{{subject}}</b> in {{scope}} zur Review eingereicht",
+        "delete_requested": "{{actor}} bittet dich, die Löschung von <b>{{subject}}</b> in {{scope}} zu prüfen",
+        "i_delete_requested": "Du hast die Löschung von <b>{{subject}}</b> in {{scope}} angefragt",
+        "deleted": "<b>{{subject}}</b> wurde in {{scope}} gelöscht",
+        "i_withdrew": "Du hast die Anfrage für <b>{{subject}}</b> in {{scope}} zurückgezogen",
+        "committed": "<b>{{subject}}</b> ist jetzt live in {{scope}}",
+        "rejected": "<b>{{subject}}</b> wurde abgelehnt: {{reason}}",
+        "withdrawn": "{{actor}} hat die Anfrage für <b>{{subject}}</b> in {{scope}} zurückgezogen",
+        "i_approved": "Du hast <b>{{subject}}</b> in {{scope}} freigegeben",
+        "i_accepted": "Du hast <b>{{subject}}</b> in {{scope}} freigegeben",
+        "i_rejected": "Du hast <b>{{subject}}</b> in {{scope}} abgelehnt",
+        "member_added": "{{actor}} hat dich zu {{scope}} hinzugefügt"
+      }
+    },
     "review": {
       "title": "Review",
       "intro": "Dokumente, die auf deine Freigabe warten. Du stimmst mit den Reviewer-Punkten ab, die dir der Workspace-Admin gegeben hat; ein Dokument wird übernommen, sobald die Freigabe-Punkte den Schwellwert des Workspaces erreichen. Ein einziges Ablehnen beendet die Anfrage.",
@@ -97,10 +118,10 @@
       "change_comment_title": "Änderungskommentar",
       "change_comment_intro": "{{author}} hat «{{doc}}» zur Review eingereicht.",
       "reject_explain": "Ein Ablehnen schließt diese Review-Anfrage sofort. Der Autor muss das Dokument überarbeiten und erneut zur Review einreichen.",
-      "accept": "Übernehmen",
-      "accept_explain": "Als Admin kannst du dieses Dokument sofort übernehmen und den Review-Schwellwert überstimmen. Fortfahren?",
+      "accept": "Freigeben",
+      "accept_explain": "Als Admin kannst du dieses Dokument sofort freigeben und den Review-Schwellwert überstimmen. Fortfahren?",
       "instruction_reviewer": "Der Autor dieses Dokuments bittet freundlich um deine Freigabe. Sobald genug Personen zustimmen, wird das Dokument öffentlich und alle im Workspace profitieren von der Änderung oder dem neuen Dokument.",
-      "instruction_admin": "Als Admin dieses Workspace kannst du es sofort übernehmen.",
+      "instruction_admin": "Als Admin dieses Workspace kannst du es sofort freigeben.",
       "instruction_voted": "Danke - du hast diese Änderung bereits angenommen. Sobald genug Personen das geänderte Dokument annehmen, kann es öffentlich werden.",
       "requested": "Review angefragt"
     },

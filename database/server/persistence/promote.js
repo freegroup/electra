@@ -13,6 +13,30 @@
 const { pool } = require("./pool")
 const { validateDocPath } = require("./docs")
 const { pathOfScope, stripPrefix } = require("./scopes")
+const activity = require("./activity")
+
+// Record a document activity event (fan-out) inside the caller's transaction.
+// recipients = [{ ref, role }] or [ref]. Derives docType (suffix, for cross-app
+// routing) + a title snapshot; keeps scope+path+version+uuid in meta so the
+// client can open the right app. By default the actor is not notified.
+function docSuffix(p) { const i = p.lastIndexOf("."); return i === -1 ? "" : p.slice(i) }
+async function recordDocActivity(client, { actor, eventType, recipients, scopeRef, docPath, version, uuid, reason, excludeActor }) {
+  const suffix = docSuffix(docPath)
+  // The full document path minus the app suffix (e.g. "signal-demo/VerticalBus"),
+  // so any folder path shows too; just the name when there is no folder.
+  const title = suffix && docPath.endsWith(suffix) ? docPath.slice(0, -suffix.length) : docPath
+  // The full scope path (e.g. "apps/gammel"), matching how the Review pane
+  // shows scopes — clearer than just the leaf label.
+  const scopeLabel = stripPrefix(await pathOfScope(client, scopeRef))
+  await activity.record(client, {
+    actor, eventType, recipients,
+    scopeId: scopeRef, scopeLabel,
+    subjectKind: "document", subjectRef: docPath, subjectLabel: title,
+    reason: reason ?? null,
+    meta: { docType: suffix, scopeRef: String(scopeRef), docPath, version, uuid: uuid ?? null },
+    excludeActor,
+  })
+}
 const {
   NotFoundError,
   BadRequestError,
@@ -288,6 +312,29 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
       await cleanupLeaf(client, leafId, docPath)
     }
 
+    // Activity: a pending result asks the scope's reviewers to review; either
+    // way the promoter sees their own action (excludeActor:false) — "I submitted
+    // it for review" or "I promoted it, now live".
+    const del = leaf.is_deletion
+    if (result && result.status === "pending") {
+      await recordDocActivity(client, {
+        actor: personRef, eventType: del ? "delete_requested" : "review_requested",
+        recipients: await activity.recipientsForScope(client, result.scopeRef),
+        scopeRef: result.scopeRef, docPath, version: result.version, uuid: result.uuid,
+      })
+      await recordDocActivity(client, {
+        actor: personRef, eventType: del ? "i_delete_requested" : "i_submitted",
+        recipients: [{ ref: personRef, role: "author" }],
+        scopeRef: result.scopeRef, docPath, version: result.version, uuid: result.uuid, excludeActor: false,
+      })
+    } else if (result) {
+      await recordDocActivity(client, {
+        actor: personRef, eventType: del ? "deleted" : "committed",
+        recipients: [{ ref: personRef, role: "author" }],
+        scopeRef: result.scopeRef, docPath, version: result.version, uuid: result.uuid, excludeActor: false,
+      })
+    }
+
     await client.query("COMMIT")
     return result
   } catch (err) {
@@ -498,6 +545,19 @@ async function approve({ scopeId, personRef, docPath, version, score }) {
     await castVote(client, scopeId, docPath, version, personRef, "approve", score)
     const committed = await quorumCheck(client, scope, docPath, version, pending.is_deletion, leafId)
 
+    // Activity: my own "I approved" history, plus notify the author on commit.
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "i_approved", recipients: [{ ref: personRef, role: "reviewer" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid, excludeActor: false,
+    })
+    if (committed) {
+      await recordDocActivity(client, {
+        actor: personRef, eventType: pending.is_deletion ? "deleted" : "committed",
+        recipients: [{ ref: pending.author, role: "author" }],
+        scopeRef: scopeId, docPath, version, uuid: pending.uuid,
+      })
+    }
+
     await client.query("COMMIT")
     return { committed, status: committed ? (pending.is_deletion ? "deleted" : "committed") : "pending" }
   } catch (err) {
@@ -536,6 +596,16 @@ async function reject({ scopeId, personRef, docPath, version, score, reason, isA
       [scopeId, docPath, version, personRef, reason || "rejected by reviewer"]
     )
 
+    // Activity: notify the author (with the reason) + my own "I rejected" history.
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "rejected", recipients: [{ ref: pending.author, role: "author" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid, reason: reason || null,
+    })
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "i_rejected", recipients: [{ ref: personRef, role: "reviewer" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid, reason: reason || null, excludeActor: false,
+    })
+
     await client.query("COMMIT")
     return { rejected: true }
   } catch (err) {
@@ -571,6 +641,17 @@ async function withdraw({ scopeId, personRef, docPath, version }) {
       const leafId = lineageLeaf(pending.meta)
       if (leafId != null) await cleanupLeaf(client, leafId, docPath)
     }
+
+    // Activity: tell the scope's reviewers their pending item is gone + my own history.
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "withdrawn",
+      recipients: await activity.recipientsForScope(client, scopeId),
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid,
+    })
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "i_withdrew", recipients: [{ ref: personRef, role: "author" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid, excludeActor: false,
+    })
 
     await client.query("COMMIT")
     return { withdrawn: true }
@@ -610,6 +691,17 @@ async function accept({ scopeId, personRef, docPath, version }) {
     const leafId = lineageLeaf(pending.meta)
     if (leafId != null) await cleanupLeaf(client, leafId, docPath)
 
+    // Activity: notify the author it went live/was deleted + the admin's own history.
+    await recordDocActivity(client, {
+      actor: personRef, eventType: pending.is_deletion ? "deleted" : "committed",
+      recipients: [{ ref: pending.author, role: "author" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid,
+    })
+    await recordDocActivity(client, {
+      actor: personRef, eventType: "i_accepted", recipients: [{ ref: personRef, role: "admin" }],
+      scopeRef: scopeId, docPath, version, uuid: pending.uuid, excludeActor: false,
+    })
+
     await client.query("COMMIT")
     return { committed: true, status: pending.is_deletion ? "deleted" : "committed" }
   } catch (err) {
@@ -622,7 +714,7 @@ async function accept({ scopeId, personRef, docPath, version }) {
 
 async function pendingRow(client, scopeId, docPath, version) {
   const res = await client.query(
-    `SELECT scope_id, doc_path, version, is_deletion, meta, author
+    `SELECT scope_id, doc_path, version, uuid, is_deletion, meta, author
        FROM versions
       WHERE scope_id = $1 AND doc_path = $2 AND version = $3 AND status = 'pending'`,
     [scopeId, docPath, version]
@@ -635,4 +727,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept, deliverToScope, getScopeRow }
+module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept, deliverToScope, getScopeRow, recordDocActivity }

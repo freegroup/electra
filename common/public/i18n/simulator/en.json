@@ -52,9 +52,30 @@
     "files": "Shared Files",
     "workspaces": "Workspaces",
     "review": "Review",
+    "activity": "Activity",
     "help": "Help"
   },
   "pane": {
+    "activity": {
+      "title": "Activity",
+      "intro": "What has happened across your workspaces - the outcome of your drafts, review requests waiting for you, and your own approvals.",
+      "empty": "No activity yet.",
+      "event": {
+        "review_requested": "{{actor}} asks you to review <b>{{subject}}</b> in {{scope}}",
+        "i_submitted": "You submitted <b>{{subject}}</b> for review in {{scope}}",
+        "delete_requested": "{{actor}} asks you to review the deletion of <b>{{subject}}</b> in {{scope}}",
+        "i_delete_requested": "You requested deletion of <b>{{subject}}</b> in {{scope}}",
+        "deleted": "<b>{{subject}}</b> was deleted in {{scope}}",
+        "i_withdrew": "You withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "committed": "<b>{{subject}}</b> is now live in {{scope}}",
+        "rejected": "<b>{{subject}}</b> was rejected: {{reason}}",
+        "withdrawn": "{{actor}} withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "i_approved": "You approved <b>{{subject}}</b> in {{scope}}",
+        "i_accepted": "You accepted <b>{{subject}}</b> in {{scope}}",
+        "i_rejected": "You rejected <b>{{subject}}</b> in {{scope}}",
+        "member_added": "{{actor}} added you to {{scope}}"
+      }
+    },
     "review": {
       "title": "Review",
       "intro": "Documents waiting for your approval. You vote with the reviewer points the workspace admin granted you; a document is committed once the approving points reach the workspace's threshold. A single reject closes the request.",

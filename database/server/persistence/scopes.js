@@ -2,6 +2,7 @@
 
 const { pool } = require("./pool")
 const { NotFoundError, BadRequestError, ConflictError } = require("../utils/errors")
+const activity = require("./activity")
 
 // ---------------------------------------------------------------------------
 // Identity-name derivation (from a display label)
@@ -358,7 +359,7 @@ async function canRead(client, scopeId, personRef) {
 // join (adding a member, bootstrap enrollment): the personal leaf is NOT created
 // eagerly here — it is provisioned lazily on the first write (see
 // ensureWriteLeaf, called from the write path). Idempotent.
-async function addMember({ scopeId, personRef }) {
+async function addMember({ scopeId, personRef, actorRef }) {
   const client = await pool.connect()
   try {
     const scope = await getScope(client, scopeId)
@@ -375,6 +376,16 @@ async function addMember({ scopeId, personRef }) {
        ON CONFLICT (scope_id, person_ref) DO UPDATE SET is_member = true`,
       [scopeId, personRef]
     )
+    // Activity: tell the added person (a real non-document event). Skipped for
+    // self-enrollment (bootstrap on login), where there is no actor.
+    if (actorRef && actorRef !== personRef) {
+      await activity.record(client, {
+        actor: actorRef, eventType: "member_added",
+        recipients: [{ ref: personRef, role: "member" }],
+        scopeId, scopeLabel: scope.label,
+        subjectKind: "workspace", subjectRef: String(scopeId), subjectLabel: scope.label,
+      })
+    }
     return { scopeId }
   } finally {
     client.release()

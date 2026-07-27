@@ -378,7 +378,7 @@ async function routes(fastify) {
       await requireAdmin(scopeId, req.personRef)
 
       // Membership only — the personal leaf is provisioned lazily on first write.
-      const result = await addMember({ scopeId, personRef })
+      const result = await addMember({ scopeId, personRef, actorRef: req.personRef })
       reply.code(201)
       return { scopeRef: String(result.scopeId) }
     }

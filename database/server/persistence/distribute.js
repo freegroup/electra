@@ -11,7 +11,8 @@
 
 const { pool } = require("./pool")
 const { validateDocPath } = require("./docs")
-const { deliverToScope, getScopeRow } = require("./promote")
+const { deliverToScope, getScopeRow, recordDocActivity } = require("./promote")
+const activity = require("./activity")
 const {
   NotFoundError,
   ForbiddenError,
@@ -99,6 +100,28 @@ async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, 
           ? { targetScopeRef: r.scopeRef, status: "pending", pendingVersion: r.version, uuid: r.uuid }
           : { targetScopeRef: r.scopeRef, status: r.status, version: r.version, uuid: r.uuid }
       )
+
+      // Activity: a pending delivery asks that target's reviewers to review;
+      // either way the distributor sees their own action (excludeActor:false).
+      const del = source.is_deletion
+      if (r.status === "pending") {
+        await recordDocActivity(client, {
+          actor: personRef, eventType: del ? "delete_requested" : "review_requested",
+          recipients: await activity.recipientsForScope(client, r.scopeRef),
+          scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid,
+        })
+        await recordDocActivity(client, {
+          actor: personRef, eventType: del ? "i_delete_requested" : "i_submitted",
+          recipients: [{ ref: personRef, role: "author" }],
+          scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid, excludeActor: false,
+        })
+      } else {
+        await recordDocActivity(client, {
+          actor: personRef, eventType: del ? "deleted" : "committed",
+          recipients: [{ ref: personRef, role: "author" }],
+          scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid, excludeActor: false,
+        })
+      }
     }
 
     await client.query("COMMIT")

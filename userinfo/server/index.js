@@ -16,6 +16,7 @@ const db = require("./db")
 const conf = require("./configuration")
 const workspaces = require("./workspaces")
 const review = require("./review")
+const activity = require("./activity")
 
 const app = express();
 const PORT = process.env.PORT_USERINFO || die("missing env variable PORT_USERINFO");
@@ -57,6 +58,7 @@ app.get('/userinfo/', sendProfile)
 // Account-scoped features (app-agnostic), fronting the internal database service.
 workspaces.init(app)
 review.init(app)
+activity.init(app)
 
 app.listen(PORT, LOCALHOST, () => {
   console.log(`Starting /userinfo on http://${LOCALHOST}:${PORT}`);

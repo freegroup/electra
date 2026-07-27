@@ -7,6 +7,7 @@ import StorageScreen from "./storage/StorageScreen"
 import DraftScreen from "./storage/DraftScreen"
 import WorkspaceScreen from "./workspace/WorkspaceScreen"
 import ReviewScreen from "./review/ReviewScreen"
+import ActivityScreen from "./activity/ActivityScreen"
 import session from "./session"
 import storageFactory from "./storage/StorageClient"
 import confirmDialog from "./ConfirmDialog"
@@ -52,8 +53,9 @@ export default class Application extends AppFrame{
             if (session.isLoggedIn()) {
               this.draftPane = new DraftScreen(this, conf)
               this.reviewPane = new ReviewScreen(this, conf)
+              this.activityPane = new ActivityScreen(this, conf)
             } else {
-              $("#draft_tab, #review_tab").hide()
+              $("#draft_tab, #review_tab, #activity_tab").hide()
             }
         } else {
             this.filePane = new Files(this, conf, permissions[this.objectType])
@@ -181,8 +183,9 @@ export default class Application extends AppFrame{
     refreshFinders() {
         this.filePane?.reload()
         this.draftPane?.reload()
-        // keep the Review-tab pending count in sync with document activity
+        // keep the Review- and Activity-tab counts in sync with document activity
         this.reviewPane?.refreshCount()
+        this.activityPane?.refreshCount()
     }
 
     // Ask the user whether to open their private draft or the shared original,

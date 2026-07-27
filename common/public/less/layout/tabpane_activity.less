@@ -1,0 +1,44 @@
+// The Activity pane — a simple feed (list) of the caller's notifications inside
+// a finderCard. Read-only; clickable rows route to the right app / Workspaces.
+#activity {
+  overflow-y: scroll;
+  padding: 40px;
+
+  .activityList {
+    .activityItem {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px @contentToEdgePadding;
+      border-bottom: 1px solid rgb(var(--border-color));
+
+      &:last-child { border-bottom: none; }
+
+      .activityText { flex: 1 1 auto; }
+      .activityTime {
+        flex: 0 0 auto;
+        font-size: 12px;
+        opacity: 0.5;
+        white-space: nowrap;
+      }
+    }
+
+    // unread: a tint accent bar on the left + heavier text
+    .activityUnread {
+      box-shadow: inset 3px 0 0 rgb(var(--tint-color));
+      .activityText { font-weight: var(--label-font-weight); }
+    }
+
+    .activityClickable {
+      cursor: pointer;
+      &:hover { background: rgba(var(--text-color), 0.03); }
+    }
+  }
+
+  .fileListEmpty {
+    padding: 20px @contentToEdgePadding;
+    opacity: 0.6;
+  }
+}
