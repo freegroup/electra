@@ -32,16 +32,16 @@
     "new_document": "Create new circuit",
     "publish": "Publish",
     "publish_explain": "Create a public link anyone can open (no login required):",
-    "promote_explain": "Make your version the group's version? Everyone who sees this circuit under the same \"Provided by\" group will then get your changes.",
+    "promote_explain": "Make your version the one your group uses? Everyone who gets this circuit from your group will then see your changes.",
     "promote_description_label": "Note for the reviewers (optional) - what changed and why?",
-    "revert_explain": "Discard your personal changes and show the official version again? This cannot be undone.",
-    "delete_explain": "Delete this circuit? There is no group version to fall back to - this cannot be undone.",
-    "delete_shared_explain": "Delete this circuit for the whole group? It disappears for everyone who sees it here, and this cannot be undone.",
-    "delete_shared_request_explain": "Request deletion of this circuit? Your group's reviewers must approve it before it is removed for everyone.",
+    "revert_explain": "Throw away your changes and show the group's version again? This can't be undone.",
+    "delete_explain": "Delete this circuit? There's no group version to fall back to, so this can't be undone.",
+    "delete_shared_explain": "Delete this circuit for the whole group? It disappears for everyone here, and this can't be undone.",
+    "delete_shared_request_explain": "Ask to delete this circuit? Your group's reviewers have to approve it before it's removed for everyone.",
     "delete_description_label": "Reason for deletion (optional)",
     "open_conflict": "Open which version?",
     "open_conflict_explain": "You have a personal copy of this circuit. Open your own copy, or the group's version?",
-    "distribute_explain": "You send your version into other workspaces you belong to. If a workspace has review enabled, it's checked there first - otherwise it becomes visible right away to everyone in that workspace and the ones below it.",
+    "distribute_explain": "Send your version to other workspaces you're in. If a workspace uses review, it's checked there first. Otherwise everyone in that workspace (and the ones under it) sees it right away.",
     "distribute_title": "Select workspaces to distribute to",
     "distribute_description_label": "Note for the reviewers (optional)",
     "distribute_empty": "You are not a member of any other workspace to distribute to yet."
@@ -58,7 +58,7 @@
   "pane": {
     "activity": {
       "title": "Activity",
-      "intro": "What has happened across your workspaces - the outcome of your drafts, review requests waiting for you, and your own approvals.",
+      "intro": "What's happening across your workspaces: how your drafts turned out, reviews waiting for you, and your own actions.",
       "empty": "No activity yet.",
       "event": {
         "review_requested": "{{actor}} asks you to review <b>{{subject}}</b> in {{scope}}",
@@ -78,7 +78,7 @@
     },
     "review": {
       "title": "Review",
-      "intro": "Documents waiting for your approval. You vote with the reviewer points the workspace admin granted you; a document is committed once the approving points reach the workspace's threshold. A single reject closes the request.",
+      "intro": "Documents waiting for your approval. Your vote is worth the review points your workspace admin gave you. Once enough points add up, the document goes live. A single reject stops it.",
       "col_doc": "Document",
       "col_workspace": "Workspace",
       "col_author": "Author",
@@ -89,7 +89,7 @@
       "voted": "voted",
       "empty": "No reviews waiting",
       "deletion": "deletion",
-      "deletion_notice": "This document is proposed for deletion - approving removes it for everyone here.",
+      "deletion_notice": "This document is up for deletion. Approving removes it for everyone here.",
       "my_points_hint": "Your vote adds this many points",
       "approved_committed": "Approved - document committed",
       "approved_pending": "Vote counted - more approvals needed",
@@ -103,20 +103,20 @@
       "not_open": "This review is no longer open",
       "score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
       "load_failed": "Could not load the review document",
-      "no_change_comment": "No change comment - the author did not describe what changed.",
+      "no_change_comment": "No note - the author didn't say what changed.",
       "change_comment_title": "Change Comment",
       "change_comment_intro": "{{author}} submitted «{{doc}}» for review.",
-      "reject_explain": "Rejecting immediately closes this review request. The author must revise the document and submit it for review again.",
+      "reject_explain": "Rejecting closes this request right away. The author has to make changes and submit it again.",
       "accept": "Accept",
-      "accept_explain": "As an admin you can commit this document immediately, overriding the review threshold. Continue?",
-      "instruction_reviewer": "The author of this document kindly asks for your approval. Once enough people accept it, the document goes public and everyone in the workspace benefits from the change or new document.",
+      "accept_explain": "As an admin, you can approve this right now and skip the usual review. Continue?",
+      "instruction_reviewer": "The author is asking for your approval. Once enough people accept it, it goes live for everyone in the workspace.",
       "instruction_admin": "As an admin of this workspace, you can accept it immediately.",
-      "instruction_voted": "Thank you - you have already accepted this change. Once enough people accept this changed document, it can go public.",
+      "instruction_voted": "Thanks, you've already approved this. Once enough people do, it goes live.",
       "requested": "Review Requested"
     },
     "workspaces": {
       "title": "Workspaces",
-      "intro": "A workspace is a common space for a <b>team or class</b> - add the people who belong, and everything you <b>promote</b> reaches only them. Members work inside it, admins manage people and the review settings, and reviewers hold the points that approve changes. Changes can pass through <b>review</b> first, so nothing reaches your team, or the public, before it's ready. And it all nests <b>hierarchically</b> - from a single group to a whole organization. Open one to explore, or create your own and invite others.",
+      "intro": "A workspace is a shared space for a <b>team or class</b>. Add the people who belong, and everything you <b>promote</b> reaches only them. Members work inside it, admins manage the people and the review settings, and reviewers hold the points that approve changes. With <b>review</b> on, changes get checked before your team sees them. Workspaces nest <b>hierarchically</b>, from a single group up to a whole organization. Open one to explore, or create your own and invite others.",
       "root": "My Workspaces",
       "personal": "Personal",
       "create": "New Workspace",
@@ -137,7 +137,7 @@
       "member_removed": "Member removed",
       "review_settings": "Review",
       "required_score": "Required points: {{count}}",
-      "required_score_hint": "Approval points a document must collect before it commits in this workspace. 0 = no review.",
+      "required_score_hint": "How many approval points a document needs before it goes live here. 0 = no review.",
       "edit_required_score": "Change required review points",
       "required_score_label": "Points (0 = no review)",
       "required_score_saved": "Threshold saved",
@@ -149,18 +149,18 @@
       "info_settings": "Info"
     },
     "draft": {
-      "title": "My Circuits",
-      "intro": "Your private circuits and your personal versions of shared ones. When you edit and save a shared circuit, your changes land here - nobody else sees them. Want your version to reach others? <b>Promote</b> it to propose it as your group's version, or <b>Distribute</b> it into other workspaces you belong to. Where a workspace requires review, it is checked and approved there first.",
+      "title": "My Files",
+      "intro": "Your own circuits live here: your private ones, and your copy of any shared circuit you've changed. Only you can see them. Want to share your version? <b>Promote</b> it to make it your group's version, or <b>Distribute</b> it to other workspaces you're in. If a workspace uses review, your version is checked there before it goes live.",
       "review_points": "Review Points",
-      "review_points_explain": "{{have}} of {{need}} approval points collected. Once the threshold is reached the document is committed as the public version.",
+      "review_points_explain": "{{have}} of {{need}} approval points so far. Once it reaches {{need}}, your version goes live for the group.",
       "kind_personal": "Private",
-      "kind_personal_explain": "This document exists only in your personal workspace - nobody else can see it.",
+      "kind_personal_explain": "This circuit lives only in your personal space. Nobody else can see it.",
       "kind_personal_copy": "Personal Copy",
-      "kind_personal_copy_explain": "You have a personal version of a shared document. Promote your changes to submit them for review - once approved they become your group's version."
+      "kind_personal_copy_explain": "This is your own copy of a shared circuit. Promote it to send your changes for review. Once approved, they become your group's version."
     },
     "files": {
-      "title": "Shared Circuits",
-      "intro": "The circuits available to you across your groups. Open one to use it; editing and saving creates your own copy (see <b>My Files</b>) without touching the original.",
+      "title": "Shared Files",
+      "intro": "All the circuits your groups share with you. Open one to use it. When you edit and save, you get your own copy (in <b>My Files</b>) and the original stays untouched.",
       "title_your": "Your Circuits",
       "title_global": "Public Circuits",
       "col_name": "Name",
@@ -203,7 +203,7 @@
     "reverted": "Personal changes discarded",
     "deleted": "Deleted",
     "delete_requested": "Deletion sent for review",
-    "distributed": "Distributed to {{total}} workspace(s) - {{live}} public, {{review}} in review."
+    "distributed": "Sent to {{total}} workspace(s) - {{live}} live, {{review}} in review."
   },
   "error": {}
 }

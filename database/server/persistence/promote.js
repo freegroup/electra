@@ -20,22 +20,33 @@ const activity = require("./activity")
 // routing) + a title snapshot; keeps scope+path+version+uuid in meta so the
 // client can open the right app. By default the actor is not notified.
 function docSuffix(p) { const i = p.lastIndexOf("."); return i === -1 ? "" : p.slice(i) }
-async function recordDocActivity(client, { actor, eventType, recipients, scopeRef, docPath, version, uuid, reason, excludeActor }) {
-  const suffix = docSuffix(docPath)
-  // The full document path minus the app suffix (e.g. "signal-demo/VerticalBus"),
-  // so any folder path shows too; just the name when there is no folder.
-  const title = suffix && docPath.endsWith(suffix) ? docPath.slice(0, -suffix.length) : docPath
-  // The full scope path (e.g. "apps/gammel"), matching how the Review pane
-  // shows scopes — clearer than just the leaf label.
-  const scopeLabel = stripPrefix(await pathOfScope(client, scopeRef))
-  await activity.record(client, {
-    actor, eventType, recipients,
-    scopeId: scopeRef, scopeLabel,
-    subjectKind: "document", subjectRef: docPath, subjectLabel: title,
-    reason: reason ?? null,
-    meta: { docType: suffix, scopeRef: String(scopeRef), docPath, version, uuid: uuid ?? null },
-    excludeActor,
-  })
+async function recordDocActivity(client, { actor, eventType, recipients, scopeRecipients, scopeRef, docPath, version, uuid, reason, excludeActor }) {
+  // Best-effort inside the domain transaction: a SAVEPOINT isolates any activity
+  // failure (lookups or inserts) so it can never roll back the promote/approve/…
+  // that triggered it — a lost notification must not break the actual action.
+  try {
+    await client.query("SAVEPOINT act")
+    const suffix = docSuffix(docPath)
+    // The full document path minus the app suffix (e.g. "signal-demo/VerticalBus"),
+    // so any folder path shows too; just the name when there is no folder.
+    const title = suffix && docPath.endsWith(suffix) ? docPath.slice(0, -suffix.length) : docPath
+    // The full scope path (e.g. "apps/gammel"), matching how the Review pane
+    // shows scopes — clearer than just the leaf label.
+    const scopeLabel = stripPrefix(await pathOfScope(client, scopeRef))
+    const recips = scopeRecipients ? await activity.recipientsForScope(client, scopeRef) : recipients
+    await activity.record(client, {
+      actor, eventType, recipients: recips,
+      scopeId: scopeRef, scopeLabel,
+      subjectKind: "document", subjectRef: docPath, subjectLabel: title,
+      reason: reason ?? null,
+      meta: { docType: suffix, scopeRef: String(scopeRef), docPath, version, uuid: uuid ?? null },
+      excludeActor,
+    })
+    await client.query("RELEASE SAVEPOINT act")
+  } catch (e) {
+    try { await client.query("ROLLBACK TO SAVEPOINT act") } catch (_) {}
+    console.log("[activity] recording skipped:", e && e.message)
+  }
 }
 const {
   NotFoundError,
@@ -319,7 +330,7 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
     if (result && result.status === "pending") {
       await recordDocActivity(client, {
         actor: personRef, eventType: del ? "delete_requested" : "review_requested",
-        recipients: await activity.recipientsForScope(client, result.scopeRef),
+        scopeRecipients: true,
         scopeRef: result.scopeRef, docPath, version: result.version, uuid: result.uuid,
       })
       await recordDocActivity(client, {
@@ -645,7 +656,7 @@ async function withdraw({ scopeId, personRef, docPath, version }) {
     // Activity: tell the scope's reviewers their pending item is gone + my own history.
     await recordDocActivity(client, {
       actor: personRef, eventType: "withdrawn",
-      recipients: await activity.recipientsForScope(client, scopeId),
+      scopeRecipients: true,
       scopeRef: scopeId, docPath, version, uuid: pending.uuid,
     })
     await recordDocActivity(client, {

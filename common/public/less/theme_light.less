@@ -1,3 +1,13 @@
+// Tint every stroked/filled shape of an inline SVG icon, whatever the element
+// type (path, line, circle, use, ellipse, polygon, …). The :not(…="none")
+// guards leave outline shapes (fill="none") and unstroked groups untouched, so
+// new or odd SVGs (e.g. a <use>-based dotted circle from a Sketch export) just
+// work without enumerating element types.
+.svgTint(@color) {
+    [stroke]:not([stroke="none"]) { stroke: @color !important; }
+    [fill]:not([fill="none"]) { fill: @color !important; }
+}
+
 body.light {
     --label-bold-font-weight: 600;
     --label-font-weight: 400;
@@ -138,18 +148,7 @@ body.light {
             svg {
                 color: white;
                 border-color:transparent;
-    
-                circle[stroke],
-                polyline[stroke],
-                path[stroke],
-                g[stroke] {
-                    stroke: white !important;
-                }
-    
-                rect[fill],
-                circle[fill] {
-                    fill: white !important;
-                }
+                .svgTint(white);
             }
         }
     }
@@ -159,24 +158,12 @@ body.light {
     // beat the global svg.inlined-svg text-color rule in specificity.
     .screenHeader {
         svg.inlined-svg.icon {
-            path[stroke], rect[stroke], g[stroke], line[stroke],
-            circle[stroke], polyline[stroke] {
-                stroke: rgb(var(--tint-color)) !important;
-            }
-            path[fill], circle[fill] {
-                fill: rgb(var(--tint-color)) !important;
-            }
+            .svgTint(rgb(var(--tint-color)));
         }
     }
     .filesTeaser, .draftTeaser {
         svg.inlined-svg.icon {
-            path[stroke], rect[stroke], g[stroke], line[stroke],
-            circle[stroke], polyline[stroke] {
-                stroke: rgb(var(--tint-color)) !important;
-            }
-            path[fill], circle[fill] {
-                fill: rgb(var(--tint-color)) !important;
-            }
+            .svgTint(rgb(var(--tint-color)));
         }
     }
 
@@ -292,19 +279,7 @@ body.light {
                     }
 
                     svg {
-                        path[stroke],
-                        rect[stroke],
-                        g[stroke],
-                        line[stroke],
-                        circle[stroke],
-                        polyline[stroke] {
-                            stroke: rgb(var(--lefttab-active-font-color))  !important;
-                        }
-
-                        circle[fill],
-                        rect[fill] {
-                            fill: rgb(var(--lefttab-active-font-color))  !important;
-                        }
+                        .svgTint(rgb(var(--lefttab-active-font-color)));
                     }
                 }
             }
@@ -319,20 +294,7 @@ body.light {
                 }
 
                 svg {
-
-                    path[stroke],
-                    rect[stroke],
-                    g[stroke],
-                    line[stroke],
-                    circle[stroke],
-                    polyline[stroke] {
-                        stroke:rgb(var(--lefttab-font-color)) !important;
-                    }
-
-                    circle[fill],
-                    rect[fill] {
-                        fill: rgb(var(--lefttab-font-color))!important;
-                    }
+                    .svgTint(rgb(var(--lefttab-font-color)));
                 }
             }
         }
@@ -633,6 +595,10 @@ body.light {
     #distributeDialog {
         .distributeTargets { border-color: rgb(var(--border-color)); }
         .distributeTarget:hover { background-color: rgba(0, 0, 0, 0.04); }
+        .distributeImagePanel {
+            background-color: rgba(var(--text-color), 0.03);
+            box-shadow: var(--box-shadow-1);
+        }
     }
 
     #deleteDialog {
@@ -784,24 +750,7 @@ body.light {
     svg.inlined-svg {
         color: rgb(var(--text-color));
         border-color:transparent;
-
-        circle[stroke],
-        rect[stroke],
-        line[stroke],
-        polygon[stroke],
-        ellipse[stroke],
-        polyline[stroke],
-        path[stroke],
-        g[stroke] {
-            stroke: rgb(var(--text-color))!important;
-        }
-
-        polygon[fill],
-        text[fill],
-        rect[fill],
-        circle[fill] {
-            fill: rgb(var(--text-color)) !important;
-        }
+        .svgTint(rgb(var(--text-color)));
     }
 
     .image-button {

@@ -101,20 +101,15 @@ async function unreadCount({ personRef }) {
   return res.rows[0].n
 }
 
-// Mark specific ids seen, or all of the caller's unread when ids is empty.
+// Mark the given ids seen (scoped to the caller). Empty is a no-op — we never
+// blanket-mark, so rows the caller hasn't actually seen stay unread.
 async function markSeen({ personRef, ids }) {
-  if (Array.isArray(ids) && ids.length > 0) {
-    await pool.query(
-      `UPDATE activity SET seen_at = now()
-        WHERE recipient = $1 AND seen_at IS NULL AND id = ANY($2::bigint[])`,
-      [personRef, ids]
-    )
-  } else {
-    await pool.query(
-      "UPDATE activity SET seen_at = now() WHERE recipient = $1 AND seen_at IS NULL",
-      [personRef]
-    )
-  }
+  if (!Array.isArray(ids) || ids.length === 0) return { ok: true }
+  await pool.query(
+    `UPDATE activity SET seen_at = now()
+      WHERE recipient = $1 AND seen_at IS NULL AND id = ANY($2::bigint[])`,
+    [personRef, ids]
+  )
   return { ok: true }
 }
 

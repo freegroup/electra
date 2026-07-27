@@ -107,7 +107,7 @@ async function distribute({ sourceScopeId, personRef, docPath, expectedVersion, 
       if (r.status === "pending") {
         await recordDocActivity(client, {
           actor: personRef, eventType: del ? "delete_requested" : "review_requested",
-          recipients: await activity.recipientsForScope(client, r.scopeRef),
+          scopeRecipients: true,
           scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid,
         })
         await recordDocActivity(client, {

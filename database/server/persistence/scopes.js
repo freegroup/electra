@@ -377,14 +377,22 @@ async function addMember({ scopeId, personRef, actorRef }) {
       [scopeId, personRef]
     )
     // Activity: tell the added person (a real non-document event). Skipped for
-    // self-enrollment (bootstrap on login), where there is no actor.
+    // self-enrollment (bootstrap on login), where there is no actor. Best-effort:
+    // this runs outside any wrapping transaction (the membership is already
+    // persisted), so a notification failure must not fail the add.
     if (actorRef && actorRef !== personRef) {
-      await activity.record(client, {
-        actor: actorRef, eventType: "member_added",
-        recipients: [{ ref: personRef, role: "member" }],
-        scopeId, scopeLabel: scope.label,
-        subjectKind: "workspace", subjectRef: String(scopeId), subjectLabel: scope.label,
-      })
+      try {
+        // Full scope path (e.g. "apps/gammel"), consistent with the doc events.
+        const scopePath = stripPrefix(await pathOfScope(client, scopeId))
+        await activity.record(client, {
+          actor: actorRef, eventType: "member_added",
+          recipients: [{ ref: personRef, role: "member" }],
+          scopeId, scopeLabel: scopePath,
+          subjectKind: "workspace", subjectRef: String(scopeId), subjectLabel: scopePath,
+        })
+      } catch (e) {
+        console.log("[activity] member_added skipped:", e && e.message)
+      }
     }
     return { scopeId }
   } finally {

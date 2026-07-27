@@ -6,20 +6,35 @@
 
   .modal-dialog { width: 880px; }
 
-  .distributeExplain { margin-bottom: 50px; }
+  // A touch more breathing room left/right than the generic dialog padding.
+  .modal-content { padding-left: 32px; padding-right: 32px; }
+
+  .distributeExplain { margin-bottom: 24px; }
 
   .distributeBody {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    gap: 40px;
+    gap: 24px;
+  }
+
+  // The illustration sits in its own card (rounded, faint fill, soft shadow —
+  // see theme) so it reads as a deliberate pair with the targets box rather than
+  // a floating image. Centered inside; the card + list share the row height.
+  .distributeImagePanel {
+    flex: 0 0 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    border-radius: @borderRadiusSmall;
   }
 
   .distributeImage {
-    flex: 0 0 280px;
-    width: 280px;
+    display: block;
+    width: 100%;
     height: auto;
-    align-self: center;
+    max-height: 100%;
   }
 
   // The list column stretches to the image's height; the scroll area is pinned
@@ -68,5 +83,5 @@
   }
 
   .distributeEmpty { opacity: 0.7; }
-  .distributeNote { margin-top: 50px; }
+  .distributeNote { margin-top: 24px; }
 }

@@ -17,7 +17,9 @@ class Dialog {
             <div class="modal-body">
               <p class="distributeExplain"></p>
               <div class="distributeBody">
-                <img class="distributeImage" src="../common/images/dialog_distribute.svg">
+                <div class="distributeImagePanel">
+                  <img class="distributeImage" src="../common/images/dialog_distribute.svg">
+                </div>
                 <div class="controlWithHeader distributeTargetsBlock">
                   <div class="distributeTargets"></div>
                   <p class="distributeEmpty" style="display:none">${t("dialog.distribute_empty")}</p>

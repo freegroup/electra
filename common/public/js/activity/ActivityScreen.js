@@ -67,8 +67,14 @@ export default class ActivityScreen {
         return
       }
       for (let it of items) $host.append(this.renderItem(it))
-      // Everything shown is now read — clear the badge.
-      if (unread > 0) this.client.seen([]).then(() => this.countBadge.set(0)).catch(() => {})
+      // Mark only the rows actually shown as read (not any unread beyond this
+      // page), then drop the badge by however many of them were unread.
+      let unreadShown = items.filter((it) => !it.seen)
+      if (unreadShown.length > 0) {
+        this.client.seen(unreadShown.map((it) => it.id))
+          .then(() => this.countBadge.set(Math.max(0, unread - unreadShown.length)))
+          .catch(() => {})
+      }
     }).catch((exc) => {
       console.log(exc)
       $host.removeClass("spinner").html(
