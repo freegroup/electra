@@ -1,0 +1,65 @@
+# Requires every outside contributor to sign the Contributor License Agreement
+# (CLA.md) before their pull request can be merged.
+#
+# Why: Electra.Academy is dual-licensed (AGPL + commercial, see
+# COMMERCIAL-LICENSE.md). Selling a commercial license is only possible while
+# the rights to the combined work rest with one party. A single unsigned outside
+# patch would end that permanently.
+#
+# How it works: the action posts a comment on new pull requests. The contributor
+# signs by replying with the exact sentence quoted in CLA.md. The signature is
+# then appended to signatures/version1/cla.json IN THIS REPOSITORY, so there is
+# no external service and no third party holding the records. Once signed, all
+# future pull requests by that person pass automatically.
+#
+# ONE MANUAL STEP REMAINS: make "CLA Assistant" a required status check under
+# Settings -> Branches -> branch protection for the default branch. Without
+# that, the check reports failure but does not actually block merging.
+#
+# Note on pull_request_target: this trigger runs the workflow from the BASE
+# branch with a token that can write, which is what lets the action record a
+# signature from a fork. It deliberately does not check out the PR head, so
+# untrusted code is never executed here. Do not add a checkout of the PR head.
+
+name: "CLA Assistant"
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [opened, closed, synchronize]
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  CLAAssistant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "CLA Assistant"
+        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
+        uses: contributor-assistant/github-action@v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path-to-signatures: "signatures/version1/cla.json"
+          path-to-document: "https://github.com/freegroup/electra/blob/main/CLA.md"
+          branch: "main"
+          # The project owner does not sign their own CLA, and dependency bots
+          # contribute no copyrightable work.
+          allowlist: freegroup,dependabot[bot],renovate[bot],github-actions[bot]
+          custom-notsigned-prcomment: |
+            Thanks for the pull request!
+
+            Electra.Academy is dual-licensed: AGPL for everyone, plus a
+            commercial license that funds keeping it free for schools. That
+            second license only works while the rights to the whole work rest
+            with one party, so outside contributions need a signed CLA.
+
+            Please read **[CLA.md](https://github.com/freegroup/electra/blob/main/CLA.md)**
+            and, if you agree, post a comment on this pull request with exactly:
+          custom-pr-sign-comment: "I have read the CLA Document and I hereby sign the CLA"
+          custom-allsigned-prcomment: "CLA signed by all contributors. Thanks - ready for review."
