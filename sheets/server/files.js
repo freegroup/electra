@@ -132,6 +132,25 @@ function init(app) {
     }
   })
 
+  // --- resolve a public name/path to a handle ------------------------------
+  // Lets links reference a shared document by name (e.g. ?global=guides/intro)
+  // instead of an opaque id. Resolves the path in the shared app content
+  // (electra/content/apps) and returns the handle the editor opens with. Works
+  // for anonymous callers too.
+  app.get("/sheets/file/global", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const path = withSuffix(req.query.path || "")
+      if (!hasSuffix(path)) {
+        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+      }
+      const rootId = await db.appRootId(auth)
+      res.json({ id: db.encodeId(rootId, path) })
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
   // --- save (create when no id) --------------------------------------------
   // Body: { id?, name?, content }. No id → new document in the user's group
   // under the app root (the backend picks the scope; here that's the app root

@@ -44,12 +44,16 @@ class Application extends GenericApplication {
       // ?review=<uuid>&path=<docPath> loads a pending version read-only for review.
       let doc = this.getParam("doc")
       let review = this.getParam("review")
+      let global = this.getParam("global")
       let tab = this.getParam("tab")
       if (review) {
         this.openReview(decodeURIComponent(review))
         this.restoreTab(tab)
       } else if (doc) {
         this.open(doc).then(() => this.restoreTab(tab))
+      } else if (global) {
+        // ?global=<path> opens a shared doc by name (stable, human-readable link)
+        this.openGlobal(decodeURIComponent(global)).then(() => this.restoreTab(tab))
       } else {
         this.showWelcomeMessage("guides/intro.brain")
         this.restoreTab(tab)

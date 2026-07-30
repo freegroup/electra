@@ -38,6 +38,13 @@ class StorageClient {
       .then((response) => response.data)
   }
 
+  // Resolve a public document name/path (shared app content) to an opaque
+  // handle, so links can reference docs by name. -> { id }
+  resolveGlobal(path) {
+    return axios.get(`${this.base}/file/global`, { params: { path, _: Date.now() } })
+      .then((response) => response.data)
+  }
+
   // Save. Omit id to create a new document (backend picks the group).
   // -> { id, version, path }
   save({ id, name, content }) {

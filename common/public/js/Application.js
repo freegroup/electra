@@ -62,7 +62,7 @@ export default class Application extends AppFrame{
         }
         // The help/readme pane. Renders lazily on first show (onShow), like the
         // other panes — no eager render here.
-        this.readmePane = new AuthorPage("#readme", `readme/en/${conf.application}/README.sheet`, "#index_tab a")
+        this.readmePane = new AuthorPage("#readme", `readme/{{lng}}/${conf.application}/README.sheet`, "#index_tab a")
 
         // Deep-link tab routing: update ?tab= on every tab switch so reloads
         // land on the same pane; restore from ?tab= on initial load via
@@ -125,6 +125,23 @@ export default class Application extends AppFrame{
         welcomeMessage.show(exampleDocument)
     }
 
+    // Open a document by its public name/path (shared app content). Powers the
+    // ?global=<path> deep link and the welcome "Open Example" button, so links
+    // can reference docs by name instead of an opaque id. Resolves the path to a
+    // handle server-side, then opens it the normal way.
+    openGlobal(path){
+        return this.storage.resolveGlobal(path).then(({ id }) => this.open(id)).then(() => {
+            // open() stamped the opaque ?doc=; swap back to the readable ?global=
+            // (they are the same doc, XOR). replaceState so opening by name adds
+            // no extra history entry.
+            const url = new URL(window.location.href)
+            url.searchParams.delete("doc")
+            url.searchParams.delete("review")
+            url.searchParams.set("global", path)
+            history.replaceState(history.state, "", url.toString())
+        })
+    }
+
     hideWelcomeMessage(){
         welcomeMessage.hide()
     }
@@ -142,6 +159,13 @@ export default class Application extends AppFrame{
     // not "do a pushState" — the history mechanics are an implementation detail.
     navigate(params, title) {
         const url = new URL(window.location.href)
+        // doc / review / global all identify the SAME document a different way,
+        // so they are mutually exclusive (XOR): setting one clears the others,
+        // the URL never carries two at once.
+        const idParams = ["doc", "review", "global"]
+        if (idParams.some((k) => k in params)) {
+            idParams.forEach((k) => url.searchParams.delete(k))
+        }
         for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v)
         history.pushState({ id: "editor", ...params }, title || '', url.toString())
         if (params.tab) {
