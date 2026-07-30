@@ -7,7 +7,7 @@
         "migrate": "node server/persistence/migrate.js",
         "test": "for f in test/*.test.js; do node --test \"$f\" || exit 1; done"
     },
-    "license": "MIT",
+    "license": "AGPL-3.0-or-later",
     "dependencies": {
         "dotenv": "^16.4.5",
         "fastify": "^5.1.0",
