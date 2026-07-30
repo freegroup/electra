@@ -1,3 +1,13 @@
+// Tint every stroked/filled shape of an inline SVG icon, whatever the element
+// type (path, line, circle, use, ellipse, polygon, …). The :not(…="none")
+// guards leave outline shapes (fill="none") and unstroked groups untouched, so
+// new or odd SVGs (e.g. a <use>-based dotted circle from a Sketch export) just
+// work without enumerating element types.
+.svgTint(@color) {
+    [stroke]:not([stroke="none"]) { stroke: @color !important; }
+    [fill]:not([fill="none"]) { fill: @color !important; }
+}
+
 body.light {
     --label-bold-font-weight: 600;
     --label-font-weight: 400;
@@ -11,6 +21,10 @@ body.light {
     /* colors of the left hand side navigation tabbar */
     --lefttab-font-color: 255, 255, 255;
     --lefttab-bg-color:  218, 26, 95;
+    /* the active tab: label/icon colour + how strongly the bar colour is
+       blended into white for its background (0..1) */
+    --lefttab-active-font-color: 0, 0, 0;
+    --lefttab-active-bg-blend: 0.5;
 
     /* colors for listitems */
     --menu-container-padding: 4px;
@@ -134,20 +148,32 @@ body.light {
             svg {
                 color: white;
                 border-color:transparent;
-    
-                circle[stroke],
-                polyline[stroke],
-                path[stroke],
-                g[stroke] {
-                    stroke: white !important;
-                }
-    
-                rect[fill],
-                circle[fill] {
-                    fill: white !important;
-                }
+                .svgTint(white);
             }
         }
+    }
+
+    // All pane header icons are inlineSVG — color them with tint so they
+    // match their pane title. Uses .inlined-svg (set by inlineSVG.js) to
+    // beat the global svg.inlined-svg text-color rule in specificity.
+    .screenHeader {
+        svg.inlined-svg.icon {
+            .svgTint(rgb(var(--tint-color)));
+        }
+    }
+    .filesTeaser, .draftTeaser {
+        svg.inlined-svg.icon {
+            .svgTint(rgb(var(--tint-color)));
+        }
+    }
+
+    // PopoverTooltip — appended to <body>, must be top-level (not inside a pane)
+    .popoverTooltip {
+        background: rgb(var(--pane-bg-color));
+        border: 1px solid rgb(var(--border-color));
+        color: rgb(var(--text-color));
+        &::before { border-bottom-color: rgb(var(--border-color)); }
+        &::after  { border-bottom-color: rgb(var(--pane-bg-color)); }
     }
 
     .spinner:before {
@@ -221,32 +247,39 @@ body.light {
     #leftTabStrip {
         background-color: rgb(var(--lefttab-bg-color)) ;
 
-        &:after {
-            color: rgb(var(--lefttab-font-color));
+        // group divider: faint line in the bar's font color
+        .leftTabSeparator hr {
+            border-top-color: rgba(var(--lefttab-font-color), 0.25);
         }
 
         >li,
         >div {
             &.active {
                 a{
+                    // The tab-strip colour blended into white (opaque white base
+                    // + a tint overlay at --lefttab-active-bg-blend). Gives the
+                    // active tab a clear edge against the white palette/content
+                    // on its right, themed from --lefttab-bg-color.
+                    background-color: white;
+                    background-image: linear-gradient(
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
+
                     &:hover {
                         background-color: white;
+                        background-image: linear-gradient(
+                            rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                            rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
+                    }
+
+                    // On the tinted active background, label + icon use the
+                    // dedicated active-tab font colour for legible contrast.
+                    .leftTabLabel {
+                        color: rgb(var(--lefttab-active-font-color));
                     }
 
                     svg {
-                        path[stroke],
-                        rect[stroke],
-                        g[stroke],
-                        line[stroke],
-                        circle[stroke],
-                        polyline[stroke] {
-                            stroke: rgb(var(--lefttab-bg-color))  !important;
-                        }
-
-                        circle[fill],
-                        rect[fill] {
-                            fill: rgb(var(--lefttab-bg-color))  !important;
-                        }
+                        .svgTint(rgb(var(--lefttab-active-font-color)));
                     }
                 }
             }
@@ -256,21 +289,12 @@ body.light {
                     background-color: rgba(0, 0, 0, 0.1);
                 }
 
+                .leftTabLabel {
+                    color: rgb(var(--lefttab-font-color));
+                }
+
                 svg {
-
-                    path[stroke],
-                    rect[stroke],
-                    g[stroke],
-                    line[stroke],
-                    circle[stroke],
-                    polyline[stroke] {
-                        stroke:rgb(var(--lefttab-font-color)) !important;
-                    }
-
-                    circle[fill],
-                    rect[fill] {
-                        fill: rgb(var(--lefttab-font-color))!important;
-                    }
+                    .svgTint(rgb(var(--lefttab-font-color)));
                 }
             }
         }
@@ -364,7 +388,7 @@ body.light {
 
     #files {
         background-color: rgb(var(--workplace-bg-color));
-        .teaser {
+        .filesTeaser {
             .title {
                 color: rgb(var(--tint-color));
             }
@@ -379,10 +403,6 @@ body.light {
             }
         }
         .filesFinder {
-            background-color: rgb(var(--pane-bg-color));
-            border: 1px solid rgb(var(--border-color));
-            border-radius: @borderRadiusBig;
-            box-shadow: var(--box-shadow-1);
             header{
                 #material-tabs {
                     border: none;
@@ -409,6 +429,193 @@ body.light {
                 transition: all 0.3s ease;
                 border-color:rgb(var(--tint-color));
             }
+        }
+    }
+
+    #draft {
+        background-color: rgb(var(--workplace-bg-color));
+        .draftTeaser {
+            .title {
+                color: rgb(var(--tint-color));
+            }
+        }
+        // .draftFinder chrome comes from .finderCard now (see above).
+    }
+
+    // fact-sheet grid — top-level so it works in #draft, #review, and anywhere
+    // else a factSheetGrid is used (not scoped to a single pane).
+    .factSheetGrid {
+        padding: 16px;
+    }
+    .factSheet {
+        border-color: rgb(var(--border-color));
+        background-color: rgb(var(--pane-bg-color));
+        &:hover {
+            border-color: rgb(var(--tint-color));
+            box-shadow: var(--box-shadow-1);
+        }
+        .factSheetTitle { color: rgb(var(--tint-color)); }
+        .factSheetThumb { background: rgba(var(--border-color), 0.25); }
+
+        .factSheetOverlayReview {
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            border: 2px solid transparent;
+            transition: background 0.12s, border-color 0.12s;
+            &.factSheetOverlayClickable:hover {
+                background: rgba(0,0,0,0.75);
+                border-color: rgb(var(--tint-color));
+            }
+        }
+
+        .factSheetStatusIcon {
+            background: none;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            transition: border-color 0.12s;
+            &:hover { border-color: rgb(var(--tint-color)); }
+        }
+
+        .factSheetBadgePrivate {
+            background: rgba(var(--text-color), 0.08);
+            color: rgb(var(--text-color));
+        }
+        .factSheetButtonBar { border-top-color: rgb(var(--border-color)); }
+    }
+
+    // Ghost buttons (layout/ghost_buttons.less) — colors live here so a theme
+    // can retint them in one place. Shared by card button bars, workspace
+    // tiles, and the file-list Actions column.
+    // Shared finder chrome (layout/finder.less) — card fill/border + the toolbar
+    // divider, so all finder panes (Shared Files, My Files, Workspaces) match.
+    // Retint here in one place.
+    .finderCard {
+        background-color: rgb(var(--pane-bg-color));
+        border: 1px solid rgb(var(--border-color));
+        box-shadow: var(--box-shadow-1);
+    }
+    .finderToolbar { border-bottom-color: rgb(var(--border-color)); }
+
+    .ghostButton {
+        color: rgba(var(--text-color), 0.5);
+        border-color: rgba(var(--text-color), 0.2);
+        &:hover {
+            background: rgba(var(--text-color), 0.06);
+            border-color: rgba(var(--text-color), 0.35);
+            color: rgb(var(--text-color));
+        }
+    }
+    .ghostButtonPrimary {
+        color: rgb(var(--tint-color));
+        border-color: rgba(var(--tint-color), 0.3);
+        &:hover {
+            background: rgba(var(--tint-color), 0.08);
+            border-color: rgb(var(--tint-color));
+        }
+    }
+
+    #workspaces {
+        background-color: rgb(var(--workplace-bg-color));
+        .filesTeaser {
+            .title { color: rgb(var(--tint-color)); }
+        }
+        .workspacesFinder {
+            // card chrome comes from .finderCard; toolbar from .finderToolbar.
+
+            .scopeTile {
+                border-color: rgb(var(--border-color));
+                background-color: rgb(var(--pane-bg-color));
+                &:hover { border-color: rgb(var(--tint-color)); }
+                .scopeTileName { color: rgb(var(--tint-color)); }
+            }
+
+            // member badge = neutral (members panel); admin badge = accent
+            .wsBadgeMember {
+                background: rgba(var(--text-color), 0.08);
+                color: rgb(var(--text-color));
+            }
+            .wsBadgeAdmin,
+            .scopeBadgeAdmin {
+                background: rgb(var(--tint-color));
+                color: #fff;
+            }
+
+            // roster role marks: a golden star for admins, a muted dot otherwise
+            .wsRoleAdmin { color: #e8a200; }
+            .wsRoleMember { color: rgba(var(--text-color), 0.35); }
+
+            .workspaceSidePanel {
+                border-left: 1px solid rgb(var(--border-color));
+                padding-left: @contentToEdgePadding;
+            }
+        }
+    }
+
+    #review {
+        background-color: rgb(var(--workplace-bg-color));
+        .filesTeaser {
+            .title { color: rgb(var(--tint-color)); }
+        }
+        .reviewFinder {
+            background-color: rgb(var(--pane-bg-color));
+            border: 1px solid rgb(var(--border-color));
+            border-radius: @borderRadiusBig;
+            box-shadow: var(--box-shadow-1);
+
+            .storageTable thead th { border-color: rgb(var(--border-color)); }
+            .reviewTitle { color: rgb(var(--tint-color)); }
+            .reviewDeletionBadge { background: rgb(var(--tint-color)); color: #fff; }
+
+            // ReviewFactSheet card
+            .reviewFactSheet {
+                .reviewFactSheetBadgeDeletion {
+                    background: rgb(var(--tint-color));
+                    color: #fff;
+                }
+                .reviewAuthorIcon {
+                    border: 2px solid transparent;
+                    transition: border-color 0.12s;
+                    &:hover { border-color: rgb(var(--tint-color)); }
+                }
+            }
+        }
+    }
+
+    #editor .editorHeader {
+        background-color: rgb(var(--pane-bg-color));
+        border-color: rgb(var(--border-color));
+        .editorHeaderBadge { background: rgb(var(--tint-color)); color: #fff; }
+        // red "Review Requested" attention tag on the left
+        .editorHeaderTag { background: #d64545; color: #fff; }
+        // bold instruction line = accent color
+        .editorHeaderInstruction { color: rgb(var(--tint-color)); }
+    }
+
+    // distribute dialog target picker
+    #distributeDialog {
+        .distributeTargets { border-color: rgb(var(--border-color)); }
+        .distributeTarget:hover { background-color: rgba(0, 0, 0, 0.04); }
+        .distributeImagePanel {
+            background-color: rgba(var(--text-color), 0.03);
+            box-shadow: var(--box-shadow-1);
+        }
+    }
+
+    #deleteDialog {
+        // a faint tinted disc behind the delete icon
+        .deleteDialogIcon { background-color: rgba(var(--tint-color), 0.12); }
+    }
+
+    // count badge (e.g. pending reviews on the Review tab)
+    .countBadge {
+        background: rgb(var(--tint-color));
+        color: #fff;
+        // on a tint-colored host (e.g. the active Review tab) flip to white so
+        // the number stays legible; a tint border keeps it visible elsewhere too
+        &.countBadgeOnTint {
+            background: #fff;
+            color: rgb(var(--tint-color));
+            border: 1px solid rgb(var(--tint-color));
         }
     }
 
@@ -543,24 +750,7 @@ body.light {
     svg.inlined-svg {
         color: rgb(var(--text-color));
         border-color:transparent;
-
-        circle[stroke],
-        rect[stroke],
-        line[stroke],
-        polygon[stroke],
-        ellipse[stroke],
-        polyline[stroke],
-        path[stroke],
-        g[stroke] {
-            stroke: rgb(var(--text-color))!important;
-        }
-
-        polygon[fill],
-        text[fill],
-        rect[fill],
-        circle[fill] {
-            fill: rgb(var(--text-color)) !important;
-        }
+        .svgTint(rgb(var(--text-color)));
     }
 
     .image-button {

@@ -1,0 +1,26 @@
+// editor_header — base for the bar across the top of the editor.
+// Paired with EditorHeader.js. Shared structure (filename · version) for both
+// the default and review variants; variant-specific styles live in
+// editor_header_default.less / editor_header_review.less.
+// Colors come from the theme.
+
+#editor .editorHeader {
+  padding: 8px @contentToEdgePadding;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+
+  .editorHeaderMain {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .editorHeaderName {
+    font-weight: var(--label-font-weight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .editorHeaderVersion { opacity: 0.55; white-space: nowrap; margin-left: -6px; }
+}

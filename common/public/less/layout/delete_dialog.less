@@ -1,0 +1,27 @@
+// delete_dialog — the shared-delete confirmation (paired with DeleteDialog.js).
+// A delete icon beside the title, an explain line, and an optional reason note
+// that travels to the reviewers. Colors come from the theme.
+
+#deleteDialog {
+
+  .modal-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+
+    h4 {
+      padding-bottom: 0;
+      margin: 0;
+    }
+  }
+
+  .deleteDialogIcon {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    border-radius: 50%;
+    box-sizing: content-box;
+  }
+}

@@ -1,5 +1,4 @@
 import GenericApplication from "../../common/js/Application"
-import shareDialog from "../../common/js/ShareDialog"
 import confirmDialog from "../../common/js/ConfirmDialog"
 import notFoundDialog from "../../common/js/NotFoundDialog"
 import toast from "../../common/js/toast"
@@ -7,207 +6,231 @@ import exportModePrompt from "./dialog/SelectExportMode"
 
 import Toolbar from "./Toolbar"
 import View from "./view"
-import fileSave from "./dialog/FileSave"
-import fileCreate from "./dialog/FileCreate"
 import conf from "./Configuration"
 import Document from "./model/document"
 import commandStack from "./commands/CommandStack"
 
-import storageFactory from '../../common/js/BackendStorage'
+import storageFactory from "../../common/js/storage/StorageClient"
+import SaveDialog from "../../common/js/storage/SaveDialog"
+import NewDocumentDialog from "../../common/js/storage/NewDocumentDialog"
+import PublishDialog from "../../common/js/storage/PublishDialog"
+import reviewClientFactory from "../../common/js/review/ReviewClient"
+import reviewEditorHeader from "../../common/js/editor/ReviewEditorHeader"
+import defaultEditorHeader from "../../common/js/editor/DefaultEditorHeader"
+
 let storage = storageFactory(conf)
 
-class Application extends GenericApplication{
-  /**
-   * @constructor
-   *
-   * @param {String} canvasId the id of the DOM element to use as paint container
-   */
+// currentFile is { id, name, version, editable } where id is the opaque handle
+// the sheets backend minted. All operations name the document by id; the
+// frontend never sees scope/path as request inputs.
+class Application extends GenericApplication {
+
   constructor() {
     super("sheets")
+    this.saveDialog    = new SaveDialog(storage, conf)
+    this.newDialog     = new NewDocumentDialog(storage, conf)
+    this.publishDialog = new PublishDialog(storage, conf)
   }
 
   init(permissions) {
     super.init(permissions, conf)
-    return new Promise( (resolve, reject) => {
-
+    return new Promise((resolve, reject) => {
       this.document = null
 
       this.view    = new View(this, "#editor .content", permissions)
       this.toolbar = new Toolbar(this, this.view, ".toolbar", permissions)
 
-      let user = this.getParam("user")
+      // deep-links: ?doc=<id> opens a document by its opaque handle;
+      // ?review=<uuid>&path=<docPath> loads a pending version read-only for review.
+      let doc = this.getParam("doc")
+      let review = this.getParam("review")
       let global = this.getParam("global")
-      let shared = this.getParam("shared")
-      if (user) {
-        this.load(user, "user")
-      }
-      else if (global) {
-        this.load(global, "global")
-      }
-      else if (shared) {
-        this.load(shared, "shared")
-      }
-      else{
+      let tab = this.getParam("tab")
+      if (review) {
+        this.openReview(decodeURIComponent(review))
+        this.restoreTab(tab)
+      } else if (doc) {
+        this.open(doc).then(() => this.restoreTab(tab))
+      } else if (global) {
+        // ?global=<path> opens a shared doc by name (stable, human-readable link)
+        this.openGlobal(decodeURIComponent(global)).then(() => this.restoreTab(tab))
+      } else {
         this.showWelcomeMessage("/basic/math/binary-addition.sheet")
+        this.restoreTab(tab)
       }
       resolve(this)
     })
   }
 
-
-  fileShare() {
-    let filePath = this.currentFile.name
-    let scope = this.currentFile.scope
-    return new Promise( (resolve, reject)=>{
-      if (this.hasUnsavedChanges) {
-        return app.fileSave(t("message.save_before_share")).then(resolve, reject)
-      }
-      resolve()
-    })
-    .then( ()=>{
-      return storage.shareFile(filePath,scope)
-    })
-    .then((response) => {
-      return shareDialog.show(response.data.filePath)
-    })
-    .catch (error => {
-      console.log(error)
-    })
+  // Load a pending version read-only for review and show the Approve/Reject
+  // bar. Content comes over the review BFF (version-pinned read) — pending
+  // versions are invisible to the normal open() walk-up.
+  openReview(uuid) {
+    $("#leftTabStrip .editor").click()
+    this.hideWelcomeMessage()
+    return reviewClientFactory().doc(uuid)
+      .then((doc) => {
+        let path = doc.path
+        this.currentFile = { id: null, name: path, version: doc.version, editable: false }
+        this.setDocument(new Document(doc.data), 0)
+        commandStack.markSaveLocation()
+        this.hasUnsavedChanges = false
+        const reviewUrl = new URL(window.location.href)
+        reviewUrl.searchParams.set("review", encodeURIComponent(uuid))
+        reviewUrl.searchParams.set("path", encodeURIComponent(path))
+        this.navigate({ review: uuid, path },
+          conf.application + " | " + this.currentFile.name)
+        reviewEditorHeader.show({
+          uuid,
+          onDone: () => {
+            this.fileNew()
+            $("#review_tab a").click()
+            this.reviewPane?.reload()
+          },
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        toast(t("pane.review.load_failed"))
+      })
   }
 
+  // Publish the current document as an anonymous public link.
+  fileShare() {
+    if (!this.currentFile) return Promise.resolve()
+    return this.fileSave()
+      .then(() => this.publishDialog.show(this.currentFile.id, this.currentFile.version))
+      .catch((error) => { if (error) console.log(error) })
+  }
 
-  fileCreateNew(){
-    return new Promise((resolve, reject)=>{
-      if (this.hasUnsavedChanges === true){
-         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
+  // Create a brand-new document: choose a name, then write version 1.
+  fileCreateNew() {
+    return new Promise((resolve, reject) => {
+      if (this.hasUnsavedChanges === true) {
+        return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
       }
       return resolve()
     })
-    .then(()=>{
-      this.fileNew()
-      if(this.permissions[this.objectType ].create && this.permissions[this.objectType ].update){
-        return fileCreate.show(this.currentFile, this.document)
-      }
-      return this.showLoginHint()
-    })
-    .then(()=>{
-      this.hasUnsavedChanges = false
-      toast(t("common:message.created"))
-      $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
-    })
-    .catch( (error)=>{
-      console.log(error)
-    })
+      .then(() => this.newDialog.show(conf.fileNew))
+      .then(({ name }) => {
+        this.fileNew(name)
+        return this._writeCurrent()
+      })
+      .then(() => {
+        this.hasUnsavedChanges = false
+        toast(t("common:message.created"))
+        $("#editorFileSave div").removeClass("highlight")
+        this.refreshFinders()
+      })
+      .catch((error) => { if (error) console.log(error) })
   }
 
-
-  fileNew(name, scope) {
+  // Reset to a fresh unsaved document with the given name.
+  fileNew(name) {
     $("#leftTabStrip .editor").click()
-    this.currentFile = { name: name??"MyNewDocument", scope: scope??"user" }
+    // A fresh document replaces the intro splash — otherwise the welcome
+    // overlay stays up and the new (empty) canvas looks like nothing happened.
+    this.hideWelcomeMessage()
+    this.currentFile = { id: null, name: name ?? "MyNewDocument", version: undefined, editable: true }
     this.setDocument(new Document(), 0)
     commandStack.markSaveLocation()
+    defaultEditorHeader.update(this.currentFile)
   }
 
-  fileSave(description="") {
+  fileSave() {
+    // A document opened for review is read-only — never save it (that would fork
+    // a pending version into the reviewer's personal workspace).
+    if (this.currentFile && this.currentFile.editable === false) {
+      return Promise.resolve()
+    }
     this.view.onCommitEdit()
-    return new Promise((resolve, reject) => { 
-      // if the user didn't has the access to write "global" files, the scope of the file is changed
-      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
-      //
-      if(this.permissions[this.objectType].global.update===false){
-        this.currentFile.scope = "user"
-      }
-  
-      if (this.permissions[this.objectType].create && this.permissions[this.objectType].update) {
-        // allow the user to enter/change the file name....
-        return fileSave.show(this.currentFile, this.document, description).then(resolve, reject)
-      }
-      reject(new Error("No permission to save files"))
-    })
-    .then(()=>{
-      this.hasUnsavedChanges = false
-      toast(t("common:message.saved"))
-      $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
-    })
-    .catch( err => {
-      console.log(err)
-    })
+    if (!this.currentFile) {
+      return this.fileCreateNew()
+    }
+    return this.saveDialog.show(this.currentFile)
+      .then(({ name }) => {
+        this.currentFile.name = name
+        return this._writeCurrent()
+      })
+      .then(() => {
+        this.hasUnsavedChanges = false
+        toast(t("common:message.saved"))
+        $("#editorFileSave div").removeClass("highlight")
+        this.refreshFinders()
+        defaultEditorHeader.update(this.currentFile)
+      })
+      .catch((err) => { if (err) console.log(err) })
+  }
+
+  // Serialize the document and save it. A null id creates a new document;
+  // otherwise it writes a new version. The backend returns the (new) handle.
+  _writeCurrent() {
+    this.view.onCommitEdit()
+    let content = this.document.toJSON()
+    return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content })
+      .then((res) => {
+        this.currentFile.id = res.id
+        this.currentFile.version = res.version
+        if (res.path) this.currentFile.name = res.path
+        this.navigate({ doc: res.id },
+          conf.application + " | " + this.currentFile.name)
+        return res
+      })
   }
 
   onPDFExport() {
-    let file = this.currentFile
+    if (!this.currentFile) return Promise.resolve()
     Promise.resolve()
       .then(() => {
-        if( !((file.scope==="global" && this.permissions[this.objectType].global.update === true) ||
-            (file.scope==="user"   && this.permissions[this.objectType].update === true ))){
-              throw new Error("no permission to export")
+        if (this.hasUnsavedChanges) {
+          return this.fileSave()
         }
         return true
       })
       .then(() => {
-        if(this.hasUnsavedChanges){
-          return this.fileSave(t("message.save_before_pdf"))
-        }
-        return true
-      })
-      .then(() => {
-        if(this.getDocument().hasLearningContent()){
+        if (this.getDocument().hasLearningContent()) {
           return exportModePrompt.show()
         }
         return "worksheet"
       })
       .then((mode) => {
-        if(file.scope === "global"){
-          return {scope: "global", file: file.name, mode: mode}
-        }
-        return storage.shareFile(file.name, file.scope).then( (response)=>{
-          return {scope: "sha", file: response.data.filePath, mode: mode}
-        })
+        // The PDF endpoint publishes the doc (login-free public render) itself,
+        // keyed by the opaque handle.
+        window.open(`../sheets/pdf?id=${encodeURIComponent(this.currentFile.id)}&mode=${mode}`, "_blank")
       })
-      .then(({scope, file, mode}) => {        
-        window.open(`../sheets/pdf?${scope}=${file}&mode=${mode}`, "_blank")
-      })
-      .catch((error)=>{
-        console.log(error)
-      })
+      .catch((error) => { if (error) console.log(error) })
   }
 
-  load(name, scope){
-    let url = conf.backend[scope].get(name)
+  open(id, version) {
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
-    return storage.loadUrl(url)
-      .then((content) => {
-        this.currentFile = { name, scope}
-        this.setDocument(new Document(content),0)
+    return storage.open(id, version)
+      .then((doc) => {
+        this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable }
+        this.setDocument(new Document(doc.content), 0)
         commandStack.markSaveLocation()
-        return content
+        defaultEditorHeader.update(this.currentFile)
+        return doc
       })
-      .then( ()=>{
-        history.pushState({
-          id: 'editor',
-          scope: scope,
-          file: name
-        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      .then(() => {
+        this.navigate({ doc: id },
+          conf.application + " | " + (this.currentFile ? this.currentFile.name : ""))
       })
-      .catch( error => {
+      .catch((error) => {
         console.log(error)
-        notFoundDialog.show(name)
+        notFoundDialog.show(id)
       })
   }
 
-  setDocument(document, pageIndex){
+  setDocument(document, pageIndex) {
     this.document = document
     // the "setDocument" is used by the CommandStack for undo/redo
     // therefore a "markSaveLocation" is a bad idea in this method
-    // commandStack.markSaveLocation()
     this.view.onCancelEdit()
     this.view.setPage(this.document.get(pageIndex || 0))
   }
 
-  getDocument(){
+  getDocument() {
     return this.document
   }
 }

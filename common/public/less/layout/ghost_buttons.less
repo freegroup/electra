@@ -1,0 +1,19 @@
+// ghost_buttons — the app's shared "ghost" button: transparent until hovered,
+// then a faint fill + border. Used in the card button bars (FileFactSheet),
+// the workspace tiles, and the file-list "Actions" column, so it lives here
+// unscoped rather than nested inside any one component.
+//
+// Structure only — the colors live in each theme file (search ".ghostButton"
+// there to retint in one place).
+
+.ghostButton {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 11px;
+  padding: 3px 8px;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+  white-space: nowrap;
+}

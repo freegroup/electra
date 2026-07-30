@@ -125,12 +125,15 @@ export default class Toolbar {
       }  
     }
 
-    if(this.app.hasModifyPermissionForCurrentFile()){
+    // Scope model: the only client-side distinction left is logged-in vs not.
+    // Anonymous users may read but not write (server enforces it too), so the
+    // create/save/pdf actions show only when the user has write permission.
+    // Everything finer (which group, promote) is governed server-side.
+    if (this.permissions[this.app.objectType].create || this.permissions[this.app.objectType].update) {
       this.pdfButton.show()
       this.saveButton.show()
       this.createFileButton.show()
-    }
-    else{
+    } else {
       this.pdfButton.hide()
       this.saveButton.hide()
       this.createFileButton.hide()

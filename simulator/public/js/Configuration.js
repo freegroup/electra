@@ -4,6 +4,13 @@ export default {
   fileNew: "NewCircuit",
   application: "simulator",
 
+  // Generic Finder API served by the app's own backend (brains). The frontend
+  // never talks to /database — brains is the intelligent layer.
+  database: {
+    base: "../brains",
+    fileSuffix: ".brain"
+  },
+
   backend: {
 
     shared: {

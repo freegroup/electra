@@ -1,62 +1,210 @@
 {
-  "app":{
-	"name": "Author",
-	"icon": "../common/images/app_author.svg",
+  "app": {
+    "name": "Author",
+    "icon": "../common/images/app_author.svg",
     "loading": "Loading the <i>Electra.Author</i>...",
     "title": "Documentation Author",
     "slogan": "Create exciting educational content using Electra Academy.",
     "description": "With Documentation Author, you can easily create and share documents, worksheets, and course materials online. You can add circuits, math formulas, cloze, pictures, and more to your documents, making them more engaging and informative. Sharing your work with others has never been easier.<br><br><b>I hope you'll give it a try!</b>"
-	},
-	"button" :{
-		"create_folder": "New Folder",
-		"create_file": "New Document",
-		"add_text": "Text",
-		"add_brain": "Circuit",
-		"add_cloze": "Cloze",
-		"add_flashcard": "Flashcard",
-		"add_image": "Image",
-		"add_timing": "Timing Diagram",
-		"new_document": "New Document",
-		"open_example": "Open Example",
-		"add_chapter": "Add Chapter",
-		"paste_chapter": "Paste Chapter"
-	},
-	"editor": {
-		"empty": {
-			"header":"Welcome to your new page!",
-			"description":"Start by adding your first content to make it feel more alive in here!"
-		},
-		"image": {
-			"dragdrop":"Drag & Drop image or click to upload"
-		}
-	},
-	"dialog":{
-		"add_chapter": "Add new Chapter",
-		"create": "Create new Docment",
-		"share": "Share worksheet with other",
-		"save": "Save Document",
-		"add_folder": "Neuen Ordner anlegen"
-	},
-    "pane": {
-		"files": {
-            "title": "Document Library",
-			"title_your": "Your Documents",
-			"title_global": "Public Documents"
-		}
-	},
-	"label": {
-		"chapter": "Chapter",
-		"name": "Name"
-	},
-	"message": {
-		"chapter_to_clipboard": "Chapter copied to clipboard",
-		"section_to_clipboard": "Section copied to clipboard",
-		"save_before_share": "File must be saved before you can share it",
-		"save_before_pdf": "File must be saved before you can save it as PDF",
-		"contains_learning": "This page contains learning material which ends later in two documents: a worksheet and a solution paper."
-	},
-	"error": {
-		"clipboard_not_page": "Clipboard data is not an electra.academy page",
-		"copy_before_paste": "You can only paste chapter into this document if you have previously \ncopied it to the clipboard using this 'copy' button"
-	}
+  },
+  "button": {
+    "create_folder": "New Folder",
+    "create_file": "New Document",
+    "add_text": "Text",
+    "add_brain": "Circuit",
+    "add_cloze": "Cloze",
+    "add_flashcard": "Flashcard",
+    "add_image": "Image",
+    "add_timing": "Timing Diagram",
+    "new_document": "New Document",
+    "open_example": "Open Example",
+    "add_chapter": "Add Chapter",
+    "paste_chapter": "Paste Chapter",
+    "revert": "Revert",
+    "promote": "Promote",
+    "open_draft": "Open my copy",
+    "open_original": "Open original",
+    "distribute": "Distribute",
+    "request_delete": "Request Deletion"
+  },
+  "editor": {
+    "empty": {
+      "header": "Welcome to your new page!",
+      "description": "Start by adding your first content to make it feel more alive in here!"
+    },
+    "image": {
+      "dragdrop": "Drag & Drop image or click to upload"
+    }
+  },
+  "dialog": {
+    "add_chapter": "Add new Chapter",
+    "create": "Create new Docment",
+    "share": "Share worksheet with other",
+    "save": "Save Document",
+    "add_folder": "Neuen Ordner anlegen",
+    "new_document": "New Document",
+    "promote_explain": "Make your version the one your group uses? Everyone who gets this document from your group will then see your changes.",
+    "promote_description_label": "Note for the reviewers (optional) - what changed and why?",
+    "revert_explain": "Throw away your changes and show the group's version again? This can't be undone.",
+    "delete_explain": "Delete this document? There's no group version to fall back to, so this can't be undone.",
+    "delete_shared_explain": "Delete this document for the whole group? It disappears for everyone here, and this can't be undone.",
+    "delete_shared_request_explain": "Ask to delete this document? Your group's reviewers have to approve it before it's removed for everyone.",
+    "delete_description_label": "Reason for deletion (optional)",
+    "open_conflict": "Open which version?",
+    "open_conflict_explain": "You have a personal copy of this document. Open your own copy, or the group's version?",
+    "distribute_explain": "Send your version to other workspaces you're in. If a workspace uses review, it's checked there first. Otherwise everyone in that workspace (and the ones under it) sees it right away.",
+    "distribute_title": "Select workspaces to distribute to",
+    "distribute_description_label": "Note for the reviewers (optional)",
+    "distribute_empty": "You are not a member of any other workspace to distribute to yet."
+  },
+  "nav": {
+    "editor": "Editor",
+    "draft": "My Files",
+    "files": "Shared Files",
+    "workspaces": "Workspaces",
+    "review": "Review",
+    "activity": "Activity",
+    "help": "Help"
+  },
+  "pane": {
+    "activity": {
+      "title": "Activity",
+      "intro": "What's happening across your workspaces: how your drafts turned out, reviews waiting for you, and your own actions.",
+      "empty": "No activity yet.",
+      "event": {
+        "review_requested": "{{actor}} asks you to review <b>{{subject}}</b> in {{scope}}",
+        "i_submitted": "You submitted <b>{{subject}}</b> for review in {{scope}}",
+        "delete_requested": "{{actor}} asks you to review the deletion of <b>{{subject}}</b> in {{scope}}",
+        "i_delete_requested": "You requested deletion of <b>{{subject}}</b> in {{scope}}",
+        "deleted": "<b>{{subject}}</b> was deleted in {{scope}}",
+        "i_withdrew": "You withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "committed": "<b>{{subject}}</b> is now live in {{scope}}",
+        "rejected": "<b>{{subject}}</b> was rejected: {{reason}}",
+        "withdrawn": "{{actor}} withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "i_approved": "You approved <b>{{subject}}</b> in {{scope}}",
+        "i_accepted": "You accepted <b>{{subject}}</b> in {{scope}}",
+        "i_rejected": "You rejected <b>{{subject}}</b> in {{scope}}",
+        "member_added": "{{actor}} added you to {{scope}}"
+      }
+    },
+    "review": {
+      "title": "Review",
+      "intro": "Documents waiting for your approval. Your vote is worth the review points your workspace admin gave you. Once enough points add up, the document goes live. A single reject stops it.",
+      "col_doc": "Document",
+      "col_workspace": "Workspace",
+      "col_author": "Author",
+      "col_score": "Points",
+      "open": "Open",
+      "approve": "Approve",
+      "reject": "Reject",
+      "voted": "voted",
+      "empty": "No reviews waiting",
+      "deletion": "deletion",
+      "deletion_notice": "This document is up for deletion. Approving removes it for everyone here.",
+      "my_points_hint": "Your vote adds this many points",
+      "approved_committed": "Approved - document committed",
+      "approved_pending": "Vote counted - more approvals needed",
+      "rejected": "Rejected",
+      "withdraw": "Withdraw",
+      "withdraw_explain": "Withdraw this request? It will be removed as if you never submitted it.",
+      "withdrawn": "Request withdrawn",
+      "reject_reason": "Reason (optional)",
+      "badge": "Review",
+      "back": "Back",
+      "not_open": "This review is no longer open",
+      "score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
+      "load_failed": "Could not load the review document",
+      "no_change_comment": "No note - the author didn't say what changed.",
+      "change_comment_title": "Change Comment",
+      "change_comment_intro": "{{author}} submitted «{{doc}}» for review.",
+      "reject_explain": "Rejecting closes this request right away. The author has to make changes and submit it again.",
+      "accept": "Accept",
+      "accept_explain": "As an admin, you can approve this right now and skip the usual review. Continue?",
+      "instruction_reviewer": "The author is asking for your approval. Once enough people accept it, it goes live for everyone in the workspace.",
+      "instruction_admin": "As an admin of this workspace, you can accept it immediately.",
+      "instruction_voted": "Thanks, you've already approved this. Once enough people do, it goes live.",
+      "requested": "Review Requested"
+    },
+    "workspaces": {
+      "title": "Workspaces",
+      "intro": "A workspace is a shared space for a <b>team or class</b>. Add the people who belong, and everything you <b>promote</b> reaches only them. Members work inside it, admins manage the people and the review settings, and reviewers hold the points that approve changes. With <b>review</b> on, changes get checked before your team sees them. Workspaces nest <b>hierarchically</b>, from a single group up to a whole organization. Open one to explore, or create your own and invite others.",
+      "root": "My Workspaces",
+      "personal": "Personal",
+      "create": "New Workspace",
+      "create_needs_parent": "Open a workspace first, then create a sub-workspace inside it.",
+      "name_label": "Workspace name",
+      "created": "Workspace created",
+      "rename": "Rename workspace",
+      "renamed": "Workspace renamed",
+      "empty": "No sub-workspaces here yet.",
+      "members": "Members",
+      "add_member": "Add member",
+      "member_label": "Member email",
+      "member_added": "Member added",
+      "member_count": "{{count}} members",
+      "member_count_one": "{{count}} member",
+      "remove_member": "Remove member",
+      "remove_member_explain": "Remove {{person}} from this workspace?",
+      "member_removed": "Member removed",
+      "review_settings": "Review",
+      "required_score": "Required points: {{count}}",
+      "required_score_hint": "How many approval points a document needs before it goes live here. 0 = no review.",
+      "edit_required_score": "Change required review points",
+      "required_score_label": "Points (0 = no review)",
+      "required_score_saved": "Threshold saved",
+      "role_admin": "admin",
+      "role_member": "member",
+      "description_label": "Description",
+      "description_empty": "No description yet.",
+      "edit_description": "Edit description",
+      "info_settings": "Info"
+    },
+    "draft": {
+      "title": "My Files",
+      "intro": "Your own documents live here: your private ones, and your copy of any shared document you've changed. Only you can see them. Want to share your version? <b>Promote</b> it to make it your group's version, or <b>Distribute</b> it to other workspaces you're in. If a workspace uses review, your version is checked there before it goes live.",
+      "review_points": "Review Points",
+      "review_points_explain": "{{have}} of {{need}} approval points so far. Once it reaches {{need}}, your version goes live for the group.",
+      "kind_personal": "Private",
+      "kind_personal_explain": "This document lives only in your personal space. Nobody else can see it.",
+      "kind_personal_copy": "Personal Copy",
+      "kind_personal_copy_explain": "This is your own copy of a shared document. Promote it to send your changes for review. Once approved, they become your group's version."
+    },
+    "files": {
+      "title": "Shared Files",
+      "intro": "All the documents your groups share with you. Open one to use it. When you edit and save, you get your own copy (in <b>My Files</b>) and the original stays untouched.",
+      "title_your": "Your Documents",
+      "title_global": "Public Documents",
+      "col_name": "Name",
+      "col_version": "Version",
+      "col_draft": "My copy",
+      "col_provider": "Workspace",
+      "col_actions": "Actions",
+      "has_draft": "personal copy",
+      "my_copy": "personal copy",
+      "personal": "personal",
+      "empty": "No documents here yet.",
+      "filter": "Search…",
+      "root": "Library",
+      "count": "{{n}} items"
+    }
+  },
+  "label": {
+    "chapter": "Chapter",
+    "name": "Name"
+  },
+  "message": {
+    "chapter_to_clipboard": "Chapter copied to clipboard",
+    "section_to_clipboard": "Section copied to clipboard",
+    "contains_learning": "This page contains learning material which ends later in two documents: a worksheet and a solution paper.",
+    "promoted": "Promoted to the group's version",
+    "pending_review": "Sent for review",
+    "reverted": "Personal changes discarded",
+    "deleted": "Deleted",
+    "delete_requested": "Deletion sent for review",
+    "distributed": "Sent to {{total}} workspace(s) - {{live}} live, {{review}} in review."
+  },
+  "error": {
+    "clipboard_not_page": "Clipboard data is not an electra.academy page",
+    "copy_before_paste": "You can only paste chapter into this document if you have previously \ncopied it to the clipboard using this 'copy' button"
+  }
 }

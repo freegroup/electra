@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Document Explorer</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">Document Explorer</span>
+    <span class="hint">local testing &amp; admin tool</span>
+    <label class="persona-label">acting as
+      <select id="persona"></select>
+    </label>
+    <label class="persona-label">role
+      <select id="role">
+        <option value="user">user</option>
+        <option value="admin">admin</option>
+        <option value="anonym">anonym</option>
+      </select>
+    </label>
+    <input id="persona-new" placeholder="+ add/name persona, Enter" title="Adds a persona you can act as, and labels its hash in the tree" />
+    <button id="reload-tree" title="Reload the whole tree">↻ reload</button>
+    <span id="db-status" class="status">DB: …</span>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: god-view tree; right-click / ⋯ for scope + document actions -->
+    <section class="tree-pane">
+      <div class="pane-title">Scope tree <span class="pane-sub">(right-click a node for actions)</span></div>
+      <div id="tree" class="tree"></div>
+    </section>
+
+    <!-- RIGHT: node-typed detail view -->
+    <section class="doc-pane">
+      <div class="card">
+        <div id="detail-head" class="card-head">Detail</div>
+        <div id="detail-toolbar" class="detail-toolbar"></div>
+        <div id="detail" class="card-body detail"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">Activity <button id="clear-log" class="link">clear</button></div>
+        <div id="log" class="log card-body"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/detail.js"></script>
+  <script src="js/tree.js"></script>
+  <script src="js/doc.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -38,7 +38,7 @@ class Dialog {
     })
 
     $("#welcomeOpenExample").on("click", ()=>{
-      app.load(exampleDocument, "global")
+      app.openGlobal(exampleDocument)
       this.hide()
     })
   }

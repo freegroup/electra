@@ -1,8 +1,5 @@
 import webUSBHelpDialog from "./dialog/WebUSBHelpDialog"
 
-import conf from "./Configuration"
-let storage = require('../../common/js/BackendStorage').default(conf)
-
 
 export default class Toolbar {
 

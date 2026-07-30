@@ -44,7 +44,12 @@ app.use(helmet.ieNoOpen());
 app.use(helmet.noSniff());
 app.use(helmet.originAgentCluster());
 app.use(helmet.permittedCrossDomainPolicies());
-app.use(helmet.referrerPolicy());
+// Google's GSI button endpoint refuses (400) when the browser sends no
+// referrer at all — it needs at least the origin to validate the
+// authorized-JavaScript-origins allow-list of the OAuth client. helmet's
+// default is 'no-referrer', which breaks this. Use the OWASP-recommended
+// value that still hides the path but keeps the origin visible.
+app.use(helmet.referrerPolicy({ policy: 'strict-origin-when-cross-origin' }));
 app.use(helmet.xssFilter());
 
 
@@ -67,6 +72,24 @@ const PORT_GAME = process.env.PORT_GAME || die("missing env variable PORT_GAME")
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
+
+// Backends that want a heads-up when a user logs in. Each hook receives the
+// user's identity headers (x-mail/x-role) and resolves the person itself — the
+// ingress never hashes. Fire-and-forget: login must never block on these.
+// Add more backends here as one-liners.
+const ON_LOGIN_HOOKS = [
+    { url: `${API_SERVICE_URL}:${process.env.PORT_DATABASE}/database/on_login` },
+];
+
+function fireOnLogin(session){
+    const role = session.email === "openjacob@gmail.com" ? "admin" : "user";
+    for (const hook of ON_LOGIN_HOOKS) {
+        fetch(hook.url, {
+            method: "POST",
+            headers: { "x-mail": session.email, "x-role": role },
+        }).catch(err => console.log(`on_login hook failed for ${hook.url}:`, err.message));
+    }
+}
 
 let sessionMiddleware = session({
     secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
@@ -145,8 +168,8 @@ app.use(sessionMiddleware);
 // redirect to a non-www domain
 // https://www.electra.academy => https://electra.academy
 //
-app.get ('/*', function (req, res, next){
-  if (req.headers.host.match(/^www\./) ) {
+app.use(function (req, res, next){
+  if (req.headers.host && req.headers.host.match(/^www\./) ) {
     res.redirect( '//' + req.headers.host.substring(4) + req.url)
   }
   else {
@@ -159,117 +182,74 @@ app.get ('/*', function (req, res, next){
 app.use('/.well-known/acme-challenge', express.static(scriptPath+'/../public/.well-known/acme-challenge'));
 
 
-app.use('/home', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_HOME,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
+// Express 5 strips the mount prefix from req.url before the handler runs, so
+// app.use('/mount', proxy) forwards '/' instead of '/mount/...'. Downstream
+// services mount their routes under /brains, /database, ... and need the full
+// path, so we re-prepend the mount prefix via pathRewrite.
+function prefixed(mount, port) {
+    return createProxyMiddleware({
+        target: API_SERVICE_URL + ":" + port,
+        changeOrigin: true,
+        pathRewrite: (path) => mount + path,
+        on: { proxyReq: onProxyReq }
+    })
+}
 
-app.use('/legal', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_LEGAL,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
+// Canonical trailing slash for top-level document navigations. A frontend app
+// reached as "/simulator" (no slash) makes the browser resolve the page's
+// relative asset paths (./images/…, ./js/…) against the PARENT, and it derives
+// the Google OAuth redirect_uri from window.location.pathname — both need the
+// trailing slash. The proxy is the only place that sees the ORIGINAL browser
+// URL (pathRewrite later appends the slash before forwarding, hiding it from
+// the backend), so the redirect has to live here.
+//
+// This is generic proxy behaviour, not app knowledge: redirect a bare
+// single-segment path (no dot, no deeper path) ONLY when the browser is
+// navigating to it as a top-level document (Sec-Fetch-Dest: document). Every
+// modern browser sets that header on page loads; API/XHR calls (fetch → the
+// single-segment /permissions, /userinfo, and all deeper paths) carry a
+// non-document value, and a missing header (non-browser client) is left alone
+// too — redirecting an XHR/POST could degrade it to GET.
+app.use((req, res, next) => {
+    const isDocument = req.headers['sec-fetch-dest'] === 'document'
+    const bareMount = /^\/[^/.]+$/.test(req.path) // "/simulator", not "/a/b" or "/x.js"
+    if (isDocument && bareMount) {
+        const query = req.originalUrl.slice(req.path.length) // preserve ?…
+        return res.redirect(301, req.path + '/' + query)
+    }
+    next()
+})
 
-app.use('/gallery', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_GALLERY,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/gamification', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_GAMIFICATION,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/userinfo', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_USERINFO,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/designer', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_DESIGNER,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/author', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_AUTHOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/sheets', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SHEETS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/brains', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_BRAINS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/shapes', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SHAPES,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/simulator', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/circuit', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_SIMULATOR,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-app.use('/common', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_COMMON,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
-
-// Proxy endpoints
-app.use('/permissions', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_PERMISSIONS,
-    changeOrigin: true,
-    pathRewrite: {},
-    onProxyReq: onProxyReq
-}));
+app.use('/home',         prefixed('/home',         PORT_HOME))
+app.use('/legal',        prefixed('/legal',        PORT_LEGAL))
+app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
+app.use('/gamification', prefixed('/gamification', PORT_GAMIFICATION))
+app.use('/userinfo',     prefixed('/userinfo',     PORT_USERINFO))
+app.use('/designer',     prefixed('/designer',     PORT_DESIGNER))
+app.use('/author',       prefixed('/author',       PORT_AUTHOR))
+app.use('/sheets',       prefixed('/sheets',       PORT_SHEETS))
+app.use('/brains',       prefixed('/brains',       PORT_BRAINS))
+// NOTE: the `database` service is intentionally NOT proxied here. It is the
+// internal, localhost-only scope/document store. Browser callers reach it only
+// through app backends (brains/sheets front their own docs, incl. public-read
+// and render-token) and the userinfo account BFF (/userinfo/workspaces). The
+// database admin explorer (database/admin, PORT_DB_ADMIN) is likewise not
+// exposed. Reach either via localhost or an SSH tunnel.
+app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
+app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
+app.use('/common',       prefixed('/common',       PORT_COMMON))
+app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
 app.use('/game', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_GAME,
     changeOrigin: true,
-    pathRewrite: {},
-    ws: true, 
-    onProxyReq: onProxyReq,
-    onProxyRes: onProxyRes
-}));
+    ws: true,
+    on: { proxyReq: onProxyReq, proxyRes: onProxyRes }
+}))
 
 
 // Google auth endpoints
-app.use('/oauth/callback/:componentUri?', async function(req, res) {
+app.use('/oauth/callback{/:componentUri}', async function(req, res) {
     try {
         console.log("authenticate called..")
         const csrfTokenCookie = req.cookies['g_csrf_token'];
@@ -299,7 +279,13 @@ app.use('/oauth/callback/:componentUri?', async function(req, res) {
         req.session.name = payload.name
         req.session.familyName = payload.family_name
         req.session.givenName = payload.given_name
-        return res.redirect(`${req.protocol}://${req.headers.host}/${componentUri}/`)
+        // Notify backends (database, …) so the user is enrolled into bootstrap
+        // scopes. Fire-and-forget — never block the redirect on it.
+        fireOnLogin(req.session)
+        // componentUri may be empty (login from the home page) — redirect to
+        // the site root in that case, not to '//'.
+        const target = componentUri ? `/${componentUri}/` : "/"
+        return res.redirect(`${req.protocol}://${req.headers.host}${target}`)
     }
     catch( error ){
         console.log(error)
@@ -312,7 +298,7 @@ app.use('/', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
     changeOrigin: true,
     pathRewrite: {},
-    onProxyReq: onProxyReq
+    on: { proxyReq: onProxyReq }
 }))
 
 //then, after all proxys

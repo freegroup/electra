@@ -29,23 +29,35 @@ function getParam(name) {
 
 $(window).load(function () {
   let containerId = "#authorContent"
+  // Preferred: a short-lived render token (login-free read of one version) used
+  // by the preview/PDF renderer. ?public= is a published doc. Legacy
+  // ?sha=/?global= kept as fallback for old links.
+  let rtoken = getParam("rtoken")
+  let pub = getParam("public")
   let sha = getParam("sha")
   let global = getParam("global")
   let mode = getParam("mode") ?? renderMode.WORKSHEET
 
-  let url = `../sheets/`
-  
-  if(sha){
-    url = url +`shared/get?sha=${sha}`
-  }
-  else if(global){
-    url = url +`global/get?filePath=${global}`
+  let url
+  if (rtoken) {
+    // render-token read via the sheets backend (the ingress no longer exposes
+    // /database). This page is loaded by puppeteer on localhost.
+    url = `../sheets/render?token=${encodeURIComponent(rtoken)}`
+  } else if (pub) {
+    url = `../sheets/public/${pub}`
+  } else if (sha) {
+    url = `../sheets/shared/get?sha=${sha}`
+  } else if (global) {
+    url = `../sheets/global/get?filePath=${global}`
   }
 
   axios.get(url)
     .then((response => {
       $(containerId).html("")
-      let pages = response.data.pages
+      // Public read wraps the doc as { data, meta, ... }; legacy returned the
+      // doc object directly. Accept both.
+      let doc = response.data && response.data.data ? response.data.data : response.data
+      let pages = doc.pages
       pages.forEach( (page, index) => {
         let container = $("<div class='authorPage'></div>")
         $(containerId).append(container)

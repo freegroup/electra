@@ -2,22 +2,7 @@
   overflow-y: scroll;
   padding: 40px;
 
-  .filesTeaser {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height:70px;
-
-    .title {
-      font-weight: var(--label-font-weight);
-      font-size: 3vw;
-      white-space: nowrap;
-    }
-    img, svg {
-        padding-right: 40px;
-        height: 100%;
-    }
-  }
+  // Header is the shared ScreenHeader — see layout/screen_header.less.
 
   .deleteIcon {
     position: absolute;
@@ -138,5 +123,143 @@
     transition: all 0.3s ease;
     border-width: 0 0 3px 0;
     border-style: solid;
+  }
+
+  // New scope-model finder (StorageScreen): a "+ New" header and a two-column
+  // Name | Provided-by table listing everything visible under the app root.
+  .filesFinder {
+    // Toolbar chrome is shared — see layout/finder.less (.finderToolbar); the
+    // breadcrumb and the search box sit inline in the toolbar's left group.
+
+    // Filter with a clear (×) button that appears once there is text.
+    .filesFilter {
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .filesFilterInput {
+      width: 390px;
+      height: @buttonHeight;
+      padding: 0 30px 0 12px;
+      border: 1px solid rgb(var(--border-color));
+      border-radius: @borderRadiusSmall;
+      background: rgb(var(--input-bg-color));
+      color: rgb(var(--input-color));
+      &:focus {
+        outline: none;
+        border-color: rgb(var(--tint-color));
+      }
+    }
+    .filesFilterClear {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 6px;
+      opacity: 0.5;
+      color: rgb(var(--text-color));
+      &:hover { opacity: 1; }
+    }
+    .filesFilter.hasText .filesFilterClear {
+      display: block;
+    }
+
+    // Breadcrumb — its own row directly above the filter. Hidden while
+    // searching (renderBreadcrumb).
+    .filesBreadcrumb {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 15px;
+
+      .filesCrumb {
+        &.filesCrumbLink {
+          cursor: pointer;
+          color: rgb(var(--tint-color));
+          text-decoration: underline;
+          &:hover { text-decoration: none; }
+        }
+        &.filesCrumbCurrent { font-weight: var(--label-font-weight); }
+      }
+      .filesCrumbSep { opacity: 0.4; }
+    }
+
+    .storageTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead th {
+        text-align: left;
+        font-weight: var(--label-font-weight);
+        text-transform: uppercase;
+        font-size: var(--label-font-size);
+        padding: 10px @contentToEdgePadding;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        opacity: 0.6;
+
+        &.colActions { text-align: right; }
+      }
+
+      .storageRow {
+        cursor: pointer;
+
+        td {
+          padding: 10px @contentToEdgePadding;
+          vertical-align: middle;
+        }
+
+        .storageThumb {
+          width: 32px;
+          height: 32px;
+          object-fit: contain;
+          vertical-align: middle;
+          margin-right: 12px;
+        }
+
+        .storageTitle {
+          font-size: 16px;
+        }
+
+        .colProvider {
+          .providerScope { opacity: 0.75; }
+          .providerVersion { margin-left: 8px; opacity: 0.5; }
+          .providerMine {
+            margin-left: 8px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            background: var(--electra-primary, #e91e63);
+            color: #fff;
+          }
+        }
+
+        .colActions {
+          text-align: right;
+          white-space: nowrap;
+
+          button {
+            margin-left: 8px;
+          }
+        }
+
+        &:hover .storageTitle {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .fileListEmpty {
+      padding: 20px @contentToEdgePadding;
+      opacity: 0.6;
+    }
   }
 }

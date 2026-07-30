@@ -1,62 +1,210 @@
 {
-	"app":{
-		"name": "Author",
-		"icon": "../common/images/app_author.svg",
-		"loading": "Lade den <i>Electra.Autor</i>...",
-		"title": "Dokumentation Author",
-		"slogan": "Erstellen Sie inspirierende Bildungsinhalte mit Electra Academy.",
-		"description": "Mit der Dokumentations-Author können Sie einfach Dokumente, Arbeitsblätter und Kursmaterialien online erstellen und teilen. Sie können Schaltkreise, mathematische Formeln, Lückentexte, Bilder und vieles mehr zu Ihren Dokumenten hinzufügen, um sie ansprechender und informativer zu gestalten. Das Teilen Ihrer Arbeit mit anderen war noch nie einfacher.<br><br><b>Probier's aus - es wird dich begeistern!</b>"
-	},
-	"button" :{
-		"create_folder": "Neuer Ordner",
-		"create_file": "Neues Dokument",
-		"add_text": "Text",
-		"add_brain": "Schaltung",
-		"add_cloze": "Lückentext",
-		"add_flashcard": "Lernkarte",
-		"add_image": "Bild",
-		"add_timing": "Pulsdiagramm",
-		"new_document": "Neues Dokument",
-		"open_example": "Beispiel öffnen",
-		"add_chapter": "Neues Kapitel",
-		"paste_chapter": "Kapitel einfügen"
-	},
-	"editor": {
-		"empty": {
-			"header":"Willkommen zu deiner neu erstellten Seite!",
-			"description":"Beginne damit diese mit Leben zu füllen, indem Du die gewünschten Inhalte auswählst."
-		},
-		"image": {
-			"dragdrop":"Bilder hochladen indem diese hier abgelegt werden oder mit einem klick lokale Bilder auswählen"
-		}
-	},
-	"dialog":{
-		"add_chapter": "Neues Kapitel anlegen",
-		"create": "Neues Dokument anlegen",
-		"share": "Arbeitsblatt mit anderen teilen",
-		"save": "Dokument speichern",
-		"add_folder": "Neuen Ordner anlegen"
-	},
-	"pane": {
-		"files": {
-			"title": "Gespeicherte Dokumente",
-			"title_your": "Deine Dokumente",
-			"title_global": "Allgemein"
-		}
-	},
-	"label": {
-		"chapter": "Kapitel",
-		"name": "Name"
-	},
-	"message": {
-		"chapter_to_clipboard": "Kapitel in die Zwischenablage kopiert",
-		"section_to_clipboard": "Abschnitt in die Zwischenablage kopiert",
-		"save_before_share": "Dokument must gespeichert werden bevor Du es teilen kannst",
-		"save_before_pdf": "Dokument must gespeichert werden bevor Du es als PDF speichern kannst",
-		"contains_learning": "Die Seite enthält Frageabschnitte. Der PDF Export enthält somit ein Lösungsdokument und einer Aufgabendokument"
-	},
-	"error": {
-		"clipboard_not_page": "Zwischenablage enthält keine Electra.Academy Seite",
-		"copy_before_paste": "Du kannst nur ein Kapitel in das Dokument über die Zwischenableage \neinfügen, wenn Du es zuvor hiermit kopiert hast."
-	}
+  "app": {
+    "name": "Author",
+    "icon": "../common/images/app_author.svg",
+    "loading": "Lade den <i>Electra.Autor</i>...",
+    "title": "Dokumentation Author",
+    "slogan": "Erstellen Sie inspirierende Bildungsinhalte mit Electra Academy.",
+    "description": "Mit der Dokumentations-Author können Sie einfach Dokumente, Arbeitsblätter und Kursmaterialien online erstellen und teilen. Sie können Schaltkreise, mathematische Formeln, Lückentexte, Bilder und vieles mehr zu Ihren Dokumenten hinzufügen, um sie ansprechender und informativer zu gestalten. Das Teilen Ihrer Arbeit mit anderen war noch nie einfacher.<br><br><b>Probier's aus - es wird dich begeistern!</b>"
+  },
+  "button": {
+    "create_folder": "Neuer Ordner",
+    "create_file": "Neues Dokument",
+    "add_text": "Text",
+    "add_brain": "Schaltung",
+    "add_cloze": "Lückentext",
+    "add_flashcard": "Lernkarte",
+    "add_image": "Bild",
+    "add_timing": "Pulsdiagramm",
+    "new_document": "Neues Dokument",
+    "open_example": "Beispiel öffnen",
+    "add_chapter": "Neues Kapitel",
+    "paste_chapter": "Kapitel einfügen",
+    "revert": "Verwerfen",
+    "promote": "Promote",
+    "open_draft": "Eigene Kopie öffnen",
+    "open_original": "Original öffnen",
+    "distribute": "Verteilen",
+    "request_delete": "Löschung anfragen"
+  },
+  "editor": {
+    "empty": {
+      "header": "Willkommen zu deiner neu erstellten Seite!",
+      "description": "Beginne damit diese mit Leben zu füllen, indem Du die gewünschten Inhalte auswählst."
+    },
+    "image": {
+      "dragdrop": "Bilder hochladen indem diese hier abgelegt werden oder mit einem klick lokale Bilder auswählen"
+    }
+  },
+  "dialog": {
+    "add_chapter": "Neues Kapitel anlegen",
+    "create": "Neues Dokument anlegen",
+    "share": "Arbeitsblatt mit anderen teilen",
+    "save": "Dokument speichern",
+    "add_folder": "Neuen Ordner anlegen",
+    "new_document": "Neues Dokument",
+    "promote_explain": "Deine Version zu der machen, die deine Gruppe nutzt? Alle, die dieses Dokument von deiner Gruppe bekommen, sehen dann deine Änderungen.",
+    "promote_description_label": "Beschreibung für die Reviewer (optional) - was hast du geändert und warum?",
+    "revert_explain": "Deine Änderungen verwerfen und wieder die Version der Gruppe zeigen? Das kann nicht rückgängig gemacht werden.",
+    "delete_explain": "Dieses Dokument löschen? Es gibt keine Gruppen-Version, auf die man zurückfallen kann - das kann nicht rückgängig gemacht werden.",
+    "delete_shared_explain": "Dieses Dokument für die ganze Gruppe löschen? Es verschwindet für alle hier, und das kann nicht rückgängig gemacht werden.",
+    "delete_shared_request_explain": "Löschung dieses Dokuments anfragen? Die Reviewer deiner Gruppe müssen zustimmen, bevor es für alle entfernt wird.",
+    "delete_description_label": "Grund für die Löschung (optional)",
+    "open_conflict": "Welche Version öffnen?",
+    "open_conflict_explain": "Du hast eine persönliche Kopie dieses Dokuments. Deine eigene Kopie öffnen oder die Version der Gruppe?",
+    "distribute_explain": "Schick deine Version an andere Workspaces, in denen du bist. Nutzt ein Workspace ein Review, wird sie dort zuerst geprüft. Sonst sehen sie alle in diesem Workspace (und den darunter) sofort.",
+    "distribute_title": "Workspaces zum Verteilen auswählen",
+    "distribute_description_label": "Beschreibung für die Reviewer (optional)",
+    "distribute_empty": "Du bist noch in keinem weiteren Workspace Mitglied, in den du verteilen könntest."
+  },
+  "nav": {
+    "editor": "Editor",
+    "draft": "Meine Dateien",
+    "files": "Shared Files",
+    "workspaces": "Workspaces",
+    "review": "Review",
+    "activity": "Aktivität",
+    "help": "Hilfe"
+  },
+  "pane": {
+    "activity": {
+      "title": "Aktivität",
+      "intro": "Was in deinen Workspaces passiert: wie deine Entwürfe ausgegangen sind, Reviews für dich und deine eigenen Aktionen.",
+      "empty": "Noch keine Aktivität.",
+      "event": {
+        "review_requested": "{{actor}} bittet dich, <b>{{subject}}</b> in {{scope}} zu prüfen",
+        "i_submitted": "Du hast <b>{{subject}}</b> in {{scope}} zur Review eingereicht",
+        "delete_requested": "{{actor}} bittet dich, die Löschung von <b>{{subject}}</b> in {{scope}} zu prüfen",
+        "i_delete_requested": "Du hast die Löschung von <b>{{subject}}</b> in {{scope}} angefragt",
+        "deleted": "<b>{{subject}}</b> wurde in {{scope}} gelöscht",
+        "i_withdrew": "Du hast die Anfrage für <b>{{subject}}</b> in {{scope}} zurückgezogen",
+        "committed": "<b>{{subject}}</b> ist jetzt live in {{scope}}",
+        "rejected": "<b>{{subject}}</b> wurde abgelehnt: {{reason}}",
+        "withdrawn": "{{actor}} hat die Anfrage für <b>{{subject}}</b> in {{scope}} zurückgezogen",
+        "i_approved": "Du hast <b>{{subject}}</b> in {{scope}} freigegeben",
+        "i_accepted": "Du hast <b>{{subject}}</b> in {{scope}} freigegeben",
+        "i_rejected": "Du hast <b>{{subject}}</b> in {{scope}} abgelehnt",
+        "member_added": "{{actor}} hat dich zu {{scope}} hinzugefügt"
+      }
+    },
+    "review": {
+      "title": "Review",
+      "intro": "Dokumente, die auf deine Freigabe warten. Deine Stimme zählt so viele Punkte, wie dir der Workspace-Admin gegeben hat. Kommen genug Punkte zusammen, geht das Dokument live. Ein einziges Ablehnen stoppt es.",
+      "col_doc": "Dokument",
+      "col_workspace": "Workspace",
+      "col_author": "Autor",
+      "col_score": "Punkte",
+      "open": "Öffnen",
+      "approve": "Freigeben",
+      "reject": "Ablehnen",
+      "voted": "abgestimmt",
+      "empty": "Keine Reviews offen",
+      "deletion": "Löschung",
+      "deletion_notice": "Dieses Dokument soll gelöscht werden. Eine Freigabe entfernt es für alle hier.",
+      "my_points_hint": "Deine Stimme zählt so viele Punkte",
+      "approved_committed": "Freigegeben - Dokument übernommen",
+      "approved_pending": "Stimme gezählt - weitere Freigaben nötig",
+      "rejected": "Abgelehnt",
+      "withdraw": "Zurücknehmen",
+      "withdraw_explain": "Diese Anfrage zurücknehmen? Sie wird entfernt, als hättest du sie nie gestellt.",
+      "withdrawn": "Anfrage zurückgenommen",
+      "reject_reason": "Begründung (optional)",
+      "badge": "Review",
+      "back": "Zurück",
+      "not_open": "Dieses Review ist nicht mehr offen",
+      "score_status": "{{have}} von {{need}} Punkten · deine Stimme: +{{mine}}",
+      "load_failed": "Review-Dokument konnte nicht geladen werden",
+      "no_change_comment": "Keine Notiz - der Autor hat nicht gesagt, was sich geändert hat.",
+      "change_comment_title": "Änderungskommentar",
+      "change_comment_intro": "{{author}} hat «{{doc}}» zur Review eingereicht.",
+      "reject_explain": "Ein Ablehnen schließt die Anfrage sofort. Der Autor muss etwas ändern und erneut einreichen.",
+      "accept": "Freigeben",
+      "accept_explain": "Als Admin kannst du das sofort freigeben und das übliche Review überspringen. Fortfahren?",
+      "instruction_reviewer": "Der Autor bittet um deine Freigabe. Sobald genug Personen zustimmen, geht es für alle im Workspace live.",
+      "instruction_admin": "Als Admin kannst du es sofort freigeben.",
+      "instruction_voted": "Danke, du hast schon zugestimmt. Sobald genug Personen das tun, geht es live.",
+      "requested": "Review angefragt"
+    },
+    "workspaces": {
+      "title": "Workspaces",
+      "intro": "Ein Workspace ist ein gemeinsamer Bereich für ein <b>Team oder eine Klasse</b>. Füg die passenden Leute hinzu, und alles, was du <b>promotest</b>, erreicht nur sie. Mitglieder arbeiten darin, Admins verwalten die Leute und die Review-Einstellungen, und Reviewer halten die Punkte, die Änderungen freigeben. Mit <b>Review</b> werden Änderungen erst geprüft, bevor dein Team sie sieht. Workspaces lassen sich <b>hierarchisch</b> verschachteln, von der einzelnen Gruppe bis zur ganzen Organisation. Öffne einen zum Stöbern oder leg deinen eigenen an und lade andere ein.",
+      "root": "Meine Workspaces",
+      "personal": "Persönlich",
+      "create": "Neuer Workspace",
+      "create_needs_parent": "Öffne zuerst einen Workspace und lege dann darin einen Unter-Workspace an.",
+      "name_label": "Workspace-Name",
+      "created": "Workspace angelegt",
+      "rename": "Workspace umbenennen",
+      "renamed": "Workspace umbenannt",
+      "empty": "Hier gibt es noch keine Unter-Workspaces.",
+      "members": "Mitglieder",
+      "add_member": "Mitglied hinzufügen",
+      "member_label": "E-Mail des Mitglieds",
+      "member_added": "Mitglied hinzugefügt",
+      "member_count": "{{count}} Mitglieder",
+      "member_count_one": "{{count}} Mitglied",
+      "remove_member": "Mitglied entfernen",
+      "remove_member_explain": "{{person}} aus diesem Workspace entfernen?",
+      "member_removed": "Mitglied entfernt",
+      "review_settings": "Review",
+      "required_score": "Benötigte Punkte: {{count}}",
+      "required_score_hint": "So viele Freigabe-Punkte braucht ein Dokument, bevor es hier live geht. 0 = kein Review.",
+      "edit_required_score": "Benötigte Review-Punkte ändern",
+      "required_score_label": "Punkte (0 = kein Review)",
+      "required_score_saved": "Schwellwert gespeichert",
+      "role_admin": "Admin",
+      "role_member": "Mitglied",
+      "description_label": "Beschreibung",
+      "description_empty": "Noch keine Beschreibung.",
+      "edit_description": "Beschreibung bearbeiten",
+      "info_settings": "Info"
+    },
+    "draft": {
+      "title": "Meine Dateien",
+      "intro": "Hier liegen deine eigenen Dokumente: die privaten und deine Kopie jedes geteilten Dokuments, das du geändert hast. Nur du kannst sie sehen. Willst du deine Version teilen? Mach sie mit <b>Promoten</b> zur Version deiner Gruppe, oder <b>verteile</b> sie an andere Workspaces, in denen du bist. Nutzt ein Workspace Reviews, wird deine Version dort geprüft, bevor sie live geht.",
+      "review_points": "Review-Punkte",
+      "review_points_explain": "{{have}} von {{need}} Freigabepunkten. Sobald {{need}} erreicht sind, geht deine Version für die Gruppe live.",
+      "kind_personal": "Privat",
+      "kind_personal_explain": "Dieses Dokument liegt nur in deinem persönlichen Bereich. Niemand sonst kann es sehen.",
+      "kind_personal_copy": "Persönliche Kopie",
+      "kind_personal_copy_explain": "Das ist deine eigene Kopie eines geteilten Dokuments. Mit Promoten schickst du deine Änderungen ins Review. Nach Freigabe werden sie die Version deiner Gruppe."
+    },
+    "files": {
+      "title": "Shared Files",
+      "intro": "Alle Dokumente, die deine Gruppen mit dir teilen. Öffne eines, um es zu nutzen. Beim Bearbeiten und Speichern bekommst du deine eigene Kopie (in <b>Meine Dateien</b>), das Original bleibt unangetastet.",
+      "title_your": "Deine Dokumente",
+      "title_global": "Allgemein",
+      "col_name": "Name",
+      "col_version": "Version",
+      "col_draft": "Meine Kopie",
+      "col_provider": "Workspace",
+      "col_actions": "Aktionen",
+      "has_draft": "persönliche Kopie",
+      "my_copy": "persönliche Kopie",
+      "personal": "privat",
+      "empty": "Noch keine Dokumente hier.",
+      "filter": "Suchen…",
+      "root": "Bibliothek",
+      "count": "{{n}} Einträge"
+    }
+  },
+  "label": {
+    "chapter": "Kapitel",
+    "name": "Name"
+  },
+  "message": {
+    "chapter_to_clipboard": "Kapitel in die Zwischenablage kopiert",
+    "section_to_clipboard": "Abschnitt in die Zwischenablage kopiert",
+    "contains_learning": "Die Seite enthält Frageabschnitte. Der PDF Export enthält somit ein Lösungsdokument und einer Aufgabendokument",
+    "promoted": "Zur Version der Gruppe freigegeben",
+    "pending_review": "Zur Prüfung eingereicht",
+    "reverted": "Persönliche Änderungen verworfen",
+    "deleted": "Gelöscht",
+    "delete_requested": "Löschung zur Review geschickt",
+    "distributed": "An {{total}} Workspace(s) gesendet - {{live}} live, {{review}} im Review."
+  },
+  "error": {
+    "clipboard_not_page": "Zwischenablage enthält keine Electra.Academy Seite",
+    "copy_before_paste": "Du kannst nur ein Kapitel in das Dokument über die Zwischenableage \neinfügen, wenn Du es zuvor hiermit kopiert hast."
+  }
 }

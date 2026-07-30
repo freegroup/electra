@@ -1,0 +1,93 @@
+// The Review pane (ReviewScreen) + the editor's review banner (ReviewBar).
+// The list reuses the .storageTable look of the Files/Draft panes.
+
+#review {
+  overflow-y: scroll;
+  padding: 40px;
+
+  // Header is the shared ScreenHeader — see layout/screen_header.less.
+
+  .reviewFinder {
+    .storageTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead th {
+        text-align: left;
+        font-weight: var(--label-font-weight);
+        text-transform: uppercase;
+        font-size: var(--label-font-size);
+        padding: 10px @contentToEdgePadding;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        opacity: 0.6;
+      }
+
+      .reviewRow {
+        td {
+          padding: 10px @contentToEdgePadding;
+          vertical-align: middle;
+        }
+
+        .reviewTitle { font-size: 16px; }
+        .reviewVersion { margin-left: 8px; opacity: 0.5; }
+
+        // The author's promote note ("what changed and why").
+        .reviewDescription {
+          margin-top: 4px;
+          font-size: 13px;
+          opacity: 0.65;
+          max-width: 480px;
+          white-space: pre-line;
+          word-break: break-word;
+        }
+
+        .reviewDeletionBadge {
+          margin-left: 8px;
+          padding: 1px 8px;
+          border-radius: 10px;
+          font-size: 0.75em;
+          text-transform: uppercase;
+          background: var(--electra-primary, #e91e63);
+          color: #fff;
+        }
+
+        .colWorkspace span { opacity: 0.75; }
+        .colAuthor { opacity: 0.75; }
+
+        // "3 / 5  +2" — collected vs. required points, plus what my vote adds.
+        .colScore {
+          white-space: nowrap;
+          .reviewScore { font-weight: var(--label-font-weight); }
+          .reviewMyScore { margin-left: 6px; opacity: 0.6; }
+        }
+
+        .colActions {
+          text-align: right;
+          white-space: nowrap;
+          button { margin-left: 8px; }
+          .reviewVoted { margin-left: 8px; opacity: 0.6; font-size: 0.85em; }
+        }
+      }
+    }
+
+    .fileListEmpty {
+      padding: 20px @contentToEdgePadding;
+      opacity: 0.6;
+    }
+  }
+}
+
+// Review mode: the document is read-only, so hide the editing toolbar groups
+// (New/Save, Delete, Undo/Redo, Share). Simulation + view controls stay.
+#editor.reviewMode .toolbar {
+  #editorgroup_fileoperations,
+  #editDelete,
+  #editUndo,
+  #editRedo,
+  #editorgroup_share {
+    display: none;
+  }
+}
+
+// The editor header (default + review variants) lives in editor_header.less.

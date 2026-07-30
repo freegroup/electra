@@ -14,13 +14,13 @@ console.log(`Component '${componentName} is loading envFile '${envFile}'`)
 dotenv.config({ debug: false,path: envFile })
 
 
-const globalApi = require("./data/global")
-const userApi = require("./data/user")
-const sharedApi = require("./data/shared")
+const files = require("./files")
+const db = require("./db")
 const conf = require("./configuration")
 const die = require("./utils/die")
 
-console.log("serving data from :", conf.absoluteGlobalDataDirectory())
+db.init(conf)
+console.log(`[brains] database at ${conf.database}, app scope "${conf.appScopePath}"`)
 
 
 const PORT = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
@@ -32,28 +32,31 @@ const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST")
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 
-globalApi.init(app)
-sharedApi.init(app)
-userApi.init(app)
+// These are dynamic, per-user API responses (a document's content depends on
+// the caller's walk-up and can change on every save/promote). They must never
+// be cached: otherwise clicking the same id twice serves a stale document from
+// the browser cache until a hard reload. Disable caching for the whole API.
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+  res.set("Pragma", "no-cache")
+  res.set("Expires", "0")
+  next()
+})
+
+files.init(app)
 
 // =======================================================================
 //
-// The main HTTP Server and socket.io run loop. Serves the HTML files
-// and the socket.io access point to change/read the GPIO pins if the server
-// is running on an Raspberry Pi
+// The main HTTP Server run loop. Serves the generic Finder API which maps
+// to the database scope model.
 //
 // =======================================================================
 async function  runServer() {
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({extended: true}));
-  app.use('/shapes/global', express.static(conf.absoluteGlobalDataDirectory()));
-
   // Start Server
   // "localhost" => Service ist nicht von ausserhalb aufrufbar.
   // Wichtig, da der Server eine public IP hat und man sonst diesen Server auch ohne den Ingress aufrufen könnte.
-  // Andere Lösung wäre "private network" + Loadbalancer. Die zusätzliche Infrastrcutur kostet aber wieder mehr.
   http.listen(PORT, LOCALHOST, function () {
-    console.log(`Starting /brainbs at http://${LOCALHOST}:${PORT}/brains`);
+    console.log(`Starting /brains at http://${LOCALHOST}:${PORT}/brains`);
   });
 }
 

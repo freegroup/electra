@@ -1,0 +1,45 @@
+// draft_toolbar — the "My Files" search box (paired with DraftToolbar.js). The
+// toolbar chrome itself is shared (see layout/finder.less, .finderToolbar); this
+// file is just the search input. Colors come from the theme.
+
+.draftToolbarFilter {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.draftToolbarInput {
+  width: 390px;
+  height: @buttonHeight;
+  padding: 0 30px 0 12px;
+  border: 1px solid rgb(var(--border-color));
+  border-radius: @borderRadiusSmall;
+  background: rgb(var(--input-bg-color));
+  color: rgb(var(--input-color));
+
+  &:focus {
+    outline: none;
+    border-color: rgb(var(--tint-color));
+  }
+}
+
+.draftToolbarClear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  opacity: 0.5;
+  color: rgb(var(--text-color));
+
+  &:hover { opacity: 1; }
+}
+
+.draftToolbarFilter.hasText .draftToolbarClear {
+  display: block;
+}

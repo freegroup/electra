@@ -1,0 +1,102 @@
+// scopeCard — FactSheet-style card for one scope/workspace. Reuses .factSheet
+// base metrics (300px, aspect-ratio, border, button bar) from fact_sheet.less
+// and adds the description-preview region in place of the image thumb.
+// The old .scopeTile class is kept in case any scope picker still uses it.
+
+.scopeCard {
+  // Description preview — fills the factSheetThumb flex area.
+  .scopeCardPreview {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 14px;
+    overflow: hidden;
+  }
+
+  .scopeCardDescription {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+
+  .scopeCardDescriptionEmpty {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.35;
+    font-style: italic;
+  }
+}
+
+// Side-panel info block (label + description edit pencils).
+.wsInfoBlock:not(:empty) { margin-bottom: 24px; }
+.wsInfoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0;
+
+  .wsInfoValue {
+    flex: 1 1 auto;
+    font-size: 13px;
+    min-width: 0;
+    word-break: break-word;
+  }
+  .wsInfoDescription {
+    opacity: 0.7;
+    font-style: italic;
+    white-space: pre-wrap;
+  }
+  .wsEditInfoButton {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.5;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    &:hover { opacity: 1; }
+  }
+}
+
+// Legacy tile — kept for any scope picker not yet on the card layout.
+.scopeTile {
+  position: relative;
+  width: 180px;
+  height: 100px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: @borderRadiusBig;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .scopeTileName {
+    font-size: 16px;
+    font-weight: var(--label-font-weight);
+    word-break: break-word;
+  }
+
+  .scopeTileFoot {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .scopeTileMembers { font-size: 12px; opacity: 0.6; }
+  .scopeTileBadges  { display: flex; gap: 6px; }
+
+  .scopeBadge {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.72em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+}

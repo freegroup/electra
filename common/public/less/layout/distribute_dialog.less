@@ -1,0 +1,87 @@
+// distribute_dialog — the target-scope picker in the distribute modal.
+// Paired with DistributeDialog.js. A scrollable list of checkbox rows, each a
+// scope the caller is a member of (label + dim path). Colors come from the theme.
+
+#distributeDialog {
+
+  .modal-dialog { width: 880px; }
+
+  // A touch more breathing room left/right than the generic dialog padding.
+  .modal-content { padding-left: 32px; padding-right: 32px; }
+
+  .distributeExplain { margin-bottom: 24px; }
+
+  .distributeBody {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  // The illustration sits in its own card (rounded, faint fill, soft shadow —
+  // see theme) so it reads as a deliberate pair with the targets box rather than
+  // a floating image. Centered inside; the card + list share the row height.
+  .distributeImagePanel {
+    flex: 0 0 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    border-radius: @borderRadiusSmall;
+  }
+
+  .distributeImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+  }
+
+  // The list column stretches to the image's height; the scroll area is pinned
+  // to fill it (position:absolute), so the list never grows taller than the
+  // image — it scrolls instead once the workspaces overflow.
+  .distributeTargetsBlock {
+    flex: 1 1 auto;
+    min-width: 0;
+    position: relative;
+  }
+
+  .distributeTargets {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: @borderRadiusSmall;
+  }
+
+  .distributeTarget {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-weight: normal;
+
+    input { margin: 0; flex: 0 0 auto; align-self: center; }
+
+    .distributeTargetLabel {
+      flex: 0 0 auto;
+      font-weight: var(--label-font-weight);
+    }
+    .distributeTargetPath {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      opacity: 0.5;
+    }
+  }
+
+  .distributeEmpty { opacity: 0.7; }
+  .distributeNote { margin-top: 24px; }
+}

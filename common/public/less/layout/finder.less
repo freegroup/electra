@@ -1,0 +1,42 @@
+// finder — shared chrome for the "finder" panes (Shared Files, My Files,
+// Workspaces) so the three read as one system: a card container (.finderCard)
+// plus a header toolbar (.finderToolbar) with left content and right-aligned
+// actions, separated by one soft divider.
+//
+// Structure only — the card fill/border and the divider color live in the theme
+// (search ".finderCard" / ".finderToolbar" there).
+
+.finderCard {
+  border-radius: @borderRadiusBig;
+}
+
+.finderToolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: @buttonSpacing;
+  padding: @buttonSpacing @contentToEdgePadding;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+
+  // Left content group (breadcrumb and/or search). Sits left; may hold more
+  // than one element inline.
+  .finderToolbarMain {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: @buttonSpacing;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  // Right-aligned button group.
+  .finderToolbarActions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: @buttonSpacing;
+    flex: 0 0 auto;
+  }
+}

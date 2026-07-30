@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: docstore
+      POSTGRES_PASSWORD: docstore
+      POSTGRES_DB: docstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./_pgdata:/var/lib/postgresql/data

@@ -1,6 +1,7 @@
 const path = require("path")
 const PDFDocument = require('pdf-lib').PDFDocument
 const die = require("../utils/die")
+const db = require("../db")
 const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
 const AUTHOR_URL =  `http://localhost:${PORT_INGRESS}/author`
 
@@ -14,45 +15,55 @@ function nocache(req, res, next) {
 module.exports = {
     init: function (app) {
 
-        app.get('/sheets/pdf', nocache, (req, res) => {
-            let file = req.query.sha ?? req.query.global 
-            let scope = req.query.sha ? "sha":"global"     
-            let mode = req.query.mode ?? "worksheet"     
-            let all = false
-            let header = mode==="solution"?"Solution Pages":""
-            let footer = path.basename(file)
-            
-            let {render} = require("../converter/pdf")
-            // if "all" are requested, we start with the "worksheet" and append the "solution" later on
-            //
-            if(mode==="all"){
-                mode = "worksheet"
-                all = true
-                header = mode==="solution"?"Solution Pages":"Worksheet Pages"
-            }
+        // PDF export. The document is named by the opaque handle (?id=). We
+        // publish it (idempotent — returns its publicId) and render the public
+        // read page, so the headless browser needs no login. mode: worksheet |
+        // solution | all (worksheet+solution merged).
+        app.get('/sheets/pdf', nocache, async (req, res) => {
+            try {
+                const auth = db.pickAuthHeaders(req)
+                const { scopeRef, path: docPath } = db.decodeId(req.query.id)
+                let mode = req.query.mode ?? "worksheet"
 
-            render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=${mode}`, header, footer)
-            .then(pdf => {
-                if (all){
-                    return render(`${AUTHOR_URL}/page.html?${scope}=${file}&mode=solution`, "Solution Pages", footer).then(async pdf2 => {
-                        var pdfsToMerge = [pdf, pdf2]
-                        const mergedPdf = await PDFDocument.create(); 
-                        for (const pdfBytes of pdfsToMerge) { 
-                            const pdf = await PDFDocument.load(pdfBytes); 
-                            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                            copiedPages.forEach((page) => {
-                                mergedPdf.addPage(page); 
-                            }); 
-                        } 
-                        return Buffer.from(await mergedPdf.save()); 
-                    })      
+                // Mint a short-lived render token (login-free read of this exact
+                // version) — no publishing needed, so unpublished docs export too.
+                const { token } = await db.call(
+                    "POST",
+                    `/database/scopes/${scopeRef}/docs/render-token`,
+                    { authHeaders: auth, body: { path: docPath } }
+                )
+                const footer = path.basename(docPath)
+
+                const { render } = require("../converter/pdf")
+                const pageUrl = (m) => `${AUTHOR_URL}/page.html?rtoken=${encodeURIComponent(token)}&mode=${m}`
+
+                let all = false
+                let header = mode === "solution" ? "Solution Pages" : ""
+                if (mode === "all") {
+                    mode = "worksheet"
+                    all = true
+                    header = "Worksheet Pages"
                 }
-                return pdf
-            })
-            .then( pdf =>{
-              res.set({'Content-Type': 'application/pdf', 'Content-Length': pdf.length})
-              res.send(pdf)
-            })
+
+                let pdf = await render(pageUrl(mode), header, footer)
+                if (all) {
+                    const pdf2 = await render(pageUrl("solution"), "Solution Pages", footer)
+                    const mergedPdf = await PDFDocument.create()
+                    for (const bytes of [pdf, pdf2]) {
+                        const src = await PDFDocument.load(bytes)
+                        const copied = await mergedPdf.copyPages(src, src.getPageIndices())
+                        copied.forEach((page) => mergedPdf.addPage(page))
+                    }
+                    pdf = Buffer.from(await mergedPdf.save())
+                }
+
+                res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
+                res.send(pdf)
+            } catch (err) {
+                const code = err && err.statusCode ? err.statusCode : 500
+                console.log(`[sheets/pdf] ${code}: ${err && err.message}`)
+                res.status(code).json({ error: { message: err && err.message } })
+            }
         })
     }
 }

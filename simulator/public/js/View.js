@@ -34,6 +34,10 @@ export default draw2d.Canvas.extend({
 
     this.permissions = permissions
     this.simulate = false
+    // read-only viewing mode (set when a document is opened for review):
+    // the canvas can be panned/simulated but not edited. Decided at each
+    // edit-policy install site (initial below + simulationStop).
+    this.readOnly = false
     this.animationFrameFunc = this._calculate.bind(this)
     this.timerBase = 10 // ms calculate every 10ms all elements
 
@@ -97,7 +101,11 @@ export default draw2d.Canvas.extend({
     this.installEditPolicy(new draw2d.policy.canvas.SnapToGeometryEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToCenterEditPolicy())
     this.installEditPolicy(new draw2d.policy.canvas.SnapToInBetweenEditPolicy())
-    this.installEditPolicy(new EditEditPolicy())
+    // Selection policy depends on the document: read-only for review, editable
+    // otherwise. Same decision is repeated in simulationStop.
+    this.installEditPolicy(this.readOnly
+      ? new draw2d.policy.canvas.ReadOnlySelectionPolicy()
+      : new EditEditPolicy())
 
     // Enable Copy&Paste for figures
     //
@@ -271,11 +279,12 @@ export default draw2d.Canvas.extend({
                   figure.add(label, locator)
                 })
                 break
-              case "design":
+              case "design": {
                 let scope = figure.attr("userData.scope")
                 let shapeName = figure.attr("userData.file")
                 window.open(`../designer?${scope}=${shapeName}`, "designer")
                 break
+              }
               case "help":
                 markdownDialog.show(figure)
                 break
@@ -417,9 +426,9 @@ export default draw2d.Canvas.extend({
     let file = $(droppedDomNode).data("file")
     let scope = $(droppedDomNode).data("scope")
 
-    // Track the drop event using GTM
-    if(dataLayer){
-      dataLayer?.push({ 'event': 'dropped_figure', 'droppedData': name})
+    // Track the drop event using GTM (absent when the app runs outside index.html)
+    if (window.dataLayer) {
+      window.dataLayer.push({ 'event': 'dropped_figure', 'droppedData': name})
     }
 
     let figure = null
@@ -493,9 +502,17 @@ export default draw2d.Canvas.extend({
     this.commonPorts.each( (i, p) => {
       p.setVisible(true)
     })
-    this.installEditPolicy(new EditEditPolicy())
-    this.installEditPolicy(this.connectionPolicy)
-    this.installEditPolicy(this.coronaFeedback)
+    // Restore the edit policy that matches the document: a read-only document
+    // (opened for review) must stay read-only after simulation, not become
+    // editable.
+    if (this.readOnly) {
+      
+      this.installEditPolicy(new draw2d.policy.canvas.ReadOnlySelectionPolicy())
+    } else {
+      this.installEditPolicy(new EditEditPolicy())
+      this.installEditPolicy(this.connectionPolicy)
+      this.installEditPolicy(this.coronaFeedback)
+    }
 
     this.getFigures().each( (index, shape) =>{
       shape.onStop?.(this.simulationContext)
@@ -520,6 +537,9 @@ export default draw2d.Canvas.extend({
     // transport the value from outputPort to inputPort
     //
     this.getLines().each( (i, line) => {
+      // getLines() also returns hand-drawn draw2d.shape.basic.Line figures,
+      // which have no source port - skip them, they carry no signal value.
+      if (!(line instanceof draw2d.Connection)) return
       line.value = line.getSource().getValue()
       if(line.value === undefined ||  line.value === null){
         // do not transfer the value if the source is "disconnected"
@@ -638,6 +658,9 @@ export default draw2d.Canvas.extend({
     // This is required after loading a brain. In this case an unpredictable state of the connections is visible.
     // Fix this by using the real values of the ports.
     this.getLines().each( (i, line) => {
+      // Only signal-carrying Connections have a source port; plain hand-drawn
+      // Lines (draw2d.shape.basic.Line) have none - leave their color alone.
+      if (!(line instanceof draw2d.Connection)) return
       let outPort = line.getSource()
       let value = outPort.getValue()
       if(value === undefined ||  value === null){

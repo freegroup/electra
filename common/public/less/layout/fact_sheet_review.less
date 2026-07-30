@@ -1,0 +1,50 @@
+// fact_sheet_review.less — ReviewFactSheet-specific styles.
+// Extends .factSheet from fact_sheet.less. Applied via .reviewFactSheet class.
+
+.reviewFactSheet {
+
+  // author line: email + globe icon side by side
+  .factSheetAuthor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    opacity: 0.6;
+    overflow: hidden;
+  }
+  .reviewAuthorName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .reviewAuthorIcon {
+    // inline in the author row — not overlaid on the thumb
+    position: static !important;
+    width: 22px !important;
+    height: 22px !important;
+    flex: 0 0 auto;
+    border-radius: 4px;
+    transition: box-shadow 0.12s;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  // deletion badge
+  .reviewFactSheetBadgeDeletion {
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 0.68em;
+    text-transform: uppercase;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  // "✓ voted" indicator in the button bar (shown once the reviewer has voted)
+  .reviewVotedIndicator {
+    font-size: 11px;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+}
