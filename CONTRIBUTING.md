@@ -66,8 +66,10 @@ directories - the very channels through which schools find it.
 ## Practical notes
 
 - Keep the style of the surrounding code; the project does not use a formatter.
-- Frontend changes need a rebuild of the affected app (`npm run build` in
-  `author`, `designer`, `gallery`, `home`, `legal` or `simulator`) - the bundles
-  under `public/js/webpack/` are checked in.
+- Frontend changes need a rebuild of the affected app: `npm run build` in
+  `author`, `designer`, `gallery`, `home`, `legal` or `simulator`. The generated
+  bundles under `public/js/webpack/` are gitignored, so do not commit them.
+  (`home/public/js/webpack/bundle.js` is tracked for historical reasons, from
+  before the ignore rule existed. Do not take it as the pattern.)
 - User-facing text belongs in `common/public/i18n/<app>/{de,en}.json`, never
   hardcoded in a template.
