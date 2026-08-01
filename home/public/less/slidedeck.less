@@ -58,12 +58,28 @@
         margin-bottom: 100vh;
 
         width: 25%;
-        height: 50vh;
+
+        // The card lays its children out in flow instead of stacking them with
+        // absolute positioning. That is what makes it survive a narrow window:
+        // absolutely positioned content cannot influence its parent's height,
+        // so the text used to run straight out of the bottom of the card as
+        // soon as it wrapped onto more lines. Now the card grows with its text.
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 14px 14px 18px;
+
+        // A floor, not a ceiling: keeps the roomy look on wide screens while
+        // letting the box grow when the text needs more room.
+        min-height: 50vh;
+
         border-radius: @borderRadiusBig;
         background-color: #fff;
         box-shadow: 0 10px 50px 0 rgba(0, 0, 0, .25);
         top: 0;
 
+        // The app name sits ABOVE the card on the coloured background, so this
+        // one stays out of the flow.
         .text {
             position: absolute;
             top: -40px;
@@ -72,20 +88,18 @@
             font-size: 24px;
             font-weight: 100;
             width: 100%;
+            left: 0;
         }
         .media {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            flex: 0 0 auto;
+            margin-bottom: 10px;
         }
         .content {
-            position: absolute;
-            top: 80px;
-            padding: 10px;
+            // grows to fill whatever is left between icon and button
+            flex: 1 1 auto;
+            width: 100%;
 
-            // Bootstrap's 14px is too small for a card this wide. The fixed
-            // card height leaves plenty of room, so the text can breathe.
+            // Bootstrap's 14px is too small for a card this wide.
             font-size: 16px;
             line-height: 1.5;
 
@@ -108,10 +122,17 @@
         }
 
         .launch_button {
-            position: absolute;
-            left: 50%;
-            bottom: 10px;
-            transform: translateX(-50%);
+            // margin-top:auto pins it to the bottom of the flex column without
+            // taking it out of the flow, so the text can never run underneath
+            // it. NOTE: the spacing above must be a margin - padding here would
+            // inflate the button's own box instead.
+            flex: 0 0 auto;
+            margin-top: auto;
+        }
+
+        // breathing room between text and button, on the text side
+        .content {
+            margin-bottom: 16px;
         }
 
         &.left {
@@ -127,6 +148,63 @@
         &.right {
             left: 70%;
             transform: translateY(50%);
+        }
+    }
+
+    // --- narrow windows and phones ------------------------------------------
+    // The scroll choreography needs three columns side by side and a viewport
+    // tall enough for a 50vh card. Below that it stops being clever and starts
+    // being broken: 25%-wide columns turn the text into a ribbon. So the whole
+    // section falls back to plain stacked cards - the colour panels and cards
+    // are simply laid out in document order, which happens to read correctly:
+    // heading, card, heading, card, heading, card, closing panel.
+    @media (max-width: 900px), (max-height: 600px) {
+        height: auto;
+        padding-bottom: 50px;
+
+        .pink_bg,
+        .orange_bg,
+        .blue_bg {
+            position: static;
+            top: auto;
+            height: auto;
+        }
+
+        .blue_bg {
+            padding: 40px 0 50px;
+        }
+
+        .section_header {
+            position: static;
+            font-size: calc(18px + 1.2vw);
+            padding: 45px 20px 0;
+            // the fade-out on scroll is driven by JS for the sticky version;
+            // stacked, the headings must simply stay visible
+            opacity: 1 !important;
+        }
+
+        // NOTE the doubled class selectors: the desktop rules live on
+        // `.card.left` / `.card.center` / `.card.right`, which are two classes
+        // and therefore beat a plain `.card` here. Without matching that
+        // specificity the cards keep their `left: 5%` and their translate, so
+        // they sit off-centre and ride over the headings.
+        .card,
+        .card.left,
+        .card.center,
+        .card.right {
+            position: static;
+            left: auto;
+            transform: none;
+            width: auto;
+            max-width: 520px;
+            min-height: 0;
+            margin: 0 auto 60px;
+
+            .text {
+                position: static;
+                color: rgb(var(--tint-color));
+                margin-bottom: 10px;
+            }
         }
     }
 }
