@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+<title data-i18n="page.privacy.title">Electra.Academy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<base href="/home" />
+
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/home/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- The text is filled from the i18n files by the same bundle the start page
+     loads - one code path for the whole app, so the header, footer and language
+     switcher here cannot drift away from the rest of the site. Nothing is loaded
+     from Google, and no cookie is written before the visitor agrees. -->
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+</head>
+
+<body class="light contentPageBody" data-appbar-subtitle-i18n="page.privacy.title">
+<div class="contentLayout">
+
+  <!-- filled by the shared Header component (js/Header.js) -->
+  <div class="appbarMount"></div>
+
+  <main>
+    <a class="backLink" href="/home/index.html" data-i18n="page.back"></a>
+    <article>
+        <h1 data-i18n="page.privacy.title"></h1>
+        <div class="draftNote" data-i18n="page.draft"></div>
+        <h2 data-i18n="page.privacy.section01.header"></h2>
+        <div data-i18n="[html]page.privacy.section01.body"></div>
+        <h2 data-i18n="page.privacy.section02.header"></h2>
+        <div data-i18n="[html]page.privacy.section02.body"></div>
+        <h2 data-i18n="page.privacy.section03.header"></h2>
+        <div data-i18n="[html]page.privacy.section03.body"></div>
+        <h2 data-i18n="page.privacy.section04.header"></h2>
+        <div data-i18n="[html]page.privacy.section04.body"></div>
+        <h2 data-i18n="page.privacy.section05.header"></h2>
+        <div data-i18n="[html]page.privacy.section05.body"></div>
+        <h2 data-i18n="page.privacy.section06.header"></h2>
+        <div data-i18n="[html]page.privacy.section06.body"></div>
+        <h2 data-i18n="page.privacy.section07.header"></h2>
+        <div data-i18n="[html]page.privacy.section07.body"></div>
+        <h2 data-i18n="page.privacy.section08.header"></h2>
+        <div data-i18n="[html]page.privacy.section08.body"></div>
+        <h2 data-i18n="page.privacy.section09.header"></h2>
+        <div data-i18n="[html]page.privacy.section09.body"></div>
+        <h2 data-i18n="page.privacy.section10.header"></h2>
+        <div data-i18n="[html]page.privacy.section10.body"></div>
+        <h2 data-i18n="page.privacy.section11.header"></h2>
+        <div data-i18n="[html]page.privacy.section11.body"></div>
+        <h2 data-i18n="page.privacy.section12.header"></h2>
+        <div data-i18n="[html]page.privacy.section12.body"></div>
+    </article>
+  </main>
+
+  <!-- filled by the shared Footer component (js/Footer.js) -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/home/js/webpack/bundle.js"></script>
+</html>

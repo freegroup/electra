@@ -31,16 +31,18 @@
   <link href='../common/css//roboto.css' rel='stylesheet' type='text/css'>
   <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 
+  <!-- The compiled LESS. Delivered as a file rather than injected by
+       style-loader, so the static content pages can share it and this page
+       shows no flash of unstyled content. -->
+  <link href="./js/webpack/bundle.css" rel="stylesheet" type="text/css">
+
   <script src="../common/js/jquery/jquery.js"></script>
   <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
-   <!-- Google Tag Manager for Electra.Academy.Simulator container-->
-   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PV5KP7Q');
-  </script>
-  <!-- End Google Tag Manager -->
+  <!-- No Google Tag Manager and no Google sign-in client on this page.
+       This is the landing page: it is the first thing a school sees, and it
+       used to fire requests to Google before the visitor had agreed to
+       anything. Nobody needs to sign in to read it either - sign-in lives in
+       the apps that actually save work. -->
 
   <script type="text/javascript">
     var app = null
@@ -48,30 +50,12 @@
   </script>
 </head>
 
-<body class="light">
+<body class="light" data-appbar-subtitle="Home">
   <div class="layout">
 
-    <div class="appbar">
-      <img class="icon svg" src="../common/images/favicon_64x64.svg"/>
-      <div class="title">
-          <h1>Electra.Academy</h1>
-          <h2>Home</h2>
-      </div>
-      <div class="slogan" data-i18n="common:header.slogan"></div>
-
-      <span class="spacer"></span>
-
-      <span class="group applicationSwitch">
-        <label class="userinfo_toggler dropdown" >
-          <span class="image-button" data-toggle="dropdown">
-            <img  crossorigin="anonymous" src="../common/images/toolbar_user.svg"/>
-          </span>
-          <div class="dropdown-menu" role="menu" >
-          </div>
-        </label>
-      </span>
-
-    </div>
+    <!-- filled by the shared Header component (js/Header.js), the same one the
+         static content pages use -->
+    <div class="appbarMount"></div>
 
     <div class="teaserContainer">
       <div class="teaser">
@@ -192,9 +176,10 @@
 
   </div>
 
+  <!-- filled by js/Footer.js -->
+  <div class="footerMount"></div>
+
 </body>
-<script src="https://accounts.google.com/gsi/client" defer></script>
-<script src="../socket.io/socket.io.js"></script>
 
 <script src="./js/webpack/bundle.js"></script>
 </html>

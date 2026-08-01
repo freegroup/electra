@@ -1,58 +1,237 @@
 {
-	"app":{
-		"name": "Electra Academy",
-		"icon": "../common/images/app_home.svg",
-		"loading": "Lade <i>Electra.Academy</i>...",
-		"title": "Electra.Academy"
-	},
-	"teaser" :{
-		"slogan":"Tauchen Sie in die Welt der logischen Schaltungen ein! Kostenlos",
-		"description": "<i>Entwerfen Sie mit Electra.Academy ganz einfach Ihre eigenen Schaltungen</i>, von einfachen Verknüpfungen bis hin zu komplizierten Schaltungen. Sie können Schaltungen, Dokumentationen und Lernmaterialien erstellen. Egal, ob Sie Hobbybastler oder Profi sind, unsere Plattform bietet Ihnen alles, was Sie brauchen. Sind Sie bereit, loszulegen?<br><br><b>Melden Sie sich noch heute bei uns an und erleben Sie die Leistungsfähigkeit!</b>"
-	},
-	"demo":{
-		"slogan": "Das Erstellen einer eigenen Schaltung geht flotter als das Zählen bis 1..2..3",
-		"description1": "Entwerfe digitale Schaltungen schnell und einfach mit einer modernen und intuitiven Benutzeroberfläche",
-		"description2": "Mit <b>Electra.Academy</b> können Sie Ihre digitalen Schaltungen online in Ihrem Browsers bearbeiten und ausführen und ein physische Gerät ansteuern. Die Möglichkeiten sind unendlich."
-	},
-	"slidedeck1":{
-		"header": "Simulator",
-		"slogan": "Virtuell digitale Schaltungen aufbauen, steuern und verstehen",
-		"points":"Aufbauen | Simulieren | Verstehen",
-		"launch":"Aufbauen",
-		"description":"Mit dem Simulator kannst du Schaltungen aufbauen, diese testen und somit viel besser verstehen"
-	},
-	"slidedeck2":{
-		"header": "Author",
-		"slogan": "Dafür gemacht um in dem Unterricht einzusetzen",
-		"points":"Schreiben | Teilen | Lernen",
-		"launch":"Schreibe",
-		"description":"<b>Electra Author</b> ist dafür gemacht um Lerninhalte zu erstellen. <br><br>Mit dem eingebaten Editor kann man Schaltungen, Tabellen, Lückentexte, FlipCards und Formeln erstellen und teilen"
-	},
-	"slidedeck3":{
-		"header": "Designer",
-		"slogan": "Erstelle deine eigenen Komponenten",
-		"points": "Entwerfen | Programmieren | Benutzen",
-		"launch": "Entwerfen",
-		"description": "Natürlich ist auch ein eingebauter Designer für eigenen Komponenten Bestandteil von diesem aufregenden Angebot rund um das Thema digitale Elektronik. Du vermisst ein Bauteil? Erstelle es doch einfach schnell selber"
-	},
-	"slidedeck4":{
-		"slogan": "Herzlich willkommen in der Welt von <b>Electra Academy</b>"
-	},
-	"button" :{
-		"launch_simulator":"Entdecke den Simulator",
-		"launch_gallery":"Stöbere in der Gallerie",
-		"launch_in_simulator": "Die Schaltung im Simulator öffnen"
-	},
-	"dialog":{
-	},
-	"label": {
-		"name": "Name",
-		"for_maker": "Für Maker",
-		"for_students": "Für Schüler",
-		"for_teacher": "Für Lehrer"
-	},
-	"message": {
-	},
-	"error": {
-	}
+    "app": {
+        "name": "Electra Academy",
+        "icon": "../common/images/app_home.svg",
+        "loading": "Lade <i>Electra.Academy</i>...",
+        "title": "Electra.Academy"
+    },
+    "teaser": {
+        "slogan": "Tauchen Sie in die Welt der logischen Schaltungen ein! Kostenlos",
+        "description": "<i>Entwerfen Sie mit Electra.Academy ganz einfach Ihre eigenen Schaltungen</i>, von einfachen Verknüpfungen bis hin zu komplizierten Schaltungen. Sie können Schaltungen, Dokumentationen und Lernmaterialien erstellen. Egal, ob Sie Hobbybastler oder Profi sind, unsere Plattform bietet Ihnen alles, was Sie brauchen. Sind Sie bereit, loszulegen?<br><br><b>Melden Sie sich noch heute bei uns an und erleben Sie die Leistungsfähigkeit!</b>"
+    },
+    "demo": {
+        "slogan": "Das Erstellen einer eigenen Schaltung geht flotter als das Zählen bis 1..2..3",
+        "description1": "Entwerfe digitale Schaltungen schnell und einfach mit einer modernen und intuitiven Benutzeroberfläche",
+        "description2": "Mit <b>Electra.Academy</b> können Sie Ihre digitalen Schaltungen online in Ihrem Browsers bearbeiten und ausführen und ein physische Gerät ansteuern. Die Möglichkeiten sind unendlich."
+    },
+    "slidedeck1": {
+        "header": "Simulator",
+        "slogan": "Virtuell digitale Schaltungen aufbauen, steuern und verstehen",
+        "points": "Aufbauen | Simulieren | Verstehen",
+        "launch": "Aufbauen",
+        "description": "Mit dem Simulator kannst du Schaltungen aufbauen, diese testen und somit viel besser verstehen"
+    },
+    "slidedeck2": {
+        "header": "Author",
+        "slogan": "Dafür gemacht um in dem Unterricht einzusetzen",
+        "points": "Schreiben | Teilen | Lernen",
+        "launch": "Schreibe",
+        "description": "<b>Electra Author</b> ist dafür gemacht um Lerninhalte zu erstellen. <br><br>Mit dem eingebaten Editor kann man Schaltungen, Tabellen, Lückentexte, FlipCards und Formeln erstellen und teilen"
+    },
+    "slidedeck3": {
+        "header": "Designer",
+        "slogan": "Erstelle deine eigenen Komponenten",
+        "points": "Entwerfen | Programmieren | Benutzen",
+        "launch": "Entwerfen",
+        "description": "Natürlich ist auch ein eingebauter Designer für eigenen Komponenten Bestandteil von diesem aufregenden Angebot rund um das Thema digitale Elektronik. Du vermisst ein Bauteil? Erstelle es doch einfach schnell selber"
+    },
+    "slidedeck4": {
+        "slogan": "Herzlich willkommen in der Welt von <b>Electra Academy</b>"
+    },
+    "button": {
+        "launch_simulator": "Entdecke den Simulator",
+        "launch_gallery": "Stöbere in der Gallerie",
+        "launch_in_simulator": "Die Schaltung im Simulator öffnen"
+    },
+    "dialog": {},
+    "label": {
+        "name": "Name",
+        "for_maker": "Für Maker",
+        "for_students": "Für Schüler",
+        "for_teacher": "Für Lehrer"
+    },
+    "message": {},
+    "error": {},
+    "footer": {
+        "tagline": "Electra.Academy ist eine freie Plattform für digitale Schaltungstechnik. Bauen, simulieren und verstehen - im Browser, ohne Installation. Für Schulen kostenlos.",
+        "about": "Über Electra.Academy",
+        "about_us": "Über uns",
+        "imprint": "Impressum",
+        "privacy": "Datenschutz",
+        "cookies": "Cookies",
+        "terms": "Nutzungsbedingungen",
+        "resources": "Ressourcen",
+        "code": "Code auf GitHub",
+        "gallery": "Galerie",
+        "interact": "Mitmachen",
+        "bugtracker": "Fehler melden",
+        "forum": "Forum",
+        "contact": "Kontakt",
+        "license": "Quelloffen unter AGPL-3.0"
+    },
+    "page": {
+        "back": "Zurück zur Startseite",
+        "updated": "Stand",
+        "draft": "Dieser Text ist noch ein Gerüst. Die Gliederung steht, die Inhalte müssen eingetragen und geprüft werden.",
+        "tbd": "TBD",
+        "imprint": {
+            "title": "Impressum",
+            "section01": {
+                "header": "Angaben gemäß § 5 DDG",
+                "body": "TBD - Name, Anschrift (keine Postfachadresse), Land"
+            },
+            "section02": {
+                "header": "Kontakt",
+                "body": "E-Mail: <a href='mailto:a.herz@freegroup.de'>a.herz@freegroup.de</a>"
+            },
+            "section03": {
+                "header": "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
+                "body": "TBD - Name und Anschrift"
+            },
+            "section04": {
+                "header": "Umsatzsteuer-Identifikationsnummer",
+                "body": "TBD - falls vorhanden, sonst Abschnitt streichen"
+            },
+            "section05": {
+                "header": "Streitschlichtung",
+                "body": "TBD - Hinweis auf die EU-Plattform zur Online-Streitbeilegung und Erklärung zur Teilnahme an einem Verbraucherschlichtungsverfahren"
+            },
+            "section06": {
+                "header": "Haftung für Inhalte und Links",
+                "body": "TBD"
+            },
+            "section07": {
+                "header": "Urheberrecht",
+                "body": "Die Software von Electra.Academy steht unter der AGPL-3.0-or-later. Einzelheiten stehen im <a href='https://github.com/freegroup/electra/blob/main/LICENSING.md' target='_blank' rel='noopener'>Lizenzhinweis</a>."
+            }
+        },
+        "cookies": {
+            "title": "Cookie-Richtlinie",
+            "section01": {
+                "header": "Was Cookies sind",
+                "body": "Cookies sind kleine Textdateien, die eine Website in deinem Browser ablegt. Daneben kann eine Website auch den <i>lokalen Speicher</i> (localStorage) deines Browsers nutzen. Beides erklären wir hier gemeinsam, weil beides Daten auf deinem Gerät speichert."
+            },
+            "section02": {
+                "header": "Welche Cookies wir setzen",
+                "body": "Wir setzen nur eigene, technisch notwendige Cookies. <b>Es werden keine Cookies von Drittanbietern gesetzt, und es findet keine Werbung und kein Tracking statt.</b><br><br><table><thead><tr><th>Name</th><th>Art</th><th>Zweck</th><th>Speicherdauer</th><th>Anbieter</th></tr></thead><tbody><tr><td><code>connect.sid</code></td><td>Cookie</td><td>Hält deine Sitzung zusammen und merkt sich, ob du angemeldet bist.</td><td>24 Stunden</td><td>Electra.Academy</td></tr><tr><td><code>i18nextLng</code></td><td>Lokaler Speicher</td><td>Merkt sich deine gewählte Sprache (Deutsch oder Englisch).</td><td>bis du ihn löschst</td><td>Electra.Academy</td></tr></tbody></table>"
+            },
+            "section03": {
+                "header": "Brauchen wir deine Einwilligung?",
+                "body": "Die oben genannten Einträge sind technisch notwendig, damit die Seite funktioniert und sich deine Sprache und deine Anmeldung merken kann. Für technisch notwendige Cookies ist nach § 25 Abs. 2 TDDDG keine Einwilligung erforderlich. Sobald wir jemals nicht notwendige Cookies einsetzen sollten - etwa für Statistik oder Werbung -, holen wir vorher deine Einwilligung ein und ergänzen diese Seite."
+            },
+            "section04": {
+                "header": "Wie du Cookies löschst oder blockierst",
+                "body": "Du kannst Cookies und den lokalen Speicher jederzeit in den Einstellungen deines Browsers ansehen, einzeln löschen oder ganz blockieren. Wenn du die technisch notwendigen Einträge blockierst, funktionieren die Anmeldung und das Merken der Sprache möglicherweise nicht mehr."
+            }
+        },
+        "privacy": {
+            "title": "Datenschutzerklärung",
+            "section01": {
+                "header": "Das Wichtigste in Kürze",
+                "body": "TBD - vier bis fünf Sätze in Klartext: Wo liegen die Daten? Brauchen Schülerinnen und Schüler eigene Konten? Was passiert beim Löschen? Gibt es Werbung oder Tracking?"
+            },
+            "section02": {
+                "header": "Verantwortlicher",
+                "body": "TBD - Name, Anschrift, Kontakt"
+            },
+            "section03": {
+                "header": "Was wir erheben und warum",
+                "body": "TBD"
+            },
+            "section04": {
+                "header": "Rechtsgrundlage",
+                "body": "TBD - Art. 6 DSGVO, bei Minderjährigen zusätzlich Art. 8 DSGVO"
+            },
+            "section05": {
+                "header": "Konten von Schülerinnen und Schülern",
+                "body": "TBD - Werden eigene Konten benötigt? Wer legt sie an? Einwilligung der Erziehungsberechtigten?"
+            },
+            "section06": {
+                "header": "Wann wir Daten weitergeben",
+                "body": "TBD - Auftragsverarbeiter, Hosting, Drittanbieter"
+            },
+            "section07": {
+                "header": "Wo Seite und Daten liegen",
+                "body": "TBD - Serverstandort, Übermittlung in Drittländer"
+            },
+            "section08": {
+                "header": "Speicherdauer",
+                "body": "TBD"
+            },
+            "section09": {
+                "header": "Was beim Löschen passiert",
+                "body": "TBD"
+            },
+            "section10": {
+                "header": "Deine Rechte",
+                "body": "TBD - Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch, Beschwerde bei der Aufsichtsbehörde"
+            },
+            "section11": {
+                "header": "Wie wir Daten absichern",
+                "body": "TBD"
+            },
+            "section12": {
+                "header": "Änderungen und Fragen",
+                "body": "TBD"
+            }
+        },
+        "terms": {
+            "title": "Nutzungsbedingungen",
+            "section01": {
+                "header": "Geltungsbereich",
+                "body": "TBD"
+            },
+            "section02": {
+                "header": "Dein Konto",
+                "body": "TBD"
+            },
+            "section03": {
+                "header": "Was du darfst",
+                "body": "TBD - Nutzung im Unterricht, eigene Schaltungen, Weitergabe von Materialien"
+            },
+            "section04": {
+                "header": "Was du nicht darfst",
+                "body": "TBD"
+            },
+            "section05": {
+                "header": "Deine Inhalte",
+                "body": "TBD - Wem gehören erstellte Schaltungen und Materialien?"
+            },
+            "section06": {
+                "header": "Verfügbarkeit",
+                "body": "TBD - kostenloses Angebot, keine Verfügbarkeitszusage"
+            },
+            "section07": {
+                "header": "Haftung",
+                "body": "TBD"
+            },
+            "section08": {
+                "header": "Änderungen dieser Bedingungen",
+                "body": "TBD"
+            }
+        },
+        "about": {
+            "title": "Über uns",
+            "section01": {
+                "header": "Was Electra.Academy ist",
+                "body": "TBD"
+            },
+            "section02": {
+                "header": "Für wen",
+                "body": "TBD - Schulen, Lehrkräfte, Schülerinnen und Schüler, Maker"
+            },
+            "section03": {
+                "header": "Wer dahintersteht",
+                "body": "TBD"
+            },
+            "section04": {
+                "header": "Quelloffen",
+                "body": "Der gesamte Quellcode liegt öffentlich auf <a href='https://github.com/freegroup/electra' target='_blank' rel='noopener'>GitHub</a> und steht unter der AGPL-3.0-or-later. Für Schulen, Bildungseinrichtungen und gemeinnützige Gruppen ist die Nutzung kostenlos."
+            },
+            "section05": {
+                "header": "Mitmachen",
+                "body": "<ul><li>Fehler melden: <a href='https://github.com/freegroup/electra/issues' target='_blank' rel='noopener'>Issues</a></li><li>Fragen und Austausch: <a href='https://github.com/freegroup/electra/discussions' target='_blank' rel='noopener'>Forum</a></li><li>Direkt schreiben: <a href='mailto:a.herz@freegroup.de'>a.herz@freegroup.de</a></li></ul>"
+            }
+        }
+    }
 }

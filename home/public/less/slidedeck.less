@@ -1,5 +1,11 @@
 .slidedeck {
-    position: absolute;
+    // relative, not absolute: as an absolutely positioned box this section was
+    // out of the flow, so anything after it (the footer) rendered on top of it
+    // instead of below. It stays a positioned ancestor either way, so the
+    // absolutely placed colour layers and the sticky cards inside are
+    // unaffected - and the page no longer depends on an out-of-flow element
+    // contributing its height to the scroll area.
+    position: relative;
     height: 400vh;
     width: 100%;
     background-image: linear-gradient(135deg, #e13f4d, #d34657);
@@ -42,6 +48,15 @@
     .card {
         position: sticky;
         z-index: 1000;
+
+        // A sticky box is released at the bottom of its containing block, and
+        // every card's container ends exactly where the footer begins - which
+        // is why they used to stay pinned on top of it. The bottom margin
+        // counts towards that limit, so 100vh releases them one screen early:
+        // they scroll up and out while the blue closing panel is showing, and
+        // the footer arrives on an empty stage.
+        margin-bottom: 100vh;
+
         width: 25%;
         height: 50vh;
         border-radius: @borderRadiusBig;

@@ -1,0 +1,132 @@
+// Site footer, four columns: brand 40%, then three link lists at 20% each.
+// Built by js/Footer.js so the link list lives in one place.
+
+.siteFooter {
+    position: relative;
+    // The cards release one screen before the footer (see the bottom margin in
+    // slidedeck.less), so they never reach it. This only guards the overlap
+    // during the transition - .slidedeck opens no stacking context, so its
+    // cards at z-index 1000 would otherwise paint over the footer.
+    z-index: 1100;
+    background-color: #1b1b3a;
+    color: #cfd0e0;
+    font-size: 15px;
+    line-height: 1.5;
+
+    .inner {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 70px 60px 50px;
+    }
+
+    .brand {
+        flex: 0 0 40%;
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            display: block;
+        }
+
+        .name {
+            margin-top: 12px;
+            font-size: 20px;
+            font-weight: 400;
+            color: #fff;
+        }
+
+        .tagline {
+            margin: 16px 0 0;
+            max-width: 42ch;
+        }
+    }
+
+    .column {
+        flex: 0 0 20%;
+        display: flex;
+        flex-direction: column;
+        // Column headings and the first link should sit on the same baseline as
+        // the brand name, not as the logo above it.
+        padding-top: 60px;
+
+        .heading {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        a {
+            color: #cfd0e0;
+            text-decoration: none;
+            padding: 6px 0;
+
+            &:hover,
+            &:focus {
+                color: #fff;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 22px 60px 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+        font-size: 14px;
+        color: #9a9bb4;
+
+        a {
+            color: #9a9bb4;
+            text-decoration: none;
+
+            &:hover,
+            &:focus {
+                color: #fff;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+// The start page uses scroll-snap and stacks absolutely positioned sections;
+// the footer must not be pulled into that flow.
+.siteFooter {
+    scroll-snap-align: none;
+}
+
+@media (max-width: 900px) {
+    .siteFooter {
+        .inner {
+            flex-direction: column;
+            gap: 30px;
+            padding: 45px 25px 30px;
+        }
+
+        .brand,
+        .column {
+            flex: 1 1 auto;
+            width: 100%;
+        }
+
+        .column {
+            padding-top: 0;
+        }
+
+        .bottom {
+            padding: 20px 25px 25px;
+        }
+    }
+}

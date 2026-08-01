@@ -1,0 +1,199 @@
+// Static content pages: /home/de/*.html and /home/en/*.html
+//
+// Those pages carry their text in the HTML and load only content.js, which
+// mounts the shared Header and Footer - no jQuery, no Bootstrap, no i18next, no
+// analytics, no cookie. With that script blocked the text and its styling still
+// render. They pull in bundle.css, which is why these rules live in the home
+// LESS: one source for the whole site rather than a second private stylesheet.
+//
+// Everything is scoped to body.contentPageBody so none of it leaks into the
+// start page, and so the start page's own rules can be undone where they would
+// get in the way.
+
+body.contentPageBody {
+    // index.less puts scroll snapping on every body. On a text page that throws
+    // the reader between sections instead of letting them read.
+    scroll-snap-type: none;
+    overflow-y: auto;
+
+    background-color: rgb(245, 248, 255);
+    color: #333;
+    // NOTE: no font-size here. It would inherit into the shared app bar and
+    // footer, and because their icon sizes are em-based the language button and
+    // its icon would grow with it - the bar then no longer matches the rest of
+    // the site. Reading typography belongs on the text, not on the document.
+
+    // The page frame. NOT called .layout: hero.less already claims that name
+    // with height:100vh, which would cut these pages off after one screen.
+    .contentLayout {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    // The shared Header wraps the logo in a link back to the start page.
+    // Nothing else: NO display:flex here. As a flex item the inlined SVG has no
+    // intrinsic size and collapses to 0x0, while on the start page the same
+    // element is a plain block and takes its 40px from .appbar .icon. That one
+    // extra rule was the whole difference between the two bars.
+    .appbar .brandLink {
+        text-decoration: none;
+    }
+
+    // --- the text -----------------------------------------------------------
+
+    main {
+        flex: 1 0 auto;
+        padding: 45px 25px 80px;
+        font-size: 17px;
+        line-height: 1.65;
+    }
+
+    .backLink {
+        display: block;
+        max-width: 72ch;
+        margin: 0 auto 28px;
+        color: rgb(var(--tint-color));
+        text-decoration: none;
+        font-size: 15px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    article {
+        // ~65-75 characters is the readable range; without this a legal
+        // paragraph runs the full window width.
+        max-width: 72ch;
+        margin: 0 auto;
+
+        h1 {
+            font-weight: 300;
+            font-size: calc(24px + 1vw);
+            line-height: 1.15;
+            color: rgb(var(--tint-color));
+            margin: 0 0 22px;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: calc(17px + 0.4vw);
+            line-height: 1.25;
+            color: rgb(var(--tint-color));
+            margin: 46px 0 12px;
+            // a deep link should not hide the heading under the top bar
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-weight: 500;
+            font-size: 17px;
+            margin: 28px 0 8px;
+        }
+
+        p {
+            margin: 0 0 18px;
+        }
+
+        ul,
+        ol {
+            margin: 0 0 18px;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        a {
+            color: rgb(var(--tint-color));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 24px;
+
+            th,
+            td {
+                text-align: left;
+                padding: 10px 12px;
+                border-bottom: 1px solid #dcdfea;
+            }
+        }
+    }
+
+    .updated {
+        margin: 0 0 30px;
+        font-size: 14px;
+        color: #6b6b7b;
+    }
+
+    .draftNote {
+        margin: 0 0 26px;
+        padding: 14px 16px;
+        border-left: 4px solid rgb(var(--tint-color));
+        background: #fff;
+        border-radius: 0 @borderRadiusSmall @borderRadiusSmall 0;
+        font-size: 15px;
+
+        &.warn {
+            border-left-color: #c9750d;
+            background: #fff8ef;
+        }
+    }
+
+    // The footer markup on these pages is static, so it cannot rely on the
+    // stacking fix that the start page needs against the sticky cards.
+    .siteFooter {
+        z-index: auto;
+    }
+
+    @media (max-width: 900px) {
+        main {
+            padding: 30px 20px 55px;
+        }
+
+        article h1 {
+            font-size: calc(20px + 1vw);
+        }
+    }
+}
+
+// --- print -------------------------------------------------------------------
+// Schools print legal texts and file them, so print gets a real layout instead
+// of a screenshot of the screen version.
+
+@media print {
+    body.contentPageBody {
+        background: #fff;
+        font-size: 11pt;
+
+        .appbar,
+        .siteFooter,
+        .backLink {
+            display: none;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        article {
+            max-width: none;
+
+            h1,
+            h2,
+            a {
+                color: #000;
+            }
+
+            // A printed link is useless without its target.
+            a[href^="http"]::after {
+                content: " (" attr(href) ")";
+                font-size: 9pt;
+            }
+        }
+    }
+}

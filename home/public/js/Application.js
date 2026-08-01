@@ -1,6 +1,10 @@
 import AppFrame from "../../common/js/ApplicationFrame"
+import AppSwitch from "../../common/js/AppSwitch"
+import LngSwitch from "../../common/js/LngSwitch"
 import party from "party-js";
 import conf from "./Configuration"
+import Header from "./Header"
+import Footer from "./Footer"
 
 class Application extends AppFrame{
   constructor() {
@@ -8,10 +12,28 @@ class Application extends AppFrame{
   }
 
   init(permissions) {
-    super.init(permissions, conf)
+    // Deliberately NOT super.init(). That would also construct Userinfo, which
+    // calls google.accounts.id.initialize() and therefore needs the Google
+    // sign-in client loaded from accounts.google.com.
+    //
+    // This is the landing page. Nobody has to sign in to read it, and a school
+    // should not have a request to Google fired at them before they have agreed
+    // to anything. Sign-in stays in the apps that actually save work - they are
+    // untouched by this.
+    this.permissions = permissions
+
+    // The header first: AppSwitch and LngSwitch append themselves into .appbar,
+    // so the bar has to exist before they run. The content sub-pages give an
+    // i18n key for the subtitle (their text lives in the i18n files); the start
+    // page has a literal "Home".
+    const subtitleKey = document.body.getAttribute("data-appbar-subtitle-i18n")
+    this.header = new Header(".appbarMount",
+      subtitleKey ? { subtitleKey } : { subtitle: "Home" })
+    this.appSwitch = new AppSwitch(permissions)
+    this.lngSwitch = new LngSwitch(permissions)
+    this.footer = new Footer()
 
     return new Promise( (resolve, reject) => {
-
       $(".launchArea .electra-button").one("mouseover", function(){party.confetti(this)})
       resolve(this)
     })

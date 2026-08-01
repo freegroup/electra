@@ -2,7 +2,11 @@
 
 @leftPaneWidth:0;
 
-@toolbarHeight:60;
+// Must carry a unit and match common/less/layout/variables.less (60px). This
+// file is imported AFTER common's, so a unitless 60 here wins and turns e.g.
+// the app-bar icon rule `@toolbarHeight - 20` into `40` (no unit) - which the
+// browser drops, collapsing the logo to 0x0.
+@toolbarHeight:60px;
 
 @toolbarButtonFontColor:rgba(0,0,0,0.5);
 
