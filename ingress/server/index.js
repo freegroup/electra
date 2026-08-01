@@ -219,13 +219,6 @@ app.use((req, res, next) => {
     next()
 })
 
-// The legal app is gone; its documents are content pages under /home now. Old
-// bookmarks, search results and links in other people's material still point
-// here, so answer them with a permanent redirect instead of a 404. The privacy
-// policy is the page most of those links were after; the footer takes readers
-// from there to the imprint, cookies and terms.
-app.get(/^\/legal(\/.*)?$/, (req, res) => res.redirect(301, '/home/privacy.html'))
-
 app.use('/home',         prefixed('/home',         PORT_HOME))
 app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
 app.use('/gamification', prefixed('/gamification', PORT_GAMIFICATION))
