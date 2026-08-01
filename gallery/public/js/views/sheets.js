@@ -1,5 +1,4 @@
 import axios from "axios"
-import party from "party-js"
 import inlineSVG from "../../../common/js/inlineSVG"
 import conf from "../Configuration"
 
@@ -51,10 +50,6 @@ class View {
             <img loading="lazy" src="${conf.sheets.backend[sheet.scope].image(sheet.imagePath)}"/>
             ${downloadBar}
           </div>
-          <div class="rating">
-            <div class="star">&#9734;</div>
-            <div class="counter">####</div>
-          </div>
       </div>`)
     });
 
@@ -67,53 +62,11 @@ class View {
       $(".search-input").focus()
     })
 
-    const tiles = document.querySelectorAll(".tile");
-    let observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            const tile = $(entry.target)
-            this.loadTile(tile)
-            observer.unobserve(entry.target)
-        });
-        }, {threshold: [0.1]}
-    );
-    
-    tiles.forEach((tile) => {observer.observe(tile)})
+    // NOTE: there used to be an IntersectionObserver here whose only job was
+    // fetching the "likes" count per tile once it scrolled into view. That
+    // service is gone, and the images lazy-load natively (loading="lazy"), so
+    // the observer had nothing left to do.
     inlineSVG.init()
-  }
-
-  loadTile(tile){
-    let rating = tile.find(".rating")    
-    let star = tile.find(".star")
-    let counter = tile.find(".counter")
-    let fullName = tile.data("fullname")
-    axios.get("../gamification/like?objectId=sheets:"+fullName)
-    .then( (res) =>{
-      counter.html(res.data.count)
-      if(res.data.canLike){
-        rating.addClass("notRated")
-        rating.one("click", ()=>{
-          party.confetti(star[0])
-          axios({
-            method: 'post',
-            url: '../gamification/like',
-            data: {objectId: "sheets:"+fullName}
-          })
-          .then( (updatedRating)=>{
-            let newRating = updatedRating.data
-            star.html("&#9733;")
-            counter.html(newRating.count.toString())
-            rating.removeClass("notRated")
-          })
-        })
-      }
-      else{
-        star.html("&#9733;")
-      }
-    })
-    .catch( exc => {
-      console.log(exc)
-    })
   }
 
 

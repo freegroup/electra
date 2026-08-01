@@ -72,12 +72,6 @@
     community.general.npm:
       path: /home/electra/server/gallery
 
-  - name: Install packages in /gamification
-    become: true
-    become_user: electra
-    community.general.npm:
-      path: /home/electra/server/gamification
-
   - name: Install packages in /ingress
     become: true
     become_user: electra

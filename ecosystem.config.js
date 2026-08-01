@@ -51,13 +51,6 @@ module.exports = {
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
-          },          
-          {
-            name   : "gamification",
-            cwd : "./gamification",
-            script: "node",
-            args: "./server/index",
-            env: { "NODE_ENV": "production"}
           },
           {
             name   : "database",

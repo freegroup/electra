@@ -1,7 +1,6 @@
 import axios from "axios"
 import ToastEditor from '@toast-ui/editor';
 import '@toast-ui/editor/dist/toastui-editor.css'; // Editor's Style
-import party from "party-js"
 
 import conf from "../Configuration"
 let storage = require('../../../common/js/BackendStorage').default(conf.shapes)
@@ -42,7 +41,6 @@ class View {
       <div class="tile" data-type="${shape.type}" data-fullname="${shape.fullName}" data-scope="${shape.scope}" data-markdown="${conf.shapes.backend[shape.scope].file(mkFile)}">
         <div class="image">
           <img loading="lazy" src="${conf.shapes.backend[shape.scope].image(shape.imagePath)}"/>
-          <div class="rating"><div class="star">&#9734;</div><div class="counter">####</div></div>
         </div>
 
         <div class="details">
@@ -81,42 +79,14 @@ class View {
     descriptions.forEach((desc) => {observer.observe(desc)})
   }
 
+  // Loads the tile's description. This used to chain a "likes" round-trip after
+  // it; that service is gone, so only the markdown remains.
   loadTile(tile){
     let desc = tile.find(".description")
-    let rating = tile.find(".rating")    
-    let star = tile.find(".star")
-    let counter = tile.find(".counter")
     let newURL = tile.data("markdown")
-    let fullName = tile.data("fullname")
     axios.get(newURL)
     .then((response) => {
       desc.html(md.render(response.data))
-    })
-    .then( ()=>{
-      return axios.get("../gamification/like?objectId=shape:"+fullName)
-    })
-    .then( (res) =>{
-      counter.html(res.data.count)
-      if(res.data.canLike){
-        rating.addClass("notRated")
-        rating.one("click", ()=>{
-          party.confetti(rating[0])
-          axios({
-            method: 'post',
-            url: '../gamification/like',
-            data: {objectId: "shape:"+fullName}
-          })
-          .then( (updatedRating)=>{
-            let newRating = updatedRating.data
-            star.html("&#9733;")
-            counter.html(newRating.count.toString())
-            rating.removeClass("notRated")
-          })
-        })
-      }
-      else{
-        star.html("&#9733;")
-      }
     })
     .catch( exc => {
       console.log(exc)
