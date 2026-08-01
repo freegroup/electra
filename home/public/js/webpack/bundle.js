@@ -75,12 +75,6 @@ class AppSwitch {
                         <div>Channel</div>
                       </label>
 
-                      <label class="applicationSwitchLegal image-button" >
-                        <img src="/common/images/app_legal.svg"/>
-                        <div>Terms of Use</div>
-                        <div>Privacy</div>
-                      </label>
-
                       <label class="applicationSwitchCoffee image-button" >
                         <img src="/common/images/app_coffee.svg"/>
                         <div>Send me a</div>
@@ -93,9 +87,6 @@ class AppSwitch {
     $(".applicationSwitch").prepend(appSwitchButtons);
     $(".applicationSwitchYoutube").off("click").on("click", () => {
       window.open("https://www.youtube.com/@electra.academy", "youtube");
-    });
-    $(".applicationSwitchLegal").off("click").on("click", () => {
-      window.open("../legal", "legal");
     });
     $(".applicationSwitchGallery").off("click").on("click", () => {
       window.open("../gallery", "gallery");
@@ -1010,7 +1001,7 @@ exports["default"] = void 0;
 // The right-hand side is an empty .applicationSwitch container that AppSwitch
 // prepends its buttons into, and LngSwitch appends its own group next to it -
 // the same widgets the apps use. No user menu here on purpose: the landing
-// page and the legal pages run no Userinfo, so a sign-in button would either do
+// page and the content sub-pages run no Userinfo, so a sign-in button would either do
 // nothing or pull in the Google sign-in client.
 
 class Header {

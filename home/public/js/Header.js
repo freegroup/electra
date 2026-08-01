@@ -6,7 +6,7 @@
 // The right-hand side is an empty .applicationSwitch container that AppSwitch
 // prepends its buttons into, and LngSwitch appends its own group next to it -
 // the same widgets the apps use. No user menu here on purpose: the landing
-// page and the legal pages run no Userinfo, so a sign-in button would either do
+// page and the content sub-pages run no Userinfo, so a sign-in button would either do
 // nothing or pull in the Google sign-in client.
 
 export default class Header {

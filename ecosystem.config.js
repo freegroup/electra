@@ -1,12 +1,5 @@
 module.exports = {
-    apps : [
-          {
-            name   : "legal",
-            cwd : "./legal",
-            script: "node",
-            args: "./server/index",
-            env: { "NODE_ENV": "production"}
-          },          
+    apps : [          
           {
             name   : "author",
             cwd : "./author",

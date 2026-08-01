@@ -51,12 +51,6 @@ export default class AppSwitch {
                         <div>Channel</div>
                       </label>
 
-                      <label class="applicationSwitchLegal image-button" >
-                        <img src="/common/images/app_legal.svg"/>
-                        <div>Terms of Use</div>
-                        <div>Privacy</div>
-                      </label>
-
                       <label class="applicationSwitchCoffee image-button" >
                         <img src="/common/images/app_coffee.svg"/>
                         <div>Send me a</div>
@@ -70,9 +64,6 @@ export default class AppSwitch {
 
     $(".applicationSwitchYoutube").off("click").on("click", () => {
       window.open("https://www.youtube.com/@electra.academy", "youtube")
-    })
-    $(".applicationSwitchLegal").off("click").on("click", () => {
-      window.open("../legal", "legal")
     })
     $(".applicationSwitchGallery").off("click").on("click", () => {
       window.open("../gallery", "gallery")

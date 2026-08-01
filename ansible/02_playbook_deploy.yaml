@@ -36,12 +36,6 @@
     community.general.npm:
       path: /home/electra/server/author
     
-  - name: Install packages in /legal
-    become: true
-    become_user: electra
-    community.general.npm:
-      path: /home/electra/server/legal
-
   - name: Install packages in /brains
     become: true
     become_user: electra
@@ -132,13 +126,6 @@
     command: npm run build
     args:
       chdir: /home/electra/server/gallery
-
-  - name: Build /legal
-    become: true
-    become_user: electra
-    command: npm run build
-    args:
-      chdir: /home/electra/server/legal
 
   - name: Build /home
     become: true

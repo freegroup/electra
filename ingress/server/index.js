@@ -65,7 +65,6 @@ const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable POR
 const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
-const PORT_LEGAL = process.env.PORT_LEGAL || die("missing env variable PORT_LEGAL");
 const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
 const PORT_GAMIFICATION = process.env.PORT_GAMIFICATION || die("missing env variable PORT_GAMIFICATION");
 const PORT_GAME = process.env.PORT_GAME || die("missing env variable PORT_GAME");
@@ -221,7 +220,6 @@ app.use((req, res, next) => {
 })
 
 app.use('/home',         prefixed('/home',         PORT_HOME))
-app.use('/legal',        prefixed('/legal',        PORT_LEGAL))
 app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
 app.use('/gamification', prefixed('/gamification', PORT_GAMIFICATION))
 app.use('/userinfo',     prefixed('/userinfo',     PORT_USERINFO))
