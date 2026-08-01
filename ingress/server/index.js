@@ -65,8 +65,6 @@ const PORT_USERINFO = process.env.PORT_USERINFO || die("missing env variable POR
 const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
-const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
-const PORT_GAME = process.env.PORT_GAME || die("missing env variable PORT_GAME");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 const API_SERVICE_URL = "http://"+LOCALHOST;
@@ -219,7 +217,6 @@ app.use((req, res, next) => {
 })
 
 app.use('/home',         prefixed('/home',         PORT_HOME))
-app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
 app.use('/userinfo',     prefixed('/userinfo',     PORT_USERINFO))
 app.use('/designer',     prefixed('/designer',     PORT_DESIGNER))
 app.use('/author',       prefixed('/author',       PORT_AUTHOR))
@@ -236,12 +233,6 @@ app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
 app.use('/common',       prefixed('/common',       PORT_COMMON))
 app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
-app.use('/game', createProxyMiddleware({
-    target: API_SERVICE_URL+":"+PORT_GAME,
-    changeOrigin: true,
-    ws: true,
-    on: { proxyReq: onProxyReq, proxyRes: onProxyRes }
-}))
 
 
 // Google auth endpoints

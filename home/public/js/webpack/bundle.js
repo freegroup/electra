@@ -63,11 +63,6 @@ class AppSwitch {
                         <div>Designer</div>
                       </label>
 
-                      <label class="applicationSwitchGallery image-button" >
-                        <img src="/common/images/app_gallery.svg"/>
-                        <div>Community</div>
-                        <div>Gallery</div>
-                      </label>
 
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="/common/images/app_youtube.svg"/>
@@ -87,9 +82,6 @@ class AppSwitch {
     $(".applicationSwitch").prepend(appSwitchButtons);
     $(".applicationSwitchYoutube").off("click").on("click", () => {
       window.open("https://www.youtube.com/@electra.academy", "youtube");
-    });
-    $(".applicationSwitchGallery").off("click").on("click", () => {
-      window.open("../gallery", "gallery");
     });
     $(".applicationSwitchDesigner").off("click").on("click", () => {
       window.open("../designer", "designer");
@@ -955,7 +947,6 @@ class Footer {
             <a href="/simulator">Simulator</a>
             <a href="/author">Author</a>
             <a href="/designer">Designer</a>
-            <a href="/gallery" data-i18n="footer.gallery"></a>
           </nav>
 
           <nav class="column">

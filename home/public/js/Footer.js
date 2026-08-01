@@ -56,7 +56,6 @@ export default class Footer {
             <a href="/simulator">Simulator</a>
             <a href="/author">Author</a>
             <a href="/designer">Designer</a>
-            <a href="/gallery" data-i18n="footer.gallery"></a>
           </nav>
 
           <nav class="column">

@@ -66,12 +66,6 @@
     community.general.npm:
       path: /home/electra/server/home
 
-  - name: Install packages in /gallery
-    become: true
-    become_user: electra
-    community.general.npm:
-      path: /home/electra/server/gallery
-
   - name: Install packages in /ingress
     become: true
     become_user: electra
@@ -113,13 +107,6 @@
     become_user: electra
     community.general.npm:
       path: /home/electra/server/userinfo
-
-  - name: Build /gallery
-    become: true
-    become_user: electra
-    command: npm run build
-    args:
-      chdir: /home/electra/server/gallery
 
   - name: Build /home
     become: true

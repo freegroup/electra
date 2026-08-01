@@ -39,11 +39,6 @@ export default class AppSwitch {
                         <div>Designer</div>
                       </label>
 
-                      <label class="applicationSwitchGallery image-button" >
-                        <img src="/common/images/app_gallery.svg"/>
-                        <div>Community</div>
-                        <div>Gallery</div>
-                      </label>
 
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="/common/images/app_youtube.svg"/>
@@ -64,9 +59,6 @@ export default class AppSwitch {
 
     $(".applicationSwitchYoutube").off("click").on("click", () => {
       window.open("https://www.youtube.com/@electra.academy", "youtube")
-    })
-    $(".applicationSwitchGallery").off("click").on("click", () => {
-      window.open("../gallery", "gallery")
     })
     $(".applicationSwitchDesigner").off("click").on("click", () => {
       window.open("../designer", "designer")

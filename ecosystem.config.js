@@ -44,13 +44,6 @@ module.exports = {
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
-          },          
-          {
-            name   : "gallery",
-            cwd : "./gallery",
-            script: "node",
-            args: "./server/index",
-            env: { "NODE_ENV": "production"}
           },
           {
             name   : "database",

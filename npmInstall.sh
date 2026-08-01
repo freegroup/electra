@@ -19,9 +19,6 @@ set -x
 (cd ./designer && npm install )
 (cd ./designer && npm run build)
 
-(cd ./gallery && rm -rf node_modules )  
-(cd ./gallery && npm install )
-(cd ./gallery && npm run build)
 
 (cd ./home && rm -rf node_modules )  
 (cd ./home && npm install )
