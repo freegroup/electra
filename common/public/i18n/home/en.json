@@ -127,52 +127,32 @@
         "privacy": {
             "title": "Privacy Policy",
             "section01": {
-                "header": "The short version",
-                "body": "TBD - four or five plain sentences: where is the data, do students need their own accounts, what happens when you delete, is there advertising or tracking."
+                "header": "Controller",
+                "body": "The controller for the processing described here is the provider named in the <a href=\"/home/imprint.html\">imprint</a>, where you will also find the full contact details."
             },
             "section02": {
-                "header": "Controller",
-                "body": "TBD - name, address, contact"
+                "header": "What we store and why",
+                "body": "<b>Without signing in, we store no personal data about you.</b> You can read the start page, the legal texts and use the simulator without us knowing who you are.<br><br>Once you sign in, we store your <b>e-mail address</b>. It is the key that ties together:<ul><li>which circuits and documents belong to you</li><li>which groups or classes you belong to, and what that gives you access to</li></ul>The e-mail address is stored in clear text, not encrypted or obscured. That is a deliberate choice: teachers assemble groups by e-mail address, so obscuring it would only provide apparent security.<br><br>We do <b>not</b> evaluate what you look at, how long you stay or where you came from. There is no profiling and no disclosure for advertising purposes."
             },
             "section03": {
-                "header": "What we collect and why",
-                "body": "TBD"
+                "header": "Signing in with Google",
+                "body": "Signing in works via <b>Google Single Sign-On</b>. You need a Google account for it - there is no separate password with us.<br><br><b>When Google is involved at all:</b> Google's sign-in code is loaded only inside the applications (simulator, author, designer, gallery). On the start page and on these information pages <b>nothing</b> is loaded from Google - you can read them in full without any connection to Google being made.<br><br><b>What Google passes to us</b> when you sign in: e-mail address, display name, given and family name, and the address of your profile picture. Of these we permanently store only the e-mail address (see above); name and picture are held for the duration of your session only, to show you in the interface.<br><br><b>Transfer to the USA:</b> Google is a US company. Signing in transfers data to the United States, a country outside the EU. The legal basis is your consent under Art. 6(1)(a) GDPR - you give it by choosing to sign in. If you would rather not, use the platform without signing in.<br><br><b>Minors:</b> Art. 8 GDPR governs consent by minors; in Germany, consent by a parent or guardian is required for children under 16. Before using the platform with sign-in, schools should check whether they may require learners to hold an account with a commercial provider - several federal states restrict this."
             },
             "section04": {
-                "header": "Legal basis",
-                "body": "TBD - Art. 6 GDPR, and Art. 8 GDPR for minors"
+                "header": "Server log files",
+                "body": "Technical log data is produced when the site is accessed, as with any web server. These logs are <b>anonymous</b>: they contain <b>no e-mail addresses</b> and are <b>not evaluated to trace the behaviour of individuals</b>. They are not combined with your account and no usage profiles are created."
             },
             "section05": {
-                "header": "Student accounts",
-                "body": "TBD - are accounts needed? who creates them? parental consent?"
+                "header": "Legal basis",
+                "body": "We process personal data only where there is a legal basis for it:<ul><li><b>Art. 6(1)(b) GDPR</b> (performance of a contract) for everything belonging to signed-in operation - your account, your saved circuits and documents, and group membership.</li><li><b>Art. 6(1)(a) GDPR</b> (consent) for signing in via Google and the transfer to the USA that comes with it. You give it by choosing to sign in, and may withdraw it at any time by no longer signing in or having your account deleted.</li><li><b>Art. 6(1)(f) GDPR</b> (legitimate interests) for the technical log data needed for secure and trouble-free operation.</li></ul>For minors, Art. 8 GDPR applies in addition."
             },
             "section06": {
-                "header": "When we share your information",
-                "body": "TBD - processors, hosting, third parties"
+                "header": "Location of site and data",
+                "body": "The application and all stored content are hosted on <b>servers in Europe</b> and are therefore subject to the GDPR.<br><br>There is one exception: <b>signing in via Google</b>. That transfers data to a US company and thus to a third country - see the section on signing in with Google for details. If you use the platform without signing in, your data does not leave the European legal area."
             },
             "section07": {
-                "header": "Location of site and data",
-                "body": "TBD - server location, transfer to third countries"
-            },
-            "section08": {
-                "header": "Data retention",
-                "body": "TBD"
-            },
-            "section09": {
-                "header": "What happens when you delete content",
-                "body": "TBD"
-            },
-            "section10": {
                 "header": "Your rights",
-                "body": "TBD - access, rectification, erasure, restriction, portability, objection, complaint to the supervisory authority"
-            },
-            "section11": {
-                "header": "How we secure your data",
-                "body": "TBD"
-            },
-            "section12": {
-                "header": "Changes and questions",
-                "body": "TBD"
+                "body": "Under the GDPR you have the following rights:<ul><li><b>Access</b> (Art. 15) to the data we process about you</li><li><b>Rectification</b> of inaccurate data (Art. 16)</li><li><b>Erasure</b> (Art. 17)</li><li><b>Restriction</b> of processing (Art. 18)</li><li><b>Data portability</b> (Art. 20)</li><li><b>Objection</b> to processing (Art. 21)</li><li><b>Withdrawal</b> of consent given (Art. 7(3)), effective for the future</li></ul>An informal e-mail to the address given in the <a href=\"/home/imprint.html\">imprint</a> is enough for any of these.<br><br>You also have the right to <b>lodge a complaint with a data protection supervisory authority</b> (Art. 77 GDPR), usually the authority of your federal state or your habitual residence."
             }
         },
         "terms": {
@@ -212,21 +192,14 @@
         },
         "about": {
             "title": "About us",
+            "intro": "Electra.Academy is a workshop for digital circuits in your browser. Drag gates onto the canvas, wire them up, and watch what happens - no setup, no installation, no waiting for the lab to be free.<br><br>The difference to a picture in a textbook: here the circuit is <b>alive</b>. Flip a switch and you can see the current run through the wires. Build something wrong and you see <i>why</i> it does not work. That is the moment understanding happens - not while memorising a truth table.",
             "section01": {
-                "header": "What Electra.Academy is",
-                "body": "TBD"
+                "header": "Who is behind it",
+                "body": "A single developer, by conviction - and has been since university.<br><br>Back then I got hooked on the question of how to not merely draw a circuit but <i>bring it to life</i>. That question never let go. Out of it grew first <a href=\"https://freegroup.github.io/draw2d/#/examples\" target=\"_blank\" rel=\"noopener\">draw2d.js</a>, an open source library for drawing and connecting diagrams in the browser that is used in projects around the world today - and then Electra.Academy, built right on top of it. What you drag across the canvas here is that same engine.<br><br>Both grew over years of evenings and weekends, with no company behind it, no investor, no marketing budget. The motivation is simple: <b>digital electronics makes sense once you are allowed to touch it.</b> Most people meet it as an abstract collection of formulas and give up before the good part starts. It does not have to be that way.<br><br>That is why there is no tracking, no advertising and no paywall. Not as a marketing promise - but because that is what a tool for schools should look like."
             },
             "section02": {
-                "header": "Who it is for",
-                "body": "TBD - schools, teachers, students, makers"
-            },
-            "section03": {
-                "header": "Who is behind it",
-                "body": "TBD"
-            },
-            "section04": {
-                "header": "Open source",
-                "body": "All source code is public on <a href='https://github.com/freegroup/electra' target='_blank' rel='noopener'>GitHub</a> under AGPL-3.0-or-later. Free to use for schools, educational institutions and non-profit groups."
+                "header": "Open source, and we mean it",
+                "body": "All source code is public on <a href=\"https://github.com/freegroup/electra\" target=\"_blank\" rel=\"noopener\">GitHub</a> under AGPL-3.0-or-later. Free to use for schools, educational institutions and non-profit groups.<br><br>Open source here also means you can check what happens. No hidden scripts, no analytics in the background, no service quietly collecting data. If you prefer, run the platform on your own school server - the code belongs to everyone.<br><br>And because one person cannot see everything: feedback from real lessons is the most valuable thing this project can get. What is missing, what gets in the way, what confuses students - please write. The ways to reach us are in the footer of this page."
             }
         }
     }
