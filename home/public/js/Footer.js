@@ -52,8 +52,7 @@ export default class Footer {
           </nav>
 
           <nav class="column">
-            <div class="heading" data-i18n="footer.resources"></div>
-            <a href="${GITHUB}" ${ext} data-i18n="footer.code"></a>
+            <div class="heading" data-i18n="footer.apps"></div>
             <a href="/simulator">Simulator</a>
             <a href="/author">Author</a>
             <a href="/designer">Designer</a>
@@ -62,6 +61,7 @@ export default class Footer {
 
           <nav class="column">
             <div class="heading" data-i18n="footer.interact"></div>
+            <a href="${GITHUB}" ${ext} data-i18n="footer.code"></a>
             <a href="${GITHUB}/issues" ${ext} data-i18n="footer.bugtracker"></a>
             <a href="${GITHUB}/discussions" ${ext} data-i18n="footer.forum"></a>
             <a href="mailto:${CONTACT_MAIL}" data-i18n="footer.contact"></a>
