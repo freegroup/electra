@@ -426,11 +426,6 @@ export default draw2d.Canvas.extend({
     let file = $(droppedDomNode).data("file")
     let scope = $(droppedDomNode).data("scope")
 
-    // Track the drop event using GTM (absent when the app runs outside index.html)
-    if (window.dataLayer) {
-      window.dataLayer.push({ 'event': 'dropped_figure', 'droppedData': name})
-    }
-
     let figure = null
     try {
       figure = eval(`new ${name}();`) // jshint ignore:line

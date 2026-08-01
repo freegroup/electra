@@ -34,8 +34,12 @@ $(window).scroll(get);
 
 $(window).load(function () {
 
-  // set the global socket object
-  socket = io( { path: '/socket.io'})
+  // No socket on the home + content pages. Its only use here was syncing the
+  // language choice across a user's open windows (LngSwitch), which is not worth
+  // a persistent WebSocket on a public landing page - and that connection was
+  // what made the ingress set an anonymous `connect.sid` session cookie before
+  // any consent. `socket` stays declared (as null) so LngSwitch's guarded
+  // `typeof socket` check simply skips the sync.
 
   // export all required classes for deserialize JSON with "eval"
   // "eval" code didn't sees imported class or code
@@ -44,17 +48,20 @@ $(window).load(function () {
 
   i18next.use(i18nextBrowserLanguageDetector).use(Backend).init({
     fallbackLng: "en",
+    // there is no de-DE.json - ask for the base language only
+    load: 'languageOnly',
     ns: ['common', 'home'],
     defaultNS: 'home',
     debug: false,
     backend: {
-      // for all available options read the backend's repository readme file
-      loadPath: '../common/i18n/{{ns}}/{{lng}}.json'
+      // absolute, so the content sub-pages (/home/imprint.html …) resolve it
+      // the same way as index.html
+      loadPath: '/common/i18n/{{ns}}/{{lng}}.json'
     }
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    return axios.get("../permissions")
+    return axios.get("/permissions")
   })
   .then( (response) => {
     // set the global scope for the "app" object
@@ -62,8 +69,12 @@ $(window).load(function () {
     return app.init(response.data)
   })
   .then( app => {
-    $('body').localize(); 
-    document.title = t("app.name")
+    $('body').localize();
+    // The content sub-pages name their own title key; the start page uses the
+    // app name. Suffix with the brand so a browser tab / search result reads
+    // e.g. "Impressum - Electra.Academy".
+    const titleKey = document.body.getAttribute("data-appbar-subtitle-i18n")
+    document.title = titleKey ? `${t(titleKey)} - ${t("app.name")}` : t("app.name")
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })
