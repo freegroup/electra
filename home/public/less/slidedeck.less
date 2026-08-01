@@ -84,10 +84,26 @@
             top: 80px;
             padding: 10px;
 
+            // Bootstrap's 14px is too small for a card this wide. The fixed
+            // card height leaves plenty of room, so the text can breathe.
+            font-size: 16px;
+            line-height: 1.5;
+
             .header {
                 color: rgb(var(--tint-color));
                 text-align: center;
                 margin-bottom: 10px;
+            }
+
+            // The opening line of each card: a single sentence that meets the
+            // reader where they are, before the product is mentioned. Set as
+            // its own paragraph so it reads as a lead-in rather than as the
+            // first half of the body text.
+            .lead {
+                font-style: italic;
+                font-size: 1.05em;
+                line-height: 1.35;
+                margin-bottom: 14px;
             }
         }
 
