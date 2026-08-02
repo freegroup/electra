@@ -1,7 +1,7 @@
 var digital_counter_BCDCounter = CircuitFigure.extend({
 
    NAME: "digital_counter_BCDCounter",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -134,6 +134,15 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
          this.counter=0;
     },
 
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.counter = 0;
+        this.last_t  = false;
+    },
+
     /**
      *  Called by the simulator for every calculation
      *  loop
@@ -145,15 +154,14 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
 
         var rising = this.last_t===false && t===true; 
         if(rising===true){
-            var a = this.getOutputPort("out_a");
-            var b = this.getOutputPort("out_b");
-            var c = this.getOutputPort("out_c");
-            var d = this.getOutputPort("out_d");
-            a.setValue(this.counter&1?true:false);
-            b.setValue(this.counter&2?true:false);
-            c.setValue(this.counter&4?true:false);
-            d.setValue(this.counter&8?true:false);
+            // count first, then publish - same order as the 4 bit and 8 bit binary
+            // counters. Publishing before the increment put the value of the
+            // PREVIOUS edge on the outputs, so the display lagged one clock behind.
             this.counter= (this.counter+1)%10;
+            this.getOutputPort("out_a").setValue(this.counter&1?true:false);
+            this.getOutputPort("out_b").setValue(this.counter&2?true:false);
+            this.getOutputPort("out_c").setValue(this.counter&4?true:false);
+            this.getOutputPort("out_d").setValue(this.counter&8?true:false);
         }
         this.last_t = t;
     }
