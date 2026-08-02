@@ -9,6 +9,7 @@ import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
 import inputPrompt from "../../common/js/InputPrompt"
 import colors from "../../common/js/Colors"
+import toast from "../../common/js/toast"
 import figureConfigDialog from "./dialog/FigureConfigDialog"
 
 import hardware from "./hardware"
@@ -528,45 +529,104 @@ export default draw2d.Canvas.extend({
     $("#paletteElementsOverlay").fadeOut("fast")
   },
 
+  /**
+   * Report a failure that happened during a simulation run, and end the run.
+   *
+   * A tick is driven by a timer, so an escaping exception used to skip the
+   * re-arm at the end of _calculate: the simulation was dead, but `simulate`
+   * stayed true and the toolbar still showed "pause" - from the outside it just
+   * looked like the values had frozen. Every step is guarded now and says so.
+   *
+   * Stopping beats limping on: a shape that throws feeds garbage into
+   * everything downstream, and half-calculated values are harder to make sense
+   * of than an honest stop. The console keeps the details, the user gets the
+   * NAME of the element that caused it - every figure and connection has one.
+   *
+   * `simulate` goes false immediately so the tick cannot re-arm; that also
+   * marks the run as already-failing, which keeps the later steps of the same
+   * tick from stacking up a second stop. The stop itself is deferred by one
+   * turn of the event loop so it never runs re-entrantly - neither out of
+   * simulationStart nor halfway through a tick.
+   */
+  _simulationError: function (exc, figure) {
+    console.error("simulation error", exc, figure, this.simulationContext)
+
+    if (this.simulate === false) {
+      return // already ending this run because of an earlier error
+    }
+    this.simulate = false
+
+    setTimeout(() => {
+      this.simulationStop()
+      toast(t("message.simulation_error", {name: figure?.NAME ?? "?"}))
+    }, 0)
+  },
+
   _calculate: function () {
-    // transport the value from outputPort to inputPort
-    //
-    this.getLines().each( (i, line) => {
-      // getLines() also returns hand-drawn draw2d.shape.basic.Line figures,
-      // which have no source port - skip them, they carry no signal value.
-      if (!(line instanceof draw2d.Connection)) return
-      line.value = line.getSource().getValue()
-      if(line.value === undefined ||  line.value === null){
-        // do not transfer the value if the source is "disconnected"
-        line.setColor(colors.draw2d.unconnected)
+    try {
+      // transport the value from outputPort to inputPort
+      //
+      this.getLines().each( (i, line) => {
+        // getLines() also returns hand-drawn draw2d.shape.basic.Line figures,
+        // which have no source port - skip them, they carry no signal value.
+        if (!(line instanceof draw2d.Connection)) return
+        try {
+          line.value = line.getSource().getValue()
+          if(line.value === undefined ||  line.value === null){
+            // do not transfer the value if the source is "disconnected"
+            line.setColor(colors.draw2d.unconnected)
+          }
+          else {
+            line.setColor(line.value ? colors.draw2d.high : colors.draw2d.low)
+          }
+        } catch(exc){
+          // e.g. a shape that replaced getValue() on its port (the signal bus
+          // does) and throws, or a connection whose source is gone. Report and
+          // break off the tick - `false` ends the each().
+          this._simulationError(exc, line)
+          return false
+        }
+      })
+
+      // call the "calculate" method if given to calculate the output-port values
+      //
+      this.getFigures().each((i, figure) => {
+        try{
+          figure.calculate?.(this.simulationContext)
+        } catch(exc){
+          this._simulationError(exc, figure)
+          return false
+        }
+      })
+
+      // transport the value from outputPort to inputPort
+      //
+      this.getLines().each( (i, line) => {
+        // same as above: a hand-drawn Line has no target port to deliver to.
+        if (!(line instanceof draw2d.Connection)) return
+        try {
+          line.getTarget().setValue(line.value)
+        } catch(exc){
+          this._simulationError(exc, line)
+          return false
+        }
+      })
+
+      this.probeWindow.tick(this.timerBase)
+    }
+    catch(exc){
+      // nothing above should reach this - but if it does, it must not take the
+      // canvas down with it.
+      this._simulationError(exc, null)
+    }
+    finally {
+      // Re-arm. This sits in a finally so that no throw above can skip it and
+      // leave the simulation dead while the toolbar still claims it is running.
+      // _simulationError sets `simulate` to false, so a failed tick ends here.
+      if (this.simulate === true) {
+        //     setImmediate(this.animationFrameFunc);
+        setTimeout(this.animationFrameFunc, this.timerBase)
       }
-      else {
-        line.setColor(line.value ? colors.draw2d.high : colors.draw2d.low)
-      }
-    })
-
-    // call the "calculate" method if given to calculate the output-port values
-    //
-    this.getFigures().each((i, figure) => {
-      try{
-        figure.calculate?.(this.simulationContext)
-      } catch(exc){
-        console.log(exc)
-        console.log(figure, this.simulationContext)
-      }
-    })
-
-    // transport the value from outputPort to inputPort
-    //
-    this.getLines().each( (i, line) => {
-      line.getTarget().setValue(line.value)
-    })
-
-    this.probeWindow.tick(this.timerBase)
-
-    if (this.simulate === true) {
-      //     setImmediate(this.animationFrameFunc);
-      setTimeout(this.animationFrameFunc, this.timerBase)
     }
   },
 
