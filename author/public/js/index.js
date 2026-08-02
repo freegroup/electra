@@ -8,6 +8,7 @@ import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 
 import loadScript from "../../common/js/loadScript"
 import session from "../../common/js/session"
+import authConfiguration from "../../common/js/authConfiguration"
 
 import "../less/index.less"
 
@@ -73,8 +74,10 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    // Resolve the login identity before init so panes/tabs can gate on it.
-    return Promise.all([axios.get("../permissions"), session.load()])
+    // Resolve the login identity and the deployment sign-in config before init,
+    // so panes/tabs can gate on the identity and Userinfo can read the client id
+    // synchronously.
+    return Promise.all([axios.get("../permissions"), session.load(), authConfiguration.load()])
   })
   .then( ([response]) => {
     // set the global scope for the "app" object

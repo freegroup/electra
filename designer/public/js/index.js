@@ -6,6 +6,7 @@ import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 
 import "../less/index.less"
 import "../../common/js/polyfill"
+import authConfiguration from "../../common/js/authConfiguration"
 
 import global from "./global"
 
@@ -70,9 +71,11 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    return axios.get("../permissions")
+    // Resolve the deployment sign-in config before init so Userinfo can read
+    // the client id synchronously.
+    return Promise.all([axios.get("../permissions"), authConfiguration.load()])
   })
-  .then( (response) => {
+  .then( ([response]) => {
     // set the global scope for the "app" object
     app = require("./Application").default
     return app.init(response.data)

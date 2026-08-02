@@ -1,17 +1,24 @@
 import loadScript from "./loadScript"
 import session from "./session"
+import authConfiguration from "./authConfiguration"
 
 export default class Userinfo {
 
   constructor(permissions){
 
-    if(permissions.featureset.authentication === false){
+    // Without a client id there is no way to start a sign-in, so offering the
+    // button would be a lie. Everything else on the page keeps working.
+    const clientId = authConfiguration.getGoogleClientId()
+
+    if(permissions.featureset.authentication === false || !clientId){
       $(".userinfo_toggler").remove()
     }
     else {
-      // https://console.cloud.google.com/apis/credentials
+      // The client id comes from the server (GET /auth/configuration) rather
+      // than being baked into this bundle - the ingress verifies tokens against
+      // it, so it is configured there and nowhere else.
       google.accounts.id.initialize({
-        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
+        client_id: clientId,
         login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
         ux_mode:"redirect"
       });

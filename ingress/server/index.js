@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path')
 const fs = require('fs');
+const crypto = require('crypto');
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -67,6 +68,30 @@ const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SH
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
+// The OAuth client this deployment accepts tokens for. NOT a secret - it is
+// public by design and also sits in the frontend (common/js/Userinfo.js), which
+// must use the SAME value. It lives in config rather than in the request
+// because it is what the token gets checked AGAINST; see the callback below.
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || die("missing env variable GOOGLE_CLIENT_ID");
+
+// Whoever signs in with this address gets the "admin" role. A single address
+// for now; unset means nobody is admin, which is the safe direction to fail in.
+// This is only the platform-wide role - per-scope admin rights are membership
+// data in the document store and have nothing to do with this.
+const ADMIN_MAIL = process.env.ADMIN_MAIL || "";
+
+// Signs the session cookie. Left unset it is regenerated on every start, which
+// simply logs everyone out on restart - no worse than today, because sessions
+// live in express-session's in-memory store and die with the process anyway.
+// Set it in secrets.ini only once sessions outlive a restart (shared store,
+// more than one ingress instance).
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
+
+// Platform-wide role of a signed-in user. The one place that decides it.
+function roleOf(email){
+    return (ADMIN_MAIL && email === ADMIN_MAIL) ? "admin" : "user";
+}
+
 const API_SERVICE_URL = "http://"+LOCALHOST;
 
 // Backends that want a heads-up when a user logs in. Each hook receives the
@@ -78,7 +103,7 @@ const ON_LOGIN_HOOKS = [
 ];
 
 function fireOnLogin(session){
-    const role = session.email === "openjacob@gmail.com" ? "admin" : "user";
+    const role = roleOf(session.email);
     for (const hook of ON_LOGIN_HOOKS) {
         fetch(hook.url, {
             method: "POST",
@@ -88,7 +113,7 @@ function fireOnLogin(session){
 }
 
 let sessionMiddleware = session({
-    secret: "puYXMGlyQpO9+9gtiZAgObKEEnmU4WNGcTpMkUey",
+    secret: SESSION_SECRET,
     saveUninitialized:true,
     cookie: { maxAge: oneDay },
     resave: false
@@ -136,7 +161,7 @@ function onProxyReq(proxyReq, req, res){
         proxyReq.setHeader("x-name", session.name);
         proxyReq.setHeader("x-family_name", session.familyName);
         proxyReq.setHeader("x-given_name", session.givenName);
-        proxyReq.setHeader("x-role", session.email==="openjacob@gmail.com"?"admin":"user");
+        proxyReq.setHeader("x-role", roleOf(session.email));
     }
     else {
         proxyReq.setHeader("x-mail", 'Guest');
@@ -145,14 +170,6 @@ function onProxyReq(proxyReq, req, res){
         proxyReq.setHeader("x-given_name", 'Guest');
         proxyReq.setHeader("x-role", "anonym");
     }
-    // Dynamically add X-Forwarded headers based on the original request
-    const forwardedProto = req.headers['x-forwarded-proto'] || req.protocol;
-    const forwardedHost = req.headers['x-forwarded-host'] || req.headers.host;
-    const forwardedPort = req.headers['x-forwarded-port'] || (req.socket.encrypted ? '443' : '80');
-
-    proxyReq.setHeader("X-Dungeon-Proto", forwardedProto);
-    proxyReq.setHeader("X-Dungeon-Host", forwardedHost);
-    proxyReq.setHeader("X-Dungeon-Port", forwardedPort);
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -236,6 +253,20 @@ app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
 
 // Google auth endpoints
+
+// What a browser needs to know in order to start a sign-in. Public by
+// definition - it is handed to anonymous visitors, who are exactly the ones who
+// still have to log in. Served here because the ingress is the component that
+// verifies tokens against this client id (see the callback below), so the value
+// exists in exactly one place and the frontend can never drift out of sync.
+//
+// Hand-written response object, deliberately: never spread process.env or a
+// config blob in here, or the first secret that lands in settings.ini leaks the
+// day someone adds it.
+app.get('/auth/configuration', function(req, res) {
+    res.json({ googleClientId: GOOGLE_CLIENT_ID })
+})
+
 app.use('/oauth/callback{/:componentUri}', async function(req, res) {
     try {
         console.log("authenticate called..")
@@ -251,11 +282,16 @@ app.use('/oauth/callback{/:componentUri}', async function(req, res) {
             return res.status(400).send('Failed to verify double submit cookie.');
         }
         const token = req.body.credential
-        const clientId = req.body.clientid
-        const client = new OAuth2Client(clientId)
+        // The audience MUST come from our own configuration, never from the
+        // request. Taking it from req.body.clientid meant the token named the
+        // client id it was then checked against - the check closed a circle and
+        // could not fail, so a valid Google token minted for ANY other OAuth
+        // client was accepted here as a login. Pinning it to GOOGLE_CLIENT_ID
+        // means only tokens actually issued for this deployment pass.
+        const client = new OAuth2Client(GOOGLE_CLIENT_ID)
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: clientId
+            audience: GOOGLE_CLIENT_ID
         })
 
         const payload = ticket.getPayload()
