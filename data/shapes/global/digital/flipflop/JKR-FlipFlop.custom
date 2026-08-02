@@ -39,23 +39,30 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
         // Those rounds carry the initial port values, not circuit events - track
         // nothing and act on nothing while they run.
         if(context && context.settling===true) return;
+
+        var q = this.getOutputPort("output_q");
+        var q_ = this.getOutputPort("output_q_not");
+
+        // Reset (active-low CLR) is LEVEL triggered and lives in its own branch,
+        // the way the hardware works: while it is asserted, hold Q=0 and do
+        // nothing else. The old code forced falling=true here and ran the reset
+        // through the normal clock path, so a held reset re-fired on EVERY tick
+        // and the counter could never leave 0. Keep last_t up to date so the
+        // clock edge right after the reset releases is measured, not invented.
+        if(this.getInputPort("input_r").getBooleanValue() === false){
+            q.setValue(false);
+            q_.setValue(true);
+            this.last_t = this.getInputPort("input_t").getBooleanValue();
+            return;
+        }
+
         var j = this.getInputPort("input_j").getBooleanValue();
         var k = this.getInputPort("input_k").getBooleanValue();
         var t = this.getInputPort("input_t").getBooleanValue();
-        var r = this.getInputPort("input_r").getBooleanValue();
-        
-        var q = this.getOutputPort("output_q");
-        var q_ = this.getOutputPort("output_q_not");
-        
-        var falling = this.last_t===true && t===false; 
-        
-        if(r === false){
-            falling = true;
-            j = false;
-            k = true;
-        }
-        
-        if(falling===true){
+
+        var rising = this.last_t===false && t===true; 
+
+        if(rising===true){
             // do nothing
             if(j===false && k ===false){
                

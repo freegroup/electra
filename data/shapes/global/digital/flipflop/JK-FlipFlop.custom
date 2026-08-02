@@ -1,3 +1,22 @@
+/**
+ * by 'Draw2D Shape Designer'
+ *
+ * Custom JS code to tweak the standard behaviour of the generated
+ * shape. add your custome code and event handler here.
+ *
+ *
+ */
+digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
+
+    init: function(attr, setter, getter){
+         this._super(attr, setter, getter);
+
+        this.attr({resizeable:false});
+        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
+
+        this.last_t = false;
+    },
+    
     /**
      *  Called if the simulation mode is starting
      **/
@@ -27,9 +46,9 @@
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         
-        var falling = this.last_t===true && t===false; 
+        var rising = this.last_t===false && t===true; 
         
-        if(falling===true){
+        if(rising===true){
             // do nothing
             if(j===false && k ===false){
                
@@ -52,5 +71,5 @@
             }
         }
         this.last_t = t;
-    }
+  }
 });
