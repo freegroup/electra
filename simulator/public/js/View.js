@@ -30,7 +30,9 @@ export default draw2d.Canvas.extend({
     this.probeWindow = new ProbeWindow(this)
 
     // global context where objects can store data during different simulation steps.
-    // OTHER object can read them. Useful for signal handover
+    // OTHER object can read them. Useful for signal handover.
+    // Replaced by a fresh object on every simulationStart - this one only exists
+    // so that code touching it outside a run never sees undefined.
     this.simulationContext = {}
 
     this.permissions = permissions
@@ -464,6 +466,14 @@ export default draw2d.Canvas.extend({
 
     this.simulate = true
 
+    // A run starts from an empty context. It is the handover area between
+    // shapes - the signal bus and the wireless SignalSource/SignalTarget pairs
+    // register their ports in here - and it used to be created once in init()
+    // and never cleared again. A second run therefore started with the ports of
+    // figures that had been deleted in the meantime, and kept reading values
+    // from shapes that were no longer on the canvas.
+    this.simulationContext = {}
+
     this.installEditPolicy(new SimulationEditPolicy())
     this.uninstallEditPolicy(this.connectionPolicy)
     this.uninstallEditPolicy(this.coronaFeedback)
@@ -471,17 +481,38 @@ export default draw2d.Canvas.extend({
       p.setVisible(false)
     })
 
+    // onPreStart/onStart is shape code and can throw just like calculate().
+    // Unguarded, the exception escaped simulationStart and left the canvas
+    // stranded halfway into simulation mode: policies swapped, ports hidden,
+    // `simulate` still true, and no loop ever started.
     this.getFigures().each( (index, shape) => {
-      shape.onPreStart?.(this.simulationContext)
+      try {
+        shape.onPreStart?.(this.simulationContext)
+      } catch(exc){
+        this._simulationError(exc, shape)
+        return false
+      }
     })
 
     this.getFigures().each( (index, shape) => {
-      shape.onStart?.(this.simulationContext)
+      try {
+        shape.onStart?.(this.simulationContext)
+      } catch(exc){
+        this._simulationError(exc, shape)
+        return false
+      }
     })
+
+    // _simulationError sets this and has already scheduled the stop, which puts
+    // the toolbar back into its "stopped" state. Don't start ticking on top of
+    // a run that is already over.
+    if (this.simulate === false) {
+      return
+    }
 
     this.probeWindow.update()
     this._calculate()
-    
+
     $("#simulationStartStop")
       .addClass("pause")
       .removeClass("play")
@@ -513,14 +544,26 @@ export default draw2d.Canvas.extend({
       this.installEditPolicy(this.coronaFeedback)
     }
 
+    // Guarded for the same reason as the start hooks. A throw here used to skip
+    // the toolbar reset below, leaving the button on "pause" for a simulation
+    // that had already stopped. _simulationError only logs in this direction:
+    // `simulate` is false by now, so it does not schedule a second stop.
     this.getFigures().each( (index, shape) =>{
-      shape.onStop?.(this.simulationContext)
+      try {
+        shape.onStop?.(this.simulationContext)
+      } catch(exc){
+        this._simulationError(exc, shape)
+      }
     })
 
     this.getFigures().each( (index, shape) =>{
-      shape.onPostStop?.(this.simulationContext)
+      try {
+        shape.onPostStop?.(this.simulationContext)
+      } catch(exc){
+        this._simulationError(exc, shape)
+      }
     })
-    
+
     $("#simulationStartStop")
       .addClass("play")
       .removeClass("pause")
