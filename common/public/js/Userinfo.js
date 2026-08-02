@@ -27,12 +27,19 @@ export default class Userinfo {
       // gets their avatar; an anonymous visitor gets the Google sign-in button.
       this.user = session.getUser()
       if (this.user) {
-        let icon = this.user.picture?this.user.picture:"../common/images/toolbar_user.svg"
+        // Google's CDN sometimes refuses the avatar (429 rate limit, offline,
+        // blocked) - fall back to the local default icon instead of showing a
+        // broken image. onerror clears itself so a broken fallback can't loop.
+        let fallback = "../common/images/toolbar_user.svg"
+        let icon = this.user.picture?this.user.picture:fallback
         let role = this.user.role==="admin"?"(Administrator)":""
-        $(".userinfo_toggler img").attr("src",icon)
+        $(".userinfo_toggler img")
+          .off("error.avatar")
+          .on("error.avatar", function(){ $(this).off("error.avatar").attr("src", fallback) })
+          .attr("src",icon)
         $(".userinfo_toggler .dropdown-menu").html(`
             <div class="userContainer">
-              <img crossorigin="anonymous" src="${icon}"/>
+              <img crossorigin="anonymous" src="${icon}" onerror="this.onerror=null;this.src='${fallback}'"/>
               <div>${this.user.displayName}</div>
               <div>${role}</div>
             </div>

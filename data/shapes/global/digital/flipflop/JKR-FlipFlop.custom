@@ -20,13 +20,25 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
     /**
      *  Called if the simulation mode is starting
      **/
-    onStart:function(context){
-        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    onStart:function(context)
+    {
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
+        this.getOutputPort("output_q").setValue(false);
+        this.getOutputPort("output_q_not").setValue(true);
+
+        // null, not false: false would claim the clock was LOW just before the
+        // run - if it idles HIGH that invents a rising edge on the first tick.
         this.last_t = null;
     },
 
     calculate:function(context)
     {
+        // The canvas settles the combinational network before the run starts.
+        // Those rounds carry the initial port values, not circuit events - track
+        // nothing and act on nothing while they run.
+        if(context && context.settling===true) return;
         var j = this.getInputPort("input_j").getBooleanValue();
         var k = this.getInputPort("input_k").getBooleanValue();
         var t = this.getInputPort("input_t").getBooleanValue();

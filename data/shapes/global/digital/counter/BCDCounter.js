@@ -138,9 +138,20 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
     /**
      *  Called if the simulation mode is starting
      **/
-    onStart:function(context){
+    onStart:function(context)
+    {
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
         this.counter = 0;
-        this.last_t  = null;
+        this.getOutputPort("out_a").setValue(false);
+        this.getOutputPort("out_b").setValue(false);
+        this.getOutputPort("out_c").setValue(false);
+        this.getOutputPort("out_d").setValue(false);
+
+        // null, not false: false would claim the clock was LOW just before the
+        // run - if it idles HIGH that invents a rising edge on the first tick.
+        this.last_t = null;
     },
 
     /**
@@ -148,8 +159,12 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
      *  loop
      *  @required
      **/
-    calculate:function()
+    calculate:function(context)
     {
+        // The canvas settles the combinational network before the run starts.
+        // Those rounds carry the initial port values, not circuit events - track
+        // nothing and act on nothing while they run.
+        if(context && context.settling===true) return;
         var t = this.getInputPort(0).getBooleanValue();
 
         var rising = this.last_t===false && t===true; 

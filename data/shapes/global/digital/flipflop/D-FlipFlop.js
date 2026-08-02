@@ -122,20 +122,25 @@ digital_flipflop_D_FlipFlop = digital_flipflop_D_FlipFlop.extend({
     /**
      *  Called if the simulation mode is starting
      **/
-    onStart:function(context){
-        // q and q_ must never show the same level. Both output ports start LOW,
-        // so publish the complement before the first clock arrives - otherwise a
-        // divider chain wired to q_ starts from an impossible state.
-        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    onStart:function(context)
+    {
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
+        this.getOutputPort("output_q").setValue(false);
+        this.getOutputPort("output_q_not").setValue(true);
 
-        // start every run from a clean slate. Without this the flip flop keeps
-        // the clock edge of the previous run, and the first edge after a restart
-        // is swallowed when the clock happened to be HIGH on stop.
+        // null, not false: false would claim the clock was LOW just before the
+        // run - if it idles HIGH that invents a rising edge on the first tick.
         this.last_t = null;
     },
 
-    calculate:function()
+    calculate:function(context)
     {
+        // The canvas settles the combinational network before the run starts.
+        // Those rounds carry the initial port values, not circuit events - track
+        // nothing and act on nothing while they run.
+        if(context && context.settling===true) return;
         var d = this.getInputPort("input_d").getBooleanValue();
         var t = this.getInputPort("input_t").getBooleanValue();
         

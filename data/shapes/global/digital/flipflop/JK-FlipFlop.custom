@@ -1,32 +1,25 @@
-/**
- * by 'Draw2D Shape Designer'
- *
- * Custom JS code to tweak the standard behaviour of the generated
- * shape. add your custome code and event handler here.
- *
- *
- */
-digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
-
-    init: function(attr, setter, getter){
-         this._super(attr, setter, getter);
-
-        this.attr({resizeable:false});
-        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
-
-        this.last_t = false;
-    },
-    
-    onStart(context)
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context)
     {
-        var q = this.getOutputPort("output_q");
-        var q_ = this.getOutputPort("output_q_not");
-        q_.setValue(!q.getBooleanValue())
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
+        this.getOutputPort("output_q").setValue(false);
+        this.getOutputPort("output_q_not").setValue(true);
+
+        // null, not false: false would claim the clock was LOW just before the
+        // run - if it idles HIGH that invents a rising edge on the first tick.
         this.last_t = null;
     },
     
-    calculate:function()
+    calculate:function(context)
     {
+        // The canvas settles the combinational network before the run starts.
+        // Those rounds carry the initial port values, not circuit events - track
+        // nothing and act on nothing while they run.
+        if(context && context.settling===true) return;
         var j = this.getInputPort("input_j").getBooleanValue();
         var k = this.getInputPort("input_k").getBooleanValue();
         var t = this.getInputPort("input_t").getBooleanValue();

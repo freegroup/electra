@@ -510,6 +510,11 @@ export default draw2d.Canvas.extend({
       return
     }
 
+    this._settle()
+    if (this.simulate === false) {
+      return
+    }
+
     this.probeWindow.update()
     this._calculate()
 
@@ -606,6 +611,85 @@ export default draw2d.Canvas.extend({
       this.simulationStop()
       toast(t("message.simulation_error", {name: figure?.NAME ?? "?"}))
     }, 0)
+  },
+
+  /**
+   * Let the combinational network find its resting state before the sequential
+   * elements start watching for clock edges.
+   *
+   * Every output port starts at LOW, which is a lie for anything whose resting
+   * level is HIGH - a NAND fed from two LOW inputs, for example. That port only
+   * publishes its real value once its figure has calculated, one tick later, and
+   * a wire adds another tick. Downstream, a flip flop watching that pin sees a
+   * genuine LOW->HIGH transition and clocks on it: a two-digit counter whose
+   * carry runs through a NAND jumped to 10 the moment it was started.
+   *
+   * That transition is an artefact of the initial values, not a circuit event.
+   * Real hardware has the same moment - the gates settle in nanoseconds after
+   * power-up - which is why real designs hold a reset until they have. This is
+   * that reset: run transport and calculate until no line changes value any
+   * more, with `settling` set on the context so the sequential shapes track
+   * levels without acting on them. Runs synchronously, so nothing is painted in
+   * between and the user sees no flicker.
+   *
+   * The fixpoint is normally reached in as many rounds as the longest chain of
+   * gates. MAX_ROUNDS caps a circuit that never settles - a ring oscillator is
+   * meant to keep changing - and simply hands over to the regular tick.
+   */
+  _settle: function () {
+    let MAX_ROUNDS = 25
+
+    this.simulationContext.settling = true
+    try {
+      for (let round = 0; round < MAX_ROUNDS; round++) {
+        let stable = true
+
+        this.getLines().each( (i, line) => {
+          if (!(line instanceof draw2d.Connection)) return
+          try {
+            let value = line.getSource().getValue()
+            if (value !== line.value) {
+              stable = false
+            }
+            line.value = value
+          } catch(exc){
+            this._simulationError(exc, line)
+            return false
+          }
+        })
+
+        this.getFigures().each( (i, figure) => {
+          try {
+            figure.calculate?.(this.simulationContext)
+          } catch(exc){
+            this._simulationError(exc, figure)
+            return false
+          }
+        })
+
+        this.getLines().each( (i, line) => {
+          if (!(line instanceof draw2d.Connection)) return
+          try {
+            line.getTarget().setValue(line.value)
+          } catch(exc){
+            this._simulationError(exc, line)
+            return false
+          }
+        })
+
+        if (this.simulate === false) {
+          return // an error ended the run
+        }
+        // round 0 has nothing to compare against - line.value is still whatever
+        // the previous run left behind.
+        if (stable === true && round > 0) {
+          break
+        }
+      }
+    }
+    finally {
+      this.simulationContext.settling = false
+    }
   },
 
   _calculate: function () {

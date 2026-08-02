@@ -120,8 +120,13 @@ digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
     /**
      *  Called if the simulation mode is starting
      **/
-    onStart:function(context){
-        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    onStart:function(context)
+    {
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
+        this.getOutputPort("output_q").setValue(false);
+        this.getOutputPort("output_q_not").setValue(true);
     },
 
     calculate:function()

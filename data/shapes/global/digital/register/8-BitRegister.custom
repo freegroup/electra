@@ -21,12 +21,31 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
     /**
      *  Called if the simulation mode is starting
      **/
-    onStart:function(context){
-        this.last_clk  = null;
+    onStart:function(context)
+    {
+        // Power-on reset: establish the reset state on the PINS too, not just
+        // internally, so a second run cannot start with the outputs of the
+        // previous one still on them.
+        this.getOutputPort("output_q1").setValue(false);
+        this.getOutputPort("output_q2").setValue(false);
+        this.getOutputPort("output_q3").setValue(false);
+        this.getOutputPort("output_q4").setValue(false);
+        this.getOutputPort("output_q5").setValue(false);
+        this.getOutputPort("output_q6").setValue(false);
+        this.getOutputPort("output_q7").setValue(false);
+        this.getOutputPort("output_q8").setValue(false);
+
+        // null, not false: false would claim the clock was LOW just before the
+        // run - if it idles HIGH that invents a rising edge on the first tick.
+        this.last_clk = null;
     },
 
-    calculate:function()
+    calculate:function(context)
     {
+        // The canvas settles the combinational network before the run starts.
+        // Those rounds carry the initial port values, not circuit events - track
+        // nothing and act on nothing while they run.
+        if(context && context.settling===true) return;
         var enable = this.getInputPort("input_enable").getBooleanValue();
         var reset = this.getInputPort("input_reset").getBooleanValue();
         var clk = this.getInputPort("input_clk").getBooleanValue();
