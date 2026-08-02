@@ -644,6 +644,8 @@ export default draw2d.Canvas.extend({
       for (let round = 0; round < MAX_ROUNDS; round++) {
         let stable = true
 
+        // read and deliver in one pass, same as the regular tick - so the round
+        // that settles the network also leaves every hasChanged flag false
         this.getLines().each( (i, line) => {
           if (!(line instanceof draw2d.Connection)) return
           try {
@@ -652,6 +654,7 @@ export default draw2d.Canvas.extend({
               stable = false
             }
             line.value = value
+            line.getTarget().setValue(value)
           } catch(exc){
             this._simulationError(exc, line)
             return false
@@ -663,16 +666,6 @@ export default draw2d.Canvas.extend({
             figure.calculate?.(this.simulationContext)
           } catch(exc){
             this._simulationError(exc, figure)
-            return false
-          }
-        })
-
-        this.getLines().each( (i, line) => {
-          if (!(line instanceof draw2d.Connection)) return
-          try {
-            line.getTarget().setValue(line.value)
-          } catch(exc){
-            this._simulationError(exc, line)
             return false
           }
         })
@@ -694,16 +687,29 @@ export default draw2d.Canvas.extend({
 
   _calculate: function () {
     try {
-      // transport the value from outputPort to inputPort
+      // Read every wire from its source port and hand it to the target port, in
+      // one pass, BEFORE the shapes calculate.
       //
+      // Delivery used to happen in a second pass after calculate, which tore a
+      // port's state in half: getValue() answers from the wire (read here),
+      // while hasChanged is worked out in setValue (delivered there). A shape
+      // calling hasChangedValue() during calculate got a flag describing the
+      // PREVIOUS tick's transition next to the CURRENT tick's level. A pulse
+      // only one tick wide came out as two falling edges and no rising one.
+      // Doing both in the same pass keeps level and flag on the same tick.
+      //
+      // Propagation is unchanged: the read still happens before calculate, so a
+      // shape still sees the outputs of the previous tick and a wire still
+      // costs exactly one tick.
       this.getLines().each( (i, line) => {
         // getLines() also returns hand-drawn draw2d.shape.basic.Line figures,
-        // which have no source port - skip them, they carry no signal value.
+        // which have no ports - skip them, they carry no signal value.
         if (!(line instanceof draw2d.Connection)) return
         try {
           line.value = line.getSource().getValue()
+          line.getTarget().setValue(line.value)
           if(line.value === undefined ||  line.value === null){
-            // do not transfer the value if the source is "disconnected"
+            // an undriven source paints the wire as "disconnected"
             line.setColor(colors.draw2d.unconnected)
           }
           else {
@@ -725,19 +731,6 @@ export default draw2d.Canvas.extend({
           figure.calculate?.(this.simulationContext)
         } catch(exc){
           this._simulationError(exc, figure)
-          return false
-        }
-      })
-
-      // transport the value from outputPort to inputPort
-      //
-      this.getLines().each( (i, line) => {
-        // same as above: a hand-drawn Line has no target port to deliver to.
-        if (!(line instanceof draw2d.Connection)) return
-        try {
-          line.getTarget().setValue(line.value)
-        } catch(exc){
-          this._simulationError(exc, line)
           return false
         }
       })
