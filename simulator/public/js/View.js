@@ -281,7 +281,10 @@ export default draw2d.Canvas.extend({
                 })
                 break
               case "design": {
-                let scope = figure.attr("userData.scope")
+                // Documents saved before the scope model carry only userData.file.
+                // Back then every shape came from the global library, so that is
+                // the right default - without it the URL reads "?undefined=".
+                let scope = figure.attr("userData.scope") ?? "global"
                 let shapeName = figure.attr("userData.file")
                 window.open(`../designer?${scope}=${shapeName}`, "designer")
                 break

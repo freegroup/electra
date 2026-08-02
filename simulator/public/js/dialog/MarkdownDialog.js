@@ -11,7 +11,11 @@ class Dialog {
   }
 
   show(figure) {
-    let scope = figure.attr("userData.scope")
+    // Same as the "open in designer" entry: documents saved before the scope
+    // model carry only userData.file, and back then every shape came from the
+    // global library. Without the default, conf.shapes[undefined] throws and the
+    // dialog never opens.
+    let scope = figure.attr("userData.scope") ?? "global"
 
     let shapeName = figure.attr("userData.file")
     let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName,".shape")
