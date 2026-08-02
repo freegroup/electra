@@ -1,7 +1,7 @@
 var digital_flipflop_SR_Latch = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SR_Latch",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -117,6 +117,14 @@ digital_flipflop_SR_Latch = digital_flipflop_SR_Latch.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    },
+
+
     calculate:function(context)
     {
         var s = this.getInputPort("input_s").getBooleanValue();

@@ -19,6 +19,14 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
     },
 
     /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.counter = 0;
+        this.last_clk  = false;
+    },
+
+    /**
      *  Called by the simulator for every calculation
      *  loop
      *  @required

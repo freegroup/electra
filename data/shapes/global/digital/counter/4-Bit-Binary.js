@@ -1,7 +1,7 @@
 var digital_counter_4_Bit_Binary = CircuitFigure.extend({
 
    NAME: "digital_counter_4_Bit_Binary",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -230,6 +230,14 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
          // your special code here
          this.last_clk=false;
          this.counter=0;
+    },
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.counter = 0;
+        this.last_clk  = false;
     },
 
     /**

@@ -3,7 +3,7 @@
     {
       "type": "shape_designer.figure.PolyRect",
       "id": "c55dd135-15db-7c71-5efa-f6761c073e66",
-      "x": 7980.75,
+      "x": 7980,
       "y": 7974.4735125,
       "width": 40,
       "height": 50,
@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n    \n    calculate:function()\n    {\n        var d = this.getInputPort(\"input_d\").getBooleanValue();\n        var e = this.getInputPort(\"input_e\").getBooleanValue();\n        \n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        \n      \n        if(e===true){\n            q.setValue(d);\n            q_.setValue(!d)\n        }\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n    },\n    \n    /**\n     *  Called if the simulation mode is starting\n     **/\n    onStart:function(context){\n        this.getOutputPort(\"output_q_not\").setValue(!this.getOutputPort(\"output_q\").getBooleanValue());\n    },\n\n    calculate:function()\n    {\n        var d = this.getInputPort(\"input_d\").getBooleanValue();\n        var e = this.getInputPort(\"input_e\").getBooleanValue();\n        \n        var q = this.getOutputPort(\"output_q\");\n        var q_ = this.getOutputPort(\"output_q_not\");\n        \n      \n        if(e===true){\n            q.setValue(d);\n            q_.setValue(!d)\n        }\n    }\n});",
         "name": "Rectangle",
         "markdown": "The **D-Latch** is a 1-bit memory circuit. You can “write” (store) a 0 or 1 bit in this latch circuit by making the enable input high (1) and setting D to whatever you want the stored bit to be. When the enable input is made low (0), the latch ignores the status of the D input and merrily holds the stored bit value, outputting at the stored value at Q, and its inverse on output not-Q.",
         "type": "Output",
@@ -28,19 +28,19 @@
       "dasharray": null,
       "vertices": [
         {
-          "x": 7980.75,
+          "x": 7980,
           "y": 7974.4735125
         },
         {
-          "x": 8020.75,
+          "x": 8020,
           "y": 7974.4735125
         },
         {
-          "x": 8020.75,
+          "x": 8020,
           "y": 8024.4735125
         },
         {
-          "x": 7980.75,
+          "x": 7980,
           "y": 8024.4735125
         }
       ],
@@ -66,7 +66,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "68aac6da-04da-9eea-260f-ab29020fcf6f",
-      "x": 7981.25,
+      "x": 7980.5,
       "y": 7973.4735125,
       "width": 28.328125,
       "height": 21.359375,
@@ -90,6 +90,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -106,7 +108,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "08459b5e-14e9-38d5-14dc-4b24f166cd2d",
-      "x": 8003.53125,
+      "x": 8002.78125,
       "y": 7973.9735125,
       "width": 28.328125,
       "height": 21.359375,
@@ -130,6 +132,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -146,7 +150,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "eada3849-d35d-7391-47aa-888a2469513d",
-      "x": 8003.03125,
+      "x": 8002.28125,
       "y": 8005.167112499999,
       "width": 28.328125,
       "height": 21.359375,
@@ -170,6 +174,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -186,7 +192,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "7c8a6215-ce17-6a10-c85b-b97fd0de466c",
-      "x": 8016.758125,
+      "x": 8016.008125,
       "y": 7979.3635125,
       "width": 10,
       "height": 10,
@@ -226,7 +232,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "078497de-04ae-57d8-a141-a3d4afacfe39",
-      "x": 8016.758125,
+      "x": 8016.008125,
       "y": 8010.9092,
       "width": 10,
       "height": 10,
@@ -266,7 +272,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "592a8604-e0a9-8913-445d-621078e5ae97",
-      "x": 7974.25,
+      "x": 7973.5,
       "y": 7979.3635125,
       "width": 10,
       "height": 10,
@@ -306,7 +312,7 @@
     {
       "type": "shape_designer.figure.ExtPort",
       "id": "5fc48f01-fecb-0d5f-ed4f-81a4bc26ae63",
-      "x": 7974.25,
+      "x": 7973.5,
       "y": 8010.9092,
       "width": 10,
       "height": 10,
@@ -361,11 +367,11 @@
       "policy": "draw2d.policy.line.VertexSelectionFeedbackPolicy",
       "vertex": [
         {
-          "x": 8007.098,
+          "x": 8006.348,
           "y": 8009.971912499997
         },
         {
-          "x": 8014.6248,
+          "x": 8013.8748,
           "y": 8009.971912499997
         }
       ],
@@ -380,7 +386,7 @@
     {
       "type": "shape_designer.figure.ExtLabel",
       "id": "47778032-d443-24ef-f676-baf37c468414",
-      "x": 7981.75,
+      "x": 7981,
       "y": 8005.167112499999,
       "width": 28.328125,
       "height": 21.359375,
@@ -404,6 +410,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {

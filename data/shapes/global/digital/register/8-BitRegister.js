@@ -329,6 +329,14 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
         this.last_clk = false;
     },
     
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.last_clk  = false;
+    },
+
     calculate:function()
     {
         var enable = this.getInputPort("input_enable").getBooleanValue();

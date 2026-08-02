@@ -2168,7 +2168,7 @@ digital_buttons_PushButton = digital_buttons_PushButton.extend({
 var digital_counter_4_Bit_Binary = CircuitFigure.extend({
 
    NAME: "digital_counter_4_Bit_Binary",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -2397,6 +2397,14 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
          // your special code here
          this.last_clk=false;
          this.counter=0;
+    },
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.counter = 0;
+        this.last_clk  = false;
     },
 
     /**
@@ -2790,6 +2798,14 @@ digital_counter_8_Bit_Binary = digital_counter_8_Bit_Binary.extend({
          // your special code here
          this.last_clk=false;
          this.counter=0;
+    },
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.counter = 0;
+        this.last_clk  = false;
     },
 
     /**
@@ -4638,6 +4654,21 @@ digital_flipflop_D_FlipFlop = digital_flipflop_D_FlipFlop.extend({
         this.last_t = false;
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        // q and q_ must never show the same level. Both output ports start LOW,
+        // so publish the complement before the first clock arrives - otherwise a
+        // divider chain wired to q_ starts from an impossible state.
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+
+        // start every run from a clean slate. Without this the flip flop keeps
+        // the clock edge of the previous run, and the first edge after a restart
+        // is swallowed when the clock happened to be HIGH on stop.
+        this.last_t = false;
+    },
+
     calculate:function()
     {
         var d = this.getInputPort("input_d").getBooleanValue();
@@ -4660,7 +4691,7 @@ digital_flipflop_D_FlipFlop = digital_flipflop_D_FlipFlop.extend({
 var digital_flipflop_D_Latch = CircuitFigure.extend({
 
    NAME: "digital_flipflop_D_Latch",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -4776,6 +4807,13 @@ digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    },
+
     calculate:function()
     {
         var d = this.getInputPort("input_d").getBooleanValue();
@@ -4796,7 +4834,7 @@ digital_flipflop_D_Latch = digital_flipflop_D_Latch.extend({
 var digital_flipflop_JK_FlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_JK_FlipFlop",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -4933,6 +4971,7 @@ digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         q_.setValue(!q.getBooleanValue())
+        this.last_t = false;
     },
     
     calculate:function()
@@ -5122,6 +5161,14 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
         this.last_t = false;
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+        this.last_t = false;
+    },
+
     calculate:function(context)
     {
         var j = this.getInputPort("input_j").getBooleanValue();
@@ -5170,7 +5217,7 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
 var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SR_FlipFlop",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -5302,6 +5349,22 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
         this.last_clk = false;
     },
     
+    
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        // q and q_ must never show the same level. Both output ports start LOW,
+        // so publish the complement before the first clock arrives - otherwise a
+        // divider chain wired to q_ starts from an impossible state.
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+
+        // start every run from a clean slate. Without this the flip flop keeps
+        // the clock edge of the previous run, and the first edge after a restart
+        // is swallowed when the clock happened to be HIGH on stop.
+        this.last_clk = false;
+    },
+
     calculate:function(context)
     {
         let s   = this.getInputPort("input_s").getBooleanValue();
@@ -5336,7 +5399,7 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
 var digital_flipflop_SR_Latch = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SR_Latch",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -5452,6 +5515,14 @@ digital_flipflop_SR_Latch = digital_flipflop_SR_Latch.extend({
         this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+    },
+
+
     calculate:function(context)
     {
         var s = this.getInputPort("input_s").getBooleanValue();
@@ -5485,7 +5556,7 @@ digital_flipflop_SR_Latch = digital_flipflop_SR_Latch.extend({
 var digital_flipflop_TFlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_TFlipFlop",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -5589,6 +5660,14 @@ digital_flipflop_TFlipFlop = digital_flipflop_TFlipFlop.extend({
         this.last_t = false;
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+        this.last_t = false;
+    },
+
     calculate:function(context)
     {
         var t = this.getInputPort("input_t").getBooleanValue();
@@ -9662,7 +9741,7 @@ digital_pulse_Delay = digital_pulse_Delay.extend({
 var digital_register_4_BitRegister = CircuitFigure.extend({
 
    NAME: "digital_register_4_BitRegister",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -9878,6 +9957,14 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
         this.last_clk = false;
     },
     
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.last_clk  = false;
+    },
+
     calculate:function()
     {
         var enable = this.getInputPort("input_enable").getBooleanValue();
@@ -10233,6 +10320,14 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
         this.last_clk = false;
     },
     
+
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.last_clk  = false;
+    },
+
     calculate:function()
     {
         var enable = this.getInputPort("input_enable").getBooleanValue();

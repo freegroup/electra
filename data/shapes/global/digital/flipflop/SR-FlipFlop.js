@@ -1,7 +1,7 @@
 var digital_flipflop_SR_FlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_SR_FlipFlop",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -133,6 +133,22 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
         this.last_clk = false;
     },
     
+    
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        // q and q_ must never show the same level. Both output ports start LOW,
+        // so publish the complement before the first clock arrives - otherwise a
+        // divider chain wired to q_ starts from an impossible state.
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+
+        // start every run from a clean slate. Without this the flip flop keeps
+        // the clock edge of the previous run, and the first edge after a restart
+        // is swallowed when the clock happened to be HIGH on stop.
+        this.last_clk = false;
+    },
+
     calculate:function(context)
     {
         let s   = this.getInputPort("input_s").getBooleanValue();

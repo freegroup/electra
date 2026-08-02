@@ -1,7 +1,7 @@
 var digital_flipflop_TFlipFlop = CircuitFigure.extend({
 
    NAME: "digital_flipflop_TFlipFlop",
-   VERSION: "local-version",
+   VERSION: "${VERSION}",
 
    init:function(attr, setter, getter)
    {
@@ -105,6 +105,14 @@ digital_flipflop_TFlipFlop = digital_flipflop_TFlipFlop.extend({
         this.last_t = false;
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+        this.last_t = false;
+    },
+
     calculate:function(context)
     {
         var t = this.getInputPort("input_t").getBooleanValue();

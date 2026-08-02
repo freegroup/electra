@@ -17,6 +17,14 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
         this.last_t = false;
     },
     
+    /**
+     *  Called if the simulation mode is starting
+     **/
+    onStart:function(context){
+        this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
+        this.last_t = false;
+    },
+
     calculate:function(context)
     {
         var j = this.getInputPort("input_j").getBooleanValue();

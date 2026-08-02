@@ -13,7 +13,7 @@
       "angle": 0,
       "userData": {
         "baseClass": "draw2d.SetFigure",
-        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.last_clk = false;\n    },\n    \n    calculate:function(context)\n    {\n        let s   = this.getInputPort(\"input_s\").getBooleanValue();\n        let r   = this.getInputPort(\"input_r\").getBooleanValue();\n        let clk = this.getInputPort(\"input_clk\").getBooleanValue();\n\n        let rising = this.last_clk===false && clk===true; \n    \n        if(rising){\n            let q = this.getOutputPort(\"output_q\");\n            let q_ = this.getOutputPort(\"output_q_not\");\n            if(r===true && s===false){\n                q.setValue(false);\n                q_.setValue(true);\n            }\n            // set\n            else if(r===false && s===true){\n                q.setValue(true);\n                q_.setValue(false);\n            }\n            // invalid\n            else if(r===true && s===true){\n                q.setValue( false);\n                q_.setValue( false);\n            }\n        }\n        this.last_clk = clk;\n    }\n});",
+        "code": "/**\n * by 'Draw2D Shape Designer'\n *\n * Custom JS code to tweak the standard behaviour of the generated\n * shape. add your custome code and event handler here.\n *\n *\n */\ntestShape = testShape.extend({\n\n    init: function(attr, setter, getter){\n         this._super(attr, setter, getter);\n\n        this.attr({resizeable:false});\n        this.installEditPolicy(new draw2d.policy.figure.AntSelectionFeedbackPolicy());\n        \n        this.last_clk = false;\n    },\n    \n    \n    /**\n     *  Called if the simulation mode is starting\n     **/\n    onStart:function(context){\n        // q and q_ must never show the same level. Both output ports start LOW,\n        // so publish the complement before the first clock arrives - otherwise a\n        // divider chain wired to q_ starts from an impossible state.\n        this.getOutputPort(\"output_q_not\").setValue(!this.getOutputPort(\"output_q\").getBooleanValue());\n\n        // start every run from a clean slate. Without this the flip flop keeps\n        // the clock edge of the previous run, and the first edge after a restart\n        // is swallowed when the clock happened to be HIGH on stop.\n        this.last_clk = false;\n    },\n\n    calculate:function(context)\n    {\n        let s   = this.getInputPort(\"input_s\").getBooleanValue();\n        let r   = this.getInputPort(\"input_r\").getBooleanValue();\n        let clk = this.getInputPort(\"input_clk\").getBooleanValue();\n\n        let rising = this.last_clk===false && clk===true; \n    \n        if(rising){\n            let q = this.getOutputPort(\"output_q\");\n            let q_ = this.getOutputPort(\"output_q_not\");\n            if(r===true && s===false){\n                q.setValue(false);\n                q_.setValue(true);\n            }\n            // set\n            else if(r===false && s===true){\n                q.setValue(true);\n                q_.setValue(false);\n            }\n            // invalid\n            else if(r===true && s===true){\n                q.setValue( false);\n                q_.setValue( false);\n            }\n        }\n        this.last_clk = clk;\n    }\n});",
         "name": "Rectangle",
         "markdown": "The **SR-Flip-Flop** can be considered as a\n1-bit memory, since it stores the input pulse even after it has passed.\nFlip-flops (or bi-stables) of different types can be made from logic\ngates and, as with other combinations of logic gates, the NAND and\nNOR gates are the most versatile, the NAND being the most widely used.\nThis is because, as well as being universal, i.e. it can be made\nto mimic any of the other standard logic functions, it is also\ncheaper to construct. Other, more widely used types of flip-flop\nare the JK, the D type and T type, which are developments of the\nSR flip-flop",
         "type": "Output",
@@ -90,6 +90,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -343,6 +345,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -383,6 +387,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
@@ -423,6 +429,8 @@
       "fontSize": 10,
       "fontColor": "rgba(8,8,8,1)",
       "fontFamily": null,
+      "bold": false,
+      "textAlign": "left",
       "editor": "LabelInplaceEditor",
       "filters": [
         {
