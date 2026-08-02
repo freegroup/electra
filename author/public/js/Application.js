@@ -47,16 +47,21 @@ class Application extends GenericApplication {
       let global = this.getParam("global")
       let tab = this.getParam("tab")
       if (review) {
+        // openReview is async like the other two, so ?tab= has to wait for it.
+        // Restoring the tab up front raced with openReview's own switch to the
+        // editor, and the editor usually won - silently dropping ?tab=.
         this.openReview(decodeURIComponent(review))
-        this.restoreTab(tab)
+          .then(() => this.restoreTab(tab))
       } else if (doc) {
-        this.open(doc).then(() => this.restoreTab(tab))
+        this.openDoc(doc)
+          .then(() => this.restoreTab(tab))
       } else if (global) {
         // ?global=<path> opens a shared doc by name (stable, human-readable link)
-        this.openGlobal(decodeURIComponent(global)).then(() => this.restoreTab(tab))
+        this.openGlobal(decodeURIComponent(global))
+          .then(() => this.restoreTab(tab))
       } else {
         this.showWelcomeMessage("/basic/math/binary-addition.sheet")
-        this.restoreTab(tab)
+          .then(() => this.restoreTab(tab))
       }
       resolve(this)
     })
@@ -201,7 +206,7 @@ class Application extends GenericApplication {
       .catch((error) => { if (error) console.log(error) })
   }
 
-  open(id, version) {
+  openDoc(id, version) {
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
     return storage.open(id, version)

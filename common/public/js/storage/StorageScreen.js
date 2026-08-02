@@ -375,7 +375,7 @@ export default class StorageScreen {
     if (f.draftId) {
       this.app.openWithConflict({ originalId: f.id, version: f.openVersion, draftId: f.draftId }).then(done, done)
     } else {
-      this.app.open(f.id, f.openVersion).then(done, done)
+      this.app.openDoc(f.id, f.openVersion).then(done, done)
     }
   }
 }

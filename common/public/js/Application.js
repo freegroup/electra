@@ -107,13 +107,13 @@ export default class Application extends AppFrame{
         //
         window.addEventListener('popstate', (event) => {
             if (event.state && event.state.id === 'editor') {
-                // New scope-model apps push { doc:<opaque id> } and open(id);
+                // New scope-model apps push { doc:<opaque id> } and openDoc(id);
                 // review state pushes { review:"<uuid>", path } and re-enters
                 // read-only review mode; legacy folder apps push { file, scope }.
                 if (event.state.review !== undefined && typeof this.openReview === 'function') {
                     this.openReview(String(event.state.review))
-                } else if (event.state.doc !== undefined && typeof this.open === 'function') {
-                    this.open(event.state.doc)
+                } else if (event.state.doc !== undefined && typeof this.openDoc === 'function') {
+                    this.openDoc(event.state.doc)
                 } else if (typeof this.load === 'function') {
                     this.load(event.state.file, event.state.scope)
                 }
@@ -121,8 +121,13 @@ export default class Application extends AppFrame{
         })
     }
 
+    // Returns a promise so callers can chain on it like they do on openDoc /
+    // openGlobal / openReview. show() is synchronous today; Promise.resolve
+    // passes a real promise straight through, so the day the welcome screen
+    // starts fetching something (images, a featured document) no call site has
+    // to change.
     showWelcomeMessage(exampleDocument){
-        welcomeMessage.show(exampleDocument)
+        return Promise.resolve(welcomeMessage.show(exampleDocument))
     }
 
     // Open a document by its public name/path (shared app content). Powers the
@@ -130,8 +135,8 @@ export default class Application extends AppFrame{
     // can reference docs by name instead of an opaque id. Resolves the path to a
     // handle server-side, then opens it the normal way.
     openGlobal(path){
-        return this.storage.resolveGlobal(path).then(({ id }) => this.open(id)).then(() => {
-            // open() stamped the opaque ?doc=; swap back to the readable ?global=
+        return this.storage.resolveGlobal(path).then(({ id }) => this.openDoc(id)).then(() => {
+            // openDoc() stamped the opaque ?doc=; swap back to the readable ?global=
             // (they are the same doc, XOR). replaceState so opening by name adds
             // no extra history entry.
             const url = new URL(window.location.href)
@@ -218,8 +223,8 @@ export default class Application extends AppFrame{
     openWithConflict({ originalId, version, draftId }) {
         return openConflictDialog.show()
             .then((choice) => {
-                if (choice === "draft") return this.open(draftId)
-                return this.open(originalId, version)
+                if (choice === "draft") return this.openDoc(draftId)
+                return this.openDoc(originalId, version)
             })
             .catch((err) => { if (err) console.log(err) })
     }

@@ -143,7 +143,7 @@ export default class DraftScreen {
       $grid.append(new DraftFactSheet(it, {
         onOpen: (item, $sheet) => {
           $sheet.addClass("spinner")
-          _this.app.open(item.id).then(() => $sheet.removeClass("spinner"))
+          _this.app.openDoc(item.id).then(() => $sheet.removeClass("spinner"))
         },
         onPromote: (item) => _this.app.promoteById(item.id),
         onDistribute: (item) => _this.app.distributeById(item),
