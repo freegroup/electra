@@ -7,8 +7,8 @@
 const db = require("./db")
 
 function init(app) {
-  // The drill-down roots: fixed entry points (app root + personal workspace),
-  // decided server-side. Called when no scope is selected.
+  // The drill-down roots: the fixed entry points, decided server-side. Called
+  // when no scope is selected.
   app.get("/userinfo/workspaces/roots", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
@@ -25,6 +25,19 @@ function init(app) {
       const auth = db.pickAuthHeaders(req)
       const j = await db.call("GET", `/database/scopes/mine`, { authHeaders: auth })
       res.json({ workspaces: j.scopes || [] })
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // Every workspace the caller can reach, flat — the source for the Workspaces
+  // search. Must stay ABOVE the /:ref route below, or Express would read
+  // "visible" as a scope reference.
+  app.get("/userinfo/workspaces/visible", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const j = await db.call("GET", `/database/scopes/visible`, { authHeaders: auth })
+      res.json({ scopes: j.scopes || [] })
     } catch (err) {
       fail(res, err)
     }

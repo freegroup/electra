@@ -115,11 +115,14 @@ export default class StorageScreen {
     $finder.addClass("finderCard").html(`
       <header class="finderToolbar">
         <div class="finderToolbarMain">
-          <nav class="filesBreadcrumb"></nav>
+          <!-- Search FIRST, breadcrumb after — see WorkspaceScreen: with the
+               breadcrumb ahead of it the box slid right the moment you opened a
+               folder, and sat at a different spot than on the other panes. -->
           <div class="filesFilter">
             <input type="text" class="filesFilterInput" placeholder="${t("pane.files.filter")}">
             <button type="button" class="filesFilterClear" aria-label="clear">×</button>
           </div>
+          <nav class="filesBreadcrumb"></nav>
         </div>
       </header>
       <div class="storageList"></div>

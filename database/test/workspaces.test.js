@@ -90,44 +90,45 @@ test("member roster is admin-only", async () => {
   assert.ok(asAdmin.json().members.some((m) => m.personRef === "bob"))
 })
 
-test("roots returns exactly the two entry points: app root + personal workspace", async () => {
+test("roots returns the shared app root only — never the personal workspace", async () => {
   // a fresh login provisions the personal workspace and enrolls in apps
   await post(ctx, "/database/on_login", asPerson("rooty"))
 
   const res = await get(ctx, "/database/scopes/roots", asPerson("rooty"))
   assert.equal(res.statusCode, 200)
-  const byKind = Object.fromEntries(res.json().roots.map((r) => [r.kind, r]))
+  const roots = res.json().roots
 
-  assert.ok(byKind.apps, "app root present")
-  assert.equal(byKind.apps.name, "apps")
-  assert.equal(byKind.apps.isMember, true)
+  assert.equal(roots.length, 1, "exactly one entry point")
+  assert.equal(roots[0].kind, "apps")
+  assert.equal(roots[0].name, "apps")
+  assert.equal(roots[0].isMember, true)
 
-  assert.ok(byKind.personal, "personal workspace present")
-  assert.equal(byKind.personal.name, "rooty")        // identity = email
-  assert.equal(byKind.personal.label, "Personal")     // display name
-  assert.equal(byKind.personal.isAdmin, true)
+  // The personal workspace is single-owner and holds nothing but the caller's
+  // own leaf — it is not a place to collaborate, so it is not an entry point.
+  assert.ok(!roots.some((r) => r.kind === "personal"), "personal workspace absent")
 
-  // exactly two entry points — sub-workspaces do NOT leak into roots
-  await post(ctx, `/database/scopes/${byKind.personal.scopeRef}/children`, asPerson("rooty"), { label: "sub" })
+  // sub-workspaces do NOT leak into roots either
+  const sub = await post(ctx, `/database/scopes/${appsId}/scopes`, asPerson("rooty"), { label: "sub" })
+  assert.equal(sub.statusCode, 201)
   const again = await get(ctx, "/database/scopes/roots", asPerson("rooty"))
-  assert.equal(again.json().roots.length, 2, "still exactly two roots after creating a sub-workspace")
+  assert.equal(again.json().roots.length, 1, "still one root after creating a sub-workspace")
 })
 
 test("the personal workspace is a promote ceiling (share via distribute, not promote)", async () => {
   await post(ctx, "/database/on_login", asPerson("ceil"))
-  const roots = (await get(ctx, "/database/scopes/roots", asPerson("ceil"))).json().roots
-  const personal = roots.find((r) => r.kind === "personal")
-  assert.ok(personal, "personal workspace present")
+  // Resolved by path, not via /roots — it is deliberately not an entry point there.
+  const personalId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/users/ceil")
+  assert.ok(personalId, "personal workspace provisioned")
 
-  const meta = (await get(ctx, `/database/scopes/${personal.scopeRef}`, asPerson("ceil"))).json()
+  const meta = (await get(ctx, `/database/scopes/${personalId}`, asPerson("ceil"))).json()
   assert.equal(meta.promoteCeiling, true)
 })
 
 test("members cannot be added to a personal workspace", async () => {
   await post(ctx, "/database/on_login", asPerson("solo"))
-  const roots = (await get(ctx, "/database/scopes/roots", asPerson("solo"))).json().roots
-  const personal = roots.find((r) => r.kind === "personal")
-  assert.ok(personal, "personal workspace present")
+  const personalId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/users/solo")
+  assert.ok(personalId, "personal workspace provisioned")
+  const personal = { scopeRef: personalId }
 
   // the owner is admin, yet inviting anyone else is forbidden by the backend
   const res = await post(ctx, `/database/scopes/${personal.scopeRef}/members`, asPerson("solo"), { personRef: "intruder" })
@@ -136,6 +137,60 @@ test("members cannot be added to a personal workspace", async () => {
   // roster stays single-owner
   const members = (await get(ctx, `/database/scopes/${personal.scopeRef}/members`, asPerson("solo"))).json().members
   assert.deepEqual(members.map((m) => m.personRef).sort(), ["solo"])
+})
+
+test("no sub-workspace may be created inside a personal workspace", async () => {
+  await post(ctx, "/database/on_login", asPerson("nesty"))
+  const personalId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/users/nesty")
+
+  // Without this guard the single-owner rule above is trivially bypassed: make
+  // a child here (addMember only objects to the workspace ITSELF) and invite
+  // anyone into that. Groups belong under the shared root instead.
+  const res = await post(ctx, `/database/scopes/${personalId}/scopes`, asPerson("nesty"), { name: "klasse-9b" })
+  assert.equal(res.statusCode, 400)
+
+  const children = (await get(ctx, `/database/scopes/${personalId}/children`, asPerson("nesty"))).json().children
+  assert.deepEqual(children, [], "personal workspace stays childless")
+})
+
+test("no scope may be MOVED into a personal workspace", async () => {
+  await post(ctx, "/database/on_login", asPerson("mover"))
+  const personalId = await scopeIdByPath(ctx.pool, ctx.schema, "electra/content/users/mover")
+
+  // The other way in: build the group elsewhere, then re-parent it. Attempted by
+  // the one person who holds every right involved — admin of the scope she just
+  // created AND admin of her own personal workspace — so what stops her is the
+  // guard itself and not a missing permission.
+  const created = await post(ctx, `/database/scopes/${appsId}/scopes`, asPerson("mover"), { name: "roamer" })
+  assert.equal(created.statusCode, 201)
+
+  const res = await patch(ctx, `/database/scopes/${created.json().scopeRef}`, asPerson("mover"), { parentRef: String(personalId) })
+  assert.equal(res.statusCode, 400)
+})
+
+test("visible lists reachable workspaces flat, with paths, and never the users branch", async () => {
+  await post(ctx, "/database/on_login", asPerson("seeker"))
+  // seeker is a member of apps (bootstrap) but not of klasse8a — the drill-down
+  // shows it all the same ("visible only"), so the search must find it too.
+  const res = await get(ctx, "/database/scopes/visible", asPerson("seeker"))
+  assert.equal(res.statusCode, 200)
+  const byPath = Object.fromEntries(res.json().scopes.map((s) => [s.path, s]))
+
+  assert.ok(byPath["apps"], "the shared root itself is listed")
+  assert.equal(byPath["apps"].isMember, true)
+
+  assert.ok(byPath["apps/klasse8a"], "a scope one level down is listed")
+  assert.equal(byPath["apps/klasse8a"].isMember, false, "marked visible-only")
+
+  // Paths arrive pre-stripped (no electra/content prefix) and the personal
+  // branch stays out entirely — it is nobody's search result but the owner's.
+  assert.ok(!Object.keys(byPath).some((p) => p.startsWith("users")), "no users branch")
+  assert.ok(!Object.keys(byPath).some((p) => p.startsWith("electra/")), "prefix stripped")
+})
+
+test("visible requires a login", async () => {
+  const res = await get(ctx, "/database/scopes/visible")
+  assert.equal(res.statusCode, 401)
 })
 
 test("an admin can delete an empty scope, but not one with children", async () => {

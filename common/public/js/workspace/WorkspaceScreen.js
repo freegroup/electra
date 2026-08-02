@@ -29,6 +29,14 @@ export default class WorkspaceScreen {
     // workspaces" — the caller's own memberships.
     this.stack = [{ scopeRef: null, name: t("pane.workspaces.root") }]
 
+    // Search state. A non-empty filter replaces the one-level-at-a-time
+    // drill-down with a flat list of every match, so a workspace nested a few
+    // levels down is one keystroke away instead of several clicks.
+    // `allScopes` is the flat source, fetched lazily on the first keystroke —
+    // browsing alone never needs it.
+    this.filter = ""
+    this.allScopes = null
+
     $("#workspaces_tab a").off("click.workspaces").on("click.workspaces", this.onShow.bind(this))
 
     $("body").append(`
@@ -59,42 +67,169 @@ export default class WorkspaceScreen {
   }
 
   render() {
-    $("#workspaces .workspacesFinder").addClass("finderCard").html(`
+    let $finder = $("#workspaces .workspacesFinder").addClass("finderCard").html(`
       <header class="finderToolbar">
-        <div class="finderToolbarMain"><nav class="workspaceBreadcrumb"></nav></div>
+        <div class="finderToolbarMain">
+          <!-- Nothing but the search box lives in the toolbar, so it starts at
+               the same spot as on Files and Drafts. Same placeholder key as
+               those two as well - one word, one place to change it. -->
+          <div class="workspaceFilter">
+            <input type="text" class="workspaceFilterInput" placeholder="${t("pane.files.filter")}">
+            <button type="button" class="workspaceFilterClear" aria-label="clear">×</button>
+          </div>
+        </div>
         <div class="finderToolbarActions">
           <button class="workspaceCreateButton electra-button electra-primary" data-i18n="pane.workspaces.create">${t("pane.workspaces.create")}</button>
         </div>
       </header>
+      <!-- Own row BELOW the toolbar: the trail describes the level you are
+           looking at, which belongs with the content and not with the search
+           box. It also means it can simply vanish while searching - a match
+           list spans every level, so there is no trail to draw. -->
+      <nav class="workspaceBreadcrumb"></nav>
       <div class="workspacesBody">
         <div class="workspaceTiles"></div>
         <aside class="workspaceSidePanel"></aside>
       </div>
     `)
 
-    $("#workspaces .workspacesFinder").off("click", ".workspaceCreateButton")
+    $finder.off("click", ".workspaceCreateButton")
       .on("click", ".workspaceCreateButton", () => this.promptCreate())
+
+    // The toolbar is rendered once and never re-rendered — reload() only
+    // repaints breadcrumb, tiles and panel. Re-rendering it on every keystroke
+    // would blow away the input and with it the caret (same reason Files splits
+    // its header from its body).
+    let $input = $finder.find(".workspaceFilterInput")
+    let $filter = $finder.find(".workspaceFilter")
+    let apply = (value) => {
+      this.filter = value.trim()
+      $filter.toggleClass("hasText", this.filter !== "")
+      // Fetch the flat list once, on first use. Until it resolves the old view
+      // stays up rather than flashing an empty box.
+      if (this.filter && this.allScopes === null) {
+        this.client.visible()
+          .then((scopes) => { this.allScopes = scopes; this.reload() })
+          .catch((exc) => { console.log(exc); this.allScopes = []; this.reload() })
+        return
+      }
+      this.reload()
+    }
+    $input.off("input.wsfilter").on("input.wsfilter", (e) => apply(e.target.value))
+    $filter.off("click.wsfilter", ".workspaceFilterClear")
+      .on("click.wsfilter", ".workspaceFilterClear", () => {
+        $input.val("")
+        apply("")
+        $input.focus()
+      })
 
     this.reload()
   }
 
+  // SEARCH mode: every workspace whose label or path matches, from all levels at
+  // once. The path is shown under the label because two groups may legitimately
+  // carry the same label (a slug keeps them apart internally, see createScope) —
+  // the path is what actually tells them apart for a human.
+  renderSearch() {
+    let needle = this.filter.toLowerCase()
+    let items = (this.allScopes || [])
+      .filter((s) => (s.label || s.name || "").toLowerCase().includes(needle) ||
+                     (s.path || "").toLowerCase().includes(needle))
+      .sort((a, b) => (a.label || a.name || "").localeCompare(b.label || b.name || ""))
+      .map((s) => ({
+        scopeRef: s.scopeRef,
+        name: s.label || s.name,
+        path: s.path,
+        memberLabel: s.isMember ? t("pane.workspaces.role_member") : t("pane.workspaces.visible_only"),
+        memberClass: s.isMember ? "wsHitMember" : "wsHitVisible",
+      }))
+
+    // The breadcrumb describes a level; a match list has none. Same for the side
+    // panel, which shows the current workspace's members and review settings.
+    $("#workspaces .workspaceBreadcrumb").hide()
+    $("#workspaces .workspaceSidePanel").empty().hide()
+
+    let $tiles = $("#workspaces .workspaceTiles").removeClass("spinner").addClass("workspaceSearchMode")
+    if (!this._hitTemplate) {
+      this._hitTemplate = Hogan.compile(`
+        {{#items}}
+          <div class="wsHit" data-ref="{{scopeRef}}">
+            <div class="wsHitMain">
+              <span class="wsHitName">{{name}}</span>
+              <span class="wsHitPath">{{path}}</span>
+            </div>
+            <span class="wsHitBadge {{memberClass}}">{{memberLabel}}</span>
+          </div>
+        {{/items}}
+        {{^items}}{{{emptyHtml}}}{{/items}}
+      `)
+    }
+    $tiles.html(this._hitTemplate.render({
+      items,
+      emptyHtml: `<div class="workspaceEmpty">${t("pane.workspaces.search_empty")}</div>`,
+    }))
+
+    $tiles.find(".wsHit").off("click").on("click", (e) => {
+      let ref = String($(e.currentTarget).data("ref"))
+      let hit = (this.allScopes || []).find((s) => String(s.scopeRef) === ref)
+      if (hit) this.jumpTo(hit)
+    })
+  }
+
+  // Open a search hit as if it had been reached by clicking down the tree: the
+  // breadcrumb is rebuilt from the flat list by matching path prefixes, so
+  // "back" still walks up through the real ancestors rather than dropping the
+  // user straight to the root.
+  jumpTo(hit) {
+    let parts = (hit.path || "").split("/")
+    let stack = [this.stack[0]]
+    for (let i = 1; i <= parts.length; i++) {
+      let prefix = parts.slice(0, i).join("/")
+      let node = (this.allScopes || []).find((s) => s.path === prefix)
+      // An ancestor the caller cannot see is simply skipped — the chain stays
+      // navigable, it just has fewer rungs.
+      if (node) {
+        stack.push({
+          scopeRef: String(node.scopeRef),
+          name: node.label || node.name,
+          isMember: !!node.isMember,
+          isAdmin: !!node.isAdmin,
+        })
+      }
+    }
+    this.stack = stack
+    this.filter = ""
+    $("#workspaces .workspaceFilterInput").val("")
+    $("#workspaces .workspaceFilter").removeClass("hasText")
+    this.reload()
+  }
+
   // Load the current level (top of the stack) and paint breadcrumb + tiles +
-  // side panel.
+  // side panel — or, while a search is active, the flat match list instead.
   reload() {
     let current = this.stack[this.stack.length - 1]
+
+    // SEARCH mode short-circuits the level machinery entirely: matches come
+    // from every level at once, so there is no "current level" to describe.
+    // Breadcrumb and side panel would both be lying, hence hidden.
+    if (this.filter && this.allScopes !== null) {
+      return this.renderSearch()
+    }
+
+    // renderBreadcrumb owns show/hide - it is the one that knows whether there
+    // is a trail worth showing.
     this.renderBreadcrumb()
 
-    let $tiles = $("#workspaces .workspaceTiles").addClass("spinner")
-    let $panel = $("#workspaces .workspaceSidePanel").empty()
+    let $tiles = $("#workspaces .workspaceTiles").removeClass("workspaceSearchMode").addClass("spinner")
+    let $panel = $("#workspaces .workspaceSidePanel").empty().show()
 
-    // Root level: the server decides the fixed entry points (app root +
-    // personal workspace) — no client-side filtering. Deeper levels: the
-    // scope's direct children. Both are single REST calls returning the visible
-    // scopes with their properties.
+    // Root level: the server decides the fixed entry points — no client-side
+    // filtering. Deeper levels: the scope's direct children. Both are single
+    // REST calls returning the visible scopes with their properties.
     let childrenP = current.scopeRef === null
       ? this.client.roots().then((rows) => rows.map((r) => ({
           scopeRef: r.scopeRef,
-          name: r.kind === "personal" ? (r.label || t("pane.workspaces.personal")) : (r.label || r.name),
+          name: r.label || r.name,
           description: r.description || null,
           isMember: !!r.isMember,
           isAdmin: !!r.isAdmin,
@@ -157,7 +292,12 @@ export default class WorkspaceScreen {
     // Any MEMBER of the current workspace may create a sub-workspace (matches the
     // backend guard). Not on the aggregate root (no single scope), and not in a
     // space the caller only sees but isn't a member of.
-    let canCreate = current.scopeRef !== null && current.isMember === true
+    //
+    // And never inside the personal workspace: it belongs to one person for
+    // good, so a group there could never be shared with anyone (the backend
+    // rejects both creating one and moving one in). Offering the button anyway
+    // would only produce an error nobody can act on.
+    let canCreate = current.scopeRef !== null && current.isMember === true && !current.isPersonal
     $("#workspaces .workspaceCreateButton").toggle(canCreate)
 
     // Side panel: review settings (every member) + member roster (admins).
@@ -244,6 +384,11 @@ export default class WorkspaceScreen {
 
   renderBreadcrumb() {
     let $bc = $("#workspaces .workspaceBreadcrumb").empty()
+    // A match list spans every level at once, so there is no trail to draw
+    // while searching. Otherwise the row shows, including at the top level,
+    // where it names where you are.
+    if (this.filter) { $bc.hide(); return }
+    $bc.show()
     this.stack.forEach((entry, i) => {
       let last = i === this.stack.length - 1
       let $crumb = last

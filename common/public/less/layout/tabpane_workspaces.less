@@ -10,7 +10,11 @@
   .workspacesFinder {
     // Toolbar chrome is shared — see layout/finder.less (.finderToolbar).
 
-    // breadcrumb: clickable ancestors + current
+    // Breadcrumb: clickable ancestors + current. Its own row directly BELOW the
+    // toolbar rather than inside it — the trail belongs to the content it
+    // describes, and keeping it out of the toolbar is what lets the search box
+    // sit at the same spot here as on Files and Drafts. Hidden while searching
+    // (renderBreadcrumb), so the row collapses on its own.
     .workspaceBreadcrumb {
       display: flex;
       flex-direction: row;
@@ -18,6 +22,7 @@
       flex-wrap: wrap;
       gap: 4px;
       font-size: 15px;
+      padding: @buttonSpacing @contentToEdgePadding 0;
 
       .wsCrumb {
         cursor: pointer;
@@ -29,6 +34,47 @@
         &.wsCrumbCurrent { cursor: default; font-weight: var(--label-font-weight); }
       }
       .wsCrumbSep { opacity: 0.4; }
+    }
+
+    // Search box, next to the breadcrumb in the toolbar's left group. Mirrors
+    // .filesFilter in tabpane_files.less rather than sharing it: hoisting both
+    // into finder.less would mean renaming the Files classes, which is a change
+    // to a working pane for no gain here.
+    .workspaceFilter {
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .workspaceFilterInput {
+      width: @filterInputWidth;
+      height: @buttonHeight;
+      padding: 0 30px 0 12px;
+      border: 1px solid rgb(var(--border-color));
+      border-radius: @borderRadiusSmall;
+      background: rgb(var(--input-bg-color));
+      color: rgb(var(--input-color));
+      &:focus {
+        outline: none;
+        border-color: rgb(var(--tint-color));
+      }
+    }
+    .workspaceFilterClear {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 6px;
+      opacity: 0.5;
+      color: rgb(var(--text-color));
+      &:hover { opacity: 1; }
+    }
+    .workspaceFilter.hasText .workspaceFilterClear {
+      display: block;
     }
 
     .workspacesBody {
@@ -50,6 +96,59 @@
       .workspaceEmpty {
         opacity: 0.6;
         padding: 20px 0;
+      }
+    }
+
+    // SEARCH mode: the same container turns from a wrapping tile grid into a
+    // stacked list of matches, so results from every level read as one sequence
+    // instead of a grid whose position means nothing.
+    .workspaceTiles.workspaceSearchMode {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: 0;
+      width: 100%;
+
+      .wsHit {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgb(var(--border-color));
+        cursor: pointer;
+        &:hover { background: rgba(var(--tint-color), 0.06); }
+        &:last-child { border-bottom: none; }
+      }
+
+      .wsHitMain {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;   // lets a long path ellipsize instead of stretching the row
+      }
+
+      .wsHitName {
+        color: rgb(var(--tint-color));
+        font-weight: var(--label-font-weight);
+      }
+
+      // The disambiguator: two groups may carry the same label, never the same path.
+      .wsHitPath {
+        font-size: 13px;
+        opacity: 0.6;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .wsHitBadge {
+        flex: 0 0 auto;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: @borderRadiusSmall;
+        &.wsHitMember  { background: rgb(var(--tint-color)); color: #fff; }
+        &.wsHitVisible { border: 1px solid rgb(var(--border-color)); opacity: 0.7; }
       }
     }
 

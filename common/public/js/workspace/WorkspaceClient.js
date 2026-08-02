@@ -10,12 +10,19 @@ class WorkspaceClient {
     this.base = "../userinfo/workspaces"
   }
 
-  // The drill-down roots: the fixed entry points (app root + personal
-  // workspace), decided server-side. -> [{ scopeRef, name, kind, isMember,
-  // isAdmin, ... }]
+  // The drill-down roots: the fixed entry points, decided server-side.
+  // -> [{ scopeRef, name, kind, isMember, isAdmin, ... }]
   roots() {
     return axios.get(`${this.base}/roots`, { params: { _: Date.now() } })
       .then((r) => r.data.roots || [])
+  }
+
+  // Every workspace the caller can reach, flat and with its full path — the
+  // source for the search, which shows matches from all levels at once instead
+  // of one level at a time. -> [{ scopeRef, label, path, isMember, isAdmin, ... }]
+  visible() {
+    return axios.get(`${this.base}/visible`, { params: { _: Date.now() } })
+      .then((r) => r.data.scopes || [])
   }
 
   // The scopes the caller is a member of (drill-down roots). -> [{ scopeRef,

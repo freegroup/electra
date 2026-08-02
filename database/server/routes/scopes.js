@@ -2,6 +2,7 @@
 //
 // Discovery:
 //   GET  /database/scopes/mine                     — scopes the caller is a member of
+//   GET  /database/scopes/visible                  — every scope the caller can reach (flat, for search)
 //   GET  /database/scopes/by-path?name=school/x    — resolve a name → scopeRef
 //   GET  /database/scopes/:scopeRef                — scope metadata
 // Administration (admin-gated):
@@ -43,6 +44,7 @@ const {
   listChildren,
   listMembers,
   rootWorkspaces,
+  visibleScopes,
 } = require("../persistence/scopes")
 const {
   ForbiddenError,
@@ -161,6 +163,19 @@ async function routes(fastify) {
       } finally {
         client.release()
       }
+    }
+  )
+
+  // Flat list of every workspace the caller can reach — the source for the
+  // Workspaces search, which collapses the drill-down into one list of matches.
+  // Unlike /mine this also carries scopes the caller may only SEE (isMember
+  // false), because the drill-down surfaces those too and search must not find
+  // less than browsing. Paths come pre-stripped, ready to display.
+  fastify.get(
+    "/database/scopes/visible",
+    { preHandler: [fastify.requireLogin] },
+    async (req) => {
+      return { scopes: await visibleScopes(req.personRef) }
     }
   )
 

@@ -175,9 +175,26 @@ async function createScope({ parentId, name, label, description = null, required
     await client.query("BEGIN")
 
     // Verify parent exists
-    const parentRes = await client.query(`SELECT id FROM scopes WHERE id = $1`, [parentId])
-    if (parentRes.rowCount === 0) {
+    const parent = await getScope(client, parentId)
+    if (!parent) {
       throw new NotFoundError(`unknown parent scope id ${parentId}`)
+    }
+
+    // A personal workspace (electra/content/users/<email>) belongs to exactly
+    // one person, for good — the same rule addMember already enforces on the
+    // workspace itself. Without this guard that rule is trivially bypassed:
+    // create a sub-scope here (addMember does not object to a CHILD) and invite
+    // whoever you like into it. The result was a shared workgroup sitting in a
+    // namespace labelled "Personal", which then also has nowhere to go when its
+    // owner leaves or changes their address.
+    //
+    // Note this can only ever reject a GROUP: createScope never sets
+    // is_personal_leaf, so the caller's own leaf — provisioned by
+    // ensureWriteLeaf with a direct INSERT — is unaffected. Groups belong under
+    // the shared root (apps), where they inherit the shared library and have a
+    // lifecycle of their own.
+    if (await isPersonalWorkspace(client, parent)) {
+      throw new BadRequestError("cannot create a sub-scope inside a personal workspace - create the group under the shared root instead")
     }
 
     // Two creation modes, decided by whether an explicit identity `name` is
@@ -853,6 +870,13 @@ async function setParentScope({ scopeId, newParentId }) {
     const np = await getScope(client, newParentId)
     if (!np) throw new NotFoundError(`unknown parent scope id ${newParentId}`)
 
+    // The other way into a personal workspace: build the group elsewhere, then
+    // move it in. Same reason as in createScope — a personal workspace stays
+    // single-owner, so nothing may be parked there.
+    if (await isPersonalWorkspace(client, np)) {
+      throw new BadRequestError("cannot move a scope into a personal workspace")
+    }
+
     // Cycle: new parent must not be the scope itself nor any of its descendants.
     const cycle = await client.query(
       `SELECT 1 FROM scope_closure WHERE ancestor_id = $1 AND descendant_id = $2`,
@@ -1014,10 +1038,11 @@ async function listChildren({ parentId, personRef }) {
 }
 
 // The Workspaces drill-down ROOTS: the fixed entry points shown when no scope
-// is given. Exactly two, in the same item shape as listChildren, decided
-// server-side (no client filtering): the shared app root (electra/content/apps)
-// and the caller's own personal workspace (electra/content/users/<personRef>).
-// `kind` distinguishes them so the UI can label without parsing paths.
+// is given, in the same item shape as listChildren and decided server-side (no
+// client filtering). For a logged-in caller that is the shared app root
+// (electra/content/apps) alone; see the comment inside for why the personal
+// workspace is not among them. An anonymous caller gets the public scopes.
+// `kind` labels each one so the UI never has to parse paths.
 async function rootWorkspaces(personRef) {
   const client = await pool.connect()
   try {
@@ -1049,12 +1074,16 @@ async function rootWorkspaces(personRef) {
     }
     // The two fixed entry points, resolved by their exact paths (not pattern
     // matching): the shared app root and the caller's own personal workspace.
+    // Only the shared app root. The caller's personal workspace is deliberately
+    // NOT an entry point here: it belongs to one person for good, holds nothing
+    // but their own leaf (no members, no review, hence no side panel), and its
+    // documents are already reachable through the Drafts pane. Listing it as a
+    // "workspace" alongside the shared root only ever suggested it was a place
+    // to collaborate — which is exactly what createScope now refuses.
     const appsId = await resolveScopeIdByPath(client, PATH_APPS)
-    const personalId = await resolveScopeIdByPath(client, `electra/content/users/${personRef}`)
 
     const wanted = [
       { id: appsId, kind: "apps" },
-      { id: personalId, kind: "personal" },
     ].filter((w) => w.id != null)
 
     const out = []
@@ -1090,6 +1119,72 @@ async function rootWorkspaces(personRef) {
   } finally {
     client.release()
   }
+}
+
+
+// Every workspace the caller can reach, flat, for the Workspaces SEARCH — the
+// counterpart of the drill-down (rootWorkspaces + listChildren), which only ever
+// shows one level at a time.
+//
+// "Can reach" mirrors what clicking through would eventually surface, so search
+// never finds less than browsing:
+//   • the scope's PARENT is one the caller is a member of — the same rule the
+//     drill-down enforces (listChildren + the route's isMember(parentId) gate),
+//     which is why non-member scopes appear too, marked "visible only"
+//   • or the caller is a member of the scope itself — reachable via a
+//     membership granted deeper in the tree (distribute, direct add), where the
+//     drill-down alone would not get you there
+//
+// Excluded: personal leaves (internal storage) and the whole `users` subtree —
+// personal workspaces are single-owner and are no longer entry points either
+// (see rootWorkspaces). The path is built in the same query rather than one
+// pathOfScope() round trip per row.
+async function visibleScopes(personRef) {
+  if (!personRef) return []
+  const res = await pool.query(
+    `WITH RECURSIVE paths AS (
+       SELECT id, parent_id, name::text AS path FROM scopes WHERE parent_id IS NULL
+       UNION ALL
+       SELECT s.id, s.parent_id, p.path || '/' || s.name
+         FROM scopes s JOIN paths p ON s.parent_id = p.id
+     ),
+     mine AS (
+       SELECT scope_id FROM memberships WHERE person_ref = $1 AND is_member = true
+     ),
+     users_root AS (SELECT id FROM paths WHERE path = $2)
+     SELECT s.id, s.name, s.label, s.description, s.is_bootstrap, s.is_anonymous,
+            p.path,
+            (m.person_ref IS NOT NULL AND m.is_member = true) AS is_member,
+            COALESCE(m.is_admin, false)                       AS is_admin,
+            (SELECT count(*)::int FROM memberships mc
+              WHERE mc.scope_id = s.id AND mc.is_member = true) AS member_count
+       FROM scopes s
+       JOIN paths p ON p.id = s.id
+       LEFT JOIN memberships m ON m.scope_id = s.id AND m.person_ref = $1
+      WHERE s.is_personal_leaf = false
+        AND (s.parent_id IN (SELECT scope_id FROM mine)
+             OR s.id     IN (SELECT scope_id FROM mine))
+        -- scope_closure carries a depth-0 self row, so this also drops the
+        -- users container itself, not just what sits under it.
+        AND NOT EXISTS (
+              SELECT 1 FROM scope_closure c
+               WHERE c.descendant_id = s.id
+                 AND c.ancestor_id = (SELECT id FROM users_root))
+      ORDER BY p.path`,
+    [personRef, PATH_USERS]
+  )
+  return res.rows.map((r) => ({
+    scopeRef: String(r.id),
+    name: r.name,
+    label: r.label,
+    description: r.description,
+    path: stripPrefix(r.path),
+    bootstrap: r.is_bootstrap,
+    anonymous: r.is_anonymous,
+    isMember: r.is_member,
+    isAdmin: r.is_admin,
+    memberCount: r.member_count,
+  }))
 }
 
 
@@ -1145,5 +1240,6 @@ module.exports = {
   listChildren,
   listMembers,
   rootWorkspaces,
+  visibleScopes,
   sanitizeName,
 }
