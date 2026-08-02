@@ -72,8 +72,12 @@ class StorageClient {
   // promotes it to the operating scope. Admins commit it right away; plain
   // members open a deletion review, where the optional description is shown to
   // the reviewers. -> { status: "deleted" | "pending" | ... }
-  deleteShared(id, description) {
-    return axios.post(`${this.base}/file/delete-shared`, description ? { id, description } : { id })
+  // Request deletion of the SHARED version, named by its uuid. Addressing the
+  // exact version (not the doc path) is what leaves the caller's personal copy
+  // of the same document untouched. Commits at once or opens a review depending
+  // on the owning scope; the returned status says which.
+  deleteShared(uuid, description) {
+    return axios.post(`${this.base}/file/delete-shared`, description ? { uuid, description } : { uuid })
       .then((response) => response.data)
   }
 

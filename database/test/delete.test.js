@@ -71,6 +71,47 @@ test("promoting a delete tombstones it for every member", async () => {
   assert.equal((await readDoc(ctx, klasseId, "group/gone.json", asPerson("bob"))).statusCode, 404)
 })
 
+test("deleting the shared version by uuid leaves the caller's personal copy intact", async () => {
+  // This is what the Files "request deletion" button does now: it names the
+  // SHARED version by its uuid, not the doc path. anna keeps a personal copy of
+  // the same path; deleting the shared original must not touch it.
+  await seedSharedDoc(ctx, klasseId, "mine-too.json", { v: "shared" })
+  await writeDoc(ctx, klasseId, "mine-too.json", asPerson("anna"), { data: { v: "annas own" } })
+
+  // uuid of the shared (committed) version on the group scope.
+  const sharedUuid = (await ctx.pool.query(
+    `SELECT uuid FROM "${ctx.schema}".versions
+      WHERE scope_id = $1 AND doc_path = $2 AND status = 'committed' AND is_deletion = false
+      ORDER BY version DESC LIMIT 1`,
+    [klasseId, "mine-too.json"]
+  )).rows[0].uuid
+
+  const r = await post(ctx, `/database/docs/${sharedUuid}/delete-request`, asPerson("anna"), {})
+  assert.equal(r.statusCode, 200, r.body)
+  assert.equal(r.json().status, "deleted") // klasse8a is score-0 → commits at once
+
+  // Gone for the group...
+  assert.equal((await readDoc(ctx, klasseId, "mine-too.json", asPerson("bob"))).statusCode, 404)
+  // ...but anna still sees HER copy, with her own content.
+  const mine = await readDoc(ctx, klasseId, "mine-too.json", asPerson("anna"))
+  assert.equal(mine.statusCode, 200, "personal copy survives")
+  assert.deepEqual(mine.json().data, { v: "annas own" })
+})
+
+test("delete-request by a non-member of the owning scope is forbidden", async () => {
+  await seedSharedDoc(ctx, klasseId, "guarded.json", { v: 1 })
+  const uuid = (await ctx.pool.query(
+    `SELECT uuid FROM "${ctx.schema}".versions
+      WHERE scope_id = $1 AND doc_path = $2 ORDER BY version DESC LIMIT 1`,
+    [klasseId, "guarded.json"]
+  )).rows[0].uuid
+
+  // stranger may not act on a scope they don't belong to, even by uuid.
+  const r = await post(ctx, `/database/docs/${uuid}/delete-request`, asPerson("stranger"), {})
+  assert.equal(r.statusCode, 403)
+  assert.equal((await readDoc(ctx, klasseId, "guarded.json", asPerson("bob"))).statusCode, 200)
+})
+
 test("a delete tombstone stops at the first review level (stays local until approved)", async () => {
   // reviewed (score 5) → sub (score 0). anna deletes at sub, promotes: it
   // commits on sub (auto) but only becomes PENDING on reviewed.

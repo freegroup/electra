@@ -201,6 +201,11 @@ export default class StorageScreen {
           let orig = hasDraft ? it.original : it
           return {
             id: orig.id,
+            // The SHARED version's uuid — the delete action addresses the exact
+            // version, not the path, so the caller's personal copy is left
+            // alone. For an inherit row that is the row's own uuid; for a
+            // personal copy it is the original's.
+            uuid: orig.uuid,
             // Full path (minus suffix) — used for the folder tree, search, and
             // the flat-list title. The grid shows only the leaf name.
             title: it.path.replace(_this.conf.fileSuffix, ""),
@@ -210,12 +215,11 @@ export default class StorageScreen {
             hasDraft,
             draftId: hasDraft ? it.id : null,
             thumbnailUrl: orig.thumbnailUrl,
-            // Deleting a shared file is offered only to logged-in members and
-            // only for pure shared originals (no personal copy in play — those
-            // are Revert'ed from My Files first). Admins delete immediately;
-            // members raise a review (deleteImmediate decides which).
-            canDelete: session.isLoggedIn() && !hasDraft,
-            deleteImmediate: !!it.deleteImmediate,
+            // Deleting a shared file is offered to every logged-in member.
+            // Having a personal copy of it makes no difference: the uuid names
+            // the shared version either way, and requiring a Revert first was a
+            // detour with nothing behind it.
+            canDelete: session.isLoggedIn(),
           }
         })
       $host.removeClass("spinner")
@@ -258,11 +262,12 @@ export default class StorageScreen {
       .filter((it) => !scopeNeedle || (it.providedBy || "").toLowerCase().startsWith(scopeNeedle))
       .filter((it) => !needle || it.title.toLowerCase().includes(needle))
       .sort((a, b) => a.title.localeCompare(b.title))
-      // Same delete affordance as the grid cards, in the "Actions" column: an
-      // admin/no-review scope shows "Delete", otherwise "Request Deletion".
+      // Same delete affordance as the grid cards, in the "Actions" column.
+      // Always "request deletion": whether it commits at once or opens a review
+      // is the scope's call, not the button's to predict.
       .map((it) => ({
         ...it,
-        deleteLabel: it.deleteImmediate ? t("common:button.delete") : t("button.request_delete"),
+        deleteLabel: t("button.request_delete"),
       }))
 
     let compiled = Hogan.compile($("#storageListTemplate").html())
@@ -313,10 +318,9 @@ export default class StorageScreen {
         thumbnailUrl: f.thumbnailUrl,
         hasDraft: f.hasDraft,
         canDelete: f.canDelete,
-        deleteImmediate: f.deleteImmediate,
       }, {
         onOpen: () => _this.openFile(f),
-        onDelete: () => _this.app.deleteSharedById({ id: f.id, deleteImmediate: f.deleteImmediate }),
+        onDelete: () => _this.app.deleteSharedById({ uuid: f.uuid }),
       }).render())
     })
 
@@ -368,7 +372,7 @@ export default class StorageScreen {
       event.stopPropagation()
       let f = meta[$(event.currentTarget).data("id")]
       if (!f) return
-      _this.app.deleteSharedById({ id: f.id, deleteImmediate: f.deleteImmediate })
+      _this.app.deleteSharedById({ uuid: f.uuid })
     })
   }
 

@@ -49,6 +49,7 @@ function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true,
     const originalId = db.encodeId(original.scopeRef, docPath)
     originalItem = {
       id: originalId,
+      uuid: original.uuid || null,
       version: original.version ?? null,
       providedBy: original.provider || null,
       thumbnailUrl: original.uuid ? `../sheets/thumb?uuid=${encodeURIComponent(original.uuid)}` : null,
@@ -230,29 +231,23 @@ function init(app) {
     }
   })
 
-  // --- delete a SHARED doc for the group (tombstone + promote) --------------
-  // Body: { id }. Two server-side steps so the client can't leave a half-done
-  // state: (1) write a deletion into the caller's own leaf, (2) promote that
-  // tombstone to the operating scope. Admin / threshold-0 → commits as 'deleted'
-  // immediately; a plain member in a review scope → a pending deletion review
-  // (README §6.9). Membership + review rules are enforced by the database
-  // (requireWriteLeaf + quorum); this endpoint only sequences the two calls.
+  // --- request deletion of a SHARED doc for the group ----------------------
+  // Body: { uuid, description? }. The uuid pins the exact shared version, so the
+  // caller's personal copy of the same path (a different uuid) is left
+  // untouched. The database resolves the scope from the uuid, enforces
+  // membership, and applies review rules: admin / score-0 → committed as
+  // 'deleted' at once, a plain member in a review scope → a pending deletion
+  // review (README §6.9).
   app.post("/sheets/file/delete-shared", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, description } = req.body || {}
-      const { scopeRef, path } = db.decodeId(id)
-      if (!hasSuffix(path)) {
-        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+      const { uuid, description } = req.body || {}
+      if (!uuid) {
+        return res.status(400).json({ error: { message: "uuid required" } })
       }
-      await db.call(
-        "DELETE",
-        `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
-        { authHeaders: auth, body: {} }
-      )
       const r = await db.call(
         "POST",
-        `/database/scopes/${scopeRef}/docs/promote?path=${encodeURIComponent(path)}`,
+        `/database/docs/${encodeURIComponent(uuid)}/delete-request`,
         { authHeaders: auth, body: description ? { description } : {} }
       )
       res.json({ status: r.status })

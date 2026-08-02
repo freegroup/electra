@@ -281,17 +281,16 @@ export default class Application extends AppFrame{
             .catch((err) => { if (err) console.log(err) })
     }
 
-    // Delete a SHARED document for the group. Admins commit it immediately;
-    // members open a deletion review — the confirm text and the resulting toast
-    // reflect which one applies (item.deleteImmediate). Like promote, the server
-    // has the final word: the toast keys off the returned status.
+    // Request deletion of a SHARED document. The wording is always "request
+    // deletion": whether it commits at once or opens a review is the scope's
+    // call, not something the button should predict — and having (or not having)
+    // a personal copy must not change what the button says. The uuid names the
+    // exact shared version, so the caller's own copy is never touched; the
+    // returned status reports what actually happened.
     deleteSharedById(item) {
-        let label = item.deleteImmediate ? t("common:button.delete") : t("button.request_delete")
-        let explain = item.deleteImmediate
-            ? t("dialog.delete_shared_explain")
-            : t("dialog.delete_shared_request_explain")
-        return deleteDialog.show(explain, { title: label, okLabel: label })
-            .then((description) => this.storage.deleteShared(item.id, description))
+        let label = t("button.request_delete")
+        return deleteDialog.show(t("dialog.delete_shared_request_explain"), { title: label, okLabel: label })
+            .then((description) => this.storage.deleteShared(item.uuid, description))
             .then((res) => toast(res && res.status === "deleted"
                 ? t("message.deleted")
                 : t("message.delete_requested")))

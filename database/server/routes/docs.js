@@ -11,7 +11,7 @@
 const { getDoc, listDocs, globDocs, putDoc, deleteDoc, historyDocs, rowToDoc } = require("../persistence/docs")
 const { pool } = require("../persistence/pool")
 const { docAt } = require("../persistence/admin")
-const { promote } = require("../persistence/promote")
+const { promote, requestDelete } = require("../persistence/promote")
 const { distribute } = require("../persistence/distribute")
 const { distributeTargets } = require("../persistence/scopes")
 const { NotFoundError, BadRequestError } = require("../utils/errors")
@@ -271,6 +271,36 @@ async function routes(fastify) {
       await requireWriteLeaf(req.params.scopeRef, req.personRef)
       const targets = await distributeTargets(req.personRef, req.params.scopeRef)
       return { targets }
+    }
+  )
+
+  // Request deletion of a SHARED version, named by its uuid. Distinct from the
+  // scope+path DELETE above, which tombstones the caller's OWN copy: here the
+  // uuid pins the exact shared version, so the caller's personal copy of the
+  // same path (a different uuid) is left untouched. requestDelete resolves the
+  // scope from the uuid and enforces membership there; a score-0 scope commits
+  // at once, otherwise it opens a deletion review.
+  fastify.post(
+    "/database/docs/:uuid/delete-request",
+    {
+      schema: {
+        body: {
+          type: "object",
+          properties: {
+            description: { type: "string", maxLength: 2000 },
+          },
+          additionalProperties: false,
+        },
+      },
+      preHandler: [fastify.requireLogin],
+    },
+    async (req) => {
+      const { description } = req.body || {}
+      return requestDelete({
+        uuid: req.params.uuid,
+        personRef: req.personRef,
+        description: (description || "").trim() || undefined,
+      })
     }
   )
 

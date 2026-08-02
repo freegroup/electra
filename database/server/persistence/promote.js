@@ -358,6 +358,110 @@ async function promote({ operatingScopeId, personRef, docPath, expectedVersion, 
 
 // If the caller is a reviewer of `scope`, record their approve vote and run a
 // quorum check. Returns true if the version committed as a result.
+// Ask that the SHARED version of a document be removed, leaving the caller's own
+// copy of it alone.
+//
+// The obvious route — write a local tombstone, then promote it — cannot do that:
+// the tombstone lands in the caller's leaf at the same doc path as their copy,
+// and a leaf holds exactly ONE state per path. The tombstone becomes the newest
+// version there and buries the copy, so asking the group to drop its version
+// silently destroyed the asker's own. Delivering straight to the owning scope
+// with cleanupLeafId=null keeps the two apart: the leaf is never touched, and if
+// the deletion commits, the copy simply becomes a document without an original
+// (instanceType "personal") and moves to the Drafts pane.
+//
+// Targets exactly one scope — the one that owns the shared version, which the
+// caller's row already names. Unlike promote there is no cascade upward: a
+// document inherited from higher up is deleted where it actually lives.
+// `data` is the version the caller currently sees, snapshotted into the
+// tombstone so a deletion awaiting review can still be previewed (see the DELETE
+// route). Returns deliverToScope's verdict: "deleted" or "pending".
+// The version to delete is named by its UUID — the stable, globally-unique
+// handle each version already carries (the review flow addresses versions the
+// same way, ?review=<uuid>). This is what lets the caller point at the SHARED
+// version specifically: their personal copy of the same doc path is a different
+// version with a different uuid, so there is no ambiguity to resolve and no
+// walk-up to second-guess. The uuid resolves scope + doc_path itself.
+async function requestDelete({ uuid, personRef, description }) {
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+
+    // Resolve the exact version. It must still be the live shared one — deleting
+    // a pending or already-tombstoned version makes no sense.
+    const found = await client.query(
+      `SELECT scope_id, doc_path, version, status, is_deletion, data
+         FROM versions WHERE uuid = $1`,
+      [uuid]
+    )
+    if (found.rowCount === 0) throw new NotFoundError(`no version with uuid ${uuid}`)
+    const target = found.rows[0]
+    if (target.status !== "committed" || target.is_deletion) {
+      throw new NotFoundError(`uuid ${uuid} is not a live shared version`)
+    }
+    const docPath = target.doc_path
+
+    const targetScope = await getScopeRow(client, target.scope_id)
+    if (!targetScope) throw new NotFoundError(`scope id ${target.scope_id} not found`)
+
+    // Deleting the shared version is a member action on THAT scope — the one the
+    // version lives in, resolved from the uuid, not wherever the caller happened
+    // to be browsing. A non-member may see an inherited doc but not delete it.
+    const member = await client.query(
+      `SELECT 1 FROM memberships
+        WHERE scope_id = $1 AND person_ref = $2 AND is_member = true`,
+      [targetScope.id, personRef]
+    )
+    if (member.rowCount === 0) {
+      throw new ForbiddenError(`caller is not a member of scope id ${targetScope.id}`)
+    }
+
+    const r = await deliverToScope(client, {
+      targetScope,
+      docPath,
+      isDeletion: true,
+      // Snapshot the version being deleted into the tombstone so a deletion that
+      // goes to review can still be previewed and opened read-only.
+      data: target.data,
+      meta: description ? { _review: { description } } : {},
+      author: personRef,
+      // No source version to copy blobs from — a tombstone carries none.
+      srcScope: null,
+      srcVersion: null,
+      cleanupLeafId: null, // the caller's own copy is not part of this
+    })
+
+    // Same reporting as distribute: a pending deletion asks this scope's
+    // reviewers to look at it, and the asker always sees their own action.
+    if (r.status === "pending") {
+      await recordDocActivity(client, {
+        actor: personRef, eventType: "delete_requested",
+        scopeRecipients: true,
+        scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid,
+      })
+      await recordDocActivity(client, {
+        actor: personRef, eventType: "i_delete_requested",
+        recipients: [{ ref: personRef, role: "author" }],
+        scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid, excludeActor: false,
+      })
+    } else {
+      await recordDocActivity(client, {
+        actor: personRef, eventType: "deleted",
+        recipients: [{ ref: personRef, role: "author" }],
+        scopeRef: r.scopeRef, docPath, version: r.version, uuid: r.uuid, excludeActor: false,
+      })
+    }
+
+    await client.query("COMMIT")
+    return r
+  } catch (err) {
+    await client.query("ROLLBACK")
+    throw err
+  } finally {
+    client.release()
+  }
+}
+
 async function maybeSelfApprove(client, scope, docPath, version, personRef, isDeletion, leafId) {
   const rev = await client.query(
     `SELECT reviewer_score FROM memberships
@@ -738,4 +842,4 @@ function lineageLeaf(meta) {
   return l && l.fromScope ? l.fromScope : null
 }
 
-module.exports = { promote, listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept, deliverToScope, getScopeRow, recordDocActivity }
+module.exports = { promote, requestDelete, listPending, reviewQueue, myPendingPromotions, approve, reject, withdraw, accept, deliverToScope, getScopeRow, recordDocActivity }

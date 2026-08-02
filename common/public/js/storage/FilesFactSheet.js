@@ -14,9 +14,9 @@ export default class FilesFactSheet extends FileFactSheet {
   actions() {
     let it = this.item
     if (!it.canDelete) return []
-    // Admins delete the shared file outright; members raise a deletion review.
-    // Same action either way — the label just sets the right expectation.
-    let label = it.deleteImmediate ? t("common:button.delete") : t("button.request_delete")
-    return [{ label, onClick: (item) => this.opts.onDelete(item) }]
+    // Always "request deletion": whether it commits at once or opens a review is
+    // the owning scope's call, and having a personal copy must not change what
+    // the button says (the action targets the shared version by uuid regardless).
+    return [{ label: t("button.request_delete"), onClick: (item) => this.opts.onDelete(item) }]
   }
 }

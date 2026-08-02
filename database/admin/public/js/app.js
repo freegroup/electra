@@ -220,6 +220,21 @@
       container.appendChild(vRow)
     }
 
+    // UUID of the selected version — the stable, per-version handle every action
+    // (delete, promote, ...) addresses a document by. Read-only; shown so it can
+    // be copied for support/debugging.
+    const selectedRow = versions.find((v) => v.version === selectedVersion)
+    if (selectedRow && selectedRow.uuid) {
+      const uuidInput = document.createElement("input")
+      uuidInput.value = selectedRow.uuid
+      uuidInput.readOnly = true
+      uuidInput.className = "mono"
+      uuidInput.onclick = () => uuidInput.select()
+      const uRow = UI.el("div", "form-row")
+      uRow.append(UI.el("label", "form-label", "UUID"), uuidInput)
+      container.appendChild(uRow)
+    }
+
     // Path + editors.
     const pathInput = document.createElement("input"); pathInput.id = "doc-path"; pathInput.value = path
     const pRow = UI.el("div", "form-row"); pRow.append(UI.el("label", "form-label", "Path"), pathInput)

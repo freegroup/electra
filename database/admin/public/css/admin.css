@@ -126,6 +126,7 @@ button.link { background: none; border: none; color: var(--muted); padding: 0; m
 button.link:hover { color: var(--accent); }
 .path-row input, #doc-path { font-family: var(--mono); }
 #doc-path { flex: 1; }
+input.mono { font-family: var(--mono); flex: 1; color: var(--muted); }
 .origin { color: var(--muted); font-family: var(--mono); font-size: 11px; margin: 8px 0 4px; min-height: 14px; }
 
 .editors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }

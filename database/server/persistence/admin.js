@@ -130,7 +130,7 @@ async function docAt(scopeId, docPath, version) {
 // explorer's version combobox. Includes each version's publish state.
 async function docVersions(scopeId, docPath) {
   const res = await pool.query(
-    `SELECT version, status, is_deletion, author, public_id, unpublished_at, created_at
+    `SELECT version, uuid, status, is_deletion, author, public_id, unpublished_at, created_at
        FROM versions
       WHERE scope_id = $1 AND doc_path = $2
       ORDER BY version DESC`,
@@ -138,6 +138,7 @@ async function docVersions(scopeId, docPath) {
   )
   return res.rows.map((r) => ({
     version: r.version,
+    uuid: r.uuid,
     status: r.status,
     isDeletion: r.is_deletion,
     author: r.author,
