@@ -138,7 +138,7 @@ digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         q_.setValue(!q.getBooleanValue())
-        this.last_t = false;
+        this.last_t = null;
     },
     
     calculate:function()

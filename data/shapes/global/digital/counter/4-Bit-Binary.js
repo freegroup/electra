@@ -237,7 +237,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
      **/
     onStart:function(context){
         this.counter = 0;
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     /**

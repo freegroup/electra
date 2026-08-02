@@ -222,7 +222,7 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
      *  Called if the simulation mode is starting
      **/
     onStart:function(context){
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     calculate:function()

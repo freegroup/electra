@@ -22,7 +22,7 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
      **/
     onStart:function(context){
         this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
-        this.last_t = false;
+        this.last_t = null;
     },
 
     calculate:function(context)

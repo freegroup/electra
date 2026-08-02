@@ -146,7 +146,7 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
         // start every run from a clean slate. Without this the flip flop keeps
         // the clock edge of the previous run, and the first edge after a restart
         // is swallowed when the clock happened to be HIGH on stop.
-        this.last_clk = false;
+        this.last_clk = null;
     },
 
     calculate:function(context)

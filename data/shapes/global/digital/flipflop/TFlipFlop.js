@@ -110,7 +110,7 @@ digital_flipflop_TFlipFlop = digital_flipflop_TFlipFlop.extend({
      **/
     onStart:function(context){
         this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
-        this.last_t = false;
+        this.last_t = null;
     },
 
     calculate:function(context)

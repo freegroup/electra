@@ -2404,7 +2404,7 @@ digital_counter_4_Bit_Binary = digital_counter_4_Bit_Binary.extend({
      **/
     onStart:function(context){
         this.counter = 0;
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     /**
@@ -2805,7 +2805,7 @@ digital_counter_8_Bit_Binary = digital_counter_8_Bit_Binary.extend({
      **/
     onStart:function(context){
         this.counter = 0;
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     /**
@@ -3014,7 +3014,7 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
      **/
     onStart:function(context){
         this.counter = 0;
-        this.last_t  = false;
+        this.last_t  = null;
     },
 
     /**
@@ -4666,7 +4666,7 @@ digital_flipflop_D_FlipFlop = digital_flipflop_D_FlipFlop.extend({
         // start every run from a clean slate. Without this the flip flop keeps
         // the clock edge of the previous run, and the first edge after a restart
         // is swallowed when the clock happened to be HIGH on stop.
-        this.last_t = false;
+        this.last_t = null;
     },
 
     calculate:function()
@@ -4971,7 +4971,7 @@ digital_flipflop_JK_FlipFlop = digital_flipflop_JK_FlipFlop.extend({
         var q = this.getOutputPort("output_q");
         var q_ = this.getOutputPort("output_q_not");
         q_.setValue(!q.getBooleanValue())
-        this.last_t = false;
+        this.last_t = null;
     },
     
     calculate:function()
@@ -5166,7 +5166,7 @@ digital_flipflop_JKR_FlipFlop = digital_flipflop_JKR_FlipFlop.extend({
      **/
     onStart:function(context){
         this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
-        this.last_t = false;
+        this.last_t = null;
     },
 
     calculate:function(context)
@@ -5362,7 +5362,7 @@ digital_flipflop_SR_FlipFlop = digital_flipflop_SR_FlipFlop.extend({
         // start every run from a clean slate. Without this the flip flop keeps
         // the clock edge of the previous run, and the first edge after a restart
         // is swallowed when the clock happened to be HIGH on stop.
-        this.last_clk = false;
+        this.last_clk = null;
     },
 
     calculate:function(context)
@@ -5665,7 +5665,7 @@ digital_flipflop_TFlipFlop = digital_flipflop_TFlipFlop.extend({
      **/
     onStart:function(context){
         this.getOutputPort("output_q_not").setValue(!this.getOutputPort("output_q").getBooleanValue());
-        this.last_t = false;
+        this.last_t = null;
     },
 
     calculate:function(context)
@@ -9962,7 +9962,7 @@ digital_register_4_BitRegister = digital_register_4_BitRegister.extend({
      *  Called if the simulation mode is starting
      **/
     onStart:function(context){
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     calculate:function()
@@ -10325,7 +10325,7 @@ digital_register_8_BitRegister = digital_register_8_BitRegister.extend({
      *  Called if the simulation mode is starting
      **/
     onStart:function(context){
-        this.last_clk  = false;
+        this.last_clk  = null;
     },
 
     calculate:function()

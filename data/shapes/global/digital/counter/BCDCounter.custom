@@ -24,7 +24,7 @@ digital_counter_BCDCounter = digital_counter_BCDCounter.extend({
      **/
     onStart:function(context){
         this.counter = 0;
-        this.last_t  = false;
+        this.last_t  = null;
     },
 
     /**
