@@ -14,6 +14,8 @@ const envFile = PROJECT_PATH+'/settings.ini'
 
 console.log(`Component '${componentName} is loading envFile '${envFile}'`)
 dotenv.config({ debug: false,path: envFile })
+// Optional, not in git: machine-local values (see thumbnails.js).
+dotenv.config({ debug: false, path: PROJECT_PATH + '/settings.local.ini' })
 
 
 const generator = require("./thumbnails")

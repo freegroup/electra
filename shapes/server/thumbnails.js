@@ -13,6 +13,11 @@ const envFile = PROJECT_PATH+'/settings.ini'
 
 console.log(`Component '${componentName} is loading envFile '${envFile}'`)
 dotenv.config({ debug: false,path: envFile })
+// Optional, not in git: machine-local values that must not reach the server,
+// e.g. PUPPETEER_EXECUTABLE_PATH on a dev machine. Same order as the database
+// service. dotenv keeps the first value it sees, so this can only add keys that
+// settings.ini does not define - it never overrides the shared config.
+dotenv.config({ debug: false, path: PROJECT_PATH + '/settings.local.ini' })
 
 
 const thisDir = path.normalize(__dirname)
@@ -104,14 +109,25 @@ module.exports = {
           code;
 
 
-        let browser = await puppeteer.launch( DEBUGGING ? 
-          { headless: false, devtools: true,slowMo: 250}: 
+        let launchOptions = DEBUGGING ?
+          { headless: false, devtools: true,slowMo: 250}:
           { headless: true, args: [
           "--disable-gpu",
           "--disable-dev-shm-usage",
           "--disable-setuid-sandbox",
           "--no-sandbox",
-        ]})
+        ]}
+
+        // Same override as the sheets converters (sheets/server/converter/launch.js):
+        // puppeteer 19 downloads an x86_64 Chromium, which cannot be spawned on an
+        // Apple-Silicon dev machine ("spawn Unknown system error -88" = EBADMACHO).
+        // Point PUPPETEER_EXECUTABLE_PATH at a native Chrome/Chromium to override
+        // the bundled build. Unset -> the bundled one is used, as before.
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+          launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+        }
+
+        let browser = await puppeteer.launch(launchOptions)
   
         const page = await browser.newPage()
        
