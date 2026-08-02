@@ -65,7 +65,13 @@ var digital_signal_VerticalBus = draw2d.shape.node.VerticalBus.extend({
   
 
     onPreStart:function(context) {
-        context.signalPorts &&= {}
+        // first check if any object already create the signal context.
+        // `??=` and not `&&=`: the bus has to CREATE the registry when it is
+        // missing. With `&&=` it did the opposite - only ever replacing one that
+        // already existed - so a circuit with a bus but without a SignalTarget
+        // left signalPorts undefined, and the getValue below threw on the first
+        // tick. Emptying the registry between runs is the canvas' job, not ours.
+        context.signalPorts ??= {}
     },
 
     onStart:function(context)
