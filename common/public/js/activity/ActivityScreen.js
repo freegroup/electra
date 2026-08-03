@@ -1,5 +1,7 @@
 import clientFactory from "./ActivityClient"
 import CountBadge from "../CountBadge"
+import { categoryFor } from "./activityIcons"
+import { relativeTime } from "./relativeTime"
 
 // The Activity pane — the caller's account-scoped, cross-app notification feed:
 // what happened to their drafts (committed / rejected + reason), review requests
@@ -13,6 +15,11 @@ const APP_BY_SUFFIX = {
   ".brain": "simulator",
   ".sheet": "author",
 }
+
+// Chevron (Lucide "chevron-down") for the expand toggle; rotates via CSS when the
+// row is expanded. See THIRD-PARTY-NOTICES.md.
+const CHEVRON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
+  `stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`
 
 // Mint the opaque document handle the editors open with (?doc=<handle>), matching
 // the backend db.encodeId: base64url(JSON.stringify({ s: scopeRef, p: docPath })).
@@ -94,14 +101,78 @@ export default class ActivityScreen {
       reason: it.reason || "",
       defaultValue: it.eventType,
     })
-    let $row = $(`<div class="activityItem"></div>`)
-    if (!it.seen) $row.addClass("activityUnread")
+    let $item = $(`<div class="activityItem"></div>`)
+    if (!it.seen) $item.addClass("activityUnread")
+
+    // A row is a header (icon + text + time + chevron) plus a detail panel that
+    // expands below it. Two separate gestures: clicking the header opens the
+    // document/workspace as before; the chevron only toggles the details.
+    let $row = $(`<div class="activityRow"></div>`)
+
+    // Category badge: a coloured icon that tells the event kind at a glance.
+    // .cat-<key> drives the colour (see tabpane_activity.less), the SVG is a
+    // vendored Lucide icon.
+    let cat = categoryFor(it.eventType)
+    $row.append($(`<span class="activityIcon cat-${cat.key}"></span>`).html(cat.svg))
+
     $row.append($(`<span class="activityText"></span>`).html(text))
-    $row.append($(`<span class="activityTime"></span>`).text(this.formatTime(it.createdAt)))
+    // Relative time in the row ("vor 5 Min"), full local timestamp on hover.
+    $row.append($(`<span class="activityTime"></span>`)
+      .text(relativeTime(it.createdAt))
+      .attr("title", this.formatTime(it.createdAt)))
+
+    // Chevron: toggles the detail panel. Its own click must not bubble up to the
+    // header's open handler.
+    let $chevron = $(`<span class="activityChevron"></span>`).html(CHEVRON_SVG)
+    $row.append($chevron)
+
     if (this.canOpen(it)) {
       $row.addClass("activityClickable").on("click", () => this.open(it))
     }
-    return $row
+
+    let $detail = this.renderDetail(it).addClass("activityDetailHidden")
+    $chevron.on("click", (e) => {
+      e.stopPropagation()
+      $item.toggleClass("activityExpanded")
+      $detail.toggleClass("activityDetailHidden")
+    })
+
+    $item.append($row).append($detail)
+    return $item
+  }
+
+  // The expandable detail panel: a small definition list of the fields we have.
+  // Rows are omitted when their value is empty, so a plain "committed" event
+  // shows fewer rows than a rejected one with a reason.
+  renderDetail(it) {
+    let $d = $(`<div class="activityDetail"></div>`)
+    let comment = (it.meta && it.meta._review && it.meta._review.description) || ""
+    let rows = [
+      [t("pane.activity.detail.file"), it.subjectLabel],
+      [t("pane.activity.detail.workspace"), it.scopeLabel],
+      [t("pane.activity.detail.when"), this.formatTime(it.createdAt)],
+      [t("pane.activity.detail.status"),
+        t(`pane.activity.status.${it.eventType}`, { defaultValue: it.eventType })],
+      [t("pane.activity.detail.actor"), it.actor],
+      [t("pane.activity.detail.version"), it.meta && it.meta.version],
+      [t("pane.activity.detail.reason"), it.reason],
+      [t("pane.activity.detail.comment"), comment],
+    ]
+    for (let [label, value] of rows) {
+      if (value === undefined || value === null || value === "") continue
+      let $r = $(`<div class="activityDetailRow"></div>`)
+      $r.append($(`<span class="activityDetailLabel"></span>`).text(label))
+      $r.append($(`<span class="activityDetailValue"></span>`).text(value))
+      $d.append($r)
+    }
+    // An explicit Open action inside the panel, mirroring the header click.
+    if (this.canOpen(it)) {
+      $(`<button class="activityDetailOpen"></button>`)
+        .text(t("pane.activity.detail.open"))
+        .on("click", (e) => { e.stopPropagation(); this.open(it) })
+        .appendTo($d)
+    }
+    return $d
   }
 
   canOpen(it) {

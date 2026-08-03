@@ -5,16 +5,40 @@
   padding: 40px;
 
   .activityList {
+    // A feed item = a header row (.activityRow) plus a collapsible detail panel.
     .activityItem {
+      border-bottom: 1px solid rgb(var(--border-color));
+      &:last-child { border-bottom: none; }
+    }
+
+    .activityRow {
       display: flex;
       flex-direction: row;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       gap: 16px;
       padding: 12px @contentToEdgePadding;
-      border-bottom: 1px solid rgb(var(--border-color));
 
-      &:last-child { border-bottom: none; }
+      // Category badge: a round tinted disc with a Lucide icon. Each .cat-<key>
+      // sets a status colour; the icon inherits it (stroke=currentColor) and the
+      // disc uses the same colour at low alpha. Light/dark ride the tokens.
+      .activityIcon {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg { width: 16px; height: 16px; display: block; }
+
+        &.cat-success { color: rgb(var(--success-color)); background: rgba(var(--success-color), 0.12); }
+        &.cat-pending { color: rgb(var(--warning-color)); background: rgba(var(--warning-color), 0.12); }
+        &.cat-danger  { color: rgb(var(--danger-color));  background: rgba(var(--danger-color),  0.12); }
+        &.cat-info    { color: rgb(var(--tint-color));    background: rgba(var(--tint-color),    0.12); }
+        &.cat-neutral { color: rgba(var(--text-color), 0.55); background: rgba(var(--text-color), 0.07); }
+      }
 
       .activityText { flex: 1 1 auto; }
       .activityTime {
@@ -23,15 +47,66 @@
         opacity: 0.5;
         white-space: nowrap;
       }
+
+      // Expand toggle - rotates when the item is open (see .activityExpanded).
+      .activityChevron {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        color: rgba(var(--text-color), 0.45);
+        transition: transform 0.15s ease, color 0.15s ease;
+        &:hover { color: rgb(var(--text-color)); }
+        svg { width: 18px; height: 18px; display: block; }
+      }
     }
 
-    // unread: a tint accent bar on the left + heavier text
+    .activityExpanded .activityChevron { transform: rotate(180deg); }
+
+    // Detail panel: a compact label/value list under the header.
+    .activityDetail {
+      padding: 4px @contentToEdgePadding 16px calc(@contentToEdgePadding + 48px);
+
+      .activityDetailRow {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        padding: 3px 0;
+        font-size: 13px;
+      }
+      .activityDetailLabel {
+        flex: 0 0 96px;
+        color: rgba(var(--text-color), 0.5);
+      }
+      .activityDetailValue {
+        flex: 1 1 auto;
+        word-break: break-word;
+      }
+      .activityDetailOpen {
+        margin-top: 10px;
+        padding: 5px 14px;
+        border: 1px solid rgb(var(--border-color));
+        border-radius: 4px;
+        background: transparent;
+        color: rgb(var(--tint-color));
+        cursor: pointer;
+        &:hover { background: rgba(var(--tint-color), 0.08); }
+      }
+    }
+    .activityDetailHidden { display: none; }
+
+    // unread: a tint accent bar on the left + heavier text. The bar sits on the
+    // item (covers header + detail), the bold text on the header row.
     .activityUnread {
       box-shadow: inset 3px 0 0 rgb(var(--tint-color));
       .activityText { font-weight: var(--label-font-weight); }
     }
 
-    .activityClickable {
+    // Only the header row is clickable/hoverable, not the detail panel below it.
+    .activityRow.activityClickable {
       cursor: pointer;
       &:hover { background: rgba(var(--text-color), 0.03); }
     }
