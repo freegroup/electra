@@ -77,17 +77,27 @@ module.exports = {
                 return strings.map( x => JSON.parse(x))
             })
             .then( (json) => {
-                function arrayUnique(array) {
-                    var a = array.concat();
-                    for(var i=0; i<a.length; ++i) {
-                        for(var j=i+1; j<a.length; ++j) {
-                            if(a[i].name === a[j].name)
-                                a.splice(j--, 1);
-                        }
+                // Merge by name, LAST one wins. The files arrive in walk-up order
+                // (global first, the caller's own last), so an override has to beat
+                // what it overrides — whoever is closer to the user decides.
+                //
+                // This is the direction index.js has had all along: its files are
+                // concatenated, so a later `var X = …` replaces the earlier one.
+                // The catalogue used to do the opposite and keep the FIRST entry,
+                // which meant a user could override a shape's code but not its
+                // catalogue entry. Masked so far only because user shapes tend to
+                // carry unique names.
+                //
+                // Map.set keeps the position of the first occurrence and replaces
+                // its value, so an override does not reorder the palette.
+                function mergeByName(entries) {
+                    let byName = new Map()
+                    for (let entry of entries) {
+                        byName.set(entry.name, entry)
                     }
-                    return a;
+                    return [...byName.values()]
                 }
-                return arrayUnique(json.flat());
+                return mergeByName(json.flat());
             })
             .then( (json => {
                 res.status(200).send(json)
