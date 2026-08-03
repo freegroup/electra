@@ -28,6 +28,50 @@
     opacity: 0.35;
     font-style: italic;
   }
+
+  // Presence dots in place of the old "N members" line. Anonymous by design —
+  // see scopeTile.js. Colours live in theme_light.
+  .scopeCardMeta {
+    // .factSheetWorkspace dims its text to 0.55 and clips overflow; both would
+    // ruin the dots, which bring their own colour and an overhanging ring.
+    opacity: 1;
+    overflow: visible;
+  }
+
+  .wsAvatarStack {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+  }
+
+  .wsAvatarDot {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Slight overlap, so a group reads as a group and not as a row of buttons.
+    // Kept shallow on purpose: a later dot paints over the right shoulder of
+    // the one before it, and anything deeper starts clipping that glyph.
+    & + .wsAvatarDot { margin-left: -4px; }
+
+    svg {
+      width: 12px;
+      height: 12px;
+      // Lucide is drawn on a 24px grid; at half that size the 2px stroke thins
+      // out, so it is set heavier here instead of in the markup.
+      stroke-width: 2.4;
+    }
+  }
+
+  .wsAvatarMore {
+    margin-left: 8px;
+    font-size: 11px;
+    opacity: 0.55;
+  }
 }
 
 // Side-panel info block (label + description edit pencils).
