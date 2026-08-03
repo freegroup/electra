@@ -30,13 +30,24 @@ function withSuffix(name) {
   return n + SUFFIX
 }
 
+// Display name of whoever last committed a version. personRef is the plain
+// email (database/server/auth.js), and only the part before the @ leaves the
+// server — so no full address ends up on a card, nor in the JSON behind it.
+function authorLabel(author) {
+  if (!author) return null
+  const s = String(author)
+  const at = s.indexOf("@")
+  return at === -1 ? s : s.slice(0, at)
+}
+
 // Build the uniform display item from a database doc/glob row.
 //   scopeRef     — the operating scope (where a save lands); goes into the handle
 //   docPath      — the document path; goes into the handle + shown as name/path
 //   providedBy   — origin scope human path (the "Provided by" column)
 //   version      — effective version
+//   author       — who last committed that version (shortened, see authorLabel)
 //   instanceType — "personal" | "personalCopy" | "inherit" (see globDocs)
-function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false, deleteImmediate = false }) {
+function toItem({ scopeRef, docPath, uuid, providedBy, version, author = null, editable = true, published = false, instanceType = "inherit", original = null, promoteCeiling = false, deleteImmediate = false }) {
   const id = db.encodeId(scopeRef, docPath)
   const ownLeaf = instanceType === "personal" || instanceType === "personalCopy"
   let displayProvider = providedBy || null
@@ -62,6 +73,7 @@ function toItem({ scopeRef, docPath, uuid, providedBy, version, editable = true,
     path: docPath,
     providedBy: displayProvider,
     version: version ?? null,
+    author: authorLabel(author),
     editable,
     published,
     instanceType,
@@ -91,6 +103,7 @@ function init(app) {
             uuid: d.uuid,
             providedBy: d.provider,
             version: d.providerVersion,
+            author: d.author,
             instanceType: d.instanceType,
             original: d.original,
             promoteCeiling: d.promoteCeiling,
@@ -123,6 +136,7 @@ function init(app) {
         uuid: doc.uuid,
         providedBy: doc.scope,
         version: doc.version,
+        author: doc.author,
       })
       // The preview image lives inside the document (content.image) so it stays
       // an atomic unit with the doc — but it's large and the editor doesn't need

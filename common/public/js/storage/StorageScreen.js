@@ -211,6 +211,9 @@ export default class StorageScreen {
             title: it.path.replace(_this.conf.fileSuffix, ""),
             providedBy: orig.providedBy,
             version: orig.version,
+            // Who last committed the SHARED version — like providedBy/version
+            // this describes the original, not the caller's own copy.
+            author: orig.author,
             openVersion: hasDraft ? orig.version : null,
             hasDraft,
             draftId: hasDraft ? it.id : null,
@@ -315,6 +318,7 @@ export default class StorageScreen {
         title: f.title.slice(prefix.length),   // leaf name at this level
         providedBy: f.providedBy,
         version: f.version,
+        author: f.author,
         thumbnailUrl: f.thumbnailUrl,
         hasDraft: f.hasDraft,
         canDelete: f.canDelete,

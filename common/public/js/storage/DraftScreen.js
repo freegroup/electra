@@ -89,6 +89,7 @@ export default class DraftScreen {
           title: it.path.replace(_this.conf.fileSuffix, ""),
           providedBy: it.providedBy,
           version: it.version,
+          author: it.author,
           isPersonal: it.instanceType === "personal",
           isPersonalCopy: it.instanceType === "personalCopy",
           // Revert only makes sense when an original exists to fall back to; a

@@ -8,7 +8,7 @@
 //     ...subclass-specific action callbacks
 //   }).render())
 //
-// `item`: { id, title, providedBy, version, thumbnailUrl, ... }
+// `item`: { id, title, providedBy, version, author, thumbnailUrl, ... }
 export default class FileFactSheet {
 
   constructor(item, opts = {}) {
@@ -25,6 +25,39 @@ export default class FileFactSheet {
   // -> [{ label, primary?, onClick }]  — ghost-button actions in the footer.
   actions() { return [] }
 
+  // -> string | null  — the "by …" segment of the meta line. ReviewFactSheet
+  // returns null: it renders its own, richer author line with the change-comment
+  // popover, and two author lines on one card would only compete.
+  metaAuthor() { return this.item.author || null }
+
+  // The three lines under the thumbnail: "name v3", then where the document
+  // comes from, then who last committed it. Every part is optional — a missing
+  // one leaves its element empty, and CSS folds empty ones away, so a card
+  // without an author does not keep a blank line for it.
+  renderMeta($sheet) {
+    let it = this.item
+    let author = this.metaAuthor()
+
+    if (it.version != null) {
+      // data-version is the hook for the version history, which is not wired up
+      // yet (the endpoint exists: /brains/file/versions).
+      $sheet.find(".factSheetVersion")
+        .text(`v${it.version}`)
+        .attr("title", t("pane.files.col_version"))
+        .attr("data-version", it.version)
+    }
+
+    $sheet.find(".factSheetWorkspace")
+      .text(it.providedBy || "")
+      .attr("title", it.providedBy || "")
+
+    if (author) {
+      // NOT .factSheetAuthor — that class belongs to ReviewFactSheet's own line.
+      let by = t("pane.files.by_author", { name: author })
+      $sheet.find(".factSheetBy").text(by).attr("title", by)
+    }
+  }
+
   render() {
     let it = this.item
     let $sheet = $(`
@@ -34,8 +67,12 @@ export default class FileFactSheet {
           <span class="factSheetOverlay"></span>
         </div>
         <div class="factSheetBody">
-          <div class="factSheetTitle"></div>
+          <div class="factSheetTitleRow">
+            <div class="factSheetTitle"></div>
+            <div class="factSheetVersion"></div>
+          </div>
           <div class="factSheetWorkspace"></div>
+          <div class="factSheetBy"></div>
           <div class="factSheetBadges"></div>
         </div>
         <div class="factSheetButtonBar"></div>
@@ -45,7 +82,7 @@ export default class FileFactSheet {
     $sheet.attr("data-id", it.id)
     $sheet.find(".factSheetThumb img").attr("src", it.thumbnailUrl)
     $sheet.find(".factSheetTitle").text(it.title).attr("title", it.title)
-    $sheet.find(".factSheetWorkspace").text(it.providedBy || "").attr("title", it.providedBy || "")
+    this.renderMeta($sheet)
 
     // top-right overlay pill (e.g. "in review")
     let overlay = this.overlayBadge()

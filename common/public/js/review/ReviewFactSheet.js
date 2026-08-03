@@ -8,6 +8,10 @@ import PopoverTooltip from "../PopoverTooltip"
 // Clicking the card body opens the review version (same as Open button).
 export default class ReviewFactSheet extends FileFactSheet {
 
+  // The meta line stays "workspace · version" here — the author gets his own
+  // line below it, with the change-comment popover attached.
+  metaAuthor() { return null }
+
   overlayBadge() {
     let it = this.item
     return {

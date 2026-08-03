@@ -181,8 +181,9 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
 // (own-leaf/slot 0 over shared/slot 1, then lowest depth, then highest version).
 //
 // Each row carries: path, provider (origin scope path) + providerVersion (where
-// the effective version lives), and operatingScopeRef (the group that produced
-// it → where a save from this row lands). No data/meta — the payload stays small.
+// the effective version lives), author (who last committed it) and
+// operatingScopeRef (the group that produced it → where a save from this row
+// lands). No data/meta — the payload stays small.
 async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
   // Operating scopes to walk up from:
   //   logged-in — the group scopes the caller is an explicit member of, at or
@@ -234,7 +235,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       `${WALKUP_SLOTS},
        matches AS (
          SELECT v.doc_path, s.depth, s.slot_rank,
-                v.scope_id, v.version, v.uuid, v.status, v.is_deletion
+                v.scope_id, v.version, v.uuid, v.status, v.is_deletion, v.author
          FROM slots s
          JOIN versions v ON v.scope_id = s.scope_id
                         AND v.status IN ('committed', 'deleted')
@@ -242,7 +243,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
        ),
        winner AS (
          SELECT DISTINCT ON (doc_path)
-                doc_path, depth, slot_rank, scope_id, version, uuid, status, is_deletion
+                doc_path, depth, slot_rank, scope_id, version, uuid, status, is_deletion, author
          FROM matches
          ORDER BY doc_path, depth ASC, slot_rank ASC, version DESC
        ),
@@ -258,7 +259,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
          ORDER BY doc_path, depth ASC, version DESC
        )
        SELECT w.doc_path, w.depth, w.slot_rank, w.scope_id, w.version, w.uuid,
-              w.status, w.is_deletion,
+              w.status, w.is_deletion, w.author,
               COALESCE(o.original_status = 'committed' AND o.original_is_deletion = false, false) AS has_original,
               o.original_scope_id, o.original_version, o.original_uuid
        FROM winner w
@@ -321,6 +322,9 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
       uuid: row.uuid,
       provider: stripPrefix(providerPath),
       providerVersion: row.version,
+      // Who last committed the effective version — the versions row carries it
+      // anyway, so this is a column, not a join.
+      author: row.author,
       operatingScopeRef: String(opScopeId),
       instanceType,
       original,

@@ -107,12 +107,38 @@
     line-height: 1.3;
   }
 
-  .factSheetWorkspace {
+  // Name and version share a line. The flex rules live in here rather than on
+  // .factSheetTitle itself, because the scope card (scopeTile.js) reuses that
+  // class outside this row, in a column.
+  .factSheetTitleRow {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+
+    // The version is short and fixed, the name takes the rest and truncates —
+    // min-width:0 is what lets it actually shrink instead of pushing the
+    // version out of the card.
+    .factSheetTitle { flex: 1 1 auto; min-width: 0; }
+
+    .factSheetVersion {
+      flex: 0 0 auto;
+      font-size: 11px;
+      opacity: 0.55;
+    }
+  }
+
+  // Provider and author, one per line. Filled in FileFactSheet.renderMeta;
+  // whichever the item has nothing for stays empty and folds away.
+  .factSheetWorkspace,
+  .factSheetBy {
     font-size: 11px;
     opacity: 0.55;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    &:empty { display: none; }
   }
 
   .factSheetBadges {
