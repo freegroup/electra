@@ -85,6 +85,32 @@
         "i_accepted": "You accepted <b>{{subject}}</b> in {{scope}}",
         "i_rejected": "You rejected <b>{{subject}}</b> in {{scope}}",
         "member_added": "{{actor}} added you to {{scope}}"
+      },
+      "detail": {
+        "file": "File",
+        "workspace": "Workspace",
+        "when": "When",
+        "status": "Status",
+        "comment": "Comment",
+        "reason": "Reason",
+        "version": "Version",
+        "actor": "By",
+        "open": "Open"
+      },
+      "status": {
+        "review_requested": "Awaiting your review",
+        "i_submitted": "Submitted for review",
+        "delete_requested": "Deletion awaiting review",
+        "i_delete_requested": "Deletion requested",
+        "deleted": "Deleted",
+        "i_withdrew": "Withdrawn",
+        "committed": "Live",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "i_approved": "Approved",
+        "i_accepted": "Approved",
+        "i_rejected": "Rejected",
+        "member_added": "Added"
       }
     },
     "review": {
@@ -127,7 +153,7 @@
     },
     "workspaces": {
       "title": "Workspaces",
-      "intro": "A workspace is a shared space for a <b>team or class</b>. Add the people who belong, and everything you <b>promote</b> reaches only them. Members work inside it, admins manage the people and the review settings, and reviewers hold the points that approve changes. With <b>review</b> on, changes get checked before your team sees them. Workspaces nest <b>hierarchically</b>, from a single group up to a whole organization. Open one to explore, or create your own and invite others.",
+      "intro": "A workspace makes sure everyone sees exactly the documents <b>meant for them</b>. You decide who belongs, and everything you share there <b>stays with exactly those people</b>. A workspace can <b>contain more workspaces</b>, from a small group up to a whole organization: the higher up you post a document, the more people you reach. Open one to explore, or create your own and invite others.",
       "root": "My Workspaces",
       "create": "New Workspace",
       "search_empty": "No workspace matches your search.",
@@ -177,6 +203,7 @@
       "title_global": "Public Documents",
       "col_name": "Name",
       "col_version": "Version",
+      "by_author": "by {{name}}",
       "col_draft": "My copy",
       "col_provider": "Workspace",
       "col_actions": "Actions",

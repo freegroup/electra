@@ -27,7 +27,7 @@
     "create": "Neue Schaltung anlegen",
     "share": "Schaltung mit anderen teilen",
     "add_probe": "Bezeichnung des Messpunkt",
-    "add_label": "Beschriftung hinzufügen",
+    "add_label": "Bauteil beschriften",
     "add_folder": "Neuen Ordner anlegen",
     "new_document": "Neue Schaltung anlegen",
     "publish": "Veröffentlichen",
@@ -74,6 +74,32 @@
         "i_accepted": "Du hast <b>{{subject}}</b> in {{scope}} freigegeben",
         "i_rejected": "Du hast <b>{{subject}}</b> in {{scope}} abgelehnt",
         "member_added": "{{actor}} hat dich zu {{scope}} hinzugefügt"
+      },
+      "detail": {
+        "file": "Datei",
+        "workspace": "Workspace",
+        "when": "Wann",
+        "status": "Status",
+        "comment": "Kommentar",
+        "reason": "Grund",
+        "version": "Version",
+        "actor": "Von",
+        "open": "Öffnen"
+      },
+      "status": {
+        "review_requested": "Wartet auf deine Prüfung",
+        "i_submitted": "Zur Review eingereicht",
+        "delete_requested": "Löschung wartet auf Prüfung",
+        "i_delete_requested": "Löschung angefragt",
+        "deleted": "Gelöscht",
+        "i_withdrew": "Zurückgezogen",
+        "committed": "Live",
+        "rejected": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "i_approved": "Freigegeben",
+        "i_accepted": "Freigegeben",
+        "i_rejected": "Abgelehnt",
+        "member_added": "Hinzugefügt"
       }
     },
     "review": {
@@ -116,7 +142,7 @@
     },
     "workspaces": {
       "title": "Workspaces",
-      "intro": "Ein Workspace ist ein gemeinsamer Bereich für ein <b>Team oder eine Klasse</b>. Füg die passenden Leute hinzu, und alles, was du <b>promotest</b>, erreicht nur sie. Mitglieder arbeiten darin, Admins verwalten die Leute und die Review-Einstellungen, und Reviewer halten die Punkte, die Änderungen freigeben. Mit <b>Review</b> werden Änderungen erst geprüft, bevor dein Team sie sieht. Workspaces lassen sich <b>hierarchisch</b> verschachteln, von der einzelnen Gruppe bis zur ganzen Organisation. Öffne einen zum Stöbern oder leg deinen eigenen an und lade andere ein.",
+      "intro": "Ein Workspace sorgt dafür, dass alle genau die Schaltungen sehen, <b>die für sie bestimmt sind</b>. Du bestimmst, wer dazugehört, und alles, was du dort teilst, <b>bleibt genau bei diesen Leuten</b>. Ein Workspace kann <b>weitere Workspaces enthalten</b>, von der kleinen Gruppe bis zur ganzen Organisation: Je weiter oben du Schaltungen einstellst, desto mehr Leute erreichst du. Öffne einen zum Stöbern oder leg deinen eigenen an und lade andere ein.",
       "root": "Meine Workspaces",
       "create": "Neuer Workspace",
       "search_empty": "Kein Workspace passt zu deiner Suche.",
@@ -166,6 +192,7 @@
       "title_global": "Beispiel Schaltungen",
       "col_name": "Name",
       "col_version": "Version",
+      "by_author": "von {{name}}",
       "col_draft": "Meine Kopie",
       "col_provider": "Workspace",
       "col_actions": "Aktionen",
@@ -186,10 +213,10 @@
     "remove_segment": "Segment entfernen",
     "add_probe": "Messpunkt einfügen",
     "remove_probe": "Messpunkt entfernen",
-    "add_label": "Beschriftung",
+    "add_label": "Beschriften",
     "delete": "Löschen",
     "open_designer": "Im Designer öffnen",
-    "description": "Beschreibung"
+    "description": "Was ist das?"
   },
   "label": {
     "name": "Name",
