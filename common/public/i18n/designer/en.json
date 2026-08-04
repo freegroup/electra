@@ -1,69 +1,217 @@
 {
-  "app":{
-	"name": "Designer",
-	"icon": "../common/images/app_designer.svg",
+  "app": {
+    "name": "Designer",
+    "icon": "../common/images/app_designer.svg",
     "loading": "Loading the <i>Electra.Designer</i>...",
     "title": "Component Designer",
     "slogan": "Create custom components for Electra.Academy",
     "description": "<i>Electra.Academy</i> can simulate wide variety of digital electronics and logical components to provide an easy and comfortable way to create circuits, documents and course material online. One of the coolest feature in Electra.Academy is, that user can define a new or custom component."
-	},
-	"button" :{
-		"create_folder": "New Folder",
-		"create_file": "New Component",
-		"new_document": "New Component",
-		"open_example": "Open Example"
-	},
-	"dialog":{
-		"add_folder": "Create new folder",
-		"create": "Create new Component",
-		"test_info": "Test page for your designed and coded draw2d shape",
-		"share": "Share component with other",
-		"save_component": "Save Component",
-		"rename_layer": "Rename Layer"
-	},
-	"filter":{
-		"header": "Properties",
-		"position": "Position",
-		"fillcolor": "Fill Color",
-		"stroke": "Line Stroke",
-		"width": "width",
-		"height": "height",
-		"fontcolor": "Font Color",
-		"fontsize": "Font Size",
-		"gradient": "Gradient",
-		"radius": "Radius",
-		"porttype": "Port Type",
-		"direction": "Orientation",
-		"textgradient": "Text Gradient",
-		"opacity": "Opacity",
-		"fanot": "Max. Fanout",
-		"blur": "Blur",
-		"size": "Size"
-	},
-    "nav": {
-		"editor": "Editor",
-		"files": "Files",
-		"help": "Help"
-	},
-    "pane": {
-		"files": {
-			"title": "Component Library",
-			"title_your": "Your Components",
-			"title_global": "Common Components"
-		},
-		"editor": {
-			"filter": "Filter",
-			"properties": "Properties",
-			"layer": "Layer",
-			"grid": "Grid"
-		}
-	},
-	"label": {
-		"name": "Name",
-		"folder": "Library"
-	},
-	"message": {
-	},
-	"error": {
-	}
+  },
+  "button": {
+    "create_folder": "New Folder",
+    "create_file": "New Component",
+    "new_document": "New Component",
+    "open_example": "Open Example",
+    "revert": "Revert",
+    "promote": "Promote",
+    "distribute": "Distribute"
+  },
+  "dialog": {
+    "add_folder": "Create new folder",
+    "create": "Create new Component",
+    "test_info": "Test page for your designed and coded draw2d shape",
+    "share": "Share component with other",
+    "save_component": "Save Component",
+    "rename_layer": "Rename Layer"
+  },
+  "filter": {
+    "header": "Properties",
+    "position": "Position",
+    "fillcolor": "Fill Color",
+    "stroke": "Line Stroke",
+    "width": "width",
+    "height": "height",
+    "fontcolor": "Font Color",
+    "fontsize": "Font Size",
+    "gradient": "Gradient",
+    "radius": "Radius",
+    "porttype": "Port Type",
+    "direction": "Orientation",
+    "textgradient": "Text Gradient",
+    "opacity": "Opacity",
+    "fanot": "Max. Fanout",
+    "blur": "Blur",
+    "size": "Size"
+  },
+  "nav": {
+    "editor": "Editor",
+    "files": "Shared Components",
+    "help": "Help",
+    "draft": "My Components",
+    "workspaces": "Workspaces",
+    "review": "Review",
+    "activity": "Activity"
+  },
+  "pane": {
+    "files": {
+      "title": "Shared Components",
+      "intro": "All components from your groups and public workspaces. Open one to edit it. When you save, you get your own copy (in <b>My Components</b>) and the original stays untouched.",
+      "title_your": "Your Circuits",
+      "title_global": "Public Circuits",
+      "col_name": "Name",
+      "col_version": "Version",
+      "by_author": "by {{name}}",
+      "col_draft": "My copy",
+      "col_provider": "Workspace",
+      "col_actions": "Actions",
+      "has_draft": "personal copy",
+      "my_copy": "personal copy",
+      "personal": "personal",
+      "empty": "No circuits here yet.",
+      "filter": "Search…",
+      "root": "Library",
+      "count": "{{n}} items"
+    },
+    "editor": {
+      "filter": "Filter",
+      "properties": "Properties",
+      "layer": "Layer",
+      "grid": "Grid"
+    },
+    "review": {
+      "title": "Review",
+      "intro": "Components waiting for your approval. Your vote is worth the review points your workspace admin gave you. Once enough points add up, the component goes live. A single reject stops it.",
+      "col_doc": "Document",
+      "col_workspace": "Workspace",
+      "col_author": "Author",
+      "col_score": "Points",
+      "open": "Open",
+      "approve": "Approve",
+      "reject": "Reject",
+      "voted": "voted",
+      "empty": "No reviews waiting",
+      "deletion": "deletion",
+      "deletion_notice": "This document is up for deletion. Approving removes it for everyone here.",
+      "my_points_hint": "Your vote adds this many points",
+      "approved_committed": "Approved - document committed",
+      "approved_pending": "Vote counted - more approvals needed",
+      "rejected": "Rejected",
+      "withdraw": "Withdraw",
+      "withdraw_explain": "Withdraw this request? It will be removed as if you never submitted it.",
+      "withdrawn": "Request withdrawn",
+      "reject_reason": "Reason (optional)",
+      "badge": "Review",
+      "back": "Back",
+      "not_open": "This review is no longer open",
+      "score_status": "{{have}} of {{need}} points · your vote: +{{mine}}",
+      "load_failed": "Could not load the review document",
+      "no_change_comment": "No note - the author didn't say what changed.",
+      "change_comment_title": "Change Comment",
+      "change_comment_intro": "{{author}} submitted «{{doc}}» for review.",
+      "reject_explain": "Rejecting closes this request right away. The author has to make changes and submit it again.",
+      "accept": "Accept",
+      "accept_explain": "As an admin, you can approve this right now and skip the usual review. Continue?",
+      "instruction_reviewer": "The author is asking for your approval. Once enough people accept it, it goes live for everyone in the workspace.",
+      "instruction_admin": "As an admin of this workspace, you can accept it immediately.",
+      "instruction_voted": "Thanks, you've already approved this. Once enough people do, it goes live.",
+      "requested": "Review Requested"
+    },
+    "activity": {
+      "title": "Activity",
+      "intro": "What's happening across your workspaces: how your drafts turned out, reviews waiting for you, and your own actions.",
+      "empty": "No activity yet.",
+      "event": {
+        "review_requested": "{{actor}} asks you to review <b>{{subject}}</b> in {{scope}}",
+        "i_submitted": "You submitted <b>{{subject}}</b> for review in {{scope}}",
+        "delete_requested": "{{actor}} asks you to review the deletion of <b>{{subject}}</b> in {{scope}}",
+        "i_delete_requested": "You requested deletion of <b>{{subject}}</b> in {{scope}}",
+        "deleted": "<b>{{subject}}</b> was deleted in {{scope}}",
+        "i_withdrew": "You withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "committed": "<b>{{subject}}</b> is now live in {{scope}}",
+        "rejected": "<b>{{subject}}</b> was rejected: {{reason}}",
+        "withdrawn": "{{actor}} withdrew the request for <b>{{subject}}</b> in {{scope}}",
+        "i_approved": "You approved <b>{{subject}}</b> in {{scope}}",
+        "i_accepted": "You accepted <b>{{subject}}</b> in {{scope}}",
+        "i_rejected": "You rejected <b>{{subject}}</b> in {{scope}}",
+        "member_added": "{{actor}} added you to {{scope}}"
+      },
+      "detail": {
+        "file": "File",
+        "workspace": "Workspace",
+        "when": "When",
+        "status": "Status",
+        "comment": "Comment",
+        "reason": "Reason",
+        "version": "Version",
+        "actor": "By",
+        "open": "Open"
+      },
+      "status": {
+        "review_requested": "Awaiting your review",
+        "i_submitted": "Submitted for review",
+        "delete_requested": "Deletion awaiting review",
+        "i_delete_requested": "Deletion requested",
+        "deleted": "Deleted",
+        "i_withdrew": "Withdrawn",
+        "committed": "Live",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "i_approved": "Approved",
+        "i_accepted": "Approved",
+        "i_rejected": "Rejected",
+        "member_added": "Added"
+      }
+    },
+    "workspaces": {
+      "title": "Workspaces",
+      "intro": "A workspace makes sure everyone sees exactly the components <b>meant for them</b>. You decide who belongs, and everything you share there <b>stays with exactly those people</b>. A workspace can <b>contain more workspaces</b>, from a small group up to a whole organization: the higher up you post a component, the more people you reach. Open one to explore, or create your own and invite others.",
+      "root": "My Workspaces",
+      "create": "New Workspace",
+      "search_empty": "No workspace matches your search.",
+      "visible_only": "visible only",
+      "create_needs_parent": "Open a workspace first, then create a sub-workspace inside it.",
+      "name_label": "Workspace name",
+      "created": "Workspace created",
+      "rename": "Rename workspace",
+      "renamed": "Workspace renamed",
+      "empty": "No sub-workspaces here yet.",
+      "members": "Members",
+      "add_member": "Add member",
+      "member_label": "Member email",
+      "member_added": "Member added",
+      "member_count": "{{count}} members",
+      "member_count_one": "{{count}} member",
+      "remove_member": "Remove member",
+      "remove_member_explain": "Remove {{person}} from this workspace?",
+      "member_removed": "Member removed",
+      "review_settings": "Review",
+      "required_score": "Required points: {{count}}",
+      "required_score_hint": "How many approval points a document needs before it goes live here. 0 = no review.",
+      "edit_required_score": "Change required review points",
+      "required_score_label": "Points (0 = no review)",
+      "required_score_saved": "Threshold saved",
+      "role_admin": "admin",
+      "role_member": "member",
+      "description_label": "Description",
+      "description_empty": "No description yet.",
+      "edit_description": "Edit description",
+      "info_settings": "Info"
+    },
+    "draft": {
+      "title": "My Components",
+      "intro": "Your own components live here: your private ones, and your copy of any shared component you have changed. Only you can see them. Want to share your version? <b>Promote</b> it to make it your group's version, or <b>Distribute</b> it to other workspaces you are in. If a workspace uses review, your version is checked there before it goes live.",
+      "review_points": "Review Points",
+      "review_points_explain": "{{have}} of {{need}} approval points so far. Once it reaches {{need}}, your version goes live for the group.",
+      "kind_personal": "Private",
+      "kind_personal_explain": "This circuit lives only in your personal space. Nobody else can see it.",
+      "kind_personal_copy": "Personal Copy",
+      "kind_personal_copy_explain": "This is your own copy of a shared circuit. Promote it to send your changes for review. Once approved, they become your group's version."
+    }
+  },
+  "label": {
+    "name": "Name",
+    "folder": "Library"
+  },
+  "message": {},
+  "error": {}
 }
