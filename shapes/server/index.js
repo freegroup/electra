@@ -23,6 +23,7 @@ const conf = require("./configuration")
 const indexApi = require("./handler/index")
 const globalApi = require("./handler/global")
 const userApi = require("./handler/user")
+const partApi = require("./handler/part")
 
 console.log("serving data from :", conf.absoluteGlobalDataDirectory())
 
@@ -43,6 +44,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 indexApi.init(app)
 globalApi.init(app)
 userApi.init(app)
+partApi.init(app)
 
 // =======================================================================
 //

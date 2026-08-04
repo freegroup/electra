@@ -90,6 +90,69 @@ module.exports = {
 
   generateShapeIndex: concatFiles,
 
+  // Render the derived parts of a component from its .shape, WITHOUT touching the
+  // filesystem. The designer saves only the .shape; this produces the .js, the
+  // .custom source, the .md doc and the .png preview from it, the same way
+  // thumbnail() does, but returns them for the caller to store as a .part
+  // document instead of writing files next to the shape.
+  //
+  //   shapeContent  the raw .shape JSON (string)
+  //   identifier    the global name the figure is declared under
+  //                 (e.g. "digital_gate_IEC60617_12_AND")
+  //
+  // -> { js, custom, md, pngBase64 }
+  renderParts: (shapeContent, identifier) => {
+    return new Promise(async (resolve, reject) => {
+      let browser
+      try {
+        let json = JSON.parse(shapeContent).draw2d
+        json = JSON.stringify(json, undefined, 2)
+
+        let code = fs.readFileSync(thisDir + "/template.js", "utf8")
+        let injectedCode =
+          "let json=" + json + ";\n" +
+          "let pkg='" + identifier + "';\n" +
+          code
+
+        let launchOptions = DEBUGGING
+          ? { headless: false, devtools: true, slowMo: 250 }
+          : { headless: true, args: [
+              "--disable-gpu", "--disable-dev-shm-usage",
+              "--disable-setuid-sandbox", "--no-sandbox",
+            ] }
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+          launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+        }
+
+        browser = await puppeteer.launch(launchOptions)
+        const page = await browser.newPage()
+        page.on("pageerror", ({ message }) => console.log(message))
+
+        await page.goto(DESIGNER_URL)
+        await page.setViewport({ width: 1500, height: 2024 })
+        await page.waitForFunction(() => "app" in window && app != null)
+        await page.mainFrame().evaluate(injectedCode)
+        await page.waitForFunction(() => img !== null)
+
+        let img = await page.evaluate(() => img)
+        let jsCode = await page.evaluate(() => code)
+        let customCode = await page.evaluate(() => customCode)
+        let markdown = await page.evaluate(() => markdown)
+
+        // The template renders under the placeholder name "testShape"; swap in
+        // the real identifier so the figure is declared and instantiated by it.
+        jsCode = jsCode.replace(/testShape/g, identifier)
+        customCode = customCode.replace(/testShape/g, identifier)
+
+        resolve({ js: jsCode, custom: customCode, md: markdown, pngBase64: img })
+      } catch (err) {
+        reject(err)
+      } finally {
+        if (browser && !DEBUGGING) browser.close()
+      }
+    })
+  },
+
   thumbnail:  (dataDirectory, shapeRelativePath) => {
     return new Promise(async (resolve, reject) => {
       let shapeAbsolutePath = path.normalize(dataDirectory + shapeRelativePath)

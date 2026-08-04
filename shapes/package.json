@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "author": "Andreas Herz <a.herz@freegroup.de>",
   "license": "AGPL-3.0-or-later",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
   "dependencies": {
     "body-parser": "1.20.1",
     "dotenv": "^16.0.3",

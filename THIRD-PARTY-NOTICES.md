@@ -29,7 +29,7 @@ imposes a restriction that conflicts with the AGPL.
 | Bootstrap TouchSpin | 4.2.5 | Apache-2.0 | István Ujj-Mészáros | `common/public/js/bootstrap-touchspin/` |
 | KaTeX (CSS + fonts) | - | MIT | KaTeX contributors | `common/public/css/katex.min.css`, `common/public/css/katex/` |
 | markdown-it-asciimath | 1.0.0 | MIT | 2016 quertt | `common/public/js/markdown-it-asciimath.js` (modified, see file header) |
-| Lucide (icon paths) | - | ISC | 2022 Lucide Contributors | `common/public/js/activity/activityIcons.js`, `common/public/js/workspace/scopeTile.js` (SVG path data only) |
+| Lucide (icon paths) | - | ISC | 2022 Lucide Contributors | `common/public/js/icons.js`, `common/public/js/workspace/scopeTile.js` (SVG path data only) |
 | Notify.js | - | MIT | 2015 the Notify.js authors | `common/public/js/notify/` |
 | Socket.IO client | - | MIT | Automattic and contributors | served at runtime via `/socket.io/socket.io.js` |
 

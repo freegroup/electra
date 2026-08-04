@@ -36,7 +36,20 @@ Index-Datei hat 24.299 Zeilen.
 
 Die fünf Dateien eines Bauteils - `.shape` (Geometrie und Ports), `.custom`
 (handgeschriebene Quelle), `.js` (generiert), `.md` (Dokumentation) und `.png`
-(Vorschau) - bilden **ein** Dokument.
+(Vorschau) - bilden **ein** Dokument mit dem Suffix **`.part`**:
+
+```
+digital/gate/IEC60617-12/AND.part
+```
+
+Der Suffix ist die Art, wie Dokumenttypen hier unterschieden werden - es gibt
+Pfade und Scopes, keinen Namensraum, und brains wie sheets filtern längst so
+(`.filter((d) => hasSuffix(d.path))`). `.shape` schied aus, weil das Dokument
+dann einen Bestandteil gleichen Namens enthielte; `.part` ist die Übersetzung von
+"Bauteil" und steht im selben Register wie `.brain` und `.sheet`.
+
+Die Ableitung des Bezeichners strippt den Suffix, so wie der alte Generator die
+Endung `.js` strippte - siehe die eingefrorene Regel weiter unten.
 
 Damit ist ein Bauteil eine Version, ein Review, ein Promote. Es kann nicht
 passieren, dass die Logik freigegeben ist und die Vorschau noch die alte zeigt.
