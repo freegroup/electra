@@ -1,9 +1,6 @@
 import conf from "../Configuration"
 import fs from "path-browserify"
 
-import storageFactory from '../../../common/js/BackendStorage'
-let storage = storageFactory(conf)
-
 class Dialog {
 
   /**
@@ -55,7 +52,7 @@ class Dialog {
    *
    * @since 4.0.0
    */
-  show(currentFile, canvas) {
+  show(currentFile, canvas, storage) {
     return new Promise( (resolve, reject) => {
       new draw2d.io.png.Writer().marshal(canvas, imageDataUrl => {
         let promiseAlreadyHandled = false
@@ -94,28 +91,38 @@ class Dialog {
           writer.marshal(canvas, json => {
             // get the directory of the current file
             let dir =  $("#fileSaveDialog .directoryName").val()
-  
+
             // get the user input and replace all unneeded stuff.
             // It is not an seccurity issue, but we remove all entered directorie paths from the filename
             // This happens on the server-side as well.
             let name = $("#fileSaveDialog .fileName").val()
             name = fs.basename(name, conf.fileSuffix) // remove any directories
-  
+
             // generate the current filename. This gets an update after the "save" request comes back.
-            // The new reals filename is in the "save" response
             currentFile.name = fs.join(dir, name + conf.fileSuffix)
             promiseAlreadyHandled = true
             $('#fileSaveDialog').modal('hide')
 
-            storage.saveFile( { draw2d: json }, currentFile.name , currentFile.scope)
-              .then((response) => {
-                let data = response.data
-                currentFile.name = data.filePath
-                history.pushState({
-                  id: 'editor',
-                  scope: currentFile.scope,
-                  file: currentFile.name
-                }, conf.appName+' | ' + name, window.location.href.split('?')[0] + '?'+currentFile.scope+'=' + currentFile.name)
+            // The designer authors only the .shape; the server renders the other
+            // members from it. A null id creates a new component in the chosen
+            // workspace (scopeRef); with an id it writes a new version.
+            storage.save({
+              id: currentFile.id,
+              name: currentFile.name,
+              scopeRef: currentFile.scopeRef,
+              shape: JSON.stringify({ draw2d: json }),
+            })
+              .then((res) => {
+                currentFile.id = res.id
+                if (res.path) currentFile.name = res.path
+                // The save landed in the caller's leaf; carry where it now lives
+                // and that it is a personal copy, so the header can show it.
+                currentFile.version = res.version
+                currentFile.scope = res.providedBy
+                currentFile.personal = res.personal
+                history.pushState({ id: 'editor', doc: res.id },
+                  conf.application + ' | ' + currentFile.name,
+                  window.location.href.split('?')[0] + '?doc=' + encodeURIComponent(res.id))
                 resolve(currentFile.name)
               })
               .catch( (exc)=>{

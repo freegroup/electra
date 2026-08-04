@@ -5,6 +5,7 @@ import toast from "../../common/js/toast"
 import checkElement from "../../common/js/checkElement"
 import confirmDialog from "../../common/js/ConfirmDialog"
 import notFoundDialog from "../../common/js/NotFoundDialog"
+import defaultEditorHeader from "../../common/js/editor/DefaultEditorHeader"
 
 import View from "./View"
 import Toolbar from "./Toolbar"
@@ -13,9 +14,9 @@ import FilterPane from "./FilterPane"
 import SelectionToolPolicy from './policy/SelectionToolPolicy'
 import conf from "./Configuration"
 import fileSave from "./dialog/FileSave"
-import fileCreate from "./dialog/FileCreate"
+import NewDocumentDialog from "../../common/js/storage/NewDocumentDialog"
 
-import storageFactory from '../../common/js/BackendStorage'
+import storageFactory from './io/DesignerStorage'
 let storage = storageFactory(conf)
 
 
@@ -27,10 +28,17 @@ class Application extends GenericApplication {
    */
   constructor() {
     super("shapes")
+    this.newDialog = new NewDocumentDialog(storage, conf)
   }
 
   init(permissions){
     super.init(permissions, conf)
+    // super.init builds the scope-based finder (StorageScreen, Draft, Workspace,
+    // Review) because conf.database is set, and wires this.storage to the plain
+    // StorageClient. The designer needs its own client — open/save carry the
+    // .shape, not `content` — so replace this.storage with DesignerStorage. The
+    // finder actions it drives (promote/revert/delete/distribute) are identical.
+    this.storage = storage
     return new Promise( (resolve, reject) => {
 
       this.documentConfigurationTempl = {
@@ -50,16 +58,25 @@ class Application extends GenericApplication {
 
       this.view.installEditPolicy(new SelectionToolPolicy())
   
-      let user = this.getParam("user")
+      // deep-links:
+      //   ?doc=<handle>   open a component by its opaque handle. The simulator
+      //                   resolves name+scope to a handle first (/part/resolve),
+      //                   so "Open in Designer" lands here too.
+      //   ?global=<path>  keep the old name-based link working
+      let doc = this.getParam("doc")
       let global = this.getParam("global")
-      if (user) {
-        this.load(user, "user")
+      let tab = this.getParam("tab")
+      if (doc) {
+        this.openDoc(doc)
+          .then(() => this.restoreTab(tab))
       }
       else if (global) {
-        this.load(global, "global")
+        this.openGlobal(decodeURIComponent(global))
+          .then(() => this.restoreTab(tab))
       }
       else {
         this.showWelcomeMessage("/digital/gate/IEC60617-12/AND.shape")
+          .then(() => this.restoreTab(tab))
       }
  
       let tutorial = this.getParam("tutorial")
@@ -148,69 +165,72 @@ class Application extends GenericApplication {
       }
       return resolve()
     })
-    .then(()=>{
-      this.fileNew()
-      if(this.permissions[this.objectType ].create && this.permissions[this.objectType ].update){
-        return fileCreate.show(this.currentFile)
-      }
-      return this.showLoginHint()
+    .then(()=> this.newDialog.show(conf.fileNew))
+    .then(({ name, scopeRef })=>{
+      this.fileNew(name, scopeRef)
+      // Persist the empty component right away, so it exists and can be opened
+      // and promoted; the server renders its (empty) derived members.
+      return storage.save({ id: null, name, scopeRef, shape: JSON.stringify({ draw2d: [] }) })
     })
-    .then(()=>{
+    .then((res)=>{
+      this.currentFile.id = res.id
+      if (res.path) this.currentFile.name = res.path
+      // Reflect where the component now lives (the caller's leaf) in the header.
+      this.currentFile.scope = res.providedBy
+      this.currentFile.personal = res.personal
       this.hasUnsavedChanges = false
       toast(t("common:message.created"))
       $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions.brains, this.currentFile)
+      defaultEditorHeader.update(this.currentFile)
     })
     .catch( (error)=>{
-      console.log(error)
+      if (error) console.log(error)
     })
   }
 
 
-  fileNew(name, scope) {
+  fileNew(name, scopeRef) {
     $("#leftTabStrip .editor").click()
     this.view.reset()
-    this.currentFile = { name: name??conf.fileNew , scope: scope??"user"}
+    // No id yet — a brand-new component. scopeRef (from the New dialog) is the
+    // workspace it will be saved to; the old user/global scope tag is gone.
+    this.currentFile = { id: null, name: name ?? conf.fileNew, scopeRef: scopeRef ?? null }
     this.documentConfiguration = {...this.documentConfigurationTempl}
     this.view.getCommandStack().markSaveLocation()
     this.view.centerDocument()
+    defaultEditorHeader.update(this.currentFile)
   }
 
   fileSave(description="") {
     this.setConfiguration()
-    return new Promise((resolve, reject) => { 
-      // if the user didn't has the access to write "global" files, the scope of the file is changed
-      // // from "global" to "user". In fact the user creates a copy in his/her own repository.
-      //
-      if(this.permissions[this.objectType].global.update===false){
-        this.currentFile.scope = "user"
-      }
-
-      if (this.permissions[this.objectType ].create && this.permissions[this.objectType].update) {
-        // allow the user to enter/change the file name....
-        return fileSave.show(this.currentFile, this.view, description).then(resolve, reject)
-      }
-      reject(new Error("No permission to save files"))
+    return new Promise((resolve, reject) => {
+      // Whether a save can go to a shared scope is now decided by the scope
+      // model (membership + review on promote), not by a global-update flag.
+      // The designer just saves; the server places it and reviews on promote.
+      return fileSave.show(this.currentFile, this.view, storage, description).then(resolve, reject)
     })
     .then( ()=>{
       this.hasUnsavedChanges = false
       toast(t("common:message.saved"))
       $("#editorFileSave div").removeClass("highlight")
-      this.filePane.refresh(conf, this.permissions[this.objectType], this.currentFile)
+      this.refreshFinders()
+      defaultEditorHeader.update(this.currentFile)
     })
     .catch( err => {
       console.log(err)
     })
   }
 
-  load(name, scope){
-    let url = conf.backend[scope].get(name)
+  openDoc(id, version){
     this.view.reset()
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
-    return storage.loadUrl(url)
-      .then((content) => {
+    return storage.open(id)
+      .then((doc) => {
         this.view.reset()
+        // The endpoint returns only the .shape (the sole thing the designer
+        // authors); parse it into the draw2d model.
+        let content = typeof doc.shape === "string" ? JSON.parse(doc.shape) : doc.shape
         let reader = new draw2d.io.json.Reader()
         reader.unmarshal(this.view, content.draw2d ?? content)
         this.getConfiguration()
@@ -218,20 +238,28 @@ class Application extends GenericApplication {
         this.view.centerDocument()
         this.hasUnsavedChanges = false
         $("#editorFileSave div").removeClass("highlight")
-        this.currentFile = { name, scope}
-        return content
+        this.currentFile = { id: doc.id, name: doc.name, version: doc.version, scope: doc.providedBy, personal: doc.personal }
+        defaultEditorHeader.update(this.currentFile)
+        return doc
       })
-      .then( ()=>{
-        history.pushState({
-          id: 'editor',
-          scope: scope,
-          file: name
-        }, conf.application+' | ' + name, window.location.href.split('?')[0] + '?'+scope+'=' + name)
+      .then((doc) => {
+        history.pushState({ id: 'editor', doc: doc.id },
+          conf.application + ' | ' + doc.name,
+          window.location.href.split('?')[0] + '?doc=' + encodeURIComponent(doc.id))
+        return doc
       })
       .catch( error => {
         console.log(error)
-        notFoundDialog.show(name)
+        notFoundDialog.show(id)
       })
+  }
+
+  // Resolve a shared component by path (?global=<path>) to a handle, then open
+  // it - keeps old name-based links working.
+  openGlobal(path) {
+    return storage.resolveGlobal(path)
+      .then((res) => this.openDoc(res.id))
+      .catch((error) => { console.log(error); notFoundDialog.show(path) })
   }
 
   getConfiguration(key) {

@@ -7,6 +7,7 @@ import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 import "../less/index.less"
 import "../../common/js/polyfill"
 import authConfiguration from "../../common/js/authConfiguration"
+import session from "../../common/js/session"
 
 import global from "./global"
 
@@ -71,9 +72,11 @@ $(window).load(function () {
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });
-    // Resolve the deployment sign-in config before init so Userinfo can read
-    // the client id synchronously.
-    return Promise.all([axios.get("../permissions"), authConfiguration.load()])
+    // Resolve the login identity and the deployment sign-in config before init.
+    // session.load() is what lets GenericApplication know the caller is logged
+    // in — without it the Draft/Review/Activity tabs stay hidden (they are
+    // account-scoped) and Userinfo can't read the client id synchronously.
+    return Promise.all([axios.get("../permissions"), session.load(), authConfiguration.load()])
   })
   .then( ([response]) => {
     // set the global scope for the "app" object

@@ -75,10 +75,42 @@
       </a>
     </li>
 
+    <li class="leftTabSeparator"><hr></li>
+
+    <li id="draft_tab">
+      <a href="#draft" class="leftTab draft" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_file.svg"/>
+        <span class="leftTabLabel" data-i18n="nav.draft">Draft</span>
+      </a>
+    </li>
+
     <li id="files_tab" class="">
       <a href="#files" class="leftTab files" data-toggle="tab">
         <img class="icon svg" src="../common/images/navigation_file.svg"/>
         <span class="leftTabLabel" data-i18n="nav.files">Files</span>
+      </a>
+    </li>
+
+    <li id="workspaces_tab">
+      <a href="#workspaces" class="leftTab workspaces" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_workspace.svg"/>
+        <span class="leftTabLabel" data-i18n="nav.workspaces">Workspaces</span>
+      </a>
+    </li>
+
+    <li class="leftTabSeparator"><hr></li>
+
+    <li id="review_tab">
+      <a href="#review" class="leftTab review" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_edit.svg"/>
+        <span class="leftTabLabel" data-i18n="nav.review">Review</span>
+      </a>
+    </li>
+
+    <li id="activity_tab">
+      <a href="#activity" class="leftTab activity" data-toggle="tab">
+        <img class="icon svg" src="../common/images/navigation_activities.svg"/>
+        <span class="leftTabLabel" data-i18n="nav.activity">Activity</span>
       </a>
     </li>
 
@@ -143,29 +175,59 @@
 
 
 
-      <div class="tab-pane" id="files">
-        <div class="filesTeaser">
-          <img class="icon svg" src="../common/images/navigation_file.svg"/>
-          <div data-i18n="pane.files.title" class="title">Component Library</div>
-        </div>
-   
-        <div class="filesFinder">
-          <header>
-            <div id="material-tabs">
-              <span class="sliding-bar"></span>
-              <a data-i18n="pane.files.title_your"   id="userFilesTab" href="#userFiles" class="active">User Components</a>
-              <a data-i18n="pane.files.title_global" id="globalFilesTab" href="#globalFiles">Build In Components</a>
-            </div>
-          </header>
-
-          <div class="material-tab-content">
-            <div id="userFiles">
-            </div>
-            <div id="globalFiles">
-            </div>
+      <div class="tab-pane" id="draft">
+        <div class="screenHeader">
+          <img class="screenHeaderIcon icon svg" src="../common/images/navigation_file.svg"/>
+          <div class="screenHeaderText">
+            <div class="screenHeaderTitle" data-i18n="pane.draft.title">My Drafts</div>
+            <div class="screenHeaderDescription" data-i18n="[html]pane.draft.intro"></div>
           </div>
         </div>
+        <div class="draftFinder"></div>
+      </div>
 
+      <div class="tab-pane" id="files">
+        <div class="screenHeader">
+          <img class="screenHeaderIcon icon svg" src="../common/images/navigation_file.svg"/>
+          <div class="screenHeaderText">
+            <div class="screenHeaderTitle" data-i18n="pane.files.title">Component Library</div>
+            <div class="screenHeaderDescription" data-i18n="[html]pane.files.intro"></div>
+          </div>
+        </div>
+        <div class="filesFinder"></div>
+      </div>
+
+      <div class="tab-pane" id="workspaces">
+        <div class="screenHeader">
+          <img class="screenHeaderIcon icon svg" src="../common/images/navigation_workspace.svg"/>
+          <div class="screenHeaderText">
+            <div class="screenHeaderTitle" data-i18n="pane.workspaces.title">Workspaces</div>
+            <div class="screenHeaderDescription" data-i18n="[html]pane.workspaces.intro"></div>
+          </div>
+        </div>
+        <div class="workspacesFinder"></div>
+      </div>
+
+      <div class="tab-pane" id="review">
+        <div class="screenHeader">
+          <img class="screenHeaderIcon icon svg" src="../common/images/navigation_edit.svg"/>
+          <div class="screenHeaderText">
+            <div class="screenHeaderTitle" data-i18n="pane.review.title">Review</div>
+            <div class="screenHeaderDescription" data-i18n="[html]pane.review.intro"></div>
+          </div>
+        </div>
+        <div class="reviewFinder"></div>
+      </div>
+
+      <div class="tab-pane" id="activity">
+        <div class="screenHeader">
+          <img class="screenHeaderIcon icon svg" src="../common/images/navigation_activities.svg"/>
+          <div class="screenHeaderText">
+            <div class="screenHeaderTitle" data-i18n="pane.activity.title">Activity</div>
+            <div class="screenHeaderDescription" data-i18n="[html]pane.activity.intro"></div>
+          </div>
+        </div>
+        <div class="activityFinder"></div>
       </div>
 
 
