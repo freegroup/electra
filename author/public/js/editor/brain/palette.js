@@ -1,4 +1,5 @@
 import conf from "../../Configuration"
+import componentIndex from "../../../../common/js/ComponentIndex"
 import Hogan from "hogan.js";
 import TreeView from "js-treeview";
 
@@ -20,10 +21,20 @@ export default class Palette {
     $("#paletteElementsScroll, #paletteFilter").removeClass("pages")
 
     this.view = view
-    $.getJSON(conf.shapes.jsonUrl, (data) => {
+    // The worksheet's components were loaded when the document opened
+    // (Application.openDoc), so read them synchronously here. Fall back to the
+    // directory-wide catalogue only when nothing has been loaded yet.
+    let ready = componentIndex.catalog.length
+      ? Promise.resolve(componentIndex.catalog)
+      : new Promise((resolve) => $.getJSON(conf.shapes.jsonUrl, resolve))
+    ready.then((data) => {
       let tmpl = Hogan.compile($("#shapeTemplate").html());
       data = data.map( shape=> {
-        shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath)
+        // A uuid means the entry came from the database and names an exact
+        // version; imagePath is the old, scope-blind addressing.
+        shape.imageUrl = shape.uuid
+          ? componentIndex.imageUrl(shape)
+          : conf.shapes[shape.scope]?.image(shape.imagePath)
         return shape
       })
       let html = tmpl.render({ shapes: data })

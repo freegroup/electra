@@ -1,6 +1,7 @@
 import GenericApplication from "../../common/js/Application"
 import confirmDialog from "../../common/js/ConfirmDialog"
 import notFoundDialog from "../../common/js/NotFoundDialog"
+import componentIndex from "../../common/js/ComponentIndex"
 import toast from "../../common/js/toast"
 import exportModePrompt from "./dialog/SelectExportMode"
 
@@ -117,9 +118,9 @@ class Application extends GenericApplication {
       return resolve()
     })
       .then(() => this.newDialog.show(conf.fileNew))
-      .then(({ name }) => {
-        this.fileNew(name)
-        return this._writeCurrent()
+      .then(({ name, scopeRef }) => {
+        this.fileNew(name, scopeRef)
+        return this._writeCurrent(scopeRef)
       })
       .then(() => {
         this.hasUnsavedChanges = false
@@ -130,9 +131,12 @@ class Application extends GenericApplication {
       .catch((error) => { if (error) console.log(error) })
   }
 
-  // Reset to a fresh unsaved document with the given name.
-  fileNew(name) {
+  // Reset to a fresh unsaved document with the given name. scopeRef, when given,
+  // is the workspace the document will be saved to — components are resolved
+  // against it, so an embedded circuit shows the parts of the place it will live.
+  fileNew(name, scopeRef) {
     $("#leftTabStrip .editor").click()
+    componentIndex.loadForScope(scopeRef)
     // A fresh document replaces the intro splash — otherwise the welcome
     // overlay stays up and the new (empty) canvas looks like nothing happened.
     this.hideWelcomeMessage()
@@ -169,14 +173,19 @@ class Application extends GenericApplication {
 
   // Serialize the document and save it. A null id creates a new document;
   // otherwise it writes a new version. The backend returns the (new) handle.
-  _writeCurrent() {
+  _writeCurrent(scopeRef) {
     this.view.onCommitEdit()
     let content = this.document.toJSON()
-    return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content })
+    return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content, scopeRef })
       .then((res) => {
         this.currentFile.id = res.id
         this.currentFile.version = res.version
         if (res.path) this.currentFile.name = res.path
+        // The save landed in the caller's leaf; reflect where it now lives and
+        // that it is a personal copy in the header.
+        this.currentFile.scope = res.providedBy
+        this.currentFile.personal = res.personal
+        defaultEditorHeader.update(this.currentFile)
         this.navigate({ doc: res.id },
           conf.application + " | " + this.currentFile.name)
         return res
@@ -211,15 +220,21 @@ class Application extends GenericApplication {
     this.hideWelcomeMessage()
     return storage.open(id, version)
       .then((doc) => {
-        this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable }
+        this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable, scope: doc.providedBy, personal: doc.personal }
+        // Components are resolved against the worksheet's scope. Load them before
+        // rendering: an embedded circuit section builds its figures synchronously
+        // and instantiates each component by its global identifier.
+        return componentIndex.loadFor(doc.id).then(() => doc)
+      })
+      .then((doc) => {
         this.setDocument(new Document(doc.content), 0)
         commandStack.markSaveLocation()
         defaultEditorHeader.update(this.currentFile)
         return doc
       })
-      .then(() => {
-        this.navigate({ doc: id },
-          conf.application + " | " + (this.currentFile ? this.currentFile.name : ""))
+      .then((doc) => {
+        this.navigate({ doc: doc.id },conf.application + " | " + doc.path)
+        return doc
       })
       .catch((error) => {
         console.log(error)
