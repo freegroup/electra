@@ -128,11 +128,13 @@ body {
           }
           .content {
             position:absolute;
-            right: 0;
-            top: @toolbarHeight;
-            bottom:0;
+            right: 0px;
+            top: 0px;
+            bottom:0px;
             left: @leftPaneWidth;
             overflow: auto;
+            // Floating toolbar hovers above; keep the content clear of it.
+            padding-top: @toolbarHeight + 8px;
           }
         }
       }

@@ -187,3 +187,21 @@ body.light {
 }
 
 
+
+// Floating toolbar — overlaps the canvas via DOM order (toolbar comes first).
+// A minimal z-index:1 is enough because it only needs to beat the canvas
+// sibling inside .workspace; dialogs live outside .workspace so they
+// are unaffected.
+body.light #editor .toolbar {
+    position: absolute;
+    right: 8px;
+    left: calc(@leftPaneWidth + 8px);
+    top: 8px;
+    border-radius: @borderRadiusBig;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07);
+    border: 1px solid rgb(179 179 179 / 89%);
+    background-color: rgba(247, 248, 250, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1;
+}

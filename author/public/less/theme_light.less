@@ -135,3 +135,18 @@ body.light {
         }
     }
 }
+// Floating toolbar — same visual style as simulator/designer. The content
+// keeps top:@toolbarHeight so it scrolls correctly; the toolbar floats above.
+body.light #editor .toolbar {
+    position: absolute;
+    right: 8px;
+    left: calc(@leftPaneWidth + 8px);
+    top: 8px;
+    border-radius: @borderRadiusBig;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07);
+    border: 1px solid rgb(179 179 179 / 89%);
+    background-color: rgba(247, 248, 250, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1;
+}

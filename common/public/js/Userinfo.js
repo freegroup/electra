@@ -1,6 +1,7 @@
 import loadScript from "./loadScript"
 import session from "./session"
 import authConfiguration from "./authConfiguration"
+import inlineSVG from "./inlineSVG"
 
 export default class Userinfo {
 
@@ -28,14 +29,22 @@ export default class Userinfo {
       this.user = session.getUser()
       if (this.user) {
         // Google's CDN sometimes refuses the avatar (429 rate limit, offline,
-        // blocked) - fall back to the local default icon instead of showing a
-        // broken image. onerror clears itself so a broken fallback can't loop.
+        // blocked). Fall back to the local default icon — but inline it as SVG
+        // so the appbar's white tint applies (a plain <img> keeps the SVG's
+        // baked-in dark #4A4A4A and looks black on the dark bar). onerror clears
+        // itself so a broken fallback can't loop.
         let fallback = "../common/images/toolbar_user.svg"
         let icon = this.user.picture?this.user.picture:fallback
         let role = this.user.role==="admin"?"(Administrator)":""
+        let toWhiteFallback = function() {
+          $(this).off("error.avatar")
+            .addClass("svg")            // inlineSVG only converts img.svg
+            .attr("src", fallback)
+          inlineSVG.init({})            // re-run: inlines the just-set img.svg
+        }
         $(".userinfo_toggler img")
           .off("error.avatar")
-          .on("error.avatar", function(){ $(this).off("error.avatar").attr("src", fallback) })
+          .on("error.avatar", toWhiteFallback)
           .attr("src",icon)
         $(".userinfo_toggler .dropdown-menu").html(`
             <div class="userContainer">

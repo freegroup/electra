@@ -124,13 +124,26 @@
 
     <div class="tab-pane active" id="editor">
        <div class="workspace">
+          <div class="paletteContainer">
+             <div id="paletteHeader">
+               <div id="paletteFilter" class=""></div>
+             </div>
+             <div id="paletteElementsScroll" class="tinyScrollbar">
+               <div id="paletteElements" class="list"></div>
+               <div id="paletteElementsOverlay"></div>
+             </div>
+          </div>
+
+          <div class="content">
+          </div>
+
           <div class="toolbar">
                <span class="group" id="editorgroup_fileoperations">
                   <span class="image-button" id="editorFileCreate" >
                     <img src="../common/images/toolbar_new_file.svg" class="svg"/>
                     <div data-i18n="common:toolbar.new" >New</div>
                   </span>
-    
+
                   <span class="image-button" id="editorFileSave" >
                     <img title="Save Document" class="icon svg" src="../common/images/toolbar_save.svg"/>
                     <div data-i18n="common:toolbar.save">Save</div>
@@ -153,7 +166,7 @@
                   <img class="icon svg" src="../common/images/toolbar_redo.svg"/>
                   <div data-i18n="common:toolbar.redo">Redo</div>
                 </span>
-                
+
               </span>
 
               <span class="group" id="editorgroup_share">
@@ -166,19 +179,6 @@
                     <div data-i18n="common:toolbar.download" >Download</div>
                   </span>
               </span>
-          </div>
-
-          <div class="paletteContainer">
-             <div id="paletteHeader">
-               <div id="paletteFilter" class=""></div>
-             </div>
-             <div id="paletteElementsScroll" class="tinyScrollbar">
-               <div id="paletteElements" class="list"></div>
-               <div id="paletteElementsOverlay"></div>
-             </div>
-          </div>
-
-          <div class="content">
           </div>
        </div>
     </div>

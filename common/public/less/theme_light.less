@@ -771,7 +771,7 @@ body.light {
         }
     }
     .toolbar {
-        background-color: #B2E2F2;
+        background-color: #f7f8fa;
     }
 
     svg.inlined-svg {
@@ -788,6 +788,20 @@ body.light {
             }
         }
 
+        // When the save button carries .highlight on its inner div, lift the
+        // whole button: accent background, white icon + label, subtle pulse.
+        // Only #editorFileSave is targeted so other buttons stay untouched.
+        &#editorFileSave:has(div.highlight) {
+            background-color: rgb(var(--tint-color));
+            border-radius: @borderRadiusSmall;
+            animation: saveButtonPulse 2s ease-in-out infinite;
+            div {
+                color: #fff;
+                animation: none;   // suppress the text-only animation
+            }
+            img, svg { .svgTint(white); }
+        }
+
         &.disabled {
             opacity: 0.2;
         }
@@ -798,6 +812,12 @@ body.light {
             }
         }
     }
+    @keyframes saveButtonPulse {
+        0%   { background-color: rgb(var(--tint-color)); }
+        50%  { background-color: rgb(var(--tint-color-dark)); }
+        100% { background-color: rgb(var(--tint-color)); }
+    }
+
     @keyframes highlight {
         0% {
             color:rgb(var(--tint-color));
