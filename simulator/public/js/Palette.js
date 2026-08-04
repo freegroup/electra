@@ -1,4 +1,5 @@
 import conf from "./Configuration"
+import componentIndex from "../../common/js/ComponentIndex"
 import Hogan from "hogan.js"
 import TreeView from "js-treeview"
 import jsonStorage from "../../common/js/JsonStorage"
@@ -42,23 +43,43 @@ export default class Palette {
     let storedCategories = jsonStorage.getItem(this.CATEGORY_KEY)
     let defaultCategories = storedCategories ?? ["digital"]
 
-    $.getJSON(conf.shapes.jsonUrl, (data) => {
-      data.forEach( shape=> shape.imageUrl = conf.shapes[shape.scope].image(shape.imagePath))
+    // Components resolved for the open document, when one is open. Falls back to
+    // the old directory-wide catalogue at startup, when there is no context yet.
+    let load = componentIndex.catalog.length
+      ? Promise.resolve(componentIndex.catalog)
+      : new Promise((resolve) => $.getJSON(conf.shapes.jsonUrl, resolve))
+
+    load.then((data) => {
+      data.forEach((shape) => {
+        // A uuid means the entry came from the database and names an exact
+        // version; imagePath is the old, scope-blind addressing.
+        shape.imageUrl = shape.uuid
+          ? componentIndex.imageUrl(shape)
+          : conf.shapes[shape.scope]?.image(shape.imagePath)
+      })
       this.buildCategory(data, defaultCategories)
       this.buildPalette(data, defaultCategories)
       this.buildTree(data, defaultCategories)
     })
   }
 
+  // Components out of the caller's own workspace go into one bucket, everything
+  // else is filed under its first tag. Same split as before, only the test
+  // changed: `scope` used to be the storage tier ("global" / "user"), now it is
+  // the scope a component comes from.
+  isOwn(shape) {
+    return shape.scope === "user" || String(shape.scope || "").startsWith("users/")
+  }
+
   buildCategory(data, selectedCategories){
     // We build a category filter by using the first "tag" of the shape
     //
     let categories = new Set()
-    data.forEach( shape => { 
-      if(shape.scope === "global")
-        categories.add(shape.tags[0])
-      else
+    data.forEach( shape => {
+      if(this.isOwn(shape))
         categories.add("User Shapes")
+      else
+        categories.add(shape.tags[0])
     })
 
     categories = Array.from(categories).map( category => {return { name: category, selected: selectedCategories.includes(category)?"selected":""}})

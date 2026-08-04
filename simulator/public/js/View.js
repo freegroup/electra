@@ -283,12 +283,25 @@ export default draw2d.Canvas.extend({
                 })
                 break
               case "design": {
-                // Documents saved before the scope model carry only userData.file.
-                // Back then every shape came from the global library, so that is
-                // the right default - without it the URL reads "?undefined=".
-                let scope = figure.attr("userData.scope") ?? "global"
+                // Edit the variant that applies HERE. The server resolves the
+                // component name against the open circuit's scope and hands back
+                // a handle (a class's override resolves to itself, the global
+                // original elsewhere); then open the designer on that handle.
+                // Saving there lands in the caller's own leaf automatically, so
+                // this never mutates the shared original in place. Needs no
+                // per-figure data, so existing circuits work too.
                 let shapeName = figure.attr("userData.file")
-                window.open(`../designer?${scope}=${shapeName}`, "designer")
+                let circuitId = (typeof app !== "undefined" && app.currentFile) ? app.currentFile.id : null
+                let params = new URLSearchParams({ name: shapeName })
+                if (circuitId) params.set("inScope", circuitId)
+                fetch(`../shapes/file/resolve?${params.toString()}`)
+                  .then((r) => r.json())
+                  .then((res) => {
+                    if (res && res.id) {
+                      window.open(`../designer?doc=${encodeURIComponent(res.id)}`, "designer")
+                    }
+                  })
+                  .catch((err) => console.log(err))
                 break
               }
               case "help":

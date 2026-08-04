@@ -1,6 +1,7 @@
 import GenericApplication from "../../common/js/Application"
 import toast from "../../common/js/toast"
 import notFoundDialog from "../../common/js/NotFoundDialog"
+import componentIndex from "../../common/js/ComponentIndex"
 
 import Toolbar from "./Toolbar"
 import Palette from "./Palette"
@@ -120,9 +121,9 @@ class Application extends GenericApplication {
       return resolve()
     })
       .then(() => this.newDialog.show(conf.fileNew))
-      .then(({ name }) => {
-        this.fileNew(name)
-        return this._writeCurrent()
+      .then(({ name, scopeRef }) => {
+        this.fileNew(name, scopeRef)
+        return this._writeCurrent(scopeRef)
       })
       .then(() => {
         this.hasUnsavedChanges = false
@@ -133,9 +134,13 @@ class Application extends GenericApplication {
       .catch((error) => { if (error) console.log(error) })
   }
 
-  // Reset to a fresh unsaved document with the given name.
-  fileNew(name) {
+  // Reset to a fresh unsaved document with the given name. scopeRef, when given,
+  // is the workspace the document will be saved to — the palette is resolved
+  // against it so a new document shows the components of the place it will live,
+  // not those of whatever was open before.
+  fileNew(name, scopeRef) {
     $("#leftTabStrip .editor").click()
+    componentIndex.loadForScope(scopeRef).then(() => this.palette.refreshUI())
     // A fresh document replaces the intro splash — otherwise the welcome
     // overlay stays up and the new (empty) canvas looks like nothing happened.
     this.hideWelcomeMessage()
@@ -180,15 +185,22 @@ class Application extends GenericApplication {
   }
 
   // Marshal the canvas and save it. A null id creates a new document; otherwise
-  // it writes a new version. The backend returns the (possibly new) handle.
-  _writeCurrent() {
+  // it writes a new version. scopeRef targets a brand-new document at a chosen
+  // workspace (ignored once the document has an id). The backend returns the
+  // (possibly new) handle.
+  _writeCurrent(scopeRef) {
     this.view.setCurrentSelection(null)
     return writer.marshal(this.view).then((json) => {
-      return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content: json })
+      return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content: json, scopeRef })
         .then((res) => {
           this.currentFile.id = res.id
           this.currentFile.version = res.version
           if (res.path) this.currentFile.name = res.path
+          // The save landed in the caller's leaf; reflect where it now lives and
+          // that it is a personal copy in the header.
+          this.currentFile.scope = res.providedBy
+          this.currentFile.personal = res.personal
+          defaultEditorHeader.update(this.currentFile)
           this.navigate({ doc: res.id },
             conf.application + " | " + this.currentFile.name)
           return res
@@ -204,18 +216,23 @@ class Application extends GenericApplication {
     $("#leftTabStrip .editor").click()
     this.hideWelcomeMessage()
     let loadedName = null
-    return storage.open(id, version)
-      .then((doc) => {
+    // The components that apply here depend on the document's scope, so they are
+    // fetched alongside it - the handle is enough, the content is not needed for
+    // that. Both must be in before unmarshalling, because building a figure
+    // instantiates the component by its global identifier.
+    return Promise.all([storage.open(id, version), componentIndex.loadFor(id)])
+      .then(([doc]) => {
         loadedName = doc.name
         this.view.clear()
         progress.show()
+        this.palette.refreshUI()
         return reader.unmarshal(this.view, doc.content, progress.update.bind(progress)).then(() => {
           progress.hide()
           this.view.getCommandStack().markSaveLocation()
           this.view.centerDocument()
           this.hasUnsavedChanges = false
           $("#editorFileSave div").removeClass("highlight")
-          this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable }
+          this.currentFile = { id: doc.id, name: doc.path, version: doc.version, editable: doc.editable, scope: doc.providedBy, personal: doc.personal }
           defaultEditorHeader.update(this.currentFile)
           return doc
         })

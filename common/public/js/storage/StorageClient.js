@@ -47,8 +47,10 @@ class StorageClient {
 
   // Save. Omit id to create a new document (backend picks the group).
   // -> { id, version, path }
-  save({ id, name, content }) {
-    return axios.post(`${this.base}/file`, { id, name, content })
+  // scopeRef (optional) targets a brand-new document at a chosen workspace;
+  // ignored once the document has an id (its scope is then fixed).
+  save({ id, name, content, scopeRef }) {
+    return axios.post(`${this.base}/file`, { id, name, content, scopeRef })
       .then((response) => response.data)
   }
 
