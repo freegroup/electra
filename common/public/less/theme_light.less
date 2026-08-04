@@ -87,9 +87,10 @@ body.light {
         }
     }
 
-    input[type=text]{
-        color: rgb(var(--input-color));        
+    input[type=text], select{
+        color: rgb(var(--input-color));
         border: 1px solid rgb(var(--border-color));
+        background-color: rgb(var(--input-bg-color));
         &:focus {
             background-color: white;
             border-bottom: 2px solid rgb(var(--tint-color));
@@ -610,6 +611,11 @@ body.light {
         .editorHeaderTag { background: #d64545; color: #fff; }
         // bold instruction line = accent color
         .editorHeaderInstruction { color: rgb(var(--tint-color)); }
+        // "· DRAFT" link in the file row — accent colour so it reads as clickable
+        .editorHeaderDraftLink {
+            color: rgb(var(--tint-color));
+            &:hover { color: rgb(var(--tint-color-dark)); }
+        }
     }
 
     // distribute dialog target picker

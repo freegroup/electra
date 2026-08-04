@@ -1,69 +1,74 @@
 {
-	"button" :{
-		"save": "Speichern",
-		"close": "Schließen",
-		"create": "Anlegen",
-		"delete": "Löschen",
-		"got_it": "Alles klar",
-		"continue": "Weiter",
-		"confirm": "Bestätigen",
-		"cancel": "Abbrechen"
-	},
-	"header": {
-		"slogan": "macht digitale Elektronik für jeden zugänglich"
-	},
-	"toolbar": {
-		"file": "Datei",
-		"file_new": "Neue",
-		"file_open": "Öffnen..",
-		"file_save": "Speichern",
-		"file_save_as": "Speichern unter..",
-		"save": "Speichern",
-		"copy": "Kopieren",
-		"undo": "Rückg.",
-		"redo": "Wiederh.",
-		"download": "Download",
-		"share": "Teilen",
-		"delete": "Löschen",
-		"select": "Auswahl",
-		"add": "Einfügen",
-		"test": "Testen",
-		"code": "Verhalten",
-		"docu": "Doku.",
-		"union": "Plus",
-		"subtract": "Minus",
-		"intersect": "Schnitt",
-		"rectangle": "Rechteck",
-		"circle": "Kreis",
-		"line": "Linie",
-		"port": "Port",
-		"connect": "Verbinden",
-		"connected": "Verbunden",
-		"disconnected": "Unterbrochen",
-		"not_supported": "Nicht unterstützt",
-		"speed": "Simulationsgeschwindigkeit",
-		"fullscreen": "Vollbild",
-		"text": "Text"
-	},
-	"label": {
-		"public_link": "Link zum Teilen"
-	},
-	"dialog":{
-		"confirm": "Bestätigen zum Fortfahren",
-		"coffee": "Fördere die Academy"
-	},
-	"message":{
-		"coffee_1":"Wenn du meine Arbeit schätzt,",
-		"coffee_2":"dann unterstütze mich gerne mit einem <a href='https://www.paypal.me/freegroup' target='_blank'>Kaffee</a>!",
-		"authenticate_before_save": "Um Dateien speichern zu können, sollten Sie sich anmelden.<br><br><i>..aber natürlich können sie auch vorher damit experimentieren</i>",
-		"link_copied": "Link kopiert",
-		"unsaved_changes": "Die Seite enthält ungespeicherte Änderunge welche verloren gehen",
-		"saved": "Gespeichert",
-		"save_failed": "Speichern fehlgeschlagen - deine Änderungen sind noch da, bitte versuche es erneut.",
-		"created": "Datei angelegt",
-		"cookie": "<b>Datenschutz Hinweis</b><br><br>Durch die Nutzung unserer Website stimmen Sie unserer <a href='../legal' target='legal'>Verwendung von Cookies Bestimmung</a> zu, damit wir Ihnen das beste Benutzerverhalten auf unserer Website bieten können.",
-		"changes_get_lost": "Sie haben nicht gespeichert. Gemachte Änderungen an dem Dokument gehen verloren wenn Sie die Seite verlassen.",
-		"no_files": "Keine Dokumente",
-		"error": "Dokumente konnten nicht geladen werden"
-	}
+  "button": {
+    "save": "Speichern",
+    "close": "Schließen",
+    "create": "Anlegen",
+    "delete": "Löschen",
+    "got_it": "Alles klar",
+    "continue": "Weiter",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen"
+  },
+  "header": {
+    "slogan": "macht digitale Elektronik für jeden zugänglich",
+    "workspace": "Workspace",
+    "file": "Datei",
+    "draft": "DRAFT",
+    "draft_title": "Persönliche Kopie",
+    "draft_explain": "<p>Du hast diese Version verändert und gespeichert - jetzt ist sie <b>deine persönliche Kopie</b> der öffentlichen Variante, und nur du kannst sie sehen.</p><p>Sollen alle sie sehen? Öffne <b>{{draft}}</b> und <b>promote</b> sie in den Workspace <b>{{scope}}</b>. Ist dort ein Review eingestellt, prüfen erst eine oder mehrere Personen deine Änderungen, bevor alle sie sehen.</p>"
+  },
+  "toolbar": {
+    "file": "Datei",
+    "file_new": "Neue",
+    "file_open": "Öffnen..",
+    "file_save": "Speichern",
+    "file_save_as": "Speichern unter..",
+    "save": "Speichern",
+    "copy": "Kopieren",
+    "undo": "Rückg.",
+    "redo": "Wiederh.",
+    "download": "Download",
+    "share": "Teilen",
+    "delete": "Löschen",
+    "select": "Auswahl",
+    "add": "Einfügen",
+    "test": "Testen",
+    "code": "Verhalten",
+    "docu": "Doku.",
+    "union": "Plus",
+    "subtract": "Minus",
+    "intersect": "Schnitt",
+    "rectangle": "Rechteck",
+    "circle": "Kreis",
+    "line": "Linie",
+    "port": "Port",
+    "connect": "Verbinden",
+    "connected": "Verbunden",
+    "disconnected": "Unterbrochen",
+    "not_supported": "Nicht unterstützt",
+    "speed": "Simulationsgeschwindigkeit",
+    "fullscreen": "Vollbild",
+    "text": "Text"
+  },
+  "label": {
+    "public_link": "Link zum Teilen"
+  },
+  "dialog": {
+    "confirm": "Bestätigen zum Fortfahren",
+    "coffee": "Fördere die Academy"
+  },
+  "message": {
+    "coffee_1": "Wenn du meine Arbeit schätzt,",
+    "coffee_2": "dann unterstütze mich gerne mit einem <a href='https://www.paypal.me/freegroup' target='_blank'>Kaffee</a>!",
+    "authenticate_before_save": "Um Dateien speichern zu können, sollten Sie sich anmelden.<br><br><i>..aber natürlich können sie auch vorher damit experimentieren</i>",
+    "link_copied": "Link kopiert",
+    "unsaved_changes": "Die Seite enthält ungespeicherte Änderunge welche verloren gehen",
+    "saved": "Gespeichert",
+    "save_failed": "Speichern fehlgeschlagen - deine Änderungen sind noch da, bitte versuche es erneut.",
+    "created": "Datei angelegt",
+    "cookie": "<b>Datenschutz Hinweis</b><br><br>Durch die Nutzung unserer Website stimmen Sie unserer <a href='../legal' target='legal'>Verwendung von Cookies Bestimmung</a> zu, damit wir Ihnen das beste Benutzerverhalten auf unserer Website bieten können.",
+    "changes_get_lost": "Sie haben nicht gespeichert. Gemachte Änderungen an dem Dokument gehen verloren wenn Sie die Seite verlassen.",
+    "no_files": "Keine Dokumente",
+    "error": "Dokumente konnten nicht geladen werden"
+  }
 }

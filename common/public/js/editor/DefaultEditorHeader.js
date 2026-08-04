@@ -11,6 +11,8 @@ class DefaultEditorHeader extends EditorHeader {
     EditorHeader.clear()
     if (!currentFile || !currentFile.name) return
     let $header = this.buildShell({
+      scope: currentFile.scope,
+      personal: currentFile.personal,
       name: currentFile.name,
       version: currentFile.version,
       modifier: "editorHeaderDefault",

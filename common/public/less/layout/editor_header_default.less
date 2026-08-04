@@ -1,7 +1,47 @@
-// editor_header_default — the quiet editing header (filename · version).
-// Paired with DefaultEditorHeader.js. Extends .editorHeader from
-// editor_header.less; nothing extra beyond the shared base for now.
+// editor_header_default — the quiet editing header. Two display-only rows:
+//   Workspace   /apps
+//   Datei       /basic/counter/schaltung.brain · v3
+// For a personal copy "· v3" is replaced by a "· DRAFT" link that opens the
+// PersonalVersionInfoDialog. Paired with DefaultEditorHeader.js /
+// EditorHeader.buildShell. Labels share a fixed width so both values line up.
+// Colors come from the theme.
 
 #editor .editorHeader.editorHeaderDefault {
-  // intentionally minimal — just the shared name · version row
+  .editorHeaderScopeRow,
+  .editorHeaderMain {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    min-width: 0;
+  }
+  .editorHeaderScopeRow { align-items: center; margin-bottom: 3px; }
+  .editorHeaderMain { align-items: baseline; }
+
+  .editorHeaderLabel {
+    flex: 0 0 auto;
+    min-width: 78px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.45;
+  }
+
+  .editorHeaderScope {
+    font-size: 12px;
+    opacity: 0.7;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  // "· DRAFT" link — sits in the version slot, reads like a tag.
+  .editorHeaderDraftLink {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: var(--label-bold-font-weight);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    margin-left: -6px;
+  }
 }
