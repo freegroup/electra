@@ -48,21 +48,19 @@ export default class NewDocumentDialog {
     `)
   }
 
-  // Fill the workspace select with the scopes the caller can write to, each
-  // shown by its full path so nesting is visible ("apps / klasse10"). Hides the
-  // whole row when there is nothing to choose (a lone workspace is no choice) —
-  // then scopeRef stays null and the backend picks its default.
+  // Fill the workspace select. "Privat" comes first and always: an empty value
+  // means the server resolves the caller's personal workspace itself (save does
+  // `chosenScope || personalWorkspaceId`), so no scope ref is sent for it. Then
+  // every workspace the caller can write to, shown by its full path.
   _loadWorkspaces() {
     let $block = $("#newDocumentDialog .newDocumentWorkspaceBlock")
     let $select = $("#newDocumentDialog .newDocumentWorkspace").empty()
+    // Private is the personal workspace — always available, no scope ref.
+    $select.append(`<option value="">${t("dialog.new_document.private")}</option>`)
     return this.workspaces.visible()
       .then((list) => {
         // Only workspaces the caller is a member of can receive a new document.
         this._choices = (list || []).filter((w) => w.isMember)
-        if (this._choices.length <= 1) {
-          $block.hide()
-          return
-        }
         for (let w of this._choices) {
           // The stored path drops the structural prefix already; show it with
           // separators the reader expects.
@@ -77,8 +75,9 @@ export default class NewDocumentDialog {
         $block.show()
       })
       .catch(() => {
-        $block.hide()
+        // Listing failed — Private alone is still a valid choice, keep it shown.
         this._choices = []
+        $block.show()
       })
   }
 
@@ -99,11 +98,10 @@ export default class NewDocumentDialog {
       $("#newDocumentDialog .okButton").off("click").on("click", () => {
         let name = this.storage.sanitize($("#newDocumentDialog .fileName").val())
         if (!name) return
-        let scopeRef = null
-        if (this._choices && this._choices.length > 1) {
-          scopeRef = $("#newDocumentDialog .newDocumentWorkspace").val() || null
-          if (scopeRef) jsonStorage.setItem(LAST_SCOPE_KEY, scopeRef)
-        }
+        // Empty value = "Privat": no scope ref, the server resolves the caller's
+        // personal workspace. A real scopeRef is remembered as the last choice.
+        let scopeRef = $("#newDocumentDialog .newDocumentWorkspace").val() || null
+        if (scopeRef) jsonStorage.setItem(LAST_SCOPE_KEY, scopeRef)
         handled = true
         $("#newDocumentDialog").modal("hide")
         resolve({ name: name + this.conf.fileSuffix, scopeRef })
