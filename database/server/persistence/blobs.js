@@ -206,10 +206,42 @@ async function getBlobByPublicId(publicId, key) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Read one blob of an exact version, addressed by that version's uuid
+// ---------------------------------------------------------------------------
+//
+// The walk-up read (getBlob) answers "the blob that applies here"; this one
+// answers "the blob of THIS version". Thumbnails need the latter: the catalogue
+// or the file card has already resolved which version it shows, and re-resolving
+// by path could land somewhere else. It also reaches pending (review-queue)
+// versions, which the walk-up skips.
+//
+// Returns null when the version or the blob is unknown; the caller's read
+// permission on the owning scope is checked by the route.
+async function getBlobByUuid(uuid, key) {
+  validateKey(key)
+  const res = await pool.query(
+    `SELECT v.scope_id, b.content_type, b.size_bytes, b.data
+       FROM versions v
+       JOIN blobs b ON (b.scope_id, b.doc_path, b.version)
+                     = (v.scope_id, v.doc_path, v.version)
+      WHERE v.uuid = $1 AND b.key = $2`,
+    [uuid, key]
+  )
+  if (res.rowCount === 0) return null
+  return {
+    scopeRef: String(res.rows[0].scope_id),
+    contentType: res.rows[0].content_type,
+    sizeBytes: res.rows[0].size_bytes,
+    buffer: res.rows[0].data,
+  }
+}
+
 module.exports = {
   putBlob,
   getBlob,
   deleteBlob,
+  getBlobByUuid,
   getBlobByPublicId,
   validateKey,
   validateContentType,

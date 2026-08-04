@@ -88,6 +88,7 @@ async function routes(fastify) {
         return doc
       }
       const prefix = q.prefix ? String(q.prefix) : null
+      const suffix = q.suffix ? String(q.suffix) : null
       // Glob mode: aggregate every doc visible under this scope (as root) across
       // all the caller's groups, one row per path with its provider.
       if (isGlob) {
@@ -95,6 +96,7 @@ async function routes(fastify) {
           rootScopeId: scopeId,
           personRef: req.personRef,
           prefix,
+          suffix,
           resolveOriginPath,
         })
         return { docs }
@@ -103,6 +105,10 @@ async function routes(fastify) {
         operatingScopeId: scopeId,
         personRef: req.personRef,
         prefix,
+        // Document types are told apart by their suffix (".brain", ".part").
+        // Filtering here keeps a caller from hauling every other type's data
+        // across just to drop it again.
+        suffix,
         resolveOriginPath,
       })
       return { docs }

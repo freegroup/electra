@@ -137,7 +137,7 @@ async function resolveEffective({ operatingScopeId, personRef, docPath }) {
 // Effective list
 // ---------------------------------------------------------------------------
 
-async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath }) {
+async function listDocs({ operatingScopeId, personRef, prefix, suffix, resolveOriginPath }) {
   const res = await pool.query(
     `${WALKUP_SLOTS},
      ranked AS (
@@ -148,12 +148,20 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
        FROM slots s
        JOIN versions v ON v.scope_id = s.scope_id
                       AND v.status IN ('committed', 'deleted')
-                      AND ($3::text IS NULL OR v.doc_path LIKE $3 || '%')
+                      -- Two orthogonal axes: prefix says WHERE, suffix says WHAT
+                      -- (".brain", ".sheet", ".part" — how document types are
+                      -- told apart here). left()/right() rather than LIKE, so
+                      -- "_" and "%" in a folder or suffix stay literal instead
+                      -- of turning into wildcards. The suffix cannot use
+                      -- versions_lookup_idx, but the join has already narrowed
+                      -- the rows to this walk-up's scopes.
+                      AND ($3::text IS NULL OR left(v.doc_path, length($3)) = $3)
+                      AND ($4::text IS NULL OR right(v.doc_path, length($4)) = $4)
        ORDER BY v.doc_path, s.depth ASC, s.slot_rank ASC, v.version DESC
      )
      SELECT * FROM ranked WHERE status = 'committed' AND is_deletion = false
      ORDER BY doc_path`,
-    [operatingScopeId, personRef, prefix || null]
+    [operatingScopeId, personRef, prefix || null, suffix || null]
   )
 
   const cache = new Map()
@@ -184,7 +192,7 @@ async function listDocs({ operatingScopeId, personRef, prefix, resolveOriginPath
 // the effective version lives), author (who last committed it) and
 // operatingScopeRef (the group that produced it → where a save from this row
 // lands). No data/meta — the payload stays small.
-async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
+async function globDocs({ rootScopeId, personRef, prefix, suffix, resolveOriginPath }) {
   // Operating scopes to walk up from:
   //   logged-in — the group scopes the caller is an explicit member of, at or
   //               under the root (personal leaves are not operable groups).
@@ -240,6 +248,9 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
          JOIN versions v ON v.scope_id = s.scope_id
                         AND v.status IN ('committed', 'deleted')
                         AND ($3::text IS NULL OR v.doc_path LIKE $3 || '%')
+                        -- suffix separates document types (".brain", ".part");
+                        -- right() not LIKE, so "_"/"%" stay literal (see listDocs)
+                        AND ($4::text IS NULL OR right(v.doc_path, length($4)) = $4)
        ),
        winner AS (
          SELECT DISTINCT ON (doc_path)
@@ -265,7 +276,7 @@ async function globDocs({ rootScopeId, personRef, prefix, resolveOriginPath }) {
        FROM winner w
        LEFT JOIN original o USING (doc_path)
        WHERE w.status = 'committed' AND w.is_deletion = false`,
-      [opScopeId, personRef, prefix || null]
+      [opScopeId, personRef, prefix || null, suffix || null]
     )
     for (const row of res.rows) {
       const prev = best.get(row.doc_path)

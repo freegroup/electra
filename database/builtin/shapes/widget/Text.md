@@ -1,0 +1,1 @@
+"Simple long text element with automatic word wrap."

@@ -1,0 +1,1 @@
+"A Markdown node allows users to add and format content using Markdown syntax in a circuit. Markdown is a lightweight markup language that allows users to format text with simple and intuitive syntax."

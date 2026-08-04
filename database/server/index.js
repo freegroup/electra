@@ -102,6 +102,25 @@ async function main() {
     fastify.log.error(err)
     process.exit(1)
   }
+
+  // Shipped content: import seed/ once, reconcile builtin/ against `apps`.
+  // After listen and deliberately not awaited into the boot path — a problem
+  // with shipped content must not keep the service from coming up. When nothing
+  // changed this writes nothing, so a restart stays invisible to the caches
+  // that hang off the scope's content version.
+  try {
+    const { syncShippedContent } = require("./persistence/shipped")
+    const result = await syncShippedContent()
+    if (result) {
+      const { seed, builtin } = result
+      fastify.log.info(
+        `shipped content: seed ${seed.created} neu / ${seed.present} vorhanden, ` +
+        `builtin ${builtin.created} neu / ${builtin.updated} geändert / ${builtin.removed} entfernt`
+      )
+    }
+  } catch (err) {
+    fastify.log.error({ err }, "shipped content sync failed")
+  }
 }
 
 module.exports = { build }

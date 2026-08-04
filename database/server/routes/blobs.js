@@ -3,12 +3,14 @@
 //   PUT    /database/scopes/:scopeRef/blobs/:key?path=X   — raw body upload
 //   GET    /database/scopes/:scopeRef/blobs/:key?path=X   — walk-up read
 //   DELETE /database/scopes/:scopeRef/blobs/:key?path=X   — remove
+//   GET    /database/docs/:uuid/blobs/:key                — one exact version
 //   GET    /database/public/:publicId/blobs/:key          — anonymous
 
 const {
   putBlob,
   getBlob,
   deleteBlob,
+  getBlobByUuid,
   getBlobByPublicId,
 } = require("../persistence/blobs")
 const { NotFoundError, BadRequestError } = require("../utils/errors")
@@ -89,6 +91,32 @@ async function routes(fastify) {
       const key = req.params.key
       const { deleted } = await deleteBlob({ leafScopeId: leafId, docPath, key })
       return { deleted }
+    }
+  )
+
+  // One exact version, addressed by its uuid. Used by the thumbnail path: the
+  // caller already knows which version it is showing, so re-resolving by path
+  // could land on a different one. A version never changes, hence the long
+  // immutable cache — the URL is only reachable while that version exists.
+  fastify.get(
+    "/database/docs/:uuid/blobs/:key",
+    { preHandler: [fastify.resolvePrincipal] },
+    async (req, reply) => {
+      const { uuid, key } = req.params
+      const blob = await getBlobByUuid(uuid, key)
+      if (!blob) {
+        throw new NotFoundError(`no blob '${key}' for version ${uuid}`)
+      }
+      // Auth: may the caller read the scope this version lives in?
+      await requireRead(blob.scopeRef, req.personRef)
+      reply.header("Content-Type", blob.contentType)
+      reply.header("Content-Length", blob.sizeBytes)
+      // Overrides the global no-store hook (index.js) for this one route, and
+      // clears its companions — Pragma/Expires would defeat the cache again.
+      reply.header("Cache-Control", "private, max-age=31536000, immutable")
+      reply.removeHeader("Pragma")
+      reply.removeHeader("Expires")
+      return blob.buffer
     }
   )
 
