@@ -18,15 +18,8 @@ dotenv.config({ debug: false,path: envFile })
 dotenv.config({ debug: false, path: PROJECT_PATH + '/settings.local.ini' })
 
 
-const generator = require("./thumbnails")
-const conf = require("./configuration")
 const indexApi = require("./handler/index")
-const globalApi = require("./handler/global")
-const userApi = require("./handler/user")
 const partApi = require("./handler/part")
-
-console.log("serving data from :", conf.absoluteGlobalDataDirectory())
-
 
 function die(msg){
     console.log(msg)
@@ -42,8 +35,6 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 
 indexApi.init(app)
-globalApi.init(app)
-userApi.init(app)
 partApi.init(app)
 
 // =======================================================================
@@ -66,13 +57,4 @@ async function  runServer() {
   });
 }
 
-generator.generateShapeIndex(conf.absoluteGlobalDataDirectory(),"global")
-const { readdirSync } = require('fs')
-
-const dirs =  readdirSync(conf.absoluteUserDataRootDirectory(), { withFileTypes: true })
-                .filter(dirent => dirent.isDirectory())
-                .map(dirent => dirent.name)
-dirs.forEach( (dir) => {
-  generator.generateShapeIndex(path.join(conf.absoluteUserDataRootDirectory(), dir, "/"), "user")
-})
 runServer()

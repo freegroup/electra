@@ -1,4 +1,3 @@
-import conf from "./Configuration"
 import componentIndex from "../../common/js/ComponentIndex"
 import Hogan from "hogan.js"
 import TreeView from "js-treeview"
@@ -15,52 +14,22 @@ export default class Palette {
     this.CATEGORY_KEY = "simulator.palette.categories"
 
     this.refreshUI();
-
-    // Add an "loader" icon to a shape whenn the backend is calculating the thumbnail
-    let startGenerateEventMethod = (msg) => {
-      $("div[data-file='" + msg.filePath + "'] ").addClass("spinner")
-    }
-    socket.on("shape/generating", startGenerateEventMethod)
- 
-    // Update the shape thumbnail if the backend fineshed the calculation
-    //
-    let endGenerateEventMethod = (msg) => {
-      $("div[data-file='" + msg.filePath + "'] ").removeClass("spinner")
-      let img = $("div[data-file='" + msg.filePath + "'] img")
-      if (img.length === 0) {
-        // insert a new shape
-        this.refreshUI()
-      }
-      else {
-        // update existing shape
-        $("div[data-file='" + msg.filePath + "'] img").attr({src: conf.shapes[msg.scope]?.image(msg.imagePath)})
-      }
-    }
-   socket.on("shape/generated", endGenerateEventMethod)
   }
 
   refreshUI(){
     let storedCategories = jsonStorage.getItem(this.CATEGORY_KEY)
     let defaultCategories = storedCategories ?? ["digital"]
 
-    // Components resolved for the open document, when one is open. Falls back to
-    // the old directory-wide catalogue at startup, when there is no context yet.
-    let load = componentIndex.catalog.length
-      ? Promise.resolve(componentIndex.catalog)
-      : new Promise((resolve) => $.getJSON(conf.shapes.jsonUrl, resolve))
-
-    load.then((data) => {
-      data.forEach((shape) => {
-        // A uuid means the entry came from the database and names an exact
-        // version; imagePath is the old, scope-blind addressing.
-        shape.imageUrl = shape.uuid
-          ? componentIndex.imageUrl(shape)
-          : conf.shapes[shape.scope]?.image(shape.imagePath)
-      })
-      this.buildCategory(data, defaultCategories)
-      this.buildPalette(data, defaultCategories)
-      this.buildTree(data, defaultCategories)
+    // The components resolved for the current context (preloaded at boot for the
+    // apps scope, reloaded on every document open). Every entry names an exact
+    // version by uuid, so its preview is addressed the same way.
+    let data = componentIndex.catalog
+    data.forEach((shape) => {
+      shape.imageUrl = componentIndex.imageUrl(shape)
     })
+    this.buildCategory(data, defaultCategories)
+    this.buildPalette(data, defaultCategories)
+    this.buildTree(data, defaultCategories)
   }
 
   // Components out of the caller's own workspace go into one bucket, everything

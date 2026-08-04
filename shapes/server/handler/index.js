@@ -1,10 +1,5 @@
-const express = require('express')
-const fs = require('fs-extra')
-const path = require('path')
 const {createHash } =  require('crypto')
-  
-const multistream = require('../utils/multistream')
-const conf = require("../configuration")
+
 const db = require("../db")
 const indexBuilder = require("../indexBuilder")
 
@@ -86,99 +81,61 @@ module.exports = {
             }
         })
 
-        // TODO: migrate to REST service API
+        // One text member of a component, addressed by the same version uuid its
+        // catalogue entry carries. The sibling of /shapes/thumb: thumb serves the
+        // preview blob, this serves the text fields (shape, custom, js, md) that
+        // live in the version's `data`. The description dialog reads `.../md`.
+        // A version never changes, so the immutable cache applies as it does for
+        // the preview.
+        const TEXT_MEMBERS = new Set(["shape", "custom", "js", "md"])
+        app.get('/shapes/part/:uuid/:member', userHash, async (req, res) => {
+            const { uuid, member } = req.params
+            if (!TEXT_MEMBERS.has(member)) return res.status(404).end()
+            try {
+                const doc = await db.call("GET", `/database/docs/${encodeURIComponent(uuid)}`, {
+                    authHeaders: db.pickAuthHeaders(req),
+                })
+                const value = doc && doc.data ? doc.data[member] : undefined
+                if (value == null) return res.status(404).end()
+                res.set("content-type", member === "md" ? "text/markdown; charset=utf-8" : "text/plain; charset=utf-8")
+                res.set("cache-control", "private, max-age=31536000, immutable")
+                res.removeHeader("Pragma")
+                res.removeHeader("Expires")
+                res.send(String(value))
+            } catch (err) {
+                res.status(err.statusCode || 404).end()
+            }
+        })
+
+        // The component code for a context, built from the database. A context is
+        // mandatory (?doc=<handle>, ?doc=new, or ?scope=<ref>): which components
+        // apply depends on the workspace, so there is nothing to serve without it.
         app.get('/shapes/index.js', nocache, userHash, async (req, res) => {
-            // the multistream do not set the correct mime type of the response....fix this.
-            //
             res.setHeader('content-type', 'text/javascript')
-
-            if (req.query.doc || req.query.scope) {
-                try {
-                    const { js } = await fromDatabase(req)
-                    return res.send(js)
-                } catch (err) {
-                    return res.status(err.statusCode || 500).send(`/* ${err.message} */`)
-                }
+            if (!req.query.doc && !req.query.scope) {
+                return res.status(400).send(`/* missing ?doc or ?scope */`)
             }
-
-            // create a array of file which can be concatenated and stream in a single response
-            //
-            let streams = [
-                fs.createReadStream(path.join(conf.absoluteGlobalDataDirectory(), '/index.js')),
-            ]
-
-            // append the user spezific file if a user is logged in and the file exists
-            //
-            if (req.get("x-hash")){
-                let userIndex = path.join(conf.absoluteUserDataDirectory(req), '/index.js')
-                if(fs.existsSync(userIndex)) {
-                    streams.push(fs.createReadStream(userIndex))
-                }
+            try {
+                const { js } = await fromDatabase(req)
+                return res.send(js)
+            } catch (err) {
+                return res.status(err.statusCode || 500).send(`/* ${err.message} */`)
             }
-            // stream all files
-            //
-            new multistream(streams).pipe(res)
-        }),
+        })
 
+        // The palette catalogue for the same context, from the same single pass,
+        // so code and catalogue cannot disagree.
         app.get('/shapes/index.json', nocache, userHash, async (req, res) => {
-            // the multistream do not set the correct mime type of the response....fix this.
-            //
             res.setHeader('content-type', 'application/json')
-
-            if (req.query.doc || req.query.scope) {
-                try {
-                    const { catalog } = await fromDatabase(req)
-                    return res.status(200).send(catalog)
-                } catch (err) {
-                    return res.status(err.statusCode || 500).json({ error: { message: err.message } })
-                }
+            if (!req.query.doc && !req.query.scope) {
+                return res.status(400).json({ error: { message: "missing ?doc or ?scope" } })
             }
- 
-            // All JSON Files which can be concatenated and returned in a single JSON-Array
-            //
-            let readFiles =  [
-                fs.readFile(path.join(conf.absoluteGlobalDataDirectory(), '/index.json'), "utf-8"),
-            ]
-            // append the user spezific file if a user is logged in and the file exists
-            //
-            if (req.get("x-hash")){
-                let userIndex = path.join(conf.absoluteUserDataDirectory(req), '/index.json')
-                if(fs.existsSync(userIndex)) {
-                    readFiles.push(fs.readFile(userIndex, "utf-8"))
-                }
+            try {
+                const { catalog } = await fromDatabase(req)
+                return res.status(200).send(catalog)
+            } catch (err) {
+                return res.status(err.statusCode || 500).json({ error: { message: err.message } })
             }
-            // Read all of them and merge them into a single file
-            //
-            return Promise.all(readFiles)
-            .then( strings =>{
-                return strings.map( x => JSON.parse(x))
-            })
-            .then( (json) => {
-                // Merge by name, LAST one wins. The files arrive in walk-up order
-                // (global first, the caller's own last), so an override has to beat
-                // what it overrides — whoever is closer to the user decides.
-                //
-                // This is the direction index.js has had all along: its files are
-                // concatenated, so a later `var X = …` replaces the earlier one.
-                // The catalogue used to do the opposite and keep the FIRST entry,
-                // which meant a user could override a shape's code but not its
-                // catalogue entry. Masked so far only because user shapes tend to
-                // carry unique names.
-                //
-                // Map.set keeps the position of the first occurrence and replaces
-                // its value, so an override does not reorder the palette.
-                function mergeByName(entries) {
-                    let byName = new Map()
-                    for (let entry of entries) {
-                        byName.set(entry.name, entry)
-                    }
-                    return [...byName.values()]
-                }
-                return mergeByName(json.flat());
-            })
-            .then( (json => {
-                res.status(200).send(json)
-            })) 
         })
     }
 }

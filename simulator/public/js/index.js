@@ -5,7 +5,7 @@ import jqueryI18next from "jquery-i18next"
 import i18nextBrowserLanguageDetector from "i18next-browser-languagedetector"
 
 import "../../common/js/polyfill"
-import loadScript from "../../common/js/loadScript"
+import componentIndex from "../../common/js/ComponentIndex"
 import session from "../../common/js/session"
 import authConfiguration from "../../common/js/authConfiguration"
 import "../less/index.less"
@@ -65,10 +65,13 @@ $(window).load(function () {
   })
   .then( () => {
     let global = require("./global").default
-    let conf = require("./Configuration").default
     // export all required classes for deserialize JSON with "eval" (required for draw2d object loading)
     for (let k in global) window[k] = global[k]
-    return loadScript(conf.shapes.jsUrl)
+    // Preload the default component catalogue (the caller's apps scope) so the
+    // palette has content before the first document opens. Opening a document
+    // reloads it for that document's scope. Replaces the old bare
+    // /shapes/index.js (filesystem) load.
+    return componentIndex.loadFor(null)
   })
   .then( ()=>{
     jqueryI18next.init(i18next, $, { useOptionsAttr: true });

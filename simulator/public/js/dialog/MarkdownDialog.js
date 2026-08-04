@@ -3,7 +3,7 @@ import fs from "path-browserify"
 import mdFactory from "../../../common/js/markdown"
 let md = mdFactory()
 
-import conf from "../Configuration"
+import componentIndex from "../../../common/js/ComponentIndex"
 
 class Dialog {
 
@@ -11,21 +11,34 @@ class Dialog {
   }
 
   show(figure) {
-    // Same as the "open in designer" entry: documents saved before the scope
-    // model carry only userData.file, and back then every shape came from the
-    // global library. Without the default, conf.shapes[undefined] throws and the
-    // dialog never opens.
-    let scope = figure.attr("userData.scope") ?? "global"
-
     let shapeName = figure.attr("userData.file")
-    let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName,".shape")
-    let markdownName = shapeName.replace(/\.shape$/, ".md")
-    let contentUrl = conf.shapes[scope].file(markdownName)
-    $.get(contentUrl,  (content) => {
-      $('#markdownDialog .sectionContent').html(md.render(content))
+    if (!shapeName) return
+    let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName, ".shape")
+
+    // The description lives in the component's .part document in the database.
+    // The catalogue loaded for the open document maps a component to the exact
+    // version uuid; match by the suffix-less path it was built from (fullName),
+    // falling back to the display name for documents saved before the scope
+    // model. No match (component gone from this context) -> heading only.
+    let base = shapeName.replace(/\.shape$/, "")
+    let entry = (componentIndex.catalog || []).find(
+      (e) => e.fullName === base || e.displayName === displayName
+    )
+
+    let render = (content) => {
+      $('#markdownDialog .sectionContent').html(content ? md.render(content) : "")
       $('#markdownDialog .media-heading').html(displayName)
       $('#markdownDialog').modal('show')
-    })
+    }
+
+    if (!entry || !entry.uuid) {
+      render("")
+      return
+    }
+
+    $.get(`../shapes/part/${encodeURIComponent(entry.uuid)}/md`)
+      .done((content) => render(content))
+      .fail(() => render(""))
   }
 }
 

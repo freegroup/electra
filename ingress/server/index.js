@@ -124,10 +124,13 @@ const wrap = middleware => (socket, next) => middleware(socket.request, {}, next
 
 function ensureLocalhost(req, res, next) {
 	var remote = req.ip || req.connection.remoteAddress
-	console.log("in islocal")
-	if ((remote === '::1') || (remote === 'localhost'))
+	// Accept every shape localhost can take: IPv6 (::1), IPv4 (127.0.0.1) and the
+	// IPv4-mapped-IPv6 form a dual-stack listener reports for an IPv4 client
+	// (::ffff:127.0.0.1). A backend service posting to LOCALHOST=127.0.0.1 arrives
+	// as the last two, so accepting only ::1 rejected it.
+	if (remote === '::1' || remote === '127.0.0.1' || remote === '::ffff:127.0.0.1' || remote === 'localhost')
 		return next();
-	else 
+	else
 		return next('route'); //call next /test route to handle check on authentication.
 }
 
@@ -317,6 +320,20 @@ app.use('/oauth/callback{/:componentUri}', async function(req, res) {
 })
 
 
+// Live broadcast to connected clients (hot-replace of a saved component, i18n
+// pushes, ...). socket.io lives here in the ingress, so a backend service that
+// wants to push to clients POSTs here. This MUST be registered BEFORE the '/'
+// catch-all proxy below - otherwise the proxy swallows /broadcast (that is why
+// it 404'd and hot-replace stopped working). The io servers are created further
+// down when the http/https listeners start; they are collected here so a
+// broadcast reaches clients on whichever transport is live. Own bodyParser
+// because the global json parser is registered only after the catch-all.
+const ioServers = []
+app.use('/broadcast', ensureLocalhost, bodyParser.json(), function (req, res) {
+    ioServers.forEach((io) => io.sockets.emit(req.body.topic, req.body.event))
+    res.send("success")
+})
+
 app.use('/', createProxyMiddleware({
     target: API_SERVICE_URL+":"+PORT_HOME,
     changeOrigin: true,
@@ -332,6 +349,7 @@ app.use(bodyParser.json());
 try {
     const http = require('http').Server(app)
     const io = require('./websocket').connect(http, {path: '/socket.io'})
+    ioServers.push(io)
 
     io.use(wrap(sessionMiddleware));
 
@@ -347,16 +365,7 @@ try {
             io.to(socket.request.session.browserId).emit("i18n", locale);
         });
     });
-    
-    app.use('/broadcast', ensureLocalhost, function( req, res){
-        const topic = req.body.topic
-        const event = req.body.event
-        console.log(req.body)
-        console.log("socket.emit...")
-        io.sockets.emit(topic, event)
-        res.send("success")
-    });
-    
+
     http.listen(PORT, () => {
         console.log(`Starting Ingress at http://localhost:${PORT}`);
     });
@@ -373,6 +382,7 @@ try{
     var credentials = {key: privateKey, cert: certificate};
     const https = require('https').Server(credentials, app);
     const io = require('./websocket').connect(https, {path: '/socket.io'})
+    ioServers.push(io)
     io.use(wrap(sessionMiddleware));
 
     io.on("connection", (socket) => {

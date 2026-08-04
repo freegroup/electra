@@ -38,6 +38,14 @@ class ComponentIndex {
     return this._load(`doc=${encodeURIComponent(handle || "new")}`)
   }
 
+  // Re-resolve the SAME context that was loaded last. Used on a live "a
+  // component changed" signal: the answer to "which version applies to me" is
+  // the walk-up for my own open document, not whatever version someone else just
+  // saved. Falls back to the default context if nothing has been loaded yet.
+  reload() {
+    return this._load(this.currentQuery || `doc=${encodeURIComponent("new")}`)
+  }
+
   // Load the components for a chosen workspace, before the first save. Scopes
   // are client-visible by ref (the workspace list, distribute targets), unlike
   // document handles - so passing one here is fine. A null scopeRef falls back
@@ -54,6 +62,8 @@ class ComponentIndex {
   // promise, and only to keep two CONCURRENT identical loads from overwriting
   // each other's globals mid-flight - it is cleared as soon as the load settles.
   _load(query) {
+    // Remember the context so a live change signal can re-resolve exactly it.
+    this.currentQuery = query
     if (this.pending && this.pendingKey === query) return this.pending
 
     this.pendingKey = query

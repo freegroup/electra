@@ -3,7 +3,7 @@ import ConnectionRouter from "./ConnectionRouter"
 import DropInterceptorPolicy from "./DropInterceptorPolicy"
 import EditEditPolicy from "./EditEditPolicy"
 import ProbeFigure from "./figures/ProbeFigure"
-import conf from "./Configuration"
+import componentIndex from "../../common/js/ComponentIndex"
 import Connection from "./figures/Connection"
 import SimulationEditPolicy from "./SimulationEditPolicy"
 import markdownDialog from "./dialog/MarkdownDialog"
@@ -326,12 +326,16 @@ export default draw2d.Canvas.extend({
     //
     this.on("click", figureConfigDialog.close )
 
-    // only responsible to reload the code and the current document
-    // (the palette.js did its own job and refresh palette entry if required)
+    // Hot-replace: a save in the designer broadcasts "component X changed" to
+    // every client (globally). It is only a signal - the version that applies to
+    // ME is the walk-up for MY open document, not whatever someone else saved.
+    // So re-resolve my own context and re-instantiate, but only when the changed
+    // component is actually one this circuit resolved (ignore unrelated saves).
     socket.on("shape/generated", msg => {
-      $.getScript(conf.shapes[msg.scope].file(msg.jsPath),
-        this.reloadFromCache.bind(this)
-      )
+      let name = msg && msg.name
+      if (name && !componentIndex.catalog.some((e) => e.name === name)) return
+      componentIndex.reload()
+        .then(() => this.reloadFromCache())
     })
 
     this.slider = $('#simulationBaseTimer')

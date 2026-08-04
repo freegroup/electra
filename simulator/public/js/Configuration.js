@@ -38,18 +38,5 @@ export default {
       save:           `../brains/global/save`,
       folder:         `../brains/global/folder`
     }
-  },
-
-  shapes: {
-    jsUrl:     "../shapes/index.js",
-    jsonUrl:   "../shapes/index.json",
-    user: {
-      image: file => `../shapes/user/get?filePath=${file}`, // deprecated
-      file:  file => `../shapes/user/get?filePath=${file}`
-    },
-    global :{
-      image: file => `../shapes/global/get?filePath=${file}`, // deprecated
-      file:  file => `../shapes/global/get?filePath=${file}`
-    }
   }
 }

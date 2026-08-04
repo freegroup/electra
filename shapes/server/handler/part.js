@@ -14,13 +14,31 @@
 // serve or accept the derived members: the editor round-trips only the shape.
 
 const db = require("../db")
-const conf = require("../configuration")
 const generator = require("../thumbnails")
 const { identifierFor } = require("../indexBuilder")
 
 const SUFFIX = ".part"          // the document suffix, a backend detail
 const SHAPE_SUFFIX = ".shape"   // the only suffix the designer ever sees
 const PREVIEW_KEY = "preview"
+
+// Live update: after a save we tell connected editors to hot-replace the
+// component. The ingress fans the message out over socket.io; clients reload
+// the new version's code via /shapes/part/<uuid>/js. Best-effort - a missing
+// ingress or a network hiccup must never fail the save.
+const PORT_INGRESS = process.env.PORT_INGRESS
+const LOCALHOST = process.env.LOCALHOST || "127.0.0.1"
+async function broadcast(topic, event) {
+  if (!PORT_INGRESS) return
+  try {
+    await fetch(`http://${LOCALHOST}:${PORT_INGRESS}/broadcast`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ topic, event }),
+    })
+  } catch (err) {
+    // best-effort; the save already succeeded
+  }
+}
 
 // Internal document name for a name coming from the designer. The designer knows
 // only ".shape"; the document is a ".part". Accept either (or none) and force
@@ -273,6 +291,13 @@ module.exports = {
           { authHeaders: auth }
         )
         const loc = displayLocation(eff.scope, auth)
+
+        // Signal open editors that this component changed. Only the identifier
+        // travels: which version applies to a given client is that client's own
+        // walk-up, so each re-resolves its own context instead of loading this
+        // (possibly personal) version. See View.js shape/generated.
+        broadcast("shape/generated", { name: identifier })
+
         res.json({
           id: db.encodeId(scopeRef, path),
           version: eff.version ?? stored.version,
