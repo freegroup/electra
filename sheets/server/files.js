@@ -30,6 +30,11 @@ function withSuffix(name) {
   return n + SUFFIX
 }
 
+// The preview image is stored as a blob on the version, under this key — not
+// inside `data`. A thumbnail is an image, so it is served as one: raw bytes with
+// a content type, from a row that a bulk read never touches.
+const PREVIEW_KEY = "preview"
+
 // Display name of whoever last committed a version. personRef is the plain
 // email (database/server/auth.js), and only the part before the @ leaves the
 // server — so no full address ends up on a card, nor in the JSON behind it.
@@ -38,6 +43,18 @@ function authorLabel(author) {
   const s = String(author)
   const at = s.indexOf("@")
   return at === -1 ? s : s.slice(0, at)
+}
+
+// Where the effective version lives, for the editor header. A personal copy is
+// recognised by the leaf segment, whose name IS the caller's email
+// (ensureWriteLeaf: leaf name == personRef == email). The shown workspace drops
+// that leaf so the header names the group; `personal` marks the caller's copy.
+function displayLocation(scopePath, auth) {
+  const email = auth["x-mail"] || ""
+  const suffix = "/" + email
+  const personal = !!email && typeof scopePath === "string" && scopePath.endsWith(suffix)
+  const scope = personal ? scopePath.slice(0, -suffix.length) : (scopePath || "")
+  return { scope, personal }
 }
 
 // Build the uniform display item from a database doc/glob row.
@@ -130,18 +147,19 @@ function init(app) {
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}${v}`,
         { authHeaders: auth }
       )
+      const loc = displayLocation(doc.scope, auth)
       const item = toItem({
         scopeRef,
         docPath: path,
         uuid: doc.uuid,
-        providedBy: doc.scope,
+        providedBy: loc.scope,
         version: doc.version,
         author: doc.author,
       })
       // The preview image lives inside the document (content.image) so it stays
       // an atomic unit with the doc — but it's large and the editor doesn't need
       // it on open. Strip it here; it's served separately via /sheets/thumb.
-      res.json({ ...item, content: withoutPreview(doc.data) })
+      res.json({ ...item, personal: loc.personal, content: withoutPreview(doc.data) })
     } catch (err) {
       fail(res, err)
     }
@@ -176,7 +194,7 @@ function init(app) {
   app.post("/sheets/file", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, name, content } = req.body || {}
+      const { id, name, content, scopeRef: chosenScope } = req.body || {}
       let scopeRef, path
       if (id) {
         const decoded = db.decodeId(id)
@@ -186,17 +204,36 @@ function init(app) {
         // name keeps the current path.
         path = name ? withSuffix(name) : decoded.path
       } else {
-        // No id → a brand-new document always lands in the caller's PERSONAL
-        // workspace (electra/content/users/<email>), where they are member+admin.
-        scopeRef = await db.personalWorkspaceId(auth)
+        // No id → a brand-new document. The caller may name the workspace it
+        // should live in (the New dialog offers the ones they can write to);
+        // without a choice it falls back to their PERSONAL workspace, as before.
+        scopeRef = chosenScope || await db.personalWorkspaceId(auth)
         path = withSuffix(name) // forces the app suffix, e.g. "MyDoc.sheet"
       }
       const stored = await db.call(
         "PUT",
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
-        { authHeaders: auth, body: { data: content } }
+        // Never let an image back into `data` — the preview is a blob, written
+        // by generatePreview below.
+        { authHeaders: auth, body: { data: withoutPreview(content) } }
       )
-      res.json({ id: db.encodeId(scopeRef, path), version: stored.version, path })
+      // Re-read the effective version so the header shows where it now lives and
+      // that it is a personal copy (the write landed in the caller's leaf). The
+      // id stays the OPERATING scope handle — the next save resolves the leaf
+      // again server-side.
+      const eff = await db.call(
+        "GET",
+        `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&_=${Date.now()}`,
+        { authHeaders: auth }
+      )
+      const loc = displayLocation(eff.scope, auth)
+      res.json({
+        id: db.encodeId(scopeRef, path),
+        version: eff.version ?? stored.version,
+        path,
+        providedBy: loc.scope,
+        personal: loc.personal,
+      })
       // Refresh the preview thumbnail (best-effort, after responding).
       generatePreview({ auth, scopeRef, path }).catch((e) =>
         console.log(`[sheets] preview generation failed: ${e && e.message}`))
@@ -474,20 +511,22 @@ function init(app) {
   app.get("/sheets/thumb", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      // Resolve scope+path+version via the UUID — one call, works for any status.
-      const doc = await db.call(
-        "GET",
-        `/database/docs/${encodeURIComponent(req.query.uuid)}`,
-        { authHeaders: auth }
-      )
+      // One call: the uuid addresses the blob of exactly that version. This used
+      // to fetch the whole document first, only to read scope, path and version
+      // out of it and then ask again.
       const dbRes = await db.raw(
         "GET",
-        `/database/scopes/${encodeURIComponent(doc.scopeRef)}/blobs/preview?path=${encodeURIComponent(doc.path)}&version=${encodeURIComponent(doc.version)}`,
+        `/database/docs/${encodeURIComponent(req.query.uuid)}/blobs/${PREVIEW_KEY}`,
         { authHeaders: auth }
       )
       const ct = dbRes.headers.get("content-type")
       if (ct) res.set("content-type", ct)
-      res.set("cache-control", "no-cache, no-store, must-revalidate")
+      // A version never changes, so its preview never changes either. The
+      // app-wide no-cache middleware also sets Pragma/Expires, which would
+      // defeat this again — drop them for this one response.
+      res.set("cache-control", "private, max-age=31536000, immutable")
+      res.removeHeader("Pragma")
+      res.removeHeader("Expires")
       res.send(Buffer.from(await dbRes.arrayBuffer()))
     } catch (err) {
       res.status(err.statusCode || 404).end()
@@ -571,7 +610,9 @@ async function generatePreview({ auth, scopeRef, path }) {
 }
 
 // Returns a shallow copy of a document's data with the (large) preview image
-// removed. The image stays stored in the doc; it's just not shipped by default.
+// removed. Only documents written before the move to blobs still carry one;
+// this keeps them from shipping it on every open. Can go once the backfill has
+// run everywhere (bin/backfill-previews.js).
 function withoutPreview(data) {
   if (!data || typeof data !== "object") return data
   if (data.image === undefined) return data

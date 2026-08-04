@@ -40,6 +40,20 @@ function authorLabel(author) {
   return at === -1 ? s : s.slice(0, at)
 }
 
+// Where the effective version lives, for the editor header. `scopePath` is the
+// walk-up result's origin scope (e.g. "apps", "apps/klasse10", or a personal
+// copy "apps/<email>"). A personal copy is recognised by the leaf segment, whose
+// name IS the caller's email (ensureWriteLeaf: leaf name == personRef == email).
+// The workspace shown drops that leaf so the header names the group, and the
+// personal flag lets the header mark it as the caller's own copy.
+function displayLocation(scopePath, auth) {
+  const email = auth["x-mail"] || ""
+  const suffix = "/" + email
+  const personal = !!email && typeof scopePath === "string" && scopePath.endsWith(suffix)
+  const scope = personal ? scopePath.slice(0, -suffix.length) : (scopePath || "")
+  return { scope, personal }
+}
+
 // Build the uniform display item from a database doc/glob row.
 //   scopeRef     — the operating scope (where a save lands); goes into the handle
 //   docPath      — the document path; goes into the handle + shown as name/path
@@ -134,18 +148,19 @@ function init(app) {
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}${v}`,
         { authHeaders: auth }
       )
+      const loc = displayLocation(doc.scope, auth)
       const item = toItem({
         scopeRef,
         docPath: path,
         uuid: doc.uuid,
-        providedBy: doc.scope,
+        providedBy: loc.scope,
         version: doc.version,
         author: doc.author,
       })
       // The preview image lives inside the document (content.image) so it stays
       // an atomic unit with the doc — but it's large and the editor doesn't need
       // it on open. Strip it here; it's served separately via /brains/thumb.
-      res.json({ ...item, content: withoutPreview(doc.data) })
+      res.json({ ...item, personal: loc.personal, content: withoutPreview(doc.data) })
     } catch (err) {
       fail(res, err)
     }
@@ -179,7 +194,7 @@ function init(app) {
   app.post("/brains/file", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, name, content } = req.body || {}
+      const { id, name, content, scopeRef: chosenScope } = req.body || {}
       let scopeRef, path
       if (id) {
         const decoded = db.decodeId(id)
@@ -189,18 +204,50 @@ function init(app) {
         // name keeps the current path.
         path = name ? withSuffix(name) : decoded.path
       } else {
-        // No id → a brand-new document always lands in the caller's PERSONAL
-        // workspace (electra/content/users/<email>), where they are member+admin.
-        // From there it can later be distributed into shared workspaces.
-        scopeRef = await db.personalWorkspaceId(auth)
+        // No id → a brand-new document. The caller may name the workspace it
+        // should live in (the New dialog offers the ones they can write to);
+        // without a choice it falls back to their PERSONAL workspace, as before.
+        scopeRef = chosenScope || await db.personalWorkspaceId(auth)
         path = withSuffix(name) // forces the app suffix, e.g. "MyCircuit.brain"
       }
+      // The preview travels beside the document, not inside it: `data` stays
+      // free of a base64 image, and the blob rides on the same version (the
+      // FK cascades, so it lives and dies with it).
+      const preview = decodeDataUrl(content && content.image)
       const stored = await db.call(
         "PUT",
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
-        { authHeaders: auth, body: { data: content } }
+        { authHeaders: auth, body: { data: withoutPreview(content) } }
       )
-      res.json({ id: db.encodeId(scopeRef, path), version: stored.version, path })
+      if (preview) {
+        // After the document, never before: putBlob attaches to the caller's
+        // active leaf version, which the PUT above has just created. It also
+        // overwrites the copy that putDoc carried over from the previous
+        // version, which would otherwise leave a stale image behind.
+        await db.call(
+          "PUT",
+          `/database/scopes/${scopeRef}/blobs/${PREVIEW_KEY}?path=${encodeURIComponent(path)}`,
+          { authHeaders: auth, rawBody: preview.buffer, contentType: preview.contentType }
+        )
+      }
+      // The write landed in the caller's own leaf (requireWriteLeaf). Re-read the
+      // effective version so the header can show where it now lives and that it
+      // is a personal copy. The returned id stays the OPERATING scope handle, so
+      // the next save resolves the leaf again server-side — the client never
+      // passes a leaf scope.
+      const eff = await db.call(
+        "GET",
+        `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&_=${Date.now()}`,
+        { authHeaders: auth }
+      )
+      const loc = displayLocation(eff.scope, auth)
+      res.json({
+        id: db.encodeId(scopeRef, path),
+        version: eff.version ?? stored.version,
+        path,
+        providedBy: loc.scope,
+        personal: loc.personal,
+      })
     } catch (err) {
       fail(res, err)
     }
@@ -459,16 +506,36 @@ function init(app) {
   })
 
   // --- preview thumbnail ----------------------------------------------------
-  // Fetch by UUID: the preview image is embedded in the document (data.image),
-  // accessible for any status (pending/committed) with a single read.
+  // Fetched by the uuid of the version being shown, so the image always belongs
+  // to exactly that version — a re-resolution by path could land on another one.
+  // Works for any status, so review-queue entries have a preview too.
   app.get("/brains/thumb", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const doc = await db.call(
-        "GET",
-        `/database/docs/${encodeURIComponent(req.query.uuid)}`,
-        { authHeaders: auth }
-      )
+      const uuid = encodeURIComponent(req.query.uuid)
+      let blob
+      try {
+        blob = await db.raw("GET", `/database/docs/${uuid}/blobs/${PREVIEW_KEY}`, {
+          authHeaders: auth,
+        })
+      } catch (err) {
+        if (err.statusCode !== 404) throw err
+        blob = null
+      }
+      if (blob) {
+        res.set("content-type", blob.headers.get("content-type"))
+        // A version never changes, so its preview never changes either. The
+        // app-wide no-cache middleware also sets Pragma/Expires, which would
+        // defeat this again — drop them for this one response.
+        res.set("cache-control", "private, max-age=31536000, immutable")
+        res.removeHeader("Pragma")
+        res.removeHeader("Expires")
+        return res.send(Buffer.from(await blob.arrayBuffer()))
+      }
+
+      // Fallback for documents written before the move to blobs: the image is
+      // still sitting in data.image. Goes away with the backfill.
+      const doc = await db.call("GET", `/database/docs/${uuid}`, { authHeaders: auth })
       const decoded = decodeDataUrl(doc.data && doc.data.image)
       if (!decoded) return res.status(404).end()
       res.set("cache-control", "no-cache, no-store, must-revalidate")
@@ -493,8 +560,15 @@ function init(app) {
   })
 }
 
+// The preview image is stored as a blob on the version, under this key — not
+// inside `data`. A thumbnail is an image, so it is served as one: raw bytes with
+// a content type, from a row that a bulk read never touches.
+const PREVIEW_KEY = "preview"
+
 // Returns a shallow copy of a document's data with the (large) preview image
-// removed. The image stays stored in the doc; it's just not shipped by default.
+// removed. Only documents written before the move to blobs still carry one;
+// this keeps them from shipping it on every open. Can go once the backfill has
+// run everywhere (bin/backfill-previews.js).
 function withoutPreview(data) {
   if (!data || typeof data !== "object") return data
   if (data.image === undefined) return data
