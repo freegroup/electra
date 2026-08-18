@@ -7,47 +7,81 @@
       name: "ssl_group"
       state: present
 
+  # No `password:` on purpose. Setting it to '' would hand the account an empty
+  # password AND rewrite it on every run; leaving it out means the account keeps
+  # whatever it has (a fresh one is created locked). Access is by SSH key.
   - name: Creating users "electra" without admin access
     user:
       name: electra
-      password: ''
       group: "ssl_group"
       shell: /bin/bash
 
-  - name: "Add nodejs apt key"
-    apt_key:
-      url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-      state: present
+  - name: Ensure the apt keyring directory exists
+    file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
 
-  - name: Install the nodejs LTS repos
+  # A key in /etc/apt/keyrings signed onto one repo, instead of the deprecated
+  # apt_key module - that one drops the key into the global trust store, where it
+  # would vouch for every repository on the machine, and it is slated for removal
+  # from ansible-core.
+  - name: Add the nodesource apt key
+    get_url:
+      url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+      dest: /etc/apt/keyrings/nodesource.asc
+      mode: '0644'
+
+  # "nodistro", not a release codename: nodesource serves a single suite for all
+  # Debian/Ubuntu versions. The previous line said "focal" (Ubuntu 20.04) while
+  # the host runs noble (24.04), and that path 404s - so apt quietly fell back to
+  # Ubuntu's own package and the server sat on node 18, end of life since April
+  # 2025 and unpatched ever since. 26 is what the dev machine runs.
+  - name: Install the nodejs repo
     apt_repository:
-      repo: "deb https://deb.nodesource.com/node_22.x focal main"
+      repo: "deb [signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_26.x nodistro main"
       state: present
       update_cache: yes
 
+  # No "when: Debian" guard here any more: this host is Ubuntu, so the condition
+  # never matched and both tasks were skipped on every run. It only worked because
+  # Ubuntu ships snapd preinstalled - on a fresh machine without it, the chromium
+  # task below would have failed. Both tasks are idempotent either way.
   - name: Install Snapd (required for Snap packages)
     apt:
       name: snapd
       state: present
-    when: ansible_distribution == "Debian"
-
 
   - name: Ensure Snapd service is enabled and running
     systemd:
       name: snapd
       state: started
       enabled: true
-    when: ansible_distribution == "Debian"
 
 
+  # The snap module checks first and does nothing if chromium is already there.
+  # A plain `command: snap install chromium` would run on every pass and report
+  # a failure on an already-provisioned machine.
   - name: Install Chromium using Snap
-    command: snap install chromium
+    community.general.snap:
+      name: chromium
+      state: present
+
+  # nodejs on its own, and the only package on "latest": it is the one thing we DO
+  # want pulled forward, so a re-run picks up security releases. Split out so that
+  # does not drag the 16 libraries below along with it.
+  #
+  # Note there is no "npm" package here. Ubuntu's npm Depends on Ubuntu's nodejs,
+  # so listing it pulled node 18 back in and fought the nodesource package. The
+  # nodesource build ships npm itself.
+  - name: Install / upgrade nodejs
+    apt:
+      name: nodejs
+      state: latest
 
   - name: Install required packages
     apt:
-      name: 
-        - nodejs
-        - npm
+      name:
         - git
         - libnss3
         - libharfbuzz-bin
@@ -63,9 +97,13 @@
         - libxfixes3 
         - libxrandr2 
         - libgbm1 
-        - libpango-1.0-0 
+        - libpango-1.0-0
         - libcairo2
-      state: latest
+      # present, NOT latest: "latest" would upgrade node and 16 system libraries
+      # on every run of this playbook, so re-running it on a live server could
+      # pull in a new node major and take the whole stack down. Upgrades are a
+      # deliberate act, not a side effect of provisioning.
+      state: present
 
 
   - name: Install PM2 NodeJS Process manager
