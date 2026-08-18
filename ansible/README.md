@@ -2,7 +2,7 @@ ansible-playbook -i ./ansible/inventory.ini ./ansible/02_playbook_deploy.yaml
 
 ansible-playbook -i ./ansible/inventory.ini ./ansible/03_playbook_letsencrypt.yaml
 
-ssh -i ~/.ssh/hetzner_server_draw2d-backend root@167.235.26.49
+ssh -i ~/.ssh/hetzner_electra root@116.203.101.3
 
 ## check certificate
 

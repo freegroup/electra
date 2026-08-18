@@ -18,8 +18,6 @@ function die(msg){
 
 const PORT = process.env.PORT_AUTHOR || die("missing env variable PORT_AUTHOR");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable PORT_AUTHOR");
-let DATADIR_I18N =  process.env.DATADIR_I18N ||  die("Environment Varialbe DATADIR_I18N missing")
-DATADIR_I18N = path.normalize(`${PROJECT_PATH}/${DATADIR_I18N}`)
 
 
 // Create Express Server

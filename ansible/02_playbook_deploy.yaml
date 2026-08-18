@@ -1,9 +1,6 @@
 - name: My first play
   hosts: electra
 
-  vars_files:
-    - deployment_vars.yaml
-
   tasks:
 
   - name: Delete old deployment
@@ -102,6 +99,12 @@
     args:
       chdir: /home/electra/server/sheets
 
+  - name: Install packages in /database
+    become: true
+    become_user: electra
+    community.general.npm:
+      path: /home/electra/server/database
+
   - name: Install packages in /userinfo
     become: true
     become_user: electra
@@ -136,27 +139,11 @@
     args:
       chdir: /home/electra/server/designer
 
-  - name: Ensure correct data-directory DATADIR_SHAPES in the settings.ini
-    ansible.builtin.lineinfile:
-      path: /home/electra/server/settings.ini
-      regexp: '^DATADIR_SHAPES='
-      line: DATADIR_SHAPES={{ DATADIR_SHAPES }}
-
-  - name: Ensure correct data-directory DATADIR_SHEETS in the settings.ini
-    ansible.builtin.lineinfile:
-      path: /home/electra/server/settings.ini
-      regexp: '^DATADIR_SHEETS='
-      line: DATADIR_SHEETS={{ DATADIR_SHEETS }}
-
-  - name: Ensure correct data-directory DATADIR_BRAINS in the settings.ini
-    ansible.builtin.lineinfile:
-      path: /home/electra/server/settings.ini
-      regexp: '^DATADIR_BRAINS='
-      line: DATADIR_BRAINS={{ DATADIR_BRAINS }}
-
-  - name: Copy secret file 
+  # The PRODUCTION secrets, not the dev ones from the project root. Both files
+  # are git-ignored; this is the only one that ever reaches the server.
+  - name: Copy secret file
     ansible.builtin.copy:
-      src: ../secrets.ini
+      src: secrets.ini
       dest: /home/electra/server/secrets.ini
       owner: electra
       group: ssl_group
@@ -183,6 +170,6 @@
   - name: Run the application via PM2 ecosystem configuration
     become: true
     become_user: electra
-    command: pm2 restart ./ecosystem.config.js
+    command: pm2 restart ./ecosystem.production.js
     args:
       chdir: /home/electra/server/
