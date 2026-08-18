@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Served at https://electra.academy/sitemap.xml.
+
+  Only the canonical root form of each URL is listed. The same pages are also
+  reachable under /home/... and with an explicit /index.html, because
+  home/server/index.js mounts the directory twice - those variants carry a
+  rel=canonical pointing here and must not appear in this file.
+
+  Kept by hand: nine pages, and no build step exists that could generate it.
+
+  No <lastmod>, <changefreq> or <priority> on purpose. Google ignores the latter
+  two outright, and a <lastmod> nobody keeps accurate is worse than none - once it
+  is provably stale the crawler stops trusting it. Add it back only together with
+  something that maintains it.
+
+  The apps are listed WITH a trailing slash: /simulator would earn a 301 from the
+  ingress canonicaliser, and a sitemap should not point at redirects.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url><loc>https://electra.academy/</loc></url>
+
+  <url><loc>https://electra.academy/simulator/</loc></url>
+  <url><loc>https://electra.academy/author/</loc></url>
+  <url><loc>https://electra.academy/designer/</loc></url>
+
+  <url><loc>https://electra.academy/about.html</loc></url>
+  <url><loc>https://electra.academy/terms.html</loc></url>
+  <url><loc>https://electra.academy/privacy.html</loc></url>
+  <url><loc>https://electra.academy/cookies.html</loc></url>
+  <url><loc>https://electra.academy/imprint.html</loc></url>
+
+</urlset>

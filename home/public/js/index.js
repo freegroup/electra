@@ -70,11 +70,11 @@ $(window).load(function () {
   })
   .then( app => {
     $('body').localize();
-    // The content sub-pages name their own title key; the start page uses the
-    // app name. Suffix with the brand so a browser tab / search result reads
-    // e.g. "Impressum - Electra.Academy".
+    // The content sub-pages name their own title key; suffix it with the brand
+    // so a browser tab / search result reads e.g. "Impressum - Electra Academy".
+    // The start page has no such key and uses the full SEO page title verbatim.
     const titleKey = document.body.getAttribute("data-appbar-subtitle-i18n")
-    document.title = titleKey ? `${t(titleKey)} - ${t("app.name")}` : t("app.name")
+    document.title = titleKey ? `${t(titleKey)} - ${t("app.name")}` : t("app.pagetitle")
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })

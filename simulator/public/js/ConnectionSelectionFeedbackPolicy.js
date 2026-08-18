@@ -34,7 +34,7 @@ export default draw2d.policy.line.OrthogonalSelectionFeedbackPolicy.extend({
       // "remove" a segment isn't always possible. depends from the router algorithm
       //
       if (conn.getRouter().canRemoveSegmentAt(conn, segment.index)) {
-        items.remove = {name:  t("contextmenu.deletesegment")}
+        items.remove = {name:  t("contextmenu.remove_segment")}
       }
     }
 

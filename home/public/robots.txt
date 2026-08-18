@@ -1,0 +1,16 @@
+# Served at https://electra.academy/robots.txt - the ingress catch-all proxies
+# unknown root paths to the home service, which serves this directory statically.
+#
+# Nothing is disallowed that the page needs in order to render. Googlebot executes
+# the JavaScript, so /common (bundles, CSS, i18n JSON) and /shapes (component code
+# for the simulator) MUST stay crawlable - blocking them would leave the crawler
+# with an empty shell.
+
+User-agent: *
+Allow: /
+
+# OAuth callbacks: never useful in an index, and a crawler hitting them only
+# produces errors.
+Disallow: /oauth/
+
+Sitemap: https://electra.academy/sitemap.xml

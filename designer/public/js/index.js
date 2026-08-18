@@ -85,7 +85,7 @@ $(window).load(function () {
   })
   .then( app => {
     $('body').localize(); 
-    document.title = t("app.name")
+    document.title = t("app.pagetitle")
     inlineSVG.init({}, ()=>{
       $(".loader").fadeOut(500, function() { $(this).remove(); })
     })

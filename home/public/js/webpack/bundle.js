@@ -344,15 +344,22 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = void 0;
 var _loadScript = _interopRequireDefault(__webpack_require__(/*! ./loadScript */ "../common/public/js/loadScript.js"));
 var _session = _interopRequireDefault(__webpack_require__(/*! ./session */ "../common/public/js/session.js"));
+var _authConfiguration = _interopRequireDefault(__webpack_require__(/*! ./authConfiguration */ "../common/public/js/authConfiguration.js"));
+var _inlineSVG = _interopRequireDefault(__webpack_require__(/*! ./inlineSVG */ "../common/public/js/inlineSVG.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class Userinfo {
   constructor(permissions) {
-    if (permissions.featureset.authentication === false) {
+    // Without a client id there is no way to start a sign-in, so offering the
+    // button would be a lie. Everything else on the page keeps working.
+    const clientId = _authConfiguration.default.getGoogleClientId();
+    if (permissions.featureset.authentication === false || !clientId) {
       $(".userinfo_toggler").remove();
     } else {
-      // https://console.cloud.google.com/apis/credentials
+      // The client id comes from the server (GET /auth/configuration) rather
+      // than being baked into this bundle - the ingress verifies tokens against
+      // it, so it is configured there and nowhere else.
       google.accounts.id.initialize({
-        client_id: "941934804792-2cosu3n1jpm05jj5551i095hppugtuo2.apps.googleusercontent.com",
+        client_id: clientId,
         login_uri: `${window.location.protocol}//${window.location.host}/oauth/callback${window.location.pathname}`,
         ux_mode: "redirect"
       });
@@ -361,12 +368,24 @@ class Userinfo {
       // gets their avatar; an anonymous visitor gets the Google sign-in button.
       this.user = _session.default.getUser();
       if (this.user) {
-        let icon = this.user.picture ? this.user.picture : "../common/images/toolbar_user.svg";
+        // Google's CDN sometimes refuses the avatar (429 rate limit, offline,
+        // blocked). Fall back to the local default icon — but inline it as SVG
+        // so the appbar's white tint applies (a plain <img> keeps the SVG's
+        // baked-in dark #4A4A4A and looks black on the dark bar). onerror clears
+        // itself so a broken fallback can't loop.
+        let fallback = "../common/images/toolbar_user.svg";
+        let icon = this.user.picture ? this.user.picture : fallback;
         let role = this.user.role === "admin" ? "(Administrator)" : "";
-        $(".userinfo_toggler img").attr("src", icon);
+        let toWhiteFallback = function () {
+          $(this).off("error.avatar").addClass("svg") // inlineSVG only converts img.svg
+          .attr("src", fallback);
+          _inlineSVG.default.init({}); // re-run: inlines the just-set img.svg
+        };
+
+        $(".userinfo_toggler img").off("error.avatar").on("error.avatar", toWhiteFallback).attr("src", icon);
         $(".userinfo_toggler .dropdown-menu").html(`
             <div class="userContainer">
-              <img crossorigin="anonymous" src="${icon}"/>
+              <img crossorigin="anonymous" src="${icon}" onerror="this.onerror=null;this.src='${fallback}'"/>
               <div>${this.user.displayName}</div>
               <div>${role}</div>
             </div>
@@ -388,6 +407,65 @@ class Userinfo {
   }
 }
 exports["default"] = Userinfo;
+
+/***/ }),
+
+/***/ "../common/public/js/authConfiguration.js":
+/*!************************************************!*\
+  !*** ../common/public/js/authConfiguration.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// The public sign-in parameters of THIS deployment - the same for every visitor,
+// logged in or not. Resolved once from GET /auth/configuration, which the
+// ingress answers from its own configuration.
+//
+// This is a different question from the other two the frontend asks at boot:
+//
+//   session      "who am I?"                  -> depends on the session
+//   permissions  "what may I do?"             -> depends on the role
+//   this module  "how is this install set up?" -> depends on neither
+//
+// Keeping it separate is what lets the client id live in a single place
+// server-side instead of being copied into the frontend bundle.
+class AuthConfiguration {
+  constructor() {
+    this.googleClientId = null;
+  }
+
+  // Fetch once and cache; repeated calls share the same promise. Never rejects:
+  // a failure here must not take the whole boot chain down with it. The editor
+  // works fine without an identity, so the app still comes up - only the
+  // sign-in button stays away (see Userinfo), which is the honest outcome when
+  // we cannot tell the browser which OAuth client to use.
+  load() {
+    if (!this._loading) {
+      this._loading = _axios.default.get("../auth/configuration").then(res => {
+        this.googleClientId = res.data.googleClientId;
+        return this;
+      }).catch(error => {
+        console.log("auth configuration unavailable - sign-in disabled", error);
+        this.googleClientId = null;
+        return this;
+      });
+    }
+    return this._loading;
+  }
+  getGoogleClientId() {
+    return this.googleClientId;
+  }
+}
+var _default = new AuthConfiguration();
+exports["default"] = _default;
 
 /***/ }),
 
@@ -11188,11 +11266,11 @@ $(window).load(function () {
     return app.init(response.data);
   }).then(app => {
     $('body').localize();
-    // The content sub-pages name their own title key; the start page uses the
-    // app name. Suffix with the brand so a browser tab / search result reads
-    // e.g. "Impressum - Electra.Academy".
+    // The content sub-pages name their own title key; suffix it with the brand
+    // so a browser tab / search result reads e.g. "Impressum - Electra Academy".
+    // The start page has no such key and uses the full SEO page title verbatim.
     const titleKey = document.body.getAttribute("data-appbar-subtitle-i18n");
-    document.title = titleKey ? `${t(titleKey)} - ${t("app.name")}` : t("app.name");
+    document.title = titleKey ? `${t(titleKey)} - ${t("app.name")}` : t("app.pagetitle");
     _inlineSVG.default.init({}, () => {
       $(".loader").fadeOut(500, function () {
         $(this).remove();

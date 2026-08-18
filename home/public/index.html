@@ -1,31 +1,34 @@
-<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<!DOCTYPE html>
+<html lang="de">
 
 <head>
-  <title>Electra Academy</title>
+  <title>Electra.Academy - Digitale Schaltungen online simulieren</title>
+  <meta name="description" content="Baue und simuliere digitale Schaltungen direkt im Browser - von einfachen Logikgattern bis zu komplexen Schaltwerken. Kostenlos, ohne Installation.">
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <base href="/home" />
 
+  <link rel="canonical" href="https://electra.academy/">
   <link rel="icon" type="image/png" href="../common/images/favicon_64x64.png" sizes="64x64">
   <link rel="icon" type="image/png" href="../common/images/favicon_48x48.png" sizes="48x48">
   <link rel="icon" type="image/png" href="../common/images/favicon_32x32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="../common/images/favicon_16x16.png" sizes="16x16">
   
   <!-- Default twitter cards -->
-  <meta name="twitter:card" content="Design your own circuits with ease, from basic gates to intricate sequential circuits, using our platform.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://electra.academy/">
-  <meta name="twitter:title" content="Circuit Simulator">
-  <meta name="twitter:description" content="Makes digital logic accessible for anyon">
-  <meta name="twitter:image" content="../common/images/favicon_64x64.png">
+  <meta name="twitter:title" content="Electra.Academy - Digitale Schaltungen online simulieren">
+  <meta name="twitter:description" content="Baue und simuliere digitale Schaltungen direkt im Browser - von einfachen Logikgattern bis zu komplexen Schaltwerken. Kostenlos, ohne Installation.">
+  <meta name="twitter:image" content="https://electra.academy/images/component_simulator.png">
 
   <!-- Other sharing -->
-  <meta property="og:title" content="Circuit Simulator">
+  <meta property="og:title" content="Electra.Academy - Digitale Schaltungen online simulieren">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="../common/images/favicon_64x64.png">
-  <meta property="og:url" content="https://electra.academy">
-  <meta property="og:description" content="Design your own circuits with ease, from basic gates to intricate sequential circuits, using our platform.">
+  <meta property="og:image" content="https://electra.academy/images/component_simulator.png">
+  <meta property="og:url" content="https://electra.academy/">
+  <meta property="og:description" content="Baue und simuliere digitale Schaltungen direkt im Browser - von einfachen Logikgattern bis zu komplexen Schaltwerken. Kostenlos, ohne Installation.">
 
   <link href="../common/css/katex.min.css" rel="stylesheet" >
   <link href='../common/css//roboto.css' rel='stylesheet' type='text/css'>
@@ -60,14 +63,14 @@
     <div class="teaserContainer">
       <div class="teaser">
         <div class="slogan">
-          <h1 data-i18n="teaser.slogan"></h1>
-          <div data-i18n="[html]teaser.description" class="textblock"></div>
+          <h1 data-i18n="teaser.slogan">Tauchen Sie in die Welt der logischen Schaltungen ein! Kostenlos</h1>
+          <div data-i18n="[html]teaser.description" class="textblock"><i>Entwerfen Sie mit Electra.Academy ganz einfach Ihre eigenen Schaltungen</i>, von einfachen Verknüpfungen bis hin zu komplizierten Schaltungen. Sie können Schaltungen, Dokumentationen und Lernmaterialien erstellen. Egal, ob Sie Hobbybastler oder Profi sind, unsere Plattform bietet Ihnen alles, was Sie brauchen. Sind Sie bereit, loszulegen?<br><br><b>Melden Sie sich noch heute bei uns an und erleben Sie die Leistungsfähigkeit!</b></div>
         </div>
       </div>
       <div class="launchArea">
         <div class="imageContainer">
           <img class="image" src="./images/component_simulator.png">
-          <a data-i18n="button.launch_simulator" class="electra-button" href="../simulator" target="simulator"></a>
+          <a data-i18n="button.launch_simulator" class="electra-button" href="../simulator" target="simulator">Entdecke den Simulator</a>
         </div>
       </div>
     </div>
@@ -76,7 +79,7 @@
     <div class="avatarContainer">
       
       <div class="avatar">
-        <div data-i18n="label.for_maker">for maker</div>
+        <div data-i18n="label.for_maker">Für Maker</div>
         <img src="./images/maker.svg">
       </div>
 
@@ -85,7 +88,7 @@
         <i class="right"></i>
       </div>
       <div class="avatar">
-        <div data-i18n="label.for_students">for students</div>
+        <div data-i18n="label.for_students">Für Schüler</div>
         <img src="./images/students.svg">
       </div>
       
@@ -95,7 +98,7 @@
       </div>
    
       <div class="avatar">
-        <div data-i18n="label.for_teacher">for teacher</div>
+        <div data-i18n="label.for_teacher">Für Lehrer</div>
         <img src="./images/teacher.svg">
       </div>
 
@@ -105,70 +108,55 @@
   <div class="intro">
     <img src="./images/blink_annotated.gif">
     <div class="header">
-      <h1 data-i18n="demo.slogan">Building your very first circuit it's easy as 1..2..3</h1>
+      <h2 data-i18n="demo.slogan">Das Erstellen einer eigenen Schaltung geht flotter als das Zählen bis 1..2..3</h2>
 
-      <div data-i18n="[html]demo.description1">
-        Design circuits quickly and easily with a modern and intuitive user interface with drag-and-drop, copy/paste,
-        zoom and more.
-      </div>
-      <div data-i18n="[html]demo.description2">
-        One function that makes the internet of Things. The internet of Things is the remote control of devices,
-        which can trigger action
-        from a remote location. With <b>Electra Academy</b>, you can edit and run your digital circuit simulation
-        designs online within your browser and trigger any physical device.
-      </div>
+      <div data-i18n="[html]demo.description1">Entwerfe digitale Schaltungen schnell und einfach mit einer modernen und intuitiven Benutzeroberfläche</div>
+      <div data-i18n="[html]demo.description2">Mit <b>Electra.Academy</b> können Sie Ihre digitalen Schaltungen online in Ihrem Browsers bearbeiten und ausführen und ein physische Gerät ansteuern. Die Möglichkeiten sind unendlich.</div>
 
     </div>
-    <a data-i18n="button.launch_in_simulator" class="launch_button electra-button" href="../simulator/?global=guides/intro.brain" target="simulator">Open in Simulator</a>
+    <a data-i18n="button.launch_in_simulator" class="launch_button electra-button" href="../simulator/?global=guides/intro.brain" target="simulator">Die Schaltung im Simulator öffnen</a>
   </div>
 
 
   <div class="slidedeck">
-    <div data-i18n="[html]slidedeck1.slogan" class="section_header">Visual connect, control, and play with sensors and tools</div>
+    <h2 data-i18n="[html]slidedeck1.slogan" class="section_header">Virtuell digitale Schaltungen aufbauen, steuern und verstehen</h2>
 
     <div class="card left">
       <div data-i18n="[html]slidedeck1.header" class="text">Simulator</div>
       <img class="media" src="../common/images/app_simulator.svg">
       <div class="content">
-        <div data-i18n="[html]slidedeck1.points"  class="header">Draw | Simulate | Share </div>
-        <div data-i18n="[html]slidedeck1.description" >With <b>Electra Academy</b> you can edit and run your simulation designs and trigger any physical device</div>
+        <div data-i18n="[html]slidedeck1.points"  class="header">Aufbauen | Simulieren | Verstehen</div>
+        <div data-i18n="[html]slidedeck1.description" ><div class="lead">Schaltungen versteht man, wenn man sie baut.</div>Mit <b>Electra.Simulator</b> ziehst du Gatter auf die Fläche, verdrahtest sie und siehst den Strom fließen - ohne Anmeldung, direkt im Browser.<br><br>Und wenn etwas nicht geht, siehst du <i>warum</i>. Was du baust, kann jemand anders öffnen, verstehen und weiterbauen.</div>
       </div>
-      <a data-i18n="[html]slidedeck1.launch" href="../simulator" target="simulator" class="electra-button launch_button">Launch</a>
+      <a data-i18n="[html]slidedeck1.launch" href="../simulator" target="simulator" class="electra-button launch_button">Aufbauen</a>
     </div>
 
     <div class="pink_bg">
-      <div data-i18n="[html]slidedeck2.slogan" class="section_header">Designed to be very easy to use in classes</div>
+      <h2 data-i18n="[html]slidedeck2.slogan" class="section_header">Dafür gemacht um in dem Unterricht einzusetzen</h2>
       <div class="card center">
         <div data-i18n="[html]slidedeck2.header" class="text">Author</div>
         <img class="media" src="../common/images/app_author.svg">
         <div class="content">
-          <div data-i18n="[html]slidedeck2.points" class="header">Write | Assign | Solve</div>
-          <div data-i18n="[html]slidedeck2.description">
-            <b>Electra Academy</b> has been designed to be very easy to use in classes. The platform has features to assist teachers in class and assignments.
-            <br>
-            It is easy to write learning materials or lessons in the build in editor.
-          </div>
+          <div data-i18n="[html]slidedeck2.points" class="header">Schreiben | Teilen | Lernen</div>
+          <div data-i18n="[html]slidedeck2.description"><div class="lead">Die beste Aufgabe ist die, die weitergegeben wird.</div>Mit <b>Electra.Author</b> schreibst du Lerninhalte: Schaltungen, Tabellen, Lückentexte, FlipCards und Formeln, alles im selben Editor.<br><br>Eine gute Aufgabe hilft einer Klasse. Geteilt hilft sie vielen.</div>
         </div>
-        <a  data-i18n="[html]slidedeck2.launch" href="../author" target="author" class="electra-button launch_button">Launch</a>
+        <a  data-i18n="[html]slidedeck2.launch" href="../author" target="author" class="electra-button launch_button">Schreiben</a>
       </div>
 
       <div class="orange_bg">
-        <div data-i18n="[html]slidedeck3.slogan" class="section_header">Build your own Components</div>
+        <h2 data-i18n="[html]slidedeck3.slogan" class="section_header">Erstelle deine eigenen Komponenten</h2>
         <div class="card right">
           <div data-i18n="[html]slidedeck3.header" class="text">Designer</div>
           <img class="media" src="../common/images/app_designer.svg">
           <div class="content">
-            <div data-i18n="[html]slidedeck3.points" class="header">Design | Code | Use</div>
-            <div  data-i18n="[html]slidedeck3.description">
-              Of course an own designer is also part of the total package. So you have the possibility
-              to draw your own shapes for the simulator and bring it to life with JS.
-            </div>
+            <div data-i18n="[html]slidedeck3.points" class="header">Entwerfen | Programmieren | Benutzen</div>
+            <div  data-i18n="[html]slidedeck3.description"><div class="lead">Dir fehlt ein Bauteil? Dann bau es dir.</div>Mit <b>Electra.Designer</b> zeichnest du eigene Komponenten und hauchst ihnen mit ein paar Zeilen JavaScript Leben ein.<br><br>Danach steht es im Simulator bereit - für dich und für alle, die es gebrauchen können.</div>
           </div>
-          <a  data-i18n="[html]slidedeck3.launch" href="../designer" target="designer" class="electra-button launch_button">Launch</a>
+          <a  data-i18n="[html]slidedeck3.launch" href="../designer" target="designer" class="electra-button launch_button">Entwerfen</a>
         </div>
- 
+
         <div class="blue_bg">
-          <div  data-i18n="[html]slidedeck4.slogan"  class="section_header">Welcome in the Universe of <b>Electra Academy</b></div>
+          <h2  data-i18n="[html]slidedeck4.slogan"  class="section_header">Herzlich willkommen in der Welt von <b>Electra Academy</b></h2>
         </div>
       </div>
 
