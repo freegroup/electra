@@ -20,10 +20,16 @@ const user = process.env.PG_DATABASE_USER || die("missing env variable PG_DATABA
 const password = process.env.PG_DATABASE_PWD || ""
 const schema = process.env.PG_DATABASE_SCHEMA || "docstore"
 
-// SSL is enabled only when a CA file is supplied. Local dev typically skips SSL.
+// SSL is off by default - the local Docker postgres speaks plaintext. A managed
+// server usually refuses an unencrypted connection ("no pg_hba.conf entry ...,
+// no encryption"), so set PG_DATABASE_SSL=true there. Supplying a CA file also
+// turns it on. Either way the certificate itself is not verified: the managed
+// host presents a chain node cannot resolve, and pinning its CA would only move
+// the problem to renewal day.
 const sslCa = process.env.PG_DATABASE_SSL_CA
-const ssl = sslCa
-  ? { rejectUnauthorized: false, ca: fs.readFileSync(sslCa).toString() }
+const sslOn = sslCa || process.env.PG_DATABASE_SSL === "true"
+const ssl = sslOn
+  ? { rejectUnauthorized: false, ...(sslCa ? { ca: fs.readFileSync(sslCa).toString() } : {}) }
   : false
 
 const pool = new Pool({ host, port, database, user, password, ssl })
