@@ -319,6 +319,9 @@ module.exports = {
         const auth = db.pickAuthHeaders(req)
         const { scopeRef, path } = db.decodeId((req.body || {}).id)
         await db.call("POST", `/database/scopes/${scopeRef}/docs/revert`, { authHeaders: auth, body: { path } })
+        // Discarding the personal copy makes the shared version win again - the
+        // effective version changed, so editors re-resolve (see save's comment).
+        broadcast("shape/generated", { name: identifierFor(path) })
         res.json({ ok: true })
       } catch (err) {
         res.status(err.statusCode || 500).json({ error: { message: err.message } })
@@ -330,6 +333,7 @@ module.exports = {
         const auth = db.pickAuthHeaders(req)
         const { scopeRef, path } = db.decodeId(req.query.id)
         await db.call("DELETE", `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`, { authHeaders: auth })
+        broadcast("shape/generated", { name: identifierFor(path) })
         res.json({ ok: true })
       } catch (err) {
         res.status(err.statusCode || 500).json({ error: { message: err.message } })
@@ -358,6 +362,10 @@ module.exports = {
           `/database/scopes/${scopeRef}/docs/promote?path=${encodeURIComponent(path)}`,
           { authHeaders: auth, body: description ? { description } : {} }
         )
+        // If this committed, the shared version changed for everyone below the
+        // target scope; if it only went to review, no client's winner changed
+        // and the uuid compare on each client makes the signal a no-op.
+        broadcast("shape/generated", { name: identifierFor(path) })
         res.json({ status: r.status })
       } catch (err) {
         res.status(err.statusCode || 500).json({ error: { message: err.message } })
@@ -372,6 +380,8 @@ module.exports = {
         const body = { path, targetScopeRefs: targets || [] }
         if (description) body.description = description
         const r = await db.call("POST", `/database/scopes/${scopeRef}/docs/distribute`, { authHeaders: auth, body })
+        // Members of the target scopes may now resolve a different version.
+        broadcast("shape/generated", { name: identifierFor(path) })
         res.json({ results: r.distributions || [] })
       } catch (err) {
         res.status(err.statusCode || 500).json({ error: { message: err.message } })

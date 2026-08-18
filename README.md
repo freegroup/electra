@@ -47,6 +47,38 @@ Hosting, operation, maintenance, support and training are services and are not
 restricted by the license - no commercial license needed to buy them. Enquiries:
 <a.herz@freegroup.de>
 
+## Local Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) and [pm2](https://pm2.keymetrics.io/) (`npm install -g pm2`)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for the local Postgres database
+
+### Start the database
+
+1. Open **Docker Desktop** and wait until the Docker engine is running (whale icon in the menu bar turns solid).
+2. Start the Postgres container:
+
+```bash
+cd database
+docker compose -f docker-compose.dev.yml up -d
+```
+
+The container runs Postgres 14 on port `5432` with user/password/db all set to `docstore`.
+Stop it with `docker compose -f docker-compose.dev.yml down`.
+
+### Start all services
+
+```bash
+pm2 start ecosystem.config.js
+```
+
+Restart a single service (e.g. after a code change):
+
+```bash
+pm2 restart shapes
+```
+
 ## Contributing
 
 Bug reports, fixes, translations and teaching material are welcome. Please read

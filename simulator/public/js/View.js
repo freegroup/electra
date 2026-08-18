@@ -327,15 +327,27 @@ export default draw2d.Canvas.extend({
     this.on("click", figureConfigDialog.close )
 
     // Hot-replace: a save in the designer broadcasts "component X changed" to
-    // every client (globally). It is only a signal - the version that applies to
-    // ME is the walk-up for MY open document, not whatever someone else saved.
-    // So re-resolve my own context and re-instantiate, but only when the changed
-    // component is actually one this circuit resolved (ignore unrelated saves).
+    // every client (globally). It is only a signal - which version applies to ME
+    // is the walk-up for MY open document, not whatever someone else saved.
+    //
+    // Two guards keep this from disrupting the canvas needlessly:
+    //  1) ignore a component this circuit does not use at all,
+    //  2) after re-resolving MY context, re-instantiate ONLY if MY winning
+    //     version actually changed. A raw scope compare cannot decide this: a
+    //     change in a higher-priority scope must still win, so only the walk-up
+    //     (via reload) knows. Comparing the entry's uuid before/after is that
+    //     answer - unchanged uuid means the save did not affect me, leave the
+    //     canvas (and the user's selection) alone.
     socket.on("shape/generated", msg => {
       let name = msg && msg.name
-      if (name && !componentIndex.catalog.some((e) => e.name === name)) return
+      let before = name ? componentIndex.catalog.find((e) => e.name === name) : null
+      if (name && !before) return
       componentIndex.reload()
-        .then(() => this.reloadFromCache())
+        .then(() => {
+          let after = componentIndex.catalog.find((e) => e.name === name)
+          if (before && after && before.uuid === after.uuid) return
+          this.reloadFromCache()
+        })
     })
 
     this.slider = $('#simulationBaseTimer')
