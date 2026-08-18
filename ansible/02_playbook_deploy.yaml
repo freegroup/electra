@@ -167,9 +167,18 @@
     when: pm2_list.stdout != '[]'  # Condition to check if the PM2 list is not empty
     ignore_errors: yes
 
+  # startOrRestart, not restart: the task above just deleted every process, and
+  # "pm2 restart <file>" only acts on processes pm2 already knows - it aborts with
+  # "Process or Namespace not found". startOrRestart covers both cases, which also
+  # matters because the delete above is ignore_errors and may leave things running.
+  #
+  # The file MUST keep the ".config.js" ending. pm2 decides purely by filename
+  # whether something is an ecosystem file or a plain script; named
+  # "ecosystem.production.js" it launched the config itself as a single node
+  # process instead of the 12 services.
   - name: Run the application via PM2 ecosystem configuration
     become: true
     become_user: electra
-    command: pm2 restart ./ecosystem.production.js
+    command: pm2 startOrRestart ./ecosystem.production.config.js
     args:
       chdir: /home/electra/server/

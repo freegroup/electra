@@ -5,6 +5,11 @@
 //
 // The duplication is intentional and the cost is real: a new service has to be
 // added HERE as well, or it simply will not start on the server.
+//
+// Do NOT drop the ".config.js" from the name. pm2 decides by filename alone
+// whether a file is an ecosystem config or a script to execute; as plain
+// "ecosystem.production.js" it started THIS FILE as a single node process and
+// none of the services below came up.
 module.exports = {
     apps : [
           {
