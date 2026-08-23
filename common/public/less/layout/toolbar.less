@@ -3,8 +3,9 @@
   display: flex;
   align-items: center;
   gap: @buttonSpacing;
-  padding-right: 10px;
   height: @toolbarHeight;
+  // The shorthand used to be preceded by `padding-right: 10px`, which it
+  // silently overwrote.
   padding: var(--menu-container-padding);
 
   * {

@@ -1,21 +1,33 @@
+// Icon above label. Used in the toolbar, the appbar and the app switcher.
+//
+// Intrinsically sized on purpose - no height:100%. That version resolved
+// against whatever the parent happened to be, so a button one wrapper deeper
+// (Connect, inside .dropdown) got no height at all and centred on a different
+// baseline than its neighbours. Now nesting depth does not matter: the button
+// is as tall as its content, and the row centres it.
 .image-button {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
+    padding: 3px 8px;
+
     font-weight: var(--label-font-weight);
     font-size: var(--label-font-size);
-    height:100%;
     border-radius: @borderRadiusSmall;
     cursor: pointer;
+
+    // Icon + gap + label must stay inside @toolbarHeight minus the bar padding.
     img,
     svg {
-      margin: 5px;
-      height: @toolbarHeight - 20;
+      height: @toolbarHeight - 32;
     }
 
     div {
       text-align: center;
-      font-size:0.8em;
+      font-size: 0.8em;
+      line-height: 1.2;
+      white-space: nowrap;
     }
   }
