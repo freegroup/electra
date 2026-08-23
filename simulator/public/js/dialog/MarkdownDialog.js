@@ -15,19 +15,31 @@ class Dialog {
     if (!shapeName) return
     let displayName = figure.attr("userData.displayName") ?? fs.basename(shapeName, ".shape")
 
-    // The description lives in the component's .part document in the database.
-    // The catalogue loaded for the open document maps a component to the exact
-    // version uuid; match by the suffix-less path it was built from (fullName),
-    // falling back to the display name for documents saved before the scope
-    // model. No match (component gone from this context) -> heading only.
+    // Identify by the figure's NAME. That is the identifier indexBuilder.js
+    // derives from the path and marks FROZEN - draw2d serialises it as the
+    // figure `type`, so it is correct even in documents whose stored
+    // userData.file is a legacy short path (guides/intro.brain holds
+    // "gate/AND.shape", which matches no entry and used to fall through to the
+    // display name - and both AND notations are called "AND").
+    let catalog = componentIndex.catalog || []
     let base = shapeName.replace(/\.shape$/, "")
-    let entry = (componentIndex.catalog || []).find(
-      (e) => e.fullName === base || e.displayName === displayName
-    )
+    let entry = catalog.find((e) => e.name === figure.NAME)
+             || catalog.find((e) => e.fullName === base)
+             || catalog.find((e) => e.displayName === displayName)
+
+    // The same preview the palette shows, addressed by the same version uuid.
+    let preview = componentIndex.imageUrl(entry)
 
     let render = (content) => {
       $('#markdownDialog .sectionContent').html(content ? md.render(content) : "")
       $('#markdownDialog .media-heading').html(displayName)
+
+      // Hide the slot rather than leave a broken image when the component has
+      // no preview, or is gone from this context.
+      let slot = $('#markdownDialog .componentPreview')
+      slot.toggle(!!preview)
+      slot.find("img").attr({ src: preview || "", alt: displayName })
+
       $('#markdownDialog').modal('show')
     }
 

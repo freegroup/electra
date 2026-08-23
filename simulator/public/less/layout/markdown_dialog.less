@@ -1,9 +1,62 @@
+// The component help dialog - the "what is this?" panel behind a double-click
+// on a figure. Structure only; the tile's colours live in the theme files.
+//
+// These rules used to sit in common/less/layout/dialog.less next to the generic
+// .media block. That block IS shared - FileCreate, FileSave and TextPrompt all
+// build one - but the preview tile is this dialog alone, and it had no business
+// being in everyone's stylesheet.
 
 #markdownDialog {
 
+  // Bootstrap's 600px left far too little text next to the preview. The global
+  // max-width in dialog.less keeps this off the edges on a small screen.
+  .modal-dialog { width: 900px; }
 
+  // Scrolling. `max-height: 70%` used to stand here and did nothing - a
+  // percentage height needs a definite height on the parent, and .modal-content
+  // has none, so the dialog grew to the full text height instead.
+  //
+  // The scroll now sits one level further in, on the text column: the preview
+  // has to stay put while the description moves. Still exactly ONE scrollable
+  // region in the dialog - two nested ones would be the anti-pattern, not this.
   .modal-body {
-    max-height: 70%;
-    overflow:auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .media {
+      flex: 1 1 auto;
+      min-height: 0;
+      // stretch, so the text column can be bounded and scroll. The generic
+      // rule centres, which the tile keeps for itself below.
+      align-items: stretch;
+    }
+
+    .media-body {
+      overflow-y: auto;
+      min-height: 0;
+    }
+  }
+
+  // Previews come from the component store and vary wildly: 30-210 wide,
+  // 31-386 tall, aspect ratios from 0.18 to 2.58. So no fixed box and no forced
+  // dimension - bounds only, and a floor so the tiniest symbols are not lost.
+  // object-fit guards against both axes being clamped at once.
+  .media-left.componentPreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    padding: 100px;
+    border-radius: @borderRadiusBig;
+
+    img {
+      width: auto;
+      height: auto;
+      min-height: 88px;
+      max-width: 140px;
+      max-height: 160px;
+      object-fit: contain;
+    }
   }
 }
