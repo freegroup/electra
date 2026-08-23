@@ -30,13 +30,67 @@
         flex-grow: 1;
     }
 
+    // EINE Reihe fuer alle Umschalter. Frueher waren es zwei: AppSwitch und
+    // Userinfo in .applicationSwitch, SettingsSwitch in einem zweiten .group,
+    // das es sich selbst an die Leiste haengte. Zwei Gruppen sind zwei
+    // eigenstaendige Flex-Elemente, die einzeln ausgerichtet werden - waren
+    // sie nicht auf das Pixel gleich hoch, stand "Einstellungen" tiefer als
+    // "Apps" und "Benutzer". Jetzt haengt alles im selben Container.
+    //
+    // Unterkante statt Mitte: damit teilen die Beschriftungen eine Grundlinie,
+    // auch wenn ein Umschalter einmal hoeher geraet als seine Nachbarn.
     .group {
         display: flex;
         flex-direction: row;
-        align-items: center;
-    }  
+        align-items: flex-end;
+    }
     
     .image-button{
         cursor:pointer;
+    }
+
+    // Die drei Umschalter - Waffel, Benutzer, Einstellungen. Sie tragen seit
+    // jetzt eine Beschriftung, waren vorher ein blosses Symbol; ohne Wort war
+    // die Waffel der einzige Knopf im Haus, der nicht sagt, was er tut.
+    //
+    // FESTE Hoehe, Symbol oben, Beschriftung unten. Wuerden die Knoepfe nur
+    // ihrem Inhalt folgen, saessen die drei Beschriftungen auf drei
+    // verschiedenen Grundlinien, sobald ein Symbol aus der Reihe faellt - und
+    // das tut hier jedes auf eigene Art: die Waffel ist ein 75x55-SVG, das
+    // Zahnrad wird von inlineSVG zu einem echten <svg> mit eigenen
+    // Massattributen, und das Benutzerbild ist ein FOTO in einem
+    // Seitenverhaeltnis, das wir nicht kennen. Eine gemeinsame Hoehe je Symbol
+    // zu erzwingen hiesse, jeden dieser Faelle einzeln zu treffen. Der
+    // Fuellrand unten trifft sie alle drei auf einmal.
+    //
+    // Nur die Umschalter, nicht .image-button allgemein: die Kacheln IM
+    // Ausklappmenue sind ebenfalls image-buttons und liegen innerhalb .appbar,
+    // eine breitere Regel haette ihr Raster mitverschoben.
+    .image-button[data-toggle="dropdown"] {
+        height: @appbarHeight - 20;
+        justify-content: flex-start;
+
+        img,
+        svg {
+            height: @appbarHeight - 50;
+
+            // Ohne diese zwei Zeilen wirkt die Hoehe darueber nicht. Ein
+            // Flex-Element hat min-height:auto, und die automatische
+            // Mindestgroesse ist die INHALTSgroesse - die sticht ein gesetztes
+            // height. Jedes der drei Symbole kam so auf sein eigenes Mass: die
+            // Waffel auf 44px (60px breit bei Verhaeltnis 75:55), das Zahnrad
+            // auf 55px (sein viewBox, nachdem inlineSVG width und height
+            // entfernt hat), das Benutzerbild auf die Groesse des Fotos, das
+            // Google liefert. Der Knopf wuchs damit ueber seine feste Hoehe
+            // hinaus und nahm die Beschriftung mit nach unten.
+            min-height: 0;
+            flex: 0 0 auto;
+        }
+
+        // Der Fuellrand druckt die Beschriftung an den unteren Rand. Ihre
+        // Grundlinie haengt damit an der Leistenhoehe statt am Symbol darueber.
+        > div {
+            margin-top: auto;
+        }
     }
 }

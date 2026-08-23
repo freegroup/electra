@@ -24,17 +24,6 @@
       height: @toolbarHeight - 32;
     }
 
-    // A dropdown toggler carries no label - the waffle, the settings menu, the
-    // avatar. The budget above reserves room for one anyway, so they came out
-    // 12px shorter than before and the whole right-hand end of the bar looked
-    // shrunken. They get the height of the brand mark on the left instead.
-    &[data-toggle="dropdown"] {
-      img,
-      svg {
-        height: @toolbarHeight - 20;
-      }
-    }
-
     div {
       text-align: center;
       font-size: 0.8em;

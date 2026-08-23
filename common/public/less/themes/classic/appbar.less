@@ -32,5 +32,14 @@
             border-color:transparent;
             .svgTint(white);
         }
+
+        // Die Beschriftung der drei Umschalter. Ohne diese Regel erbt sie die
+        // dunkle Standardfarbe und steht unsichtbar auf der dunklen Leiste -
+        // gefaerbt waren bisher nur Titel, Slogan und die Symbole.
+        // Nur die Umschalter: die Kacheln IM Ausklappmenue sind ebenfalls
+        // image-buttons, liegen aber auf hellem Grund und bleiben dunkel.
+        &[data-toggle="dropdown"] > div {
+            color: white;
+        }
     }
 }

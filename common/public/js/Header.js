@@ -47,12 +47,13 @@ export default class Header {
       : ""
 
     const userinfoMarkup = userinfo
-      ? `<label class="dropdown userinfo_toggler">
+      ? `<div class="dropdown userinfo_toggler">
           <span class="image-button" data-toggle="dropdown">
             <img crossorigin="anonymous" src="/common/images/toolbar_user.svg"/>
+            <div data-i18n="common:header.user">Benutzer</div>
           </span>
           <div class="dropdown-menu" role="menu"></div>
-        </label>`
+        </div>`
       : ""
 
     // Absolute Bildpfade, nicht relative: die Inhaltsseiten liegen unter

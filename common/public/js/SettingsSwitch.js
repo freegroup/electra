@@ -44,19 +44,26 @@ const ICON = "/common/images/canvas_configure.svg"
 export default class SettingsSwitch {
 
   constructor(permissions) {
-    const bar = document.querySelector(".appbar")
+    // In DIE Gruppe, die die Leiste schon hat - nicht in eine zweite eigene.
+    // Frueher haengte sich dieser Schalter ein weiteres <span class="group">
+    // an die Leiste, weil es zu seiner Entstehungszeit keinen vorgesehenen
+    // Platz gab. Zwei Gruppen sind zwei eigenstaendige Flex-Elemente, die
+    // einzeln ausgerichtet werden: waren sie nicht auf das Pixel gleich hoch,
+    // stand "Einstellungen" ein paar Pixel tiefer als "Apps" und "Benutzer".
+    // Eine Reihe, ein Bezugspunkt.
+    const bar = document.querySelector(".appbar .applicationSwitch")
     if (!bar) return
 
     const languages = Object.keys(lngs)
       .map((lng) => `<li class="settingsOption" data-lng="${lng}">${lngs[lng].nativeName}</li>`)
       .join("")
 
-    const group = document.createElement("span")
-    group.className = "group"
+    const group = document.createElement("template")
     group.innerHTML = `
       <div class="dropdown settingsMenu" id="settingsMenu">
         <span class="image-button" data-toggle="dropdown">
           <img class="svg" src="${ICON}" alt="Einstellungen"/>
+          <div data-i18n="common:header.settings">Einstellungen</div>
         </span>
         <ul class="dropdown-menu dropdown-menu-right" role="menu">
           <li class="settingsHeader" data-i18n="common:settings.language">Sprache</li>
@@ -68,9 +75,10 @@ export default class SettingsSwitch {
         </ul>
       </div>
     `
-    bar.appendChild(group)
-
-    this.root = group.querySelector("#settingsMenu")
+    // Das Menue selbst haengt in die Reihe, ohne eigene Huelle drumherum -
+    // eine Ebene weniger, die anders hoch sein koennte als die Nachbarn.
+    this.root = group.content.querySelector("#settingsMenu")
+    bar.appendChild(this.root)
 
     this.root.querySelectorAll("[data-lng]").forEach((li) => {
       li.addEventListener("click", () => this.selectLanguage(li.getAttribute("data-lng")))

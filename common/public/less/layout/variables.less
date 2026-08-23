@@ -4,7 +4,12 @@
 @tabBarWidth: 200px;     // width of the left navigation bar
 @tabIconSize: 22px;      // icon size inside a left-nav entry
 @toolbarHeight: 60px;
-@appbarHeight: 70px;
+// 90 statt 70, seit die drei Umschalter rechts eine Beschriftung tragen.
+// Symbol, Abstand und Text brauchen zusammen rund 55px, und die wollen nicht
+// bis an die Kante stehen. Alles unter der Leiste rechnet aus dieser Zahl
+// (tab_content, die Dialoge, die Palette) - die Hoehe ist deshalb ein Wert und
+// kein Umbau.
+@appbarHeight: 90px;
 
 @borderRadiusBig: 8px;
 @borderRadiusSmall: 4px;

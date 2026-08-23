@@ -33,10 +33,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // would point at /home/common and 404. Absolute works from any depth.
 class AppSwitch {
   constructor(permissions) {
-    let appSwitchButtons = $(` 
-            <label class="dropdown" >
+    // <div>, nicht <label>: die drei Umschalter in der Leiste sollen dasselbe
+    // Element sein. Ein <label> gehoert zu einem Formularfeld, hier gab es
+    // keins - dafuer brachte es Regeln mit, die ein <div> nicht hat, und die
+    // Reihe stand dadurch nicht auf einer Linie.
+    let appSwitchButtons = $(`
+            <div class="dropdown" >
                 <span class="image-button application-waffel"  data-toggle="dropdown">
                   <img  src="/common/images/app_switch.svg" />
+                  <div data-i18n="common:header.apps">Apps</div>
                 </span>
 
                 <div class="dropdown-menu" role="menu" >
@@ -82,8 +87,8 @@ class AppSwitch {
                         <div>Coffee</div>
                       </label>
 
-                </div>   
-         </span>
+                </div>
+         </div>
     `);
     $(".applicationSwitch").prepend(appSwitchButtons);
     $(".applicationSwitchYoutube").off("click").on("click", () => {
@@ -385,12 +390,13 @@ class Header {
     // wo es das nicht tut. Leer war er sonst genau dort unsichtbar, wo er als
     // einziger sagt, worum es hier ueberhaupt geht.
     const sloganMarkup = slogan ? `<div class="slogan" data-i18n="common:header.slogan">macht digitale Elektronik für jeden zugänglich</div>` : "";
-    const userinfoMarkup = userinfo ? `<label class="dropdown userinfo_toggler">
+    const userinfoMarkup = userinfo ? `<div class="dropdown userinfo_toggler">
           <span class="image-button" data-toggle="dropdown">
             <img crossorigin="anonymous" src="/common/images/toolbar_user.svg"/>
+            <div data-i18n="common:header.user">Benutzer</div>
           </span>
           <div class="dropdown-menu" role="menu"></div>
-        </label>` : "";
+        </div>` : "";
 
     // Absolute Bildpfade, nicht relative: die Inhaltsseiten liegen unter
     // /home/de/… und /home/en/…, wo "../common" auf /home/common zeigen wuerde.
@@ -484,15 +490,22 @@ const lngs = {
 const ICON = "/common/images/canvas_configure.svg";
 class SettingsSwitch {
   constructor(permissions) {
-    const bar = document.querySelector(".appbar");
+    // In DIE Gruppe, die die Leiste schon hat - nicht in eine zweite eigene.
+    // Frueher haengte sich dieser Schalter ein weiteres <span class="group">
+    // an die Leiste, weil es zu seiner Entstehungszeit keinen vorgesehenen
+    // Platz gab. Zwei Gruppen sind zwei eigenstaendige Flex-Elemente, die
+    // einzeln ausgerichtet werden: waren sie nicht auf das Pixel gleich hoch,
+    // stand "Einstellungen" ein paar Pixel tiefer als "Apps" und "Benutzer".
+    // Eine Reihe, ein Bezugspunkt.
+    const bar = document.querySelector(".appbar .applicationSwitch");
     if (!bar) return;
     const languages = Object.keys(lngs).map(lng => `<li class="settingsOption" data-lng="${lng}">${lngs[lng].nativeName}</li>`).join("");
-    const group = document.createElement("span");
-    group.className = "group";
+    const group = document.createElement("template");
     group.innerHTML = `
       <div class="dropdown settingsMenu" id="settingsMenu">
         <span class="image-button" data-toggle="dropdown">
           <img class="svg" src="${ICON}" alt="Einstellungen"/>
+          <div data-i18n="common:header.settings">Einstellungen</div>
         </span>
         <ul class="dropdown-menu dropdown-menu-right" role="menu">
           <li class="settingsHeader" data-i18n="common:settings.language">Sprache</li>
@@ -504,8 +517,10 @@ class SettingsSwitch {
         </ul>
       </div>
     `;
-    bar.appendChild(group);
-    this.root = group.querySelector("#settingsMenu");
+    // Das Menue selbst haengt in die Reihe, ohne eigene Huelle drumherum -
+    // eine Ebene weniger, die anders hoch sein koennte als die Nachbarn.
+    this.root = group.content.querySelector("#settingsMenu");
+    bar.appendChild(this.root);
     this.root.querySelectorAll("[data-lng]").forEach(li => {
       li.addEventListener("click", () => this.selectLanguage(li.getAttribute("data-lng")));
     });

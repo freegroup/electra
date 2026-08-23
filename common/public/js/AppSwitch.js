@@ -9,10 +9,15 @@ import coffeeDialog from "./CoffeeDialog"
 export default class AppSwitch {
 
   constructor(permissions){
-    let appSwitchButtons = $(` 
-            <label class="dropdown" >
+    // <div>, nicht <label>: die drei Umschalter in der Leiste sollen dasselbe
+    // Element sein. Ein <label> gehoert zu einem Formularfeld, hier gab es
+    // keins - dafuer brachte es Regeln mit, die ein <div> nicht hat, und die
+    // Reihe stand dadurch nicht auf einer Linie.
+    let appSwitchButtons = $(`
+            <div class="dropdown" >
                 <span class="image-button application-waffel"  data-toggle="dropdown">
                   <img  src="/common/images/app_switch.svg" />
+                  <div data-i18n="common:header.apps">Apps</div>
                 </span>
 
                 <div class="dropdown-menu" role="menu" >
@@ -58,8 +63,8 @@ export default class AppSwitch {
                         <div>Coffee</div>
                       </label>
 
-                </div>   
-         </span>
+                </div>
+         </div>
     `)
     $(".applicationSwitch").prepend(appSwitchButtons)
 

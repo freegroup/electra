@@ -11,6 +11,17 @@
         padding: var(--menu-container-padding);
     }
 
+    // Dieser Schalter haengt seit der Zusammenlegung in derselben Gruppe wie
+    // die App-Waffel. Damit greift deren Aufklappregel auch hier
+    // (.applicationSwitch .open .dropdown-menu) und legte der Liste ein
+    // Kachelraster auf. Die Einstellungen sind aber eine Liste. Der Vorsatz
+    // .applicationSwitch steht mit, damit die Regel gewinnt, ohne dass es auf
+    // die Reihenfolge der Importe ankommt.
+    .applicationSwitch &.open .dropdown-menu {
+        display: block;
+        max-width: none;
+    }
+
     .settingsHeader {
         padding: 8px 12px 4px;
         font-size: 0.75em;
