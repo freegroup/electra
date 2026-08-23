@@ -1,0 +1,113 @@
+// kurs - MODERN
+//
+// Spiegel von themes/classic/book.less. Was hier nicht steht, faellt auf
+// Klassisch zurueck - eine Deklaration zu LOESCHEN entfernt sie also nicht,
+// dafuer muss sie ausdruecklich zurueckgesetzt werden.
+//
+// Der Unterschied zu Klassisch ist Ruhe: mehr Weissraum um den Lesetext, eine
+// leisere Trennlinie unter dem Tabellenkopf, und die Formel nicht als
+// eingefaerbter Kasten mit Akzentbalken, sondern als abgesetzte Flaeche.
+
+&.bookBody {
+    background-color: rgb(var(--surface-recessed));
+    color: rgb(var(--text-default));
+
+    nav.toc {
+        .tocTitle { color: rgb(var(--text-strong)); }
+
+        a {
+            color: rgb(var(--text-muted));
+            border-radius: 4px;
+            padding: 3px 8px;
+            &:hover {
+                color: rgb(var(--text-strong));
+                background-color: rgba(var(--state-hover), 1);
+            }
+        }
+        > ol > li > a { color: rgb(var(--text-default)); }
+
+        details > summary a { color: rgb(var(--text-default)); }
+
+        .bookGift {
+            background-color: rgb(var(--surface-base));
+            border: 1px solid rgba(var(--line-default), 0.7);
+            color: rgb(var(--text-default));
+            text-decoration: none;
+
+            img {
+                border: 1px solid rgba(var(--line-default), 0.7);
+                border-radius: 3px;
+                box-shadow: var(--elevation-2);
+            }
+            strong {
+                color: rgb(var(--text-strong));
+                font-weight: var(--weight-semibold);
+            }
+            span { color: rgb(var(--text-muted)); }
+            &:hover {
+                border-color: rgb(var(--accent));
+                box-shadow: var(--elevation-2);
+                strong { color: rgb(var(--accent)); }
+            }
+        }
+
+    }
+
+    article {
+        background-color: rgb(var(--surface-base));
+        border: 1px solid rgba(var(--line-default), 0.7);
+        border-radius: @borderRadiusBig;
+        padding: 40px 48px;
+        // Lesetext, nicht Bedienoberflaeche. Die 1.65 aus Klassisch sind fuer
+        // eine schmale Spalte noch etwas eng.
+        line-height: 1.75;
+
+        h1 {
+            color: rgb(var(--text-strong));
+            font-weight: var(--weight-light);
+            font-size: 2.1em;
+            letter-spacing: -0.02em;
+        }
+        h2 {
+            color: rgb(var(--text-strong));
+            font-weight: var(--weight-semibold);
+            font-size: 1.35em;
+        }
+        h3 {
+            color: rgb(var(--text-strong));
+            font-weight: var(--weight-semibold);
+            font-size: 1.1em;
+        }
+
+        p.formel {
+            background-color: rgb(var(--surface-recessed));
+            // Ausdruecklich aus: Klassisch setzt hier einen Akzentbalken, und
+            // ein Weglassen wuerde ihn nicht entfernen.
+            border-left: none;
+            border-radius: @borderRadiusBig;
+            font-family: var(--font-ui);
+            font-size: 1.05em;
+        }
+
+        figcaption, p.caption { color: rgb(var(--text-muted)); }
+
+        table {
+            th {
+                border-bottom: 1px solid rgb(var(--line-default));
+                color: rgb(var(--text-strong));
+                font-weight: var(--weight-semibold);
+            }
+            td { border-bottom: 1px solid rgba(var(--line-default), 0.4); }
+            caption { color: rgb(var(--text-muted)); }
+        }
+
+        a { color: rgb(var(--accent)); }
+    }
+
+    .simulatorLink,
+    .downloadLink {
+        background-color: rgb(var(--accent));
+        color: rgb(var(--text-on-accent));
+        &:hover { background-color: rgb(var(--accent-highlight)); }
+    }
+}

@@ -1,0 +1,79 @@
+// kurs - CLASSIC
+//
+// Nur Aussehen. Die Struktur steht in layout/book.less.
+//
+// Der Selektor ist &.bookBody: der Wrapper ist body.themed, und die Klasse
+// sitzt auf demselben Element - ein Nachfahrenselektor wuerde ins Leere zeigen.
+
+&.bookBody {
+    background-color: rgb(var(--surface-recessed));
+    color: rgb(var(--text-default));
+
+    nav.toc {
+        .tocTitle { color: rgb(var(--text-strong)); }
+
+        a {
+            color: rgb(var(--text-muted));
+            &:hover { color: rgb(var(--accent)); }
+        }
+        > ol > li > a { color: rgb(var(--text-default)); }
+
+        details > summary a { color: rgb(var(--text-default)); }
+
+        .bookGift {
+            background-color: rgb(var(--surface-base));
+            border: 1px solid rgb(var(--line-default));
+            color: rgb(var(--text-default));
+            text-decoration: none;
+
+            img {
+                border: 1px solid rgb(var(--line-default));
+                box-shadow: 0 1px 3px rgba(var(--shadow-color), 0.15);
+            }
+            strong { color: rgb(var(--text-strong)); }
+            span { color: rgb(var(--text-muted)); }
+            &:hover {
+                border-color: rgb(var(--accent));
+                strong { color: rgb(var(--accent)); }
+            }
+        }
+
+    }
+
+    article {
+        // Der Lesetext bekommt eine eigene Flaeche, damit er sich vom
+        // Seitengrund abhebt.
+        background-color: rgb(var(--surface-base));
+        border-radius: @borderRadiusBig;
+        padding: 32px 40px;
+        line-height: 1.65;
+
+        h1, h2, h3 { color: rgb(var(--text-strong)); }
+
+        p.formel {
+            background-color: rgb(var(--surface-recessed));
+            border-left: 3px solid rgb(var(--accent));
+            font-family: var(--font-ui);
+        }
+
+        figcaption, p.caption { color: rgb(var(--text-muted)); }
+
+        table {
+            th {
+                border-bottom: 2px solid rgb(var(--line-default));
+                color: rgb(var(--text-strong));
+            }
+            td { border-bottom: 1px solid rgba(var(--line-default), 0.6); }
+            caption { color: rgb(var(--text-muted)); }
+        }
+
+        a { color: rgb(var(--accent)); }
+    }
+
+    .simulatorLink,
+    .downloadLink {
+        background-color: rgb(var(--accent));
+        color: rgb(var(--text-on-accent));
+        &:hover { background-color: rgb(var(--accent-highlight)); }
+    }
+}

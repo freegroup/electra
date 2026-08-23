@@ -1,0 +1,56 @@
+% Grundkurs Digitaltechnik - das gedruckte Handbuch.
+%
+%   make          -> grundkurs.pdf
+%
+% Die Kapitel unter kapitel/ sind der einmalige Auszug aus dem Word-Manuskript
+% von 2004 (tools/convert-book.js). Ab jetzt werden sie hier gepflegt; die
+% Webfassung unter book/ ist eine eigenstaendige zweite Fassung und wird
+% NICHT aus dieser hier erzeugt.
+
+\documentclass[
+  11pt,
+  ngerman,
+  numbers=noenddot,
+  listof=totoc,
+  bibliography=totoc,
+  twoside,
+  open=right,
+]{scrbook}
+
+\input{preamble}
+
+\title{Grundkurs Digitaltechnik}
+% Untertitel war im Manuskript "Grundlagen fuer den DigitalSimulator" - das
+% Programm, fuer das das Buch 1:1 als Handbuch geschrieben wurde.
+\subtitle{Grundlagen für Electra.Academy}
+\author{Andreas Herz}
+\date{\the\year}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\tableofcontents
+
+\mainmatter
+
+\include{kapitel/01-grundlagen}
+\include{kapitel/02-das-dualsystem}
+\include{kapitel/03-vorbemerkungen}
+\include{kapitel/04-verknuepfungsschaltungen}
+\include{kapitel/05-taktgeber}
+\include{kapitel/06-flipflops}
+\include{kapitel/07-kv-tafel}
+\include{kapitel/08-frequenzteiler}
+\include{kapitel/09-zaehler-und-teiler}
+\include{kapitel/10-schieberegister}
+\include{kapitel/11-volladdierer}
+
+\backmatter
+% Kapitel 12 des Manuskripts war der Anhang, und der bestand nur aus dem
+% Abbildungs- und dem Stichwortverzeichnis. Beide setzt LaTeX selbst, mit
+% eigenen Seitenzahlen - der alte Text dazu ist deshalb nicht eingebunden.
+\listoffigures
+\printindex
+
+\end{document}

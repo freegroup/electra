@@ -7,7 +7,8 @@
     "lint:theme": "node tools/lint-theme.js",
     "css:fingerprint": "node tools/css-fingerprint.js",
     "css:check": "node tools/css-fingerprint.js --check",
-    "verify": "npm run lint:theme && npm run css:check"
+    "verify": "npm run lint:theme && npm run css:check",
+    "book:pdf": "cd print && make && cd .. && node tools/publish-pdf.js"
   },
   "license": "SEE LICENSE IN LICENSE"
 }

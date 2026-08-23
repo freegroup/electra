@@ -1,15 +1,22 @@
-// Site footer, four columns: brand 40%, then three link lists at 20% each.
-// Built by js/Footer.js so the link list lives in one place.
+// Fusszeile der Website - Struktur.
+//
+// Vier Spalten: Marke 40%, dann drei Linklisten zu je 20%. Das Markup baut
+// common/js/Footer.js, damit die Linkliste an einer Stelle steht.
+//
+// Lag bis zuletzt in home/public/less/. Seit das Buch unter /book/ dieselbe
+// Fusszeile braucht - und dort die Pflichtangaben nach §5 TMG stehen muessen -
+// gehoert sie hierher: zwei Apps, eine Quelle.
+//
+// Farbfrei wie jede Datei unter layout/. Der Fuss ist bewusst dunkel, in beiden
+// Themes; die Werte stehen als --footer-* in den Token-Dateien.
 
 .siteFooter {
     position: relative;
-    // The cards release one screen before the footer (see the bottom margin in
-    // slidedeck.less), so they never reach it. This only guards the overlap
-    // during the transition - .slidedeck opens no stacking context, so its
-    // cards at z-index 1000 would otherwise paint over the footer.
+    // Die Karten der Startseite loesen sich einen Bildschirm vor dem Fuss (siehe
+    // den unteren Abstand in slidedeck.less), erreichen ihn also nie. Das hier
+    // sichert nur den Uebergang ab - .slidedeck oeffnet keinen Stapelkontext,
+    // seine Karten auf z-index 1000 wuerden sonst ueber den Fuss malen.
     z-index: 1100;
-    background-color: #1b1b3a;
-    color: #cfd0e0;
     font-size: 15px;
     line-height: 1.5;
 
@@ -35,8 +42,6 @@
         .name {
             margin-top: 12px;
             font-size: 20px;
-            font-weight: 400;
-            color: #fff;
         }
 
         .tagline {
@@ -49,26 +54,17 @@
         flex: 0 0 20%;
         display: flex;
         flex-direction: column;
-        // Column headings and the first link should sit on the same baseline as
-        // the brand name, not as the logo above it.
+        // Spaltenueberschrift und erster Link sollen auf der Grundlinie des
+        // Markennamens sitzen, nicht auf der des Logos darueber.
         padding-top: 60px;
 
         .heading {
-            color: #fff;
-            font-weight: 500;
             margin-bottom: 18px;
         }
 
         a {
-            color: #cfd0e0;
             text-decoration: none;
             padding: 6px 0;
-
-            &:hover,
-            &:focus {
-                color: #fff;
-                text-decoration: underline;
-            }
         }
     }
 
@@ -83,26 +79,17 @@
         max-width: 1400px;
         margin: 0 auto;
         padding: 22px 60px 30px;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
 
         font-size: 14px;
-        color: #9a9bb4;
 
         a {
-            color: #9a9bb4;
             text-decoration: none;
-
-            &:hover,
-            &:focus {
-                color: #fff;
-                text-decoration: underline;
-            }
         }
     }
 }
 
-// The start page uses scroll-snap and stacks absolutely positioned sections;
-// the footer must not be pulled into that flow.
+// Die Startseite arbeitet mit scroll-snap und stapelt absolut positionierte
+// Abschnitte; der Fuss darf da nicht hineingezogen werden.
 .siteFooter {
     scroll-snap-align: none;
 }

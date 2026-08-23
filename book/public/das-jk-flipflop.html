@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Das JK-Flipflop (Master-Slave-Flipflop) - Electra.Academy</title>
+<meta name="description" content="Ein weiteres und sehr wichtiges Flipflop ist das JK-Flipflop. Mit ihm können viele Zähler und Teiler aufgebaut werden. Wie man an dem Schaltsymbol..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/das-jk-flipflop.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Das JK-Flipflop (Master-Slave-Flipflop) - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/das-jk-flipflop.html">
+<meta property="og:description" content="Ein weiteres und sehr wichtiges Flipflop ist das JK-Flipflop. Mit ihm können viele Zähler und Teiler aufgebaut werden. Wie man an dem Schaltsymbol...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops" open>
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a class="current" aria-current="page">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler">
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Das JK-Flipflop (Master-Slave-Flipflop)</h1>
+      <p>Ein weiteres und sehr wichtiges Flipflop ist das JK-Flipflop. Mit ihm können viele Zähler und Teiler aufgebaut werden. Wie man an dem Schaltsymbol erkennt, hat auch dieses Flipflop einen Setz- und einen Rücksetzeingang. Werden diese beiden Anschlüsse verwendet, so kann man das Bauteil als gewöhnliches RS-Flipflop betreiben. Dazu sollten aber die anderen Eingänge nicht angeschlossen sein um eine Fehlschaltung am Ausgang zu vermeiden.</p>
+      <p>Das JK-Flipflop kann alternativ dazu über die beiden Eingänge J und K betrieben werden. Für diesen Fall besitzt es noch einen weiteren Eingang T, über den dem Flipflop ein Taktimpuls zugeführt werden kann.</p>
+      <p>Prinzipiell unterscheidet man zwei Arten von JK-Flipflops: Das „positiv-flankengetriggerte“ und das „negativ-flankengetriggerte“. Beim positiv-flankengetriggerten Flipflop, das in Abb. 32 dargestellt ist, erfolgt die Schaltung am Ausgang durch den ansteigenden Teil des angelegten Takt-Impulses. Das bedeutet, dass die Werte am Ausgang, die durch J und K bestimmt werden mit dem Ansteigen des Taktimpulses von L auf H ihren Wert ändern. Dargestellt ist das im Schaltsymbol durch die ansteigende Flanke eines Rechteckimpulses in der oberen rechten Ecke des Schaltsymbols. </p>
+      <figure>
+        <img src="media/abb-33.svg" alt="Schaltsymbol JK-FlipFlop (positive Flanke)"/>
+        <figcaption>Schaltsymbol JK-FlipFlop (positive Flanke)</figcaption>
+      </figure>
+      <p>Beim negativ-flankengetriggerten JK-Flipflop, das in der Technik hauptsächlich verwendet wird, erfolgt die Umschaltung beim Abfallen des Impulses von H auf L. Abb. 33 symbolisiert ein solches Bauteil. Das Unterscheidungsmerkmal gegenüber dem vorherigen Flipflop ist die abfallende Flanke eines Rechteckimpulses.</p>
+      <figure>
+        <img src="media/abb-34.svg" alt="Schaltsymbol JK-FlipFlop (negative Flanke)"/>
+        <figcaption>Schaltsymbol JK-FlipFlop (negative Flanke)</figcaption>
+      </figure>
+      <p>Wohlbemerkt sind die beiden Eingänge R und S in diesem Fall nicht angeschlossen. Sie haben nämlich Priorität, d.h. sie sind vom Takt unabhängig. Doch dazu später mehr.</p>
+      <p>Wie schon bei der Unterscheidung der beiden JK-Flipflops erwähnt wurde, ist ein Taktimpuls bei diesem Bauteil sehr wichtig. Angelegt wird er am Eingang T. Von ihm hängt es z.B. ab, wie schnell sich ein Wert am Ausgang Q oder ¬Q ändern kann. Die Logik-Tafel gibt über die Werte am Ausgang genauer Auskunft.</p>
+      <table>
+        <thead><tr><th>J</th><th>K</th><th>Q</th><th>¬Q</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>0</td><td>0</td><td>Q</td><td>¬Q</td></tr>
+          <tr><td>1</td><td>1</td><td>¬Q</td><td>Q</td></tr>
+        </tbody>
+      </table>
+      <p>Hat der J-Eingang den Wert 0 und K den Wert 1, so liegt am Ausgang Q der Wert 0. Entsprechend hat der komplementäre Ausgang ¬Q den Wert 1.</p>
+      <p>Wechselt nun der J-Eingang auf den Wert 1 und der K-Eingang auf den Wert 0, so hat der Ausgang Q den Wert 1 und ¬Q den Wert 0.</p>
+      <p>Wenn beide Eingänge den Wert 0 haben, so ändert sich das Ausgangssignal nicht, das bedeutet, dass der vorherige Wert des Ausgangs beibehalten wird.</p>
+      <p>Falls beide Eingänge den Wert 1 aufweisen, so dreht sich das Ausgangssignal gerade um. Sowohl Q als auch ¬Q nehmen jeweils ihren komplementären Wert an. Oder anders ausgedrückt: Q nimmt den Wert von ¬Q an und ¬Q den Wert von Q.</p>
+      <p>Allerdings kann sich das Ausgangssignal nur ändern, wenn ein Taktimpuls wirksam geworden ist. Um also ein Umschalten des Wertes am Ausgang zu erreichen, muss unbedingt ein Takt angelegt werden. Sobald nun bei einem negativ-flankengetriggerten Flipflop eine negative Flanke an T anliegt, stellen sich die Ausgänge Q und ¬Q entsprechend den Eingängen J und K um.</p>
+      <p>Die Eingänge R und S sind dagegen vom Taktimpuls unabhängig. Sobald z.B. der Setzeingang auf Masse gelegt wird, erscheint am Ausgang der Wert 1, auch dann, wenn gerade kein Taktimpuls wirksam wurde. Ebenso funktioniert die Schaltung wenn der Rücksetzeingang R mit Masse verbunden wird. Dann erscheint am Ausgang A der Wert 0. Sobald der R- oder der S-Eingang benutzt wird, ist die übrige Beschaltung (also T, J und K) nicht wirksam.</p>
+      <p>In Abb. 34 ist nun das Schaltverhalten eines negativ-flankengetriggerten Flipflops dargestellt. Deutlich zu sehen ist dabei, dass ein Umschalten des Signals am Ausgang nur dann erfolgen kann, wenn der Taktimpuls T gerade abfällt.</p>
+      <p>Spannungs-Diagramm (Schaltdiagramm) für ein negativ-flankengetriggertes JK-Flipflop:</p>
+      <figure>
+        <img src="media/abb-35.svg" alt="Diagramm Zeitverhalten JK-FlipFlop"/>
+        <figcaption>Diagramm Zeitverhalten JK-FlipFlop</figcaption>
+      </figure>
+      <p>Zur Verdeutlichung hier nun die Erläuterung:</p>
+      <p>J=0, K=1. Da R und S den Wert 1 haben, also nicht wirksam sind, kann der Takt wirksam werden. In der Logik-Tafel sieht man, dass der Ausgang Q den Wert 0 haben muss. Deshalb nimmt Q auch im Diagramm beim Abfallen der Taktflanke T den Wert 0 an.</p>
+      <p>J=1, K=0. Damit hat Q den Wert 1.</p>
+      <p>J=K=0. Am Ausgang Q erscheint der Wert 1, da laut Logik-Tafel der Wert gleich bleibt.</p>
+      <p>J=K=1. Nun erscheint am Ausgang das gegenteilige Signal, das zuvor an Q lag. In diesem Fall ist es der Wert 0.</p>
+      <p>J=0, K=1. Damit hat der Ausgang Q den Wert 0.</p>
+      <p>J=K=0. Das Signal am Ausgang bleibt gleich, also auf 0.</p>
+      <p>Bei Punkt A wird nun der Setzeingang S auf Masse gelegt. Damit nimmt der Ausgang Q sofort den Wert 1 an. Dies geschieht wie man sieht auch ohne Taktimpuls.</p>
+      <p>Der Setzeingang S liegt noch immer auf Masse. Somit sind die Signale von J und K nicht wirksam, wenngleich auch eine negative Taktflanke vorliegt.</p>
+      <p>Im Punkt B ist nun der Setzeingang S wieder auf dem Wert 1. Dagegen wird der Rücksetzeingang R auf Masse, also auf den Wert 0 gelegt. Damit nimmt der Ausgang Q sofort den Wert 0 an.</p>
+      <p>R ist noch immer auf Masse gelegt. Damit hat der Ausgang unabhängig von J und K den Wert 0.</p>
+      <p>J=0, K=1. R hat nun wieder den Wert 1, ist also genau wie S nicht wirksam. Der Taktimpuls kann also wieder wirksam werden und schaltet deshalb bei der abfallenden Taktflanke den Ausgang Q auf den Wert 0.</p>
+      <p>Zu bemerken wäre noch, dass bei nicht wirksamen Eingängen R und S zwischen den einzelnen Takt-Impulsen die Eingänge J und K jeden beliebigen Wert annehmen können ohne dass sich der Wert am Ausgang Q verändert. Sie können auch ihren Wert zwischen zwei Impulsen mehrmals wechseln. Für das Umschalten am Ausgang ist nur interessant, was zur Zeit der abfallenden Taktflanke für Signale an J und K liegen. Nur nach diesen Werten richtet sich der Wert des Ausgangs Q.</p>
+      <p>Abb. 35 zeigt die Innenschaltung des JK-Flipflops. Das Master-Slave-Flipflop besteht intern aus 2 bistabilen Multivibratoren mit gesteuerter Übernahme, die in Reihe (hintereinander) geschaltet sind. Der sogenannte Master (engl. Master = Herr, Meister) besteht aus den Verknüpfungsschaltungen V3 und V4. Die NAND-Gatter V1 und V2 bilden die dazugehörige Torschaltung. Die J- und K-Eingänge sind UND-verknüpft. Die Verknüpfungsschaltungen V5 und V6 bilden die Torschaltung des Slave (engl. Slave = Knecht, Sklave). Der Multivibrator des Slave besteht aus den Verknüpfungsschaltungen V7 und V8. Der Multivibrator verfügt noch über 2 Eingänge, die nicht über die Torschaltung laufen, also auch unabhängig vom Takt wirksam sind: L-Pegel am Setzeingang S stellt den Ausgang Q auf den Wert 1, L-Pegel am Rücksetzeingang R stellt Q wieder auf den Wert 0 zurück.</p>
+      <figure>
+        <img src="media/abb-36.svg" alt="Schaltbild Master-Slave-Flipflop"/>
+        <figcaption>Schaltbild Master-Slave-Flipflop</figcaption>
+      </figure>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

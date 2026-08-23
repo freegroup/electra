@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Zähler und Teiler - Electra.Academy</title>
+<meta name="description" content="In der Praxis wird man nun recht selten einen Zähler mit einzelnen JK-Flipflops aufbauen. Vielmehr nimmt man Zähler bzw. Teiler, die als integrierte..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/zaehler-und-teiler.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Zähler und Teiler - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/zaehler-und-teiler.html">
+<meta property="og:description" content="In der Praxis wird man nun recht selten einen Zähler mit einzelnen JK-Flipflops aufbauen. Vielmehr nimmt man Zähler bzw. Teiler, die als integrierte...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops">
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler" open>
+          <summary><a class="current" aria-current="page">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Zähler und Teiler</h1>
+      <p>In der Praxis wird man nun recht selten einen Zähler mit einzelnen JK-Flipflops aufbauen. Vielmehr nimmt man Zähler bzw. Teiler, die als integrierte Schaltungen (ICs) angeboten werden. Eine solche Schaltung ist z.B. der IC „SN 7490“.</p>
+      <p>Mit dieser Schaltung lassen sich Frequenzteiler realisieren, die im folgenden beschrieben sind. Außerdem ist es ein häufig benötigter Zähler-IC, der von 0 bis 9 zählt und dann bei entsprechender Beschaltung wieder auf 0 zurück geht.</p>
+      <figure>
+        <img src="media/abb-51.svg" alt="Schaltbild Zähler mit Teiler"/>
+        <figcaption>Schaltbild Zähler mit Teiler</figcaption>
+      </figure>
+      <p>Das Prinzipschaltbild zeigt, dass auch hier 4 JK-Flipflops verwendet wurden. Hier werden zum Teil auch die Setzeingänge der Flipflops verwendet. Das bringt den Vorteil, dass Verknüpfungsschaltungen für die Rücksetzung entfallen und die Schaltung kann dadurch billiger realisiert werden.</p>
+      <p>Als Takteingang dient hier je nach Anforderung der Eingang A oder der Eingang BD, der auch in verschiedenen Datenbüchern mit B gekennzeichnet ist.</p>
+      <p>Mit den Eingängen R<sub>01</sub> und R<sub>02</sub> kann man eine Nullstellung „erzwingen“ indem man an beide Eingänge ein High-Signal legt. Ebenso ist es möglich mit Hilfe der beiden Eingänge R<sub>91</sub> und R<sub>92</sub> eine Neun-Stellung zu erzwingen. Mit einer entsprechenden Verknüpfungsschaltung ist es also möglich, jede Art von Zähler zwischen 0 und 9 aufzubauen indem man den Zähler beim gewünschten Stand wieder auf Null setzt. Für den Zähler von 0 bis 9 werden diese vier Eingänge auf Masse gelegt.</p>
+      <p>Den Anschluss des ICs zeigt die folgende Abbildung. Im Gegensatz zu den Transistoren werden allerdings sämtliche Pinbelegungsbilder mit den Anschlussbeinen nach unten gezeichnet. Man stellt also den IC auf die „Füße“ und betrachtet ihn von oben, nicht von unten!</p>
+      <figure>
+        <img src="media/abb-52.svg" alt="IC Zähler mit Teiler"/>
+        <figcaption>IC Zähler mit Teiler</figcaption>
+      </figure>
+      <p>Zur Erkennung der linken oder rechten Seite eines integrierten Schaltkreises ist bei Pin 1 bzw. Pin 14 (Pin = Anschlussbeinchen) eine Kerbe oder eine punktförmige Vertiefung angebracht. Dadurch ist die Benennung des Pins sofort zu erkennen. Eingezeichnet wird dies auch auf dem Applikationsbild (Anschlussbild).</p>
+      <p>Die Anschlüsse 4 und 13 sind bei diesem Bild nicht gekennzeichnet. Das bedeutet, dass sie keinen Anschluss zur inneren Schaltung des Zählers haben. Gewöhnlich werden solche Anschlüsse mit „NC“ gekennzeichnet, was ausgeschrieben „Non Connect“ (nicht angeschlossen) heißt.</p>
+      <p>Bei Pin 14 und 1 sieht man innerhalb des ICs den Invertierungspunkt. Das bedeutet, dass bei einem L-Impuls (hier negative Flanke, da negativflankengetriggertes Flipflop) eine Umschaltung geschehen kann.</p>
+      <p>Oftmals werden auch in Datenbüchern die Benennungsbuchstaben mit einem Komplementär-Zeichen gekennzeichnet. Das wäre in diesem Fall ¬A oder ¬BD. Die Ausgänge Q<sub>A</sub>, Q<sub>B</sub>, Q<sub>C</sub>, Q<sub>D</sub> sind Ausgänge der Flipflops und bezeichnen die Dualstelle der dualen Zahl am Ausgang. Bei der Dualzahl 1100 hat also Q<sub>D</sub> und Q<sub>C</sub> den Wert 1, Q<sub>B</sub> und Q<sub>A</sub> haben den Wert 0.</p>
+      <p>Die Spannung wird an Pin 10 (Masse) und Pin 5 (positiver Pol der Versorgungsspannung) angeschlossen.</p>
+      <h2>In diesem Kapitel</h2>
+      <ul class="chapterIndex">
+        <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+        <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+        <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+        <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+        <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+      </ul>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

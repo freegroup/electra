@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Integrierter Zähler und Teiler 7492 - Electra.Academy</title>
+<meta name="description" content="Dieser IC ist ähnlich aufgebaut wie der vorher besprochene Zähler 7490. Er besteht ebenfalls aus 4 JK-Flipflops, nur sind hier andere..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/integrierter-zaehler-und-teiler-7492.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Integrierter Zähler und Teiler 7492 - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/integrierter-zaehler-und-teiler-7492.html">
+<meta property="og:description" content="Dieser IC ist ähnlich aufgebaut wie der vorher besprochene Zähler 7490. Er besteht ebenfalls aus 4 JK-Flipflops, nur sind hier andere...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops">
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler" open>
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a class="current" aria-current="page">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Integrierter Zähler und Teiler 7492</h1>
+      <p>Dieser IC ist ähnlich aufgebaut wie der vorher besprochene Zähler 7490. Er besteht ebenfalls aus 4 JK-Flipflops, nur sind hier andere Teilerverhältnisse zu erreichen, die im Folgenden beschrieben sind.</p>
+      <p>Das Teilerverhältnis 1:2, das nicht extra aufgeführt ist, kann man durch eine analoge Beschaltung wie beim Zähler 7490 erreichen. Auch hier wird das Eingangsflipflop für die Teilung verwendet. Wie man aus dem Prinzipschaltbild erkennt, hat dieses Bauteil keine Rücksetzung auf 9. Es ist nur eine Rückstellung auf 0 möglich. Der Eingang der Flipflopkette ist hier mit BC beschriftet. In manchen Datenbüchern wird er ebenso wie beim 7490 mit „B“ gekennzeichnet.</p>
+      <figure>
+        <img src="media/abb-58.svg" alt="Schaltbild 7492"/>
+        <figcaption>Schaltbild 7492</figcaption>
+      </figure>
+      <p>Die Pinbelegung stimmt mit dem vorherigen Zähler in Aus- und Eingängen überein. Nur die Rückstelleingänge für 0 liegen diesmal bei Pin 6 und 7. Ohne Anschluss, also NC (Non Connect) sind die Anschlüsse 2, 3, 4 und 13. Die Stromversorgung stimmt ebenfalls mit dem Zähler 7490 überein.</p>
+      <figure>
+        <img src="media/abb-59.svg" alt="IC 7492"/>
+        <figcaption>IC 7492</figcaption>
+      </figure>
+      <h3>Frequenzteiler 1:6</h3>
+      <figure><img src="media/abb-60.svg" alt="Frequenzteiler 1:6"/></figure>
+      <p>Das Eingangsflipflop wird hier nicht verwendet. Nur die Teilerkette FF<sub>B</sub>, FF<sub>C</sub> und FF<sub>D</sub> ist angeschlossen.</p>
+      <h3>Frequenzteiler 1:12</h3>
+      <figure><img src="media/abb-61.svg" alt="Frequenzteiler 1:12"/></figure>
+      <p>Einer der beiden Rückstelleingänge muss auf Masse gelegt werden. Der Ausgang Q<sub>A</sub> wird mit dem Eingang BC verbunden. Somit befinden sich alle Flipflops in Betrieb.</p>
+      <p>Generell kann man an den Ausgängen der verwendeten Flipflops die H- bzw. L-Signale abgreifen. So kann man also den oberen Teiler mit Teilerverhältnis 1:6 auch als „Fünfzähler“ verwenden. Der Zähler beginnt mit der Zahl 0 und schaltet nach 5 wieder auf 0 zurück. Oder man kann mit einem Teiler 1:9 beim 7490 einen „Achterzähler“ aufbauen. Dieser beginnt ebenfalls mit der Zahl 0 zu zählen und schaltet nach der Zahl 8 auf 0 zurück.</p>
+      <p>Mit diesen Zählern kann man nun verschiedene auch für den täglichen Gebrauch sehr nützliche Schaltungen aufbauen. So z.B. eine Digitaluhr, Impulszähler, Frequenzmesser mit digitaler Anzeige, Stoppuhren und viele andere Zählschaltungen.</p>
+      <p>Doch vorerst haben wir nur das duale Signal. Dieses muss durch eine geeignete Decoderschaltung in ein sichtbares, sofort erkennbares Signal umgeformt werden. Bei unseren Zählerschaltungen empfiehlt sich die Umformung in einen Code, der durch eine 7-Segmentanzeige angezeigt werden kann. Ein solcher Decoder kann durch geeignete Verknüpfungsschaltungen aufgebaut werden. Da diese Schaltung aber sehr umfangreich würde, empfiehlt es sich auch hier auf einen schon fertigen Decoder zurückzugreifen, wie er im nächsten Kapitel beschrieben wird.</p>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Dualzähler - Electra.Academy</title>
+<meta name="description" content="Aus dem JK-Flipflop lässt sich nun eine in der Technik oft gebrauchte Zählerschaltung realisieren. Dabei werden oft die Eingänge S und R neben den J-..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/dualzaehler.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Dualzähler - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/dualzaehler.html">
+<meta property="og:description" content="Aus dem JK-Flipflop lässt sich nun eine in der Technik oft gebrauchte Zählerschaltung realisieren. Dabei werden oft die Eingänge S und R neben den J-...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops" open>
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a class="current" aria-current="page">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler">
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Dualzähler</h1>
+      <p>Aus dem JK-Flipflop lässt sich nun eine in der Technik oft gebrauchte Zählerschaltung realisieren. Dabei werden oft die Eingänge S und R neben den J- und K-Eingängen benutzt. Der Einfachheit halber werden hier nur die J- und K-Eingänge sowie der R-Eingang verwendet. Natürlich wird auch der Takteingang T angeschlossen.</p>
+      <p>Wenn man an ein JK-Flipflop einen Takt T anlegt, so hat der Ausgang Q<sub>0</sub> bei jeder negativen Taktflanke eine Wertänderung, also einen dauernden Wechsel zwischen 1 und 0. Abb. 37 zeigt den zeitlichen Verlauf des Ausgangs Q<sub>0</sub> in Abhängigkeit vom angelegten Takt T. Jetzt wird an das zweite JK-Flipflop das Ausgangssignal Q<sub>0</sub> angeschlossen. Somit bestimmt der Ausgang des ersten Flipflops den Takt des zweiten Flipflops. Das Anschlussbild ist in Abb. 36 zu sehen.</p>
+      <p>Wie man im Spannungsdiagramm der Schaltung erkennt, hat der Ausgang Q<sub>1</sub> die halbe Taktfrequenz wie Q<sub>0</sub>. Dies beruht wiederum darauf, dass eine Umschaltung des Flipflops nur bei einer negativen Taktflanke stattfindet. Die Schaltzustände der beiden Flipflops entsprechen, wie unter dem Diagramm aufgezählt, dem dualen Zählerstand. Der Zähler kann also nur bis zur Zahl 11 des Dualsystems zählen. Das entspricht der dezimalen Zahl 3. Danach kehrt er automatisch wieder zur Anfangszahl 00 zurück.</p>
+      <figure>
+        <img src="media/abb-37.svg" alt="Schaltbild Dualzähler"/>
+        <figcaption>Schaltbild Dualzähler</figcaption>
+      </figure>
+      <p>Wenn nun der Rücksetzeingang R, der oftmals auch Reset-Eingang genannt wird, auf Masse gelegt wird, erscheint auf jeden Fall der Wert 0 an beiden Ausgängen. Dabei ist der Takt nicht von Bedeutung, ebenso die Schaltzustände der beiden Ausgänge Q<sub>0</sub> und Q<sub>1</sub>. Im folgenden Diagramm wird kurz nach dem zweiten Erscheinen der Zahl 11 (dual) der Reset-Eingang aktiviert. Man sieht, dass die beiden Ausgänge sofort den Wert 0 annehmen, obwohl keine negative Flanke vorliegt. Das wurde ja bereits im letzten Abschnitt näher erläutert. Dieser Sachverhalt wird nun bei Zählern angewandt, die bis zu einer bestimmten Zahl zählen sollen, die durch eine einfache Aneinanderreihung von Flipflops nicht erreicht wird. Beispielsweise könnte man mit der in Abb. 36 dargestellten Schaltung einen Zähler bauen, der nach der Zahl 2, also dual 10, auf 0 zurückspringt. Genaueres darüber wird im nächsten Abschnitt behandelt.</p>
+      <figure>
+        <img src="media/abb-38.svg" alt="Diagramm Dualzähler"/>
+        <figcaption>Diagramm Dualzähler</figcaption>
+      </figure>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

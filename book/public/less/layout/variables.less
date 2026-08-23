@@ -1,0 +1,12 @@
+// Das Handbuch hat keine Seitenleiste im Sinne der Editoren - die
+// Kapitelnavigation ist Teil des Textflusses, keine feste Spalte am
+// Fensterrand. Deshalb 0, wie auf der Startseite.
+@leftPaneWidth: 0;
+
+// Muss eine Einheit tragen und zu common/less/layout/variables.less (60px)
+// passen. Diese Datei wird NACH common importiert, ein einheitenloses 60 wuerde
+// gewinnen und Regeln wie `@toolbarHeight - 20` zu einer nackten Zahl machen -
+// die der Browser verwirft, worauf das Logo auf 0x0 zusammenfaellt.
+@toolbarHeight: 60px;
+
+@toolbarButtonFontColor: rgba(0, 0, 0, 0.5);

@@ -41,6 +41,16 @@
     /* inverse: the dark end, used as an animation endpoint */
     --surface-inverse: 0, 0, 0;
 
+    // Fusszeile. Sie ist in beiden Themes dunkel - das ist Absicht und keine
+    // vergessene Anpassung: der Fuss schliesst die Seite ab und soll sich vom
+    // Inhalt absetzen, egal welches Theme darueber laeuft. Als Tokens, damit
+    // das eine Entscheidung an einer Stelle bleibt und kein Streufeuer aus
+    // Hexwerten in einer Layoutdatei.
+    --footer-bg:       27, 27, 58;
+    --footer-text:     207, 208, 224;
+    --footer-strong:   255, 255, 255;
+    --footer-muted:    154, 155, 180;
+
     /* -- text ------------------------------------------------------------ */
     --text-strong:     0, 0, 0;
     --text-default:    0, 0, 0;

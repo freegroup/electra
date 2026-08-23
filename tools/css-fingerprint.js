@@ -41,7 +41,7 @@ const fs = require("fs")
 const path = require("path")
 
 const ROOT = path.resolve(__dirname, "..")
-const APPS = ["home", "simulator", "author", "designer"]
+const APPS = ["home", "simulator", "author", "designer", "book"]
 const OUT = path.join(ROOT, ".fingerprint")
 const LESSC = path.join(ROOT, "home", "node_modules", ".bin", "lessc")
 

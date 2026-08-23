@@ -1,0 +1,67 @@
+\chapter{Schieberegister}
+
+\section{Einführung}
+
+Auch bei den sogenannten Schieberegistern finden JK-Flipflops Anwendung. Maßgeblich beteiligt sind dabei nur die Eingänge J und K, der Takteingang T und, wenn erforderlich, der Rücksetzeingang R.\index{Takteingang}\index{Rücksetzeingang}
+
+Ein Schieberegister ist so aufgebaut, dass der Taktimpuls an alle Takteingänge gleichzeitig gelegt wird. Es findet also keine Taktteilung statt, sondern alle Flipflops haben den selben Takt. Weiterhin wird jeweils der Q-Ausgang des vorhergehenden Flipflops mit dem J-Eingang des nachfolgenden Flipflops verbunden und der \ensuremath{\lnot}Q-Ausgang mit dem K-Eingang.\index{Taktimpuls}
+
+Der Dateneingang D dieser Kette wird an den Eingang des ersten Flipflops gelegt und invertiert an den K-Eingang.\index{Dateneingang}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.8\linewidth]{media/abb-68}
+  \caption{Schaltbild Schieberegister}
+\end{figure}
+
+Wird bei dieser Schaltung an den Takteingang T ein Impuls gelegt, so wird die gespeicherte Information des Flipflops 3 an die Eingänge des Flipflops 2 weiter „geschoben“. Daher auch der Begriff „Schieberegister“. Die an D angelegten Daten werden also mit jedem Taktimpuls um eine Flipflopstelle weiter nach rechts geschoben. In diesem Beispiel können im Höchstfall 4 Werte in den Flipflops gespeichert werden. Es handelt sich dabei also um ein „4-Bit-Schieberegister“. Ein Bit stellt eine Informationseinheit dar und hat entweder den Wert 0 oder den Wert 1.\index{Takteingang}\index{Taktimpuls}
+
+Spielen wir nun einmal einen solchen Ablauf durch. An den Dateneingang D wird der Wert 1 gelegt. Wird nun ein Taktimpuls wirksam, so erhält das Flipflop 3 am Ausgang Q\textsubscript{3} den Wert 1. Daraufhin wird an D der Wert 0 angelegt. Mit dem nächsten Taktimpuls an T wird der Wert 1 von FF\textsubscript{3} an FF\textsubscript{2} weitergeschoben; es tritt also an FF\textsubscript{2} der Wert 1 am Ausgang auf. Außerdem wird beim selben Taktimpuls der Datenwert 0 vom Eingang D auf das FF\textsubscript{3} übernommen, womit am Ausgang Q\textsubscript{3} der Wert 0 auftritt. Wird nun an den Eingang D der Wert 1 gelegt und tritt ein erneuter Taktimpuls auf, so erhält der Ausgang Q\textsubscript{1} den Wert 1, Q\textsubscript{2} erhält den Wert 0 und Q\textsubscript{3} den Wert des Dateneingangs vor dem Impuls, also 1. Wird daraufhin an D der Wert 0 gelegt und wird ein neuer Taktimpuls wirksam, so erscheint am Ausgang Q\textsubscript{3} der Wert 0, an Q\textsubscript{2} der Wert 1, an Q\textsubscript{1} der Wert 0 und an Q\textsubscript{0} der Wert 1.\index{Dateneingang}\index{Taktimpuls}
+
+Der angelegte Wert von D wird also immer pro Taktimpuls um eine Stelle weiter geschoben.\index{Taktimpuls}
+
+Die folgende Tabelle zeigt den Sachverhalt der Verschiebung anschaulich. Dabei sind die Informationen, d.h. die Werte 1 oder 0, die an D gelegt werden durch die Variablen a\textsubscript{3}, a\textsubscript{2}, a\textsubscript{1} und a\textsubscript{0} ersetzt. Wichtig dabei ist, dass man zuerst die Daten für a\textsubscript{0} eingeben muss, dann die für a\textsubscript{1} usw., damit am Ende die Datenreihe a\textsubscript{3}a\textsubscript{2}a\textsubscript{1}a\textsubscript{0} erreicht wird. Ein X in der Tabelle bedeutet, dass der Wert an dieser Stelle beliebig ist.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{cccccc}
+    \toprule
+    t & D & Q\textsubscript{3} & Q\textsubscript{2} & Q\textsubscript{1} & Q\textsubscript{0} \\
+    \midrule
+    0 & D=a\textsubscript{0} & X & X & X & X \\
+    1 & D=a\textsubscript{1} & a\textsubscript{0} & X & X & X \\
+    2 & D=a\textsubscript{2} & a\textsubscript{1} & a\textsubscript{0} & X & X \\
+    3 & D=a\textsubscript{3} & a\textsubscript{2} & a\textsubscript{1} & a\textsubscript{0} & X \\
+    4 & X & a\textsubscript{3} & a\textsubscript{2} & a\textsubscript{1} & a\textsubscript{0} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Eine weitere Möglichkeit der Eingabe der 4 Daten ist durch die Möglichkeit des Setzens gegeben. Die Daten können nämlich auch durch die Setz- bzw. Rücksetzeingänge eingegeben werden, soweit diese vorhanden sind. Dabei ist ja, wie bekannt, kein Takt nötig.
+
+Falls die Rücksetzeingänge bei einer „Taktsetzung“ (also einer Registrierung der Daten über die J- und K-Eingänge) miteinander verbunden sind, kann damit das ganze Register gelöscht werden. Dies ist von großem Vorteil bei einem Ringschieberegister, das folgend abgebildet ist.\index{Ringschieberegister}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.8\linewidth]{media/abb-69}
+  \caption{Schaltbild Schieberegister}
+\end{figure}
+
+Bei diesem Ringschieberegister ist der Ausgang Q\textsubscript{0} mit dem Dateneingang D verbunden. Die Daten werden also in einem Ring weitergeschoben. Dadurch bleiben die einmal gespeicherten Werte die ganze Zeit über gespeichert. Bei einem normalen Schieberegister müsste man ständig bei D neue Daten eingeben, während beim Ringschieberegister die einmal gespeicherten Bits erhalten bleiben und nur ihren Platz wechseln. Die Registrierung der Daten bei einem solchen Ringschieberegister erfolgt zweckmäßigerweise über die Setz- bzw. Rücksetzeingänge. Es ist aber auch eine Registrierung über die J- und K-Eingänge möglich. Nur muss in diesem Fall für die Zeit der Dateneingabe die Verbindung zwischen Q\textsubscript{0} und R unterbrochen werden, da Ausgänge generell nicht zusammengeschaltet werden dürfen. Diese Trennung kann z.B. über eine Verknüpfungsschaltung geschehen.\index{Ringschieberegister}\index{Dateneingang}\index{Ringschieberegister}
+
+Um eine Vereinfachung der Schaltung zu erreichen, hat man für das Schieberegister ein Schaltsymbol entworfen, ebenso für das Ringschieberegister.\index{Ringschieberegister}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.8\linewidth]{media/abb-70}
+  \caption{Schaltsymbol Schieberegister}
+\end{figure}
+
+An den Takteingang T wird der Takt angelegt. Die Daten werden über den Dateneingang D in die Register a\textsubscript{3}, a\textsubscript{2}, a\textsubscript{1} und a\textsubscript{0} geschoben und können an den Ausgängen Q\textsubscript{3}, Q\textsubscript{2}, Q\textsubscript{1} und Q\textsubscript{0} bzw. \ensuremath{\lnot}Q\textsubscript{0} abgegriffen werden. Mit dem Rücksetzeingang R kann das gesamte Register gelöscht werden.\index{Takteingang}\index{Dateneingang}\index{Rücksetzeingang}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.8\linewidth]{media/abb-71}
+  \caption{Schaltsymbol Schieberegister}
+\end{figure}
+

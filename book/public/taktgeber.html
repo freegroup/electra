@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Taktgeber - Electra.Academy</title>
+<meta name="description" content="Der Taktgeber ist besonders für die im folgenden beschriebenen Flipflops, Zähler und Speicher von Nutzen. Dazu wird jeder Zeitabschnitt im..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/taktgeber.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Taktgeber - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/taktgeber.html">
+<meta property="og:description" content="Der Taktgeber ist besonders für die im folgenden beschriebenen Flipflops, Zähler und Speicher von Nutzen. Dazu wird jeder Zeitabschnitt im...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber" open>
+          <summary><a class="current" aria-current="page">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops">
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler">
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Taktgeber</h1>
+      <p>Der Taktgeber ist besonders für die im folgenden beschriebenen Flipflops, Zähler und Speicher von Nutzen. Dazu wird jeder Zeitabschnitt im Programmablauf einer digitalen Schaltung in Taktimpulse eingeteilt. Der Takt wird durch einen dauernden Wechsel von H und L, dem sogenannten Dauerimpuls, an eine Schaltung gelegt. So z.B. auch an jedem Computer. Für Versuchsschaltungen und zur genauen Verfolgung der Schaltzustände ist es von Vorteil, wenn die Taktlänge variabel ist. Man kann dadurch langsam den Programmablauf der Schaltung kontrollieren oder schnell das Verhalten prüfen.</p>
+      <p>Eine solche Schaltung für schnelle Taktimpulse ist in Abb. 20 dargestellt. Es ist ein astabiler Multivibrator mit 2 Kondensatoren die zwischen 22 nF und 1 µF liegen und mit 2 Widerständen die zweckmässigerweise wegen der Impulslänge als Drehpotentiometer verwendet werden. Man wählt am besten Drehpotentiometer in der Grössenordnung von 3,3 k. Weiterhin werden 2 Inverter verwendet.</p>
+      <figure>
+        <img src="media/abb-21.svg" alt="Schaltbild Taktgeber"/>
+        <figcaption>Schaltbild Taktgeber</figcaption>
+      </figure>
+      <figure>
+        <img src="media/abb-22.svg" alt="Diagramm Taktgeber"/>
+        <figcaption>Diagramm Taktgeber</figcaption>
+      </figure>
+      <p>Betrachtet man das Oszilloskopbild dieser Schaltung (s. Abb. 21), so fällt auf, dass bei den Übergängen der beiden Bereiche keine genaue senkrechten Flanken entstehen. Dies spielt jedoch bei einer digitalen Schaltung keine Rolle. Die Impulslänge kann nun durch die Drehwiderstände verändert werden. Die genaue Dauer des Impulses und der Taktlücke lässt sich durch die Gleichung t=R·C bestimmen. </p>
+      <p>Bei R=3k und C=100 nF erhält man also einen Impuls von t=3·10<sup>-4</sup> s.</p>
+      <p>Einen besseren AMV (astabilen Multivibrator) zeigt Abb. 22. Das Herzstück dieser Schaltung ist der Präzisionstimer NE 555, der verhältnismäßig günstig ist. Der Vorteil des Timers ist vor allem die erhöhte Frequenzgenauigkeit und die genauere Impulsform der Rechteckspannung. Dies ist deutlich am Oszilloskopbild zu erkennen. Außerdem ist die Ausgangsleistung mit etwa 200 mA deutlich höher als bei der vorherigen Schaltung. Die Impulslänge kann durch Wahl der Widerstände und des Kondensators zwischen einigen ns und mehreren Sekunden (50 s und mehr) variiert werden.</p>
+      <figure>
+        <img src="media/abb-23.svg" alt="Schaltbild Taktgeber mit einem NE555"/>
+        <figcaption>Schaltbild Taktgeber mit einem NE555</figcaption>
+      </figure>
+      <figure>
+        <img src="media/abb-24.svg" alt="Diagramm Zeitverhalten NE555"/>
+        <figcaption>Diagramm Zeitverhalten NE555</figcaption>
+      </figure>
+      <p class="formel">t<sub>1</sub> = 0,7(R<sub>A</sub>+R<sub>B</sub>)·C</p>
+      <p class="formel">t<sub>2</sub> = 0,7·R<sub>B</sub>·C</p>
+      <p class="formel">t<sub>1</sub>+t<sub>2</sub> = 0,7(R<sub>A</sub>+2R<sub>B</sub>)·C</p>
+      <p>Nun kann es jedoch manchmal auch nötig sein, einzelne Impulse, die von Hand ausgelöst werden, an eine digitale Schaltung zu legen. Dies ist vor allem von großem Nutzen, wenn die Schaltung nach jedem Schritt kontrolliert werden soll. Nun könnte man einfach einen Taster nehmen, mit der Stromversorgung verbinden und durch das Drücken der Taste einen Impuls erzeugen. Doch leider geht das nicht so einfach. Der Grund dafür ist in Abb. 24 zu erkennen.</p>
+      <figure>
+        <img src="media/abb-25.svg" alt="Diagramm Tastenprellen"/>
+        <figcaption>Diagramm Tastenprellen</figcaption>
+      </figure>
+      <p>Bei einem einfachen Taster ist eben keinesfalls beim Drücken der Taste sofort die angelegte Spannung am Ausgang vorhanden. Vielmehr „pendelt“ der Spannungswert zwischen High und Low viele Male hin und her bevor der Spannungswert konstant bleibt. Das geschieht zwar mit einer sehr hohen Frequenz, doch sind gerade digitale Schaltungen auf sehr hohe Frequenzen (im Megahertz bis Gigahertz-Bereich) ausgelegt und reagieren damit auf diese schnellen Wechsel. Falls also ein einfacher Taster verwendet wird, ist eine sog. „Entprellung“ unbedingt erforderlich. Den Schaltplan dazu zeigt Abb. 25. Wie man sieht, ist auch diese Schaltung mit Standard-Gattern aufgebaut, nämlich zwei NAND-Gattern.</p>
+      <figure>
+        <img src="media/abb-26.svg" alt="Schaltbild verhinderung Tastenprellen"/>
+        <figcaption>Schaltbild verhinderung Tastenprellen</figcaption>
+      </figure>
+      <p>Eine weitaus bessere Schaltung für Einzelimpulse ist in Abb. 26 dargestellt. Dabei findet wieder der Timer-IC NE 555 von Texas Instruments Verwendung. Man kann nun durch die Wahl des Widerstandes R und des Kondensators C die Impulsdauer bestimmen und zwar von einigen ns bis zu mehreren Sekunden. Bei der einfachen entprellten Taste kann man zwar auch durch mehr oder weniger langes Drücken der Taste die Impulsdauer grob bestimmen, doch versagt diese Methode bei kurzen Einschaltzeiten. Außerdem ist auch hier der Ausgang höher belastbar.</p>
+      <figure>
+        <img src="media/abb-27.svg" alt="Schaltbild eines Einzelimpulsgebers"/>
+        <figcaption>Schaltbild eines Einzelimpulsgebers</figcaption>
+      </figure>
+      <figure>
+        <img src="media/abb-28.svg" alt="Diagramm Einzelimpulsgebers"/>
+        <figcaption>Diagramm Einzelimpulsgebers</figcaption>
+      </figure>
+      <h2>In diesem Kapitel</h2>
+      <ul class="chapterIndex">
+        <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+      </ul>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

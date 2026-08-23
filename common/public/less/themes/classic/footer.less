@@ -1,0 +1,50 @@
+// footer - CLASSIC
+//
+// Nur Aussehen. Struktur in layout/footer.less.
+//
+// Der Fuss ist dunkel, unabhaengig vom Theme - deshalb eigene --footer-*-Tokens
+// statt der Flaechen- und Textfarben der Oberflaeche. Modern spiegelt diese
+// Datei mit denselben Werten; sollte der Fuss dort spaeter anders aussehen,
+// steht die Datei schon bereit.
+
+.siteFooter {
+    background-color: rgb(var(--footer-bg));
+    color: rgb(var(--footer-text));
+
+    .brand .name {
+        color: rgb(var(--footer-strong));
+        font-weight: 400;
+    }
+
+    .column {
+        .heading {
+            color: rgb(var(--footer-strong));
+            font-weight: 500;
+        }
+
+        a {
+            color: rgb(var(--footer-text));
+
+            &:hover,
+            &:focus {
+                color: rgb(var(--footer-strong));
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .bottom {
+        border-top: 1px solid rgba(var(--footer-strong), 0.12);
+        color: rgb(var(--footer-muted));
+
+        a {
+            color: rgb(var(--footer-muted));
+
+            &:hover,
+            &:focus {
+                color: rgb(var(--footer-strong));
+                text-decoration: underline;
+            }
+        }
+    }
+}

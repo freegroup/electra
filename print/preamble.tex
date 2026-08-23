@@ -1,0 +1,45 @@
+% Satzspiegel, Schrift und Pakete des gedruckten Handbuchs.
+%
+% Diese Datei ist handgepflegt. Der Buchkoerper unter kapitel/ stammt aus dem
+% einmaligen Lauf von tools/convert-book.js, die Gestaltung hier nicht.
+
+\usepackage{fontspec}
+\usepackage[ngerman]{babel}
+\usepackage{csquotes}
+\usepackage{microtype}
+
+% Libertinus statt Inter. Der Plan sah Inter vor, damit Buch und Website
+% dasselbe Schriftbild bekommen - im Repo liegt Inter aber nur als woff2
+% (common/public/css/inter/), und das kann fontspec nicht einbinden. Eine
+% Serifenschrift traegt einen 100-Seiten-Fliesstext im Druck ohnehin besser als
+% eine Oberflaechen-Grotesk. Falls Inter doch gewuenscht ist: woff2 mit fonttools
+% nach otf wandeln, dann hier eintragen.
+\setmainfont{Libertinus Serif}
+\setsansfont{Libertinus Sans}
+\setmonofont{Libertinus Mono}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{media/}}
+
+% Logiktafeln. booktabs setzt Linien mit Abstand statt Gitter - bei
+% Wahrheitstabellen aus Nullen und Einsen ist das der Unterschied zwischen
+% lesbar und Tapete.
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.15}
+
+\usepackage[
+  a5paper,
+  inner=20mm, outer=15mm, top=18mm, bottom=20mm,
+]{geometry}
+
+% 56 Stichwoerter, aus den XE-Feldern des Manuskripts uebernommen.
+\usepackage{imakeidx}
+\makeindex[title=Stichwortverzeichnis, intoc]
+
+\usepackage[hidelinks]{hyperref}
+
+% Abbildungen sitzen mitten im Text und sollen dort bleiben.
+\setkomafont{caption}{\small}
+\setkomafont{captionlabel}{\small\bfseries}
+\setcapindent{0pt}

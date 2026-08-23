@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>Volladdierer - Electra.Academy</title>
+<meta name="description" content="Ein Volladdierer ist eine Schaltung, die zwei Dualzahlen zusammenzählt. Dabei beginnt er bei der letzten Stelle, genau so, wie eine Addition „von Hand“..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/volladdierer.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="Volladdierer - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/volladdierer.html">
+<meta property="og:description" content="Ein Volladdierer ist eine Schaltung, die zwei Dualzahlen zusammenzählt. Dabei beginnt er bei der letzten Stelle, genau so, wie eine Addition „von Hand“...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops">
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./kv-tafel.html">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler">
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a class="current" aria-current="page">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>Volladdierer</h1>
+      <p>Ein Volladdierer ist eine Schaltung, die zwei Dualzahlen zusammenzählt. Dabei beginnt er bei der letzten Stelle, genau so, wie eine Addition „von Hand“ ausgeführt wird. Hier ein kleines Beispiel:</p>
+      <p>Die Dualzahlen a<sub>3</sub>a<sub>2</sub>a<sub>1</sub>a<sub>0</sub> und b<sub>3</sub>b<sub>2</sub>b<sub>1</sub>b<sub>0</sub> sollen addiert werden.</p>
+      <table>
+        <thead><tr><th></th><th>a<sub>3</sub></th><th>a<sub>2</sub></th><th>a<sub>1</sub></th><th>a<sub>0</sub></th></tr></thead>
+        <tbody>
+          <tr><td>+</td><td>b<sub>3</sub></td><td>b<sub>2</sub></td><td>b<sub>1</sub></td><td>b<sub>0</sub></td></tr>
+          <tr><td></td><td>Ü<sub>3</sub></td><td>Ü<sub>2</sub></td><td>Ü<sub>1</sub></td><td></td></tr>
+          <tr><td>Ü<sub>4</sub></td><td>S<sub>3</sub></td><td>S<sub>2</sub></td><td>S<sub>1</sub></td><td>S<sub>0</sub></td></tr>
+        </tbody>
+      </table>
+      <p>Die Dualzahlen werden untereinander geschrieben. Danach wird die Summe aus a<sub>0</sub> + b<sub>0</sub> gebildet und der Übertrag Ü<sub>1</sub> unter a<sub>1</sub> und b<sub>1</sub> geschrieben. So läuft die Addition weiter bis zum Übertrag Ü<sub>4</sub>, der vor die Summen S<sub>3</sub> S<sub>2</sub> S<sub>1</sub> S<sub>0</sub> gesetzt wird.</p>
+      <p>Dabei kann der Volladdierer (VA) nur zwei einstellige Dualzahlen addieren, wodurch ein kleiner Kunstgriff nötig wird um größere Dualzahlen zu addieren. Doch dazu später mehr.</p>
+      <p>Zuerst stellt sich die Frage: Wie werden Dualzahlen eigentlich addiert? Dabei gelten natürlich genau wie bei der Addition im Dezimalsystem auch bestimmte Regeln. Diese sind in der Logik-Tafel abgebildet. Dabei stellt A eine zu addierende Variable dar, B die andere. Diese beiden Werte A und B werden also zu der Summe S und dem Übertrag Ü zusammengefasst.</p>
+      <table>
+        <thead><tr><th>A</th><th>B</th><th>S</th><th>Ü</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>Ein Volladdierer besteht eigentlich aus zwei Halbaddierern, die zwei einstellige Dualzahlen addieren können, jedoch ohne Übertrag. Durch die Zusammenschaltung dieser beiden Halbaddierer ist es möglich, eine Summe samt Übertrag zu bilden. Da die Volladdierer aber als fertige ICs angeboten werden, empfiehlt es sich, diese zu verwenden.</p>
+      <p>Doch nun zu dem vorher angesprochenen Problem. Wie sieht eine Volladdierer-Schaltung aus, mit der man zwei vierstellige Dualzahlen summieren kann?</p>
+      <p>Bei diesem Problem hilft uns wiederum das Schieberegister. Wenn man die Register mit den schon gespeicherten Daten an einen VA in der angegebenen Weise anschliesst, so stehen pro Taktimpuls immer nur zwei Werte der beiden Dualzahlen zur Addition zur Verfügung. Es beginnt mit den beiden Werten a<sub>0</sub> und b<sub>0</sub>. Diese werden nun in den VA eingegeben, der sie addiert. Am Ausgang S steht dann die Summe dieser beiden Zahlen und am Ausgang Ü der Übertrag. Bei einem erneuten Taktimpuls gelangen nun die beiden Dualwerte a<sub>1</sub> und b<sub>1</sub>, die ja nach dem letzten Taktimpuls den Platz von a<sub>0</sub> und b<sub>0</sub> eingenommen haben, an den VA.</p>
+      <p>Das JK-Flipflop unterhalb der Schieberegister, das vor diesem Taktimpuls den Wert Ü<sub>1</sub> am Eingang hatte, hat nun den Wert Ü<sub>1</sub> am Ausgang Q. Dieser Ausgang Q ist nun mit einem weiteren Eingang C des VA verbunden. Es liegen also an den Eingängen des Volladdierers die Werte a<sub>1</sub> (an A), b<sub>1</sub> (an B) und Ü<sub>1</sub> an C. Diese werden wiederum addiert und erscheinen als Summe S und als Übertrag Ü an dessen Ausgängen.</p>
+      <p>Zuvor wurde jedoch der Ausgang S des VA mit dem J-Eingang des Serienaddierers verbunden. Nachdem nun die Summe a<sub>0</sub> + b<sub>0</sub> gebildet wurde und ein erneuter Taktimpuls die Werte a<sub>3</sub>, a<sub>2</sub> und a<sub>1</sub> um eine Stelle weiter nach rechts geschoben hat (ebenso die Werte b<sub>3</sub>, b<sub>2</sub> und b<sub>1</sub>), sind in den Schieberegistern folgende Werte gespeichert.</p>
+      <p class="formel">Register A: X,  a<sub>3</sub>, a<sub>2</sub>, a<sub>1</sub></p>
+      <p class="formel">Register B: S<sub>0</sub>, b<sub>3</sub>, b<sub>2</sub>, b<sub>1</sub></p>
+      <p>In dem JK-Flipflop befindet sich der Übertrag Ü<sub>1</sub>.</p>
+      <p>Nun tritt die erneute Addition der Variablen an A, B und C des VA auf. Es wird also die Summe a<sub>1</sub> + b<sub>1</sub> + Ü<sub>1</sub> gebildet. Dabei wird die Summe S<sub>1</sub> gebildet, die wiederum am J-Eingang des unteren Schieberegisters anliegt und bei einem erneuten Taktimpuls als Information aufgenommen wird. Der Übertrag Ü<sub>2</sub>, der bei der Addition entsteht und an den J-Eingang des Flipflops gelegt wird, wird auch von diesem beim nächsten Impuls aufgenommen und erscheint dann am Ausgang Q um von dort bei einer erneuten Addition übernommen zu werden.</p>
+      <p>Es befinden sich also jetzt folgende Werte in den Registern:</p>
+      <p class="formel">Register A: X,   X, a<sub>3</sub>, a<sub>2</sub></p>
+      <p class="formel">Register B: S<sub>1</sub>, S<sub>0</sub>, b<sub>3</sub>, b<sub>2</sub></p>
+      <p>In dem JK-Flipflop befindet sich der Übertrag Ü<sub>2</sub>.</p>
+      <p>Bei einem erneuten Taktimpuls wird die Summe der Werte a<sub>2</sub>, b<sub>2</sub> und Ü<sub>2</sub> gebildet. Es erscheint dann am Ausgang S des VA die gebildete Summe S<sub>2</sub> und der Übertrag Ü<sub>3</sub>.</p>
+      <p>Diese Art der Addition wird so weit fortgesetzt bis sämtliche Variablen addiert sind. Nachdem die letzte Summierung geschehen ist und die letzte Summe in dem unteren Schieberegister abgespeichert wurde, sind die Werte wie folgt in den Registern:</p>
+      <p>Register A: X,   X,  X,  X</p>
+      <p>Register B: S<sub>3</sub>, S<sub>2</sub>, S<sub>1</sub>, S<sub>0</sub></p>
+      <p>In dem JK-Flipflop befindet sich der Übertrag Ü<sub>4</sub>.</p>
+      <p>Der Übertrag Ü<sub>4</sub> kann nun aus dem JK-Flipflop entnommen werden und vor die Summe S<sub>3</sub>, S<sub>2</sub>, S<sub>1</sub>, S<sub>0</sub> gesetzt werden. Der Sachverhalt der Verschiebung innerhalb des Registers und die Addition der einzelnen Variablen zu einer Summe S und dem Übertrag Ü ist in der folgenden Tabelle noch einmal zusammengefasst.</p>
+      <p>Schieberegister A:</p>
+      <table>
+        <thead><tr><th>t</th><th>Stelle 3</th><th>Stelle 2</th><th>Stelle 1</th><th>Stelle 0</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>a<sub>3</sub></td><td>a<sub>2</sub></td><td>a<sub>1</sub></td><td>a<sub>0</sub></td></tr>
+          <tr><td>1</td><td>X</td><td>a<sub>3</sub></td><td>a<sub>2</sub></td><td>a<sub>1</sub></td></tr>
+          <tr><td>2</td><td>X</td><td>X</td><td>a<sub>3</sub></td><td>a<sub>2</sub></td></tr>
+          <tr><td>3</td><td>X</td><td>X</td><td>X</td><td>a<sub>3</sub></td></tr>
+          <tr><td>4</td><td>X</td><td>X</td><td>X</td><td>X</td></tr>
+        </tbody>
+      </table>
+      <p>Schieberegister B:</p>
+      <table>
+        <thead><tr><th>t</th><th>Stelle 3</th><th>Stelle 2</th><th>Stelle 1</th><th>Stelle 0</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>b<sub>3</sub></td><td>b<sub>2</sub></td><td>b<sub>1</sub></td><td>b<sub>0</sub></td></tr>
+          <tr><td>1</td><td>S<sub>0</sub></td><td>b<sub>3</sub></td><td>b<sub>2</sub></td><td>b<sub>1</sub></td></tr>
+          <tr><td>2</td><td>S<sub>1</sub></td><td>S<sub>0</sub></td><td>b<sub>3</sub></td><td>b<sub>2</sub></td></tr>
+          <tr><td>3</td><td>S<sub>2</sub></td><td>S<sub>1</sub></td><td>S<sub>0</sub></td><td>b<sub>3</sub></td></tr>
+          <tr><td>4</td><td>S<sub>3</sub></td><td>S<sub>2</sub></td><td>S<sub>1</sub></td><td>S<sub>0</sub></td></tr>
+        </tbody>
+      </table>
+      <p>JK-Flipflop:</p>
+      <table>
+        <thead><tr><th>t</th><th>Q</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>X</td></tr>
+          <tr><td>1</td><td>Ü<sub>1</sub></td></tr>
+          <tr><td>2</td><td>Ü<sub>2</sub></td></tr>
+          <tr><td>3</td><td>Ü<sub>3</sub></td></tr>
+          <tr><td>4</td><td>Ü<sub>4</sub></td></tr>
+        </tbody>
+      </table>
+      <figure>
+        <img src="media/abb-72.svg" alt="Schaltbild Serienaddierer"/>
+        <figcaption>Schaltbild Serienaddierer</figcaption>
+      </figure>
+      <p>Das obere Schieberegister A, das untere B, das JK-Flipflop und der Volladdierer bilden zusammen eine Einheit. Da diese Schaltung mehrere Variablen, also eine „Serie von Bits“, addieren kann, nennt man diese Schaltung auch einen Serienaddierer.</p>
+      <p>Der Takt T, der an den beiden Schieberegistern und dem Flipflop liegt muss an den Eingang T angelegt werden. Weiterhin müssen die dualen Zahlen a<sub>3</sub>a<sub>2</sub>a<sub>1</sub>a<sub>0</sub> und b<sub>3</sub>b<sub>2</sub>b<sub>1</sub>b<sub>0</sub> über die Setz- und Rücksetzeingänge in die Register geladen werden. Diese Eingänge sind hier der Übersicht wegen nicht eingezeichnet.</p>
+      <p>Wenn die Schaltung aufgebaut und in Betrieb genommen wird, empfiehlt es sich zuerst Einzelimpulse an den Takteingang T zu legen. So kann die Schaltung Schritt für Schritt beobachtet  und kontrolliert werden. Danach ist ein Betrieb mit höherer Taktfrequenz möglich.</p>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>

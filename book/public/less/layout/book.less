@@ -1,0 +1,245 @@
+// Handbuch - Struktur einer Buchseite im Browser.
+//
+// Farbfrei, wie jede Datei unter layout/. Alles Farbige liegt in
+// themes/classic/book.less und dessen Spiegel unter themes/modern/.
+//
+// Zwei Spalten: links das Inhaltsverzeichnis, das in JEDER Seite steht und
+// nicht per JavaScript nachgeladen wird. Das kostet ein paar Kilobyte pro Seite
+// und bringt dafuer, dass jede Seite von jeder anderen aus verlinkt ist - ohne
+// interne Verlinkung findet eine Suchmaschine die Tiefe eines Buches nicht.
+
+body.bookBody {
+  margin: 0;
+  overflow-y: auto;
+
+  .bookLayout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    box-sizing: border-box;
+  }
+
+  // Inhaltsverzeichnis
+  nav.toc {
+    flex: 0 0 240px;
+    position: sticky;
+    top: 24px;
+    font-size: 0.9em;
+    line-height: 1.5;
+
+    .tocTitle {
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: kapitel;
+    }
+
+    > ol > li {
+      counter-increment: kapitel;
+      margin-bottom: 6px;
+    }
+
+    // Die Kapitelnummer. Sie muss an ZWEI Stellen stehen: Kapitel ohne
+    // Abschnitte sind ein blosser Link, Kapitel mit Abschnitten stecken in
+    // einem <details> und ihr Link sitzt im <summary>. Nur die erste Form zu
+    // bedienen war der Grund, warum die Zaehlung im Menue Luecken hatte -
+    // 1, 2, 3, -, -, -, 7.
+    > ol > li > a::before,
+    > ol > li > details > summary > a::before {
+      content: counter(kapitel) ". ";
+    }
+
+    // Abschnitte eines Kapitels, eingerueckt und mit eigenem Aufzaehlungszeichen
+    ol ol {
+      padding-left: 14px;
+      margin: 2px 0 8px;
+
+      > li > a::before {
+        content: "•";
+        margin-right: 7px;
+      }
+    }
+
+    a {
+      display: block;
+      padding: 2px 0;
+      text-decoration: none;
+    }
+
+    // Klapp-Kapitel. <details> bringt einen eigenen Marker mit, der je nach
+    // Browser anders aussieht - deshalb aus und selbst gesetzt.
+    details > summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+
+      &::-webkit-details-marker { display: none; }
+
+      &::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 0;
+        height: 0;
+        border-left: 4px solid currentColor;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        transition: transform 0.15s;
+      }
+      a { padding: 2px 0; }
+    }
+    details[open] > summary::before { transform: rotate(90deg); }
+
+    // Das Buch zum Mitnehmen. Eine Karte, kein Link in der Zeile - es ist ein
+    // Geschenk und darf danach aussehen.
+    .bookGift {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: @borderRadiusBig;
+      text-align: center;
+
+      img {
+        width: 120px;
+        height: auto;
+        margin-bottom: 8px;
+      }
+      strong { font-size: 1.02em; }
+      span { font-size: 0.85em; }
+    }
+  }
+
+  article {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 46em;
+
+    h1 {
+      margin: 0 0 24px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      margin: 40px 0 12px;
+    }
+
+    h3 {
+      margin: 28px 0 8px;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    // Die Boolesche Gleichung. Abgesetzt wie im Buch, wo sie eingerueckt steht.
+    p.formel {
+      margin: 20px 0;
+      padding: 12px 20px;
+    }
+
+    figure {
+      margin: 28px 0;
+      text-align: center;
+
+      img {
+        // Die Abbildungen sind Vektor und tragen ihre Groesse aus dem WMF von
+        // 2004 - teils 30px breit, teils 210px. Eine feste Breite wuerde die
+        // schmalen aufblasen; eine Obergrenze laesst jede in ihrer Groesse.
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    figcaption {
+      margin-top: 8px;
+      font-size: 0.9em;
+    }
+
+    // Logiktafeln
+    table {
+      margin: 24px auto;
+      border-collapse: collapse;
+
+      caption {
+        caption-side: bottom;
+        padding-top: 8px;
+        font-size: 0.9em;
+        text-align: center;
+      }
+
+      th, td {
+        padding: 5px 14px;
+        text-align: center;
+      }
+    }
+
+    p.caption {
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    // Kapitelseiten fuehren ihre Abschnitte auf
+    ul.chapterIndex {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin-bottom: 6px;
+      }
+    }
+  }
+
+  // Der Knopf, der die Schaltung im Simulator oeffnet. Das ist der Teil, den
+  // ein Lehrbuch auf Papier nicht kann.
+  .simulatorLink,
+  .downloadLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0;
+    padding: 10px 18px;
+    border-radius: @borderRadiusBig;
+    text-decoration: none;
+
+    img, svg {
+      height: 20px;
+      width: auto;
+    }
+  }
+}
+
+// Schmale Bildschirme: das Inhaltsverzeichnis wandert ueber den Text und
+// scrollt mit, statt eine 240px-Spalte von der Lesebreite abzuziehen.
+@media (max-width: 860px) {
+  body.bookBody main {
+    flex-direction: column;
+    gap: 24px;
+  }
+  body.bookBody nav.toc {
+    position: static;
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}

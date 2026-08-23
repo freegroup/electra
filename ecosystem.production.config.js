@@ -44,6 +44,13 @@ module.exports = {
             env: { "NODE_ENV": "production" }
           },
           {
+            name   : "book",
+            cwd : "./book",
+            script: "node",
+            args: "./server/index",
+            env: { "NODE_ENV": "production"}
+          },
+          {
             name   : "designer",
             cwd : "./designer",
             script: "node",

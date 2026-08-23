@@ -1,0 +1,50 @@
+// footer - MODERN
+//
+// Nur Aussehen. Struktur in layout/footer.less.
+//
+// Spiegel von themes/classic/footer.less, Wert fuer Wert gleich. Der Fuss ist in
+// beiden Themes derselbe dunkle Abschluss; die Datei liegt trotzdem hier, weil
+// jedes Theme denselben Dateisatz traegt - und weil eine spaetere Abweichung
+// dann genau hier hingehoert.
+
+.siteFooter {
+    background-color: rgb(var(--footer-bg));
+    color: rgb(var(--footer-text));
+
+    .brand .name {
+        color: rgb(var(--footer-strong));
+        font-weight: 400;
+    }
+
+    .column {
+        .heading {
+            color: rgb(var(--footer-strong));
+            font-weight: 500;
+        }
+
+        a {
+            color: rgb(var(--footer-text));
+
+            &:hover,
+            &:focus {
+                color: rgb(var(--footer-strong));
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .bottom {
+        border-top: 1px solid rgba(var(--footer-strong), 0.12);
+        color: rgb(var(--footer-muted));
+
+        a {
+            color: rgb(var(--footer-muted));
+
+            &:hover,
+            &:focus {
+                color: rgb(var(--footer-strong));
+                text-decoration: underline;
+            }
+        }
+    }
+}

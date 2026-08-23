@@ -4,7 +4,7 @@ import SettingsSwitch from "../../common/js/SettingsSwitch"
 import party from "party-js";
 import conf from "./Configuration"
 import Header from "./Header"
-import Footer from "./Footer"
+import Footer from "../../common/js/Footer"
 
 class Application extends AppFrame{
   constructor() {

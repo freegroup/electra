@@ -1,0 +1,9 @@
+# Bewusst NICHTS ausgeschlossen.
+#
+# Die Druckfassung public/grundkurs-digitaltechnik.pdf ist ein Erzeugnis, wird
+# aber mitversioniert: sie entsteht in print/ mit LaTeX, und auf dem Server
+# steht kein TeX. Sie beim Ausrollen zu bauen hiesse, eine komplette
+# TeX-Installation dorthin zu bringen - fuer eine Datei, die sich nur aendert,
+# wenn jemand am Buch arbeitet.
+#
+# Neu erzeugen:  npm run book:pdf

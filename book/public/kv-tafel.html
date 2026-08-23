@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+<meta charset="utf-8"/>
+<title>KV-Tafel - Electra.Academy</title>
+<meta name="description" content="Um bei komplizierten Rücksetzbedingungen oder bei Ansteuerungen von LEDs und Siebensegmentanzeigen eine möglichst einfache Kombination von..."/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="index, follow"/>
+
+<link rel="canonical" href="https://electra.academy/book/kv-tafel.html">
+<link rel="icon" type="image/png" href="/common/images/favicon_64x64.png" sizes="64x64"/>
+<link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
+
+<meta property="og:title" content="KV-Tafel - Electra.Academy">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://electra.academy/book/kv-tafel.html">
+<meta property="og:description" content="Um bei komplizierten Rücksetzbedingungen oder bei Ansteuerungen von LEDs und Siebensegmentanzeigen eine möglichst einfache Kombination von...">
+
+<link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
+<link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/book/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
+
+<script src="/common/js/jquery/jquery.js"></script>
+<script src="/common/js/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+  var app = null
+  var socket = null
+</script>
+<!-- The stored theme, applied before the first paint. Contract with
+     common/js/theme.js - same storage key, same attribute. -->
+<script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed bookBody">
+
+<div class="bookLayout">
+
+  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
+       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+       themselves into .applicationSwitch. No user menu: reading needs no
+       sign-in, and Userinfo would pull in the Google client. -->
+  <div class="appbar">
+    <a class="brandLink" href="/home/index.html">
+      <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
+    </a>
+    <div class="title">
+      <h1>Electra.Academy</h1>
+      <h2>Grundlagen</h2>
+    </div>
+    <span class="spacer"></span>
+    <span class="group applicationSwitch"></span>
+  </div>
+
+  <main>
+    <nav class="toc">
+      <div class="tocTitle">Grundkurs Digitaltechnik</div>
+      <ol>
+        <li><a href="./grundlagen.html">Grundlagen</a></li>
+        <li><a href="./das-dualsystem.html">Das Dualsystem</a></li>
+        <li><a href="./vorbemerkungen.html">Vorbemerkungen</a></li>
+        <li><details data-chapter="verknuepfungsschaltungen">
+          <summary><a href="./verknuepfungsschaltungen.html">Verknüpfungsschaltungen</a></summary>
+          <ol>
+            <li><a href="./and-gatter.html">AND-Gatter (UND-Verknüpfung)</a></li>
+            <li><a href="./or-gatter.html">OR-Gatter (ODER-Verknüpfung)</a></li>
+            <li><a href="./inverter.html">INVERTER (NOT-Verknüpfung)</a></li>
+            <li><a href="./nand-gatter.html">NAND-Gatter</a></li>
+            <li><a href="./nor-gatter.html">NOR-Gatter</a></li>
+            <li><a href="./ex-or-gatter.html">EX-OR-Gatter (Exklusiv-ODER)</a></li>
+            <li><a href="./ex-nor-gatter.html">EX-NOR-Gatter</a></li>
+            <li><a href="./gatter-mit-mehreren-eingaengen.html">Gatter mit mehreren Eingängen</a></li>
+            <li><a href="./kombi-schaltungen.html">Kombi-Schaltungen</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="taktgeber">
+          <summary><a href="./taktgeber.html">Taktgeber</a></summary>
+          <ol>
+            <li><a href="./taktgeber-allgemein.html">Taktgeber allgemein</a></li>
+          </ol>
+        </details></li>
+        <li><details data-chapter="flipflops">
+          <summary><a href="./flipflops.html">Flipflops</a></summary>
+          <ol>
+            <li><a href="./r-s-flipflop.html">R-S-Flipflop (Setzspeicher)</a></li>
+            <li><a href="./das-jk-flipflop.html">Das JK-Flipflop (Master-Slave-Flipflop)</a></li>
+            <li><a href="./dualzaehler.html">Dualzähler</a></li>
+            <li><a href="./dualzaehler-fuer-beliebige-zahlenreihen.html">Dualzähler für beliebige Zahlenreihen</a></li>
+            <li><a href="./d-flipflop.html">D-Flipflop (Datenspeicher)</a></li>
+          </ol>
+        </details></li>
+        <li><a class="current" aria-current="page">KV-Tafel</a></li>
+        <li><a href="./frequenzteiler.html">Frequenzteiler</a></li>
+        <li><details data-chapter="zaehler-und-teiler">
+          <summary><a href="./zaehler-und-teiler.html">Zähler und Teiler</a></summary>
+          <ol>
+            <li><a href="./sn-7490-als-teiler.html">SN 7490 als Teiler</a></li>
+            <li><a href="./integrierter-zaehler-und-teiler-7492.html">Integrierter Zähler und Teiler 7492</a></li>
+            <li><a href="./bcd-to-7-segment-decoder.html">BCD-to-7-Segment Decoder</a></li>
+            <li><a href="./dezimalzaehler-mit-anzeige.html">Dezimalzähler mit Anzeige (7-Segment)</a></li>
+            <li><a href="./bcd-to-decimal-decoder.html">BCD-to-Decimal Decoder</a></li>
+          </ol>
+        </details></li>
+        <li><a href="./schieberegister.html">Schieberegister</a></li>
+        <li><a href="./volladdierer.html">Volladdierer</a></li>
+      </ol>
+      <a class="bookGift" href="./grundkurs-digitaltechnik.pdf" download>
+        <img src="media/cover.jpg" alt="Titelseite: Grundkurs Digitaltechnik" width="120" height="170"/>
+        <strong>Das ganze Buch als PDF</strong>
+        <span>11 Kapitel, kostenlos und ohne Anmeldung</span>
+      </a>
+    </nav>
+    <article>
+      <h1>KV-Tafel</h1>
+      <p>Um bei komplizierten Rücksetzbedingungen oder bei Ansteuerungen von LEDs und Siebensegmentanzeigen eine möglichst einfache Kombination von Verknüpfungsschaltungen zu erreichen, bedient man sich meist der sogenannten KV-Tafeln. Es ist eine systematische Methode bei der ein bestimmtes Schema die Erkennung der benötigten Verknüpfungsschaltungen erleichtert. Entwickelt wurde es von Karnaugh und Veitch. Bei dem Verfahren werden die Variablen in rechteckigen Feldern der KV-Tafel dargestellt.</p>
+      <p>Ein Beispiel:</p>
+      <p>Der Ausgang A soll ein Segment einer 7-Segment-Anzeige ansteuern. Gewählt wurde das oberste waagerechte Segment. Dabei wählen wir den Zähler von vorher, der von 0 bis 5 zählt. Der Ausgang A muss bei 0, 2, 3 und 5 den Wert 1 haben, da bei diesen Zahlen das Segment leuchten muss.</p>
+      <table>
+        <thead><tr><th>Q<sub>2</sub></th><th>Q<sub>1</sub></th><th>Q<sub>0</sub></th><th>A</th><th>Dez. Zahl</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>2</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>3</td></tr>
+          <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>4</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>1</td><td>5</td></tr>
+        </tbody>
+      </table>
+      <p>Durch diese Logik-Tafel ist nun der Zusammenhang der Dualzahlen (Q<sub>2</sub>Q<sub>1</sub>Q<sub>0</sub>) und dem Anschluss A des Segments gegeben. Es soll eine Decoderschaltung gefunden werden, die das Segment nur bei den dafür bestimmten Zahlen zum Leuchten bringt.</p>
+      <p>Nun werden zuerst so viele quadratische Felder aufgezeichnet, wie der Zähler im Höchstfall erreichen kann. Das wäre in unserem Fall mit 3 JK-Flipflops die Ziffern 0 bis 7, also 8 Zahlen. Bei Zählern mit 4 Flipflops wären es 16 usw.</p>
+      <p>Danach werden die Felder in sich überlappende Bereiche unterteilt. Die komplementären Ausgänge ¬Q<sub>2</sub>, ¬Q<sub>1</sub>, ¬Q<sub>0</sub> werden dabei ebenfalls berücksichtigt. Nun werden die Werte 1 für A in das Diagramm eingetragen. Die kleine Ziffer im rechten oberen Eck ist die dezimale Zahl dieses Feldes. Als Beispiel der Wert 1 für die dez. Zahl 0 (¬Q<sub>0</sub>, ¬Q<sub>1</sub>, ¬Q<sub>2</sub>) in die linke untere Ecke. Man nimmt immer die „Einserausgänge“ für die Bestimmung des Feldes. Bei der Zahl 000 des dualen Systems muss also jedes Mal der komplementäre Ausgang (¬Q<sub>2</sub>, ¬Q<sub>1</sub>, ¬Q<sub>0</sub>) genommen werden, da diese den Wert 1 haben. Somit wird die dezimale Zahl 0 in das obere rechte Eck des Feldes mit den Koordinaten ¬Q<sub>2</sub>, ¬Q<sub>1</sub>, ¬Q<sub>0</sub> geschrieben und der Wert, den der Ausgang A bei dieser Zahl hat in dem Kästchen vermerkt. Bei der dualen Zahl 101 wäre also das Fach mit den Koordinaten Q<sub>2</sub>, ¬Q<sub>1</sub>, Q<sub>0</sub> gemeint.</p>
+      <p>Mit diesem Schema wird nun das ganze Diagramm ausgefüllt. Die Felder, die danach noch frei sind, werden mit einem „Kreuz“ versehen, da sie ja beim Zählvorgang nicht vorkommen. Bei ihnen ist es also gleichgültig, ob sie nun den Wert 1 oder 0 haben.</p>
+      <p>Nun werden die „Einser“ in 2er oder 4er Gruppen zusammengefasst. Allerdings darf eine Zusammenfassung nicht diagonal erfolgen, wohl aber über den Rand hinweg. Die einzelnen Felder einer solchen Gruppe werden in der nachfolgenden mathematischen Gleichung durch ein „und“-Zeichen verknüpft. Die einzelnen Gruppen dagegen mit einem „oder“-Zeichen.</p>
+      <figure>
+        <img src="media/abb-44.svg" alt="KV-Tafel"/>
+        <figcaption>KV-Tafel</figcaption>
+      </figure>
+      <p>Man erhält also nach Zusammenfassung der Felder und Gruppen die mathematische Gleichung der Form:</p>
+      <p class="formel">A = Q<sub>1</sub> ∨ (Q<sub>2</sub> ∧ Q<sub>0</sub>) ∨ (¬Q<sub>0</sub> ∧ ¬Q<sub>2</sub>)</p>
+      <p>Das Umsetzen einer solchen Formel in eine Decoderschaltung wurde ja bereits bei den Verknüpfungsschaltungen erläutert. Man hält sich dabei stur an die mathematische Formel, das heißt für ein „und“-Zeichen ein AND-Gatter und für ein „oder“-Zeichen ein OR-Gatter. Damit ergibt sich die unten abgebildete Decoderschaltung die das Segment steuert.</p>
+      <figure>
+        <img src="media/abb-45.svg" alt="Schaltbild Decoderschaltung"/>
+        <figcaption>Schaltbild Decoderschaltung</figcaption>
+      </figure>
+      <p>Der Einbau dieser Decoderschaltung erfolgt nun ganz analog. Es werden die benötigten Ausgänge der einzelnen Flipflops an die Schaltung angeschlossen und der Ausgang A an das Segment der 7-Segment-Anzeige.</p>
+      <figure>
+        <img src="media/abb-46.svg" alt="Schaltbild Decoderschaltung"/>
+        <figcaption>Schaltbild Decoderschaltung</figcaption>
+      </figure>
+      <p>Dieses Verfahren erscheint auf den ersten Blick recht kompliziert, ist aber bei genau schematischer Durchführung sehr einfach und schnell auszuführen. Bei der rein mathematischen Darstellung würde ein umfangreiches Wissen der Algebra unbedingt nötig sein. Außerdem wäre der Überblick schwer zu behalten. Deshalb wählt man, wenn irgend möglich, diese Art der Lösung. Oftmals erkennt man auch sofort, wie die Decoderschaltung aussehen muss. Dann ist natürlich diese schematische Darstellung nicht nötig.</p>
+      <p>Ein weiteres Beispiel für die Anwendung der KV-Tafel. Ein Zähler, der von 0 bis 9 zählt, soll eine 7-Segment-Anzeige steuern. Gesucht ist nun die Decoderschaltung für das mittlere waagerechte Segment. Die Abhängigkeit des Ausganges A der Decoderschaltung, die das Segment ansteuert ist wiederum in der Tabelle aufgezeigt.</p>
+      <table>
+        <thead><tr><th>Q<sub>3</sub></th><th>Q<sub>2</sub></th><th>Q<sub>1</sub></th><th>Q<sub>0</sub></th><th>A</th><th>Dez. Zahl</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+          <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>1</td><td>2</td></tr>
+          <tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>3</td></tr>
+          <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>4</td></tr>
+          <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>5</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>6</td></tr>
+          <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>7</td></tr>
+          <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>8</td></tr>
+          <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>9</td></tr>
+          <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>X</td><td>10</td></tr>
+        </tbody>
+      </table>
+      <p>Die Rücksetzung geschieht bei Q<sub>3</sub> = Q<sub>1</sub> = 1. Diese beiden Ausgänge werden durch ein AND-Gatter miteinander verknüpft, negiert und an die Rücksetzeingänge der 4 JK-Flipflops angeschlossen. Man kann genauso gut ein NAND-Gatter nehmen anstatt des AND-Gatters und der nachfolgenden Negation.</p>
+      <p>Die KV-Tafel muss nun 16 Felder haben, da insgesamt 16 Ziffern gezählt werden könnten (0 bis 15). Nun werden, genauso wie vorher die Felder in sich überlappende Zeilen und Spalten unterteilt. Dabei darf keine Zeile oder Spalte für zwei Ausgänge gleichzeitig gelten. Beispielsweise darf die erste und zweite waagerechte Spalte nicht gleichzeitig Q<sub>0</sub> und Q<sub>2</sub> sein, wohl darf eine Spalte Q<sub>0</sub>, die andere ¬Q<sub>0</sub> sein, und gleichzeitig beide Spalten Q<sub>2</sub>.</p>
+      <p>Die einzelnen Felder werden nun genauso wie vorher ausgefüllt. Das bedeutet, dass zuerst die dezimalen Zahlen in die rechten oberen Ecken der Felder geschrieben werden. Dies geschieht, indem man die Ausgänge der Flipflops, die den Wert 1 haben zur Auffindung der Koordinaten zuhilfe nimmt. Beispielsweise soll das Feld für die duale Zahl 0100 (entspr. der dez. Zahl 4) aufgesucht werden. Q<sub>3</sub>, also die erste Ziffer, ist 0. Da aber ein 1-Wert benötigt wird, muss der invertierte Ausgang ¬Q<sub>3</sub> genommen werden. Q<sub>2</sub> ist schon 1, deshalb ist der invertierte Ausgang nicht nötig. Q<sub>1</sub> und Q<sub>0</sub> sind wieder 0, daher wird auch hier der invertierte Ausgang verwendet. Nun liegen schon alle Koordinaten dieses Punktes fest. Er wird im KV-Diagramm aufgesucht und mit der Zahl 4 versehen.</p>
+      <p>Als weiteres Beispiel dient die duale Zahl 0101. Dabei sind die Ausgänge Q<sub>3</sub> und Q<sub>1</sub> Null. Also müssen hier die invertierten Ausgänge als Koordinaten verwendet werden. Q<sub>2 </sub>und Q<sub>0</sub> sind schon 1. Das ergibt die Feldkoordinaten ¬Q<sub>3</sub>, Q<sub>2</sub>, ¬Q<sub>1</sub>, Q<sub>0</sub>. Diese Koordinaten werden im KV-Diagramm aufgesucht und mit der Zahl 5 versehen.</p>
+      <p>Sind nun sämtliche Felder mit den dazugehörigen dezimalen Zahlen versehen, wird anhand der Tabelle der Wert A, der am Ausgang des Decoders erscheinen soll, in das dafür bestimmte Feld eingetragen. Für die Felder, die der Zähler durch die Rücksetzung nicht erreichen kann, wird ein „X“ eingetragen als Zeichen dafür, dass es gleichgültig ist, ob der Zähler in dieser Situation eine 0 oder 1 ausgibt.</p>
+      <figure>
+        <img src="media/abb-47.svg" alt="KV-Tafel"/>
+        <figcaption>KV-Tafel</figcaption>
+      </figure>
+      <p>Nun werden benachbarte Einser-Felder zu 2er oder 4er Gruppen zusammengefasst. Diese Zusammenfassung darf auch über den Rand hinaus und auf der anderen Seite weitergehen. Diagonal darf dagegen nicht zusammengefasst werden.</p>
+      <p>Die Koordinaten, die eine Gruppe gemeinsam hat, werden untereinander mit einem „und“-Zeichen der Booleschen Algebra zusammengefasst. Die Gruppen untereinander mit einem „oder“-Zeichen. Daraus ergibt sich die mathematische Formel:</p>
+      <p class="formel">A = (¬Q<sub>0</sub> ∧ Q<sub>2</sub>) ∨ (¬Q<sub>1</sub> ∧ Q<sub>3</sub>) ∨ (Q<sub>1</sub> ∧ ¬Q<sub>2</sub>) ∨ (¬Q<sub>1</sub> ∧ Q<sub>2</sub> ∧ ¬Q<sub>3</sub>)</p>
+      <p>Nun müssen nur noch die „und”-Gruppen, deren Ausgänge an ein AND-Gatter angeschlossen wurden, mit einem OR-Gatter verbunden werden. Damit ist der Decoder für das mittlere Segment der 7-Segment-Anzeige fertig.</p>
+      <figure>
+        <img src="media/abb-48.svg" alt="Schaltbild Decoderschaltung"/>
+        <figcaption>Schaltbild Decoderschaltung</figcaption>
+      </figure>
+    </article>
+  </main>
+
+  <!-- Gefuellt von common/js/Footer.js - dieselbe Fusszeile wie auf der
+       Startseite und den Rechtsseiten. Sie traegt Impressum und Datenschutz,
+       und die gehoeren an EINE Stelle, nicht in eine zweite Abschrift hier. -->
+  <div class="footerMount"></div>
+
+</div>
+</body>
+
+<script src="/book/js/webpack/bundle.js"></script>
+</html>
