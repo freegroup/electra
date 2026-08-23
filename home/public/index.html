@@ -65,13 +65,33 @@
       <div class="teaser">
         <div class="slogan">
           <h1 data-i18n="teaser.slogan">Tauchen Sie in die Welt der logischen Schaltungen ein! Kostenlos</h1>
-          <div data-i18n="[html]teaser.description" class="textblock"><i>Entwerfen Sie mit Electra.Academy ganz einfach Ihre eigenen Schaltungen</i>, von einfachen Verknüpfungen bis hin zu komplizierten Schaltungen. Sie können Schaltungen, Dokumentationen und Lernmaterialien erstellen. Egal, ob Sie Hobbybastler oder Profi sind, unsere Plattform bietet Ihnen alles, was Sie brauchen. Sind Sie bereit, loszulegen?<br><br><b>Melden Sie sich noch heute bei uns an und erleben Sie die Leistungsfähigkeit!</b></div>
+          <div data-i18n="[html]teaser.description" class="textblock"><i>Bau deine eigenen Schaltungen</i>, von einer einzelnen Verknüpfung bis zum kompletten Schaltwerk. Dazu Aufgaben, Erklärungen und Lernmaterial - alles im selben Browser.<br><br><b>Kein Konto, keine Installation. Schaltung zeichnen, Simulation starten, Strom fließt.</b></div>
         </div>
       </div>
+      <!-- Zwei gleichwertige Eingaenge: bauen oder lernen. .launchArea ist eine
+           Flexzeile mit flex:1 auf den Kindern, der zweite Block setzt sich
+           also von selbst daneben.
+
+           Das Titelbild kommt aus /book/ und nicht aus einer Kopie hier -
+           tools/publish-pdf.js erneuert es bei jedem Buchsatz, eine zweite
+           Ablage wuerde davon nichts mitbekommen. -->
       <div class="launchArea">
+        <!-- Das Bild ist derselbe Weg wie der Knopf darunter. Es traegt
+             aria-hidden und tabindex="-1": fuer Maus und Blick ist die ganze
+             Flaeche anklickbar, fuer Tastatur und Screenreader bleibt es bei
+             EINEM Ziel, naemlich dem beschrifteten Knopf. Ein zweiter,
+             unbeschrifteter Tabstopp aufs selbe Ziel waere nur im Weg. -->
         <div class="imageContainer">
-          <img class="image" src="./images/component_simulator.png">
-          <a data-i18n="button.launch_simulator" class="electra-button" href="../simulator" target="simulator">Entdecke den Simulator</a>
+          <a class="imageLink" href="../simulator" target="simulator" aria-hidden="true" tabindex="-1">
+            <img class="image" src="./images/component_simulator.png" alt="">
+          </a>
+          <a data-i18n="button.launch_simulator" class="electra-button electra-primary" href="../simulator" target="simulator">Entdecke den Simulator</a>
+        </div>
+        <div class="imageContainer bookLaunch">
+          <a class="imageLink blob" href="../book/" aria-hidden="true" tabindex="-1">
+            <img class="image" src="/book/media/cover.jpg" alt="">
+          </a>
+          <a data-i18n="button.launch_book" class="electra-button electra-primary" href="../book/">Grundkurs Digitaltechnik</a>
         </div>
       </div>
     </div>

@@ -14,7 +14,19 @@
 
         a {
             color: rgb(var(--text-muted));
-            &:hover { color: rgb(var(--accent)); }
+
+            &:hover,
+            &:focus-visible {
+                background-color: rgb(var(--state-hover));
+                color: rgb(var(--accent));
+            }
+        }
+
+        // Die Seite, auf der man steht - dauerhaft markiert, nicht nur beim
+        // Ueberfahren.
+        a.current {
+            background-color: rgb(var(--state-selected));
+            color: rgb(var(--text-strong));
         }
         > ol > li > a { color: rgb(var(--text-default)); }
 

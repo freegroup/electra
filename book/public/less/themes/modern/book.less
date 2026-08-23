@@ -17,12 +17,18 @@
 
         a {
             color: rgb(var(--text-muted));
-            border-radius: 4px;
-            padding: 3px 8px;
-            &:hover {
+
+            &:hover,
+            &:focus-visible {
+                background-color: rgb(var(--state-hover));
                 color: rgb(var(--text-strong));
-                background-color: rgba(var(--state-hover), 1);
             }
+        }
+
+        a.current {
+            background-color: rgb(var(--state-selected));
+            color: rgb(var(--text-strong));
+            font-weight: var(--weight-semibold);
         }
         > ol > li > a { color: rgb(var(--text-default)); }
 

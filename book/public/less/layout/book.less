@@ -25,7 +25,7 @@ body.bookBody {
     align-items: flex-start;
     gap: 48px;
     width: 100%;
-    max-width: 1180px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 32px 24px 64px;
     box-sizing: border-box;
@@ -33,7 +33,12 @@ body.bookBody {
 
   // Inhaltsverzeichnis
   nav.toc {
-    flex: 0 0 240px;
+    // Waechst mit dem Fenster. Bei festen 240px brach jeder laengere
+    // Abschnittstitel um - "AND-Gatter (UND-Verknuepfung)" auf zwei Zeilen -,
+    // obwohl auf einem breiten Bildschirm links reichlich Platz ist. Die untere
+    // Grenze haelt die Spalte auf schmalen Fenstern schmal, die obere
+    // verhindert, dass sie dem Lesetext die Breite nimmt.
+    flex: 0 0 clamp(240px, 22vw, 340px);
     position: sticky;
     top: 24px;
     font-size: 0.9em;
@@ -51,24 +56,36 @@ body.bookBody {
       counter-reset: kapitel;
     }
 
+    // Jede Kapitelzeile hat dieselben drei Spalten, sonst steht die Liste
+    // schief: das Aufklapp-Dreieck gibt es nur bei Kapiteln mit Abschnitten und
+    // haette die uebrigen um seine Breite versetzt, und "10." ist breiter als
+    // "1.". Das Dreieck sitzt deshalb absolut im linken Freiraum, den ALLE
+    // Zeilen haben, und die Nummer in einem rechtsbuendigen Feld fester Breite.
+    @tocMarker: 14px;
+    @tocNumber: 1.7em;
+    @tocGap: 0.35em;
+
     > ol > li {
       counter-increment: kapitel;
       margin-bottom: 6px;
+      position: relative;
+      padding-left: @tocMarker;
     }
 
-    // Die Kapitelnummer. Sie muss an ZWEI Stellen stehen: Kapitel ohne
-    // Abschnitte sind ein blosser Link, Kapitel mit Abschnitten stecken in
-    // einem <details> und ihr Link sitzt im <summary>. Nur die erste Form zu
-    // bedienen war der Grund, warum die Zaehlung im Menue Luecken hatte -
-    // 1, 2, 3, -, -, -, 7.
+    // Die Nummer muss an ZWEI Stellen stehen: Kapitel ohne Abschnitte sind ein
+    // blosser Link, bei Kapiteln mit Abschnitten sitzt der Link im <summary>.
     > ol > li > a::before,
     > ol > li > details > summary > a::before {
-      content: counter(kapitel) ". ";
+      content: counter(kapitel) ".";
+      display: inline-block;
+      width: @tocNumber;
+      margin-right: @tocGap;
+      text-align: right;
     }
 
-    // Abschnitte eines Kapitels, eingerueckt und mit eigenem Aufzaehlungszeichen
+    // Abschnitte, eingerueckt bis unter die Kapiteltitel
     ol ol {
-      padding-left: 14px;
+      padding-left: @tocNumber + @tocGap;
       margin: 2px 0 8px;
 
       > li > a::before {
@@ -77,10 +94,17 @@ body.bookBody {
       }
     }
 
+    // Padding statt nur Text: eine Zeile, die sich beim Ueberfahren hervorheben
+    // laesst. Ohne sie waere die Markierung ein duenner Streifen ums Wort.
+    // Kein negativer Rand - der wuerde die Nummernspalte verschieben, die
+    // gerade erst ausgerichtet wurde. Die 6px links verschieben Nummer UND
+    // Unterpunkte gleichermassen, die Spalten bleiben also stehen.
     a {
       display: block;
-      padding: 2px 0;
+      padding: 3px 6px;
+      border-radius: 4px;
       text-decoration: none;
+      transition: background-color 0.12s, color 0.12s;
     }
 
     // Klapp-Kapitel. <details> bringt einen eigenen Marker mit, der je nach
@@ -88,15 +112,14 @@ body.bookBody {
     details > summary {
       list-style: none;
       cursor: pointer;
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
 
       &::-webkit-details-marker { display: none; }
 
       &::before {
         content: "";
-        flex: 0 0 auto;
+        position: absolute;
+        left: 0;
+        top: 0.62em;
         width: 0;
         height: 0;
         border-left: 4px solid currentColor;
@@ -104,7 +127,6 @@ body.bookBody {
         border-bottom: 4px solid transparent;
         transition: transform 0.15s;
       }
-      a { padding: 2px 0; }
     }
     details[open] > summary::before { transform: rotate(90deg); }
 

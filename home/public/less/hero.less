@@ -75,6 +75,44 @@
                 img{
                     max-height:100%;
                 }
+
+                // Das Bild ist ein Link wie der Knopf darunter.
+                .imageLink {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex: 1 1 auto;
+                    min-height: 0;
+                    cursor: pointer;
+                    // Ein Link ohne Text braucht keine Textdekoration, sonst
+                    // zieht der Browser einen Strich unter das Bild.
+                    text-decoration: none;
+                }
+
+                // Der Buch-Eingang. Beim Simulator steckt der Farbklecks im
+                // PNG; hier liegt er als eigenes SVG dahinter, weil das
+                // Titelbild aus dem PDF erzeugt wird und keine
+                // Hintergrundgrafik mitbringen darf.
+                //
+                // Die Kippung und der Schatten kommen aus derselben Ecke wie
+                // beim Simulatorbild - dort sind sie ebenfalls Teil der Grafik.
+                &.bookLaunch {
+                    .blob {
+                        background: url("../images/blob_teal.svg") center center / contain no-repeat;
+                        // Der Klecks fuellt die Polsterflaeche und ragt damit
+                        // ueber das Blatt hinaus. Ohne Polster waere er exakt
+                        // so gross wie das Bild - also unsichtbar dahinter.
+                        // Prozente sind hier untauglich: der Anker hat keine
+                        // feste Hoehe, gegen die sie zaehlen koennten.
+                        padding: 16px 40px 22px;
+                        box-sizing: border-box;
+                    }
+
+                    img {
+                        transform: rotate(-4deg);
+                        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+                    }
+                }
             }
         }
 

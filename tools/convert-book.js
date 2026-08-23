@@ -675,11 +675,11 @@ ${bodyLines.join("\n")}
 // state what the book is and then get out of the way of the chapter list.
 function overviewPage(pages, terms) {
   const lines = [
-    `      <p>Ein vollstaendiger Grundkurs der Digitaltechnik: vom Dualsystem ueber die`,
-    `         Gatter und ihre Wahrheitstabellen bis zu Flipflops, Zaehlern, Schieberegistern`,
-    `         und dem Volladdierer. Geschrieben von Andreas Herz, urspruenglich als Buch.</p>`,
+    `      <p>Ein vollständiger Grundkurs der Digitaltechnik: vom Dualsystem über die`,
+    `         Gatter und ihre Wahrheitstabellen bis zu Flipflops, Zählern, Schieberegistern`,
+    `         und dem Volladdierer. Geschrieben von Andreas Herz, ursprünglich als Buch.</p>`,
     `      <p>Jedes Kapitel steht als eigene Seite. Wo es zum Thema eine fertige Schaltung`,
-    `         gibt, fuehrt ein Knopf sie direkt im Simulator auf - lesen und ausprobieren`,
+    `         gibt, führt ein Knopf sie direkt im Simulator auf - lesen und ausprobieren`,
     `         am selben Ort.</p>`,
     `      <h2>Inhalt</h2>`,
     `      <ol class="chapterIndex">`,
@@ -696,12 +696,12 @@ function overviewPage(pages, terms) {
   }
   lines.push(`      </ol>`)
   if (terms.length) {
-    lines.push(`      <h2>Stichwoerter</h2>`,
+    lines.push(`      <h2>Stichwörter</h2>`,
                `      <p class="stichwoerter">${terms.map(htmlEsc).join(" &middot; ")}</p>`)
   }
   return page({
     title: "Grundkurs Digitaltechnik",
-    description: "Digitaltechnik von Grund auf: Dualsystem, Logikgatter, Flipflops, Zaehler, "
+    description: "Digitaltechnik von Grund auf: Dualsystem, Logikgatter, Flipflops, Zähler, "
                + "Schieberegister und Volladdierer - mit Wahrheitstabellen und Schaltungen zum Ausprobieren.",
     slugName: "index",
     bodyLines: lines,
