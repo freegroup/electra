@@ -1,0 +1,14 @@
+#editor .editorHeader {
+    background-color: rgb(var(--pane-bg-color));
+    border-color: rgb(var(--border-color));
+    .editorHeaderBadge { background: rgb(var(--tint-color)); color: #fff; }
+    // red "Review Requested" attention tag on the left
+    .editorHeaderTag { background: #d64545; color: #fff; }
+    // bold instruction line = accent color
+    .editorHeaderInstruction { color: rgb(var(--tint-color)); }
+    // "· DRAFT" link in the file row — accent colour so it reads as clickable
+    .editorHeaderDraftLink {
+        color: rgb(var(--tint-color));
+        &:hover { color: rgb(var(--tint-color-dark)); }
+    }
+}

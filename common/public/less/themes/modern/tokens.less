@@ -1,0 +1,108 @@
+// ---------------------------------------------------------------------------
+// MODERN - semantic tokens.
+//
+// The same names Classic defines, pointed at other values. That is the entire
+// theme: no rule is duplicated, no selector is repeated. The component files in
+// themes/classic/ reach their colours through these names, and because custom
+// properties resolve per element at computed-value time, the compatibility
+// aliases in Classic (--pane-bg-color and friends) follow along automatically.
+//
+// Why these values - the diagnosis this theme answers:
+//   - a full-height, fully saturated brand-colour sidebar is THE 2014-2016
+//     signal. The brand moves onto the active item's label and icon, where it
+//     carries meaning, and off the 200px field where it carried none.
+//   - the tinted workplaces (simulator cyan, author pink, designer blue) fight
+//     that brand colour. One neutral for all four apps.
+//   - the shadow ladder is the verbatim 2015 Material snippet: short, dark,
+//     hard. Current depth is wide-blur and barely there.
+//   - borders were the pre-2018 way to separate things. Lightened here;
+//     removing them is a per-component job for later.
+// ---------------------------------------------------------------------------
+[data-theme="modern"] {
+
+    /* -- surfaces --------------------------------------------------------- */
+    /* The chrome (navigation) is the deepest level, the workplace sits just
+       above it, panes are white. Three steps instead of Classic's brand-colour
+       field against a tinted workplace. */
+    --surface-sunken:   var(--slate-100);
+    --surface-recessed: var(--slate-50);
+    --surface-base:     var(--white);
+    --surface-raised:   var(--white);
+    --surface-muted:    var(--slate-100);
+    --surface-alt:      var(--slate-50);
+    --surface-inverse:  var(--slate-900);
+
+    /* -- text ------------------------------------------------------------- */
+    /* Pure black is harsher than a screen ever needs. Slate-900 reads softer at
+       the same legibility. This also tints every inline SVG, through the global
+       .svgTint(rgb(var(--text-color))) rule. */
+    --text-strong:      var(--slate-900);
+    --text-default:     var(--slate-800);
+    --text-muted:       var(--slate-600);
+    --text-disabled:    var(--slate-400);
+    --text-on-accent:   var(--white);
+
+    /* -- lines ------------------------------------------------------------ */
+    --line-default:     var(--slate-200);
+
+    /* -- accent ----------------------------------------------------------- */
+    --accent:           var(--brand-500);
+    --accent-strong:    var(--brand-700);
+    --accent-contrast:  var(--white);
+    /* Classic carries a second pink 15 units off the brand, from an undefined
+       token's fallback. Modern has no reason to keep the drift. */
+    --accent-highlight: var(--brand-500);
+
+    /* -- interaction ------------------------------------------------------ */
+    --state-hover:      var(--slate-50);
+    --state-selected:   var(--slate-100);
+
+    /* -- status ----------------------------------------------------------- */
+    --status-success:   var(--green-600);
+    --status-warning:   var(--amber-600);
+    --status-danger:    var(--red-600);
+
+    /* -- type ------------------------------------------------------------- */
+    /* Inter instead of Roboto. Roboto is the Material Design signature of 2014
+       and the loudest remaining marker of the old look. Inter was drawn for
+       screens at interface sizes - a large x-height that stays legible at 13px,
+       and open apertures that keep it from turning to mush in a dense list.
+       Self-hosted, see css/inter.css. */
+    --font-ui: 'InterVariable', 'Inter', sans-serif;
+
+    /* A real Roboto Light cut - see themes/classic/tokens.less. */
+    --weight-light: 300;
+
+    /* -- depth ------------------------------------------------------------ */
+    --shadow-color: var(--shadow-rgb);
+    --elevation-0: 0 1px 2px rgba(var(--shadow-rgb), .04);
+    --elevation-1: 0 1px 2px rgba(var(--shadow-rgb), .04), 0 4px 12px rgba(var(--shadow-rgb), .06);
+    --elevation-2: 0 4px 12px rgba(var(--shadow-rgb), .06), 0 12px 28px rgba(var(--shadow-rgb), .08);
+    --elevation-3: 0 12px 28px rgba(var(--shadow-rgb), .08), 0 24px 48px rgba(var(--shadow-rgb), .10);
+
+
+    // -----------------------------------------------------------------------
+    // The navigation bar.
+    //
+    // Not expressible through the surface tokens alone, because Classic paints
+    // the bar in the brand colour while Modern paints it as a surface - the two
+    // ask different questions of the same three variables.
+    //
+    // The active tab is drawn as `white` plus an overlay of --lefttab-bg-color
+    // at --lefttab-active-bg-blend (see themes/classic/tab_strip.less). On a
+    // light bar that overlay would make the active tab invisible, so the blend
+    // goes to 0: the active tab becomes pure white against the slightly darker
+    // bar, and the brand colour identifies it through label and icon instead.
+    //
+    // --lefttab-active-bg-blend is the last token that encodes a technique
+    // rather than a role. It disappears when the active tab gets a proper
+    // accent bar, which needs a rule and therefore the adjustment stage.
+    // -----------------------------------------------------------------------
+    --lefttab-bg-color:          var(--surface-sunken);
+    --lefttab-font-color:        var(--text-muted);
+    --lefttab-active-font-color: var(--accent);
+    --lefttab-active-bg-blend:   0;
+
+    /* Toolbars sit on the workplace rather than carrying their own tint. */
+    --toolbar-bg-color: var(--surface-recessed);
+}

@@ -1,0 +1,42 @@
+# Guards the CSS layer separation on every pull request.
+#
+# less/layout/** holds structure and must contain no colour literal.
+# less/themes/** holds appearance and must contain no layout property.
+#
+# Why this is worth a CI job: the separation existed as a convention before, and
+# it decayed - 124 colour literals had leaked into the structure layer by the
+# time anyone looked. A convention nobody verifies is a comment.
+#
+# The check needs no dependencies (plain node, no npm install), so it runs in
+# seconds.
+#
+# Deliberately NOT here: tools/css-fingerprint.js. That one compares the
+# compiled CSS against a recorded baseline and is the safety net for the
+# ongoing theme restructuring - run it locally, before and after a move. As a
+# CI gate it would be wrong: every intentional design change would fail the
+# build until someone re-records a 480 KB baseline, which trains people to
+# re-record without reading. It is a refactoring tool, not a regression suite.
+
+name: lint theme layers
+
+on:
+  pull_request:
+    paths:
+      - "**/less/**"
+      - "tools/lint-theme.js"
+      - ".github/workflows/lint-theme.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/less/**"
+      - "tools/lint-theme.js"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm run lint:theme

@@ -1,0 +1,68 @@
+.genericDialog {
+    .modal-content {
+        box-shadow:  var(--box-shadow-3);
+        background-color:rgb(var(--pane-bg-color));
+
+        // Classic keeps its brand-coloured title and rule - that IS the classic
+        // look. The separators the structure now provides are given the same
+        // colour so nothing changes visually.
+        .modal-header {
+            border-bottom-color: transparent;
+            h4{
+                border-bottom: 1px solid rgb(var(--tint-color));
+                color: rgb(var(--tint-color));
+            }
+        }
+
+        .modal-body {
+            .list-group {
+
+                *[data-draw2d="true"] {
+                    color: rgb(var(--tint-color));
+                }
+
+                .list-group-item {
+                    background-color: transparent;
+                }
+
+                *[data-draw2d="false"][data-type="file"] {
+                    color: gray;
+                }
+            }
+        }
+
+        .modal-footer {
+            background-color: transparent;
+        }
+    }
+}
+
+// distribute dialog target picker
+#distributeDialog {
+    .distributeTargets { border-color: rgb(var(--border-color)); }
+    .distributeTarget:hover { background-color: rgba(0, 0, 0, 0.04); }
+    .distributeImagePanel {
+        background-color: rgba(var(--text-color), 0.03);
+        box-shadow: var(--box-shadow-1);
+    }
+}
+
+#deleteDialog {
+    // a faint tinted disc behind the delete icon
+    .deleteDialogIcon { background-color: rgba(var(--tint-color), 0.12); }
+}
+
+#figureConfigDialog{
+    textarea {
+        &.figureAttribute {
+            background-color:#272822;
+            border-color:#272822;
+            color:#ffffff;
+        }
+        &.lineNumbering {
+            background-color:#3E3D32;
+            border-color:#3E3D32;
+            color:#928869;
+        }
+    }
+}

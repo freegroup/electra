@@ -1,0 +1,149 @@
+// ---------------------------------------------------------------------------
+// CLASSIC - semantic tokens
+//
+// The look Electra has always had. Classic owns :root and carries no
+// data-theme attribute, which makes it the state everything falls back into
+// when a theme file is missing or something goes wrong.
+//
+// Naming is role + level, not component: a token says what a value IS FOR
+// ("a sunken surface"), never where it is used ("the left tab bar"). That is
+// the whole point of the layer. A new theme answers "what are my surface
+// levels", it does not have to know how the navigation is built.
+//
+// There is deliberately NO primitives.less here. A primitive layer expresses a
+// system - a grey ramp, a spacing scale - and Classic has none: its greys are
+// 240,240,240 next to 248,248,248 next to 208,215,222, values that grew one at
+// a time. Inventing a ramp would either change them or lie about them. Modern
+// has a primitives.less because Modern was designed.
+//
+// Colours are RGB triples, consumed as rgb(var(--x)) / rgba(var(--x), a). That
+// is the existing convention and it is what makes per-token opacity possible.
+// ---------------------------------------------------------------------------
+:root {
+
+    /* -- surfaces, from lowest to highest ------------------------------- */
+    /* sunken: the chrome around the content - the navigation bar. Classic
+       paints that bar in the brand colour instead of a surface, so nothing
+       reads this in Classic; it exists so both themes speak one vocabulary. */
+    --surface-sunken:   245, 248, 255;
+    /* recessed: what panes sit ON - the workplace behind documents and finders */
+    --surface-recessed: 245, 248, 255;
+    /* base: panes, dialogs, cards, documents */
+    --surface-base:     255, 255, 255;
+    /* raised: menus and anything floating above a pane */
+    --surface-raised:   255, 255, 255;
+
+    /* muted: a surface that reads as inactive (disabled menu row) */
+    --surface-muted:   238, 238, 238;
+    /* alt: a second neutral surface where base would not read as separate
+       (the back face of a flashcard) */
+    --surface-alt:     243, 241, 241;
+    /* inverse: the dark end, used as an animation endpoint */
+    --surface-inverse: 0, 0, 0;
+
+    /* -- text ------------------------------------------------------------ */
+    --text-strong:     0, 0, 0;
+    --text-default:    0, 0, 0;
+    --text-muted:      102, 102, 102;
+    --text-disabled:   176, 176, 176;
+    --text-on-accent:  255, 255, 255;
+
+    /* -- lines ----------------------------------------------------------- */
+    --line-default:    208, 215, 222;
+
+    /* -- accent ---------------------------------------------------------- */
+    --accent:          218, 26, 95;
+    --accent-strong:   158, 27, 52;
+    --accent-contrast: 255, 255, 255;
+
+    /* A second pink, 15 units off --accent (233,30,99 vs 218,26,95). It reached
+       the code as the fallback of var(--electra-primary, #e91e63) - a token that
+       is never defined anywhere, so the fallback is what actually renders. Almost
+       certainly drift rather than intent, but folding it into --accent is a
+       visible change and belongs with the other corrections, not here. */
+    --accent-highlight: 233, 30, 99;
+
+    /* -- shadow ---------------------------------------------------------- */
+    /* The colour every drop shadow is built from. Pulled out so a theme can
+       shift all of them at once - Modern uses a blue-black rather than pure
+       black, which is most of what makes soft shadows read as modern. */
+    --shadow-color:    0, 0, 0;
+
+    /* -- interaction states ---------------------------------------------- */
+    --state-hover:     248, 248, 248;
+    --state-selected:  240, 240, 240;
+
+    /* -- status ---------------------------------------------------------- */
+    --status-success:  34, 134, 58;
+    --status-warning:  176, 121, 0;
+    --status-danger:   203, 36, 49;
+
+    /* -- depth ----------------------------------------------------------- */
+    /* The 2015 Material Design ladder, kept verbatim - this is what Classic
+       looks like. Modern replaces it wholesale. */
+    --elevation-0: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --elevation-1: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    --elevation-2: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    --elevation-3: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+
+    /* -- type ------------------------------------------------------------ */
+    /* The typeface is part of the look, so it is a token and not a hardcoded
+       rule in layout/. Classic keeps Roboto - Google's Android system face and
+       the signature of Material Design, which is precisely what makes it the
+       right choice HERE and the wrong one for Modern. */
+    --font-ui: 'Roboto', sans-serif;
+    --text-size-md:    14px;
+    /* Roboto ships a real Light cut, so 300 is a genuine weight here and not
+       a synthetic one. Classic does not use it; the vocabulary is shared. */
+    --weight-light:    300;
+    --weight-normal:   400;
+    --weight-semibold: 600;
+
+
+    // -----------------------------------------------------------------------
+    // COMPATIBILITY ALIASES
+    //
+    // The ~640 structural rules still ask for the old names. Each alias dies as
+    // its component moves into a themes/classic/<component>.less during the
+    // split, so this block shrinks to nothing. Until then nothing has to change
+    // in two places at once.
+    //
+    // Where an old name has no semantic counterpart it keeps its literal value
+    // and is flagged - those are the ones the split is meant to eliminate.
+    // -----------------------------------------------------------------------
+    --pane-bg-color:               var(--surface-base);
+    --workplace-bg-color:          var(--surface-recessed);
+    --text-color:                  var(--text-default);
+    --border-color:                var(--line-default);
+    --tint-color:                  var(--accent);
+    --tint-color-dark:             var(--accent-strong);
+    --success-color:               var(--status-success);
+    --warning-color:               var(--status-warning);
+    --danger-color:                var(--status-danger);
+    --input-bg-color:              var(--surface-base);
+    --input-color:                 var(--text-default);
+    --input-label-color:           var(--text-default);
+    --list-item-hover-bg-color:    var(--state-hover);
+    --list-item-selected-bg-color: var(--state-selected);
+    --box-shadow-0:                var(--elevation-0);
+    --box-shadow-1:                var(--elevation-1);
+    --box-shadow-2:                var(--elevation-2);
+    --box-shadow-3:                var(--elevation-3);
+    --label-font-size:             var(--text-size-md);
+    --label-font-weight:           var(--weight-normal);
+    --label-bold-font-weight:      var(--weight-semibold);
+
+    /* The navigation bar is the accent colour as a full field - that IS the
+       classic look, and the thing Modern moves away from. */
+    --lefttab-bg-color:            var(--accent);
+    --lefttab-font-color:          var(--accent-contrast);
+    --lefttab-active-font-color:   var(--text-default);
+
+    /* No semantic counterpart: encodes how strongly the bar colour is mixed
+       into white for the active tab (0..1). A leftover of one gradient trick,
+       and precisely the kind of token this refactoring exists to remove. */
+    --lefttab-active-bg-blend: 0.5;
+
+    /* Layout metric that ended up in the colour block. Belongs in layout/. */
+    --menu-container-padding: 4px;
+}

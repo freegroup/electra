@@ -10,7 +10,16 @@
   border-radius: 2em;
   overflow: hidden;
   transform: translateZ(0);
-  transition: all 500ms ease;
+
+  // It is a <div>, so nothing about it says "clickable" until we say so.
+  cursor: pointer;
+
+  // 150ms, not the 500ms the morph uses. This transition governs the button's
+  // own reaction - shadow, border, the press scale below - and half a second of
+  // it reads as no reaction at all. The play/pause morph keeps its 500ms on the
+  // inner spans, where it belongs: that one is an animation, this one is
+  // feedback, and they want very different speeds.
+  transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
 
   &:active {
     transform: scale(1.1, 1.1);

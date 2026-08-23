@@ -1,0 +1,58 @@
+// ---------------------------------------------------------------------------
+// CLASSIC - the look Electra has always had, and the default.
+//
+// One wrapper, then one file per component. The component files carry NO theme
+// prefix themselves: that is what lets a file be copied into another theme
+// folder and edited, without a find-and-replace and without the risk of leaving
+// one selector pointing at the theme it came from.
+//
+// The wrapper is `body.themed`, not a bare `body`, on purpose. These rules
+// out-specify Bootstrap 3, which is loaded separately and styles the very
+// classes that appear here - .dropdown-menu, .tab-pane, .modal-backdrop,
+// .nav-tabs, .context-menu-list. Drop the class and vendor CSS starts winning.
+//
+// Tokens sit outside the wrapper, on :root; see tokens.less.
+// ---------------------------------------------------------------------------
+
+@import "../mixins";
+@import "tokens";
+
+// Shared with every other theme - keyframe names are document-wide, so they
+// cannot be per-theme. See themes/animations.less.
+@import "../animations";
+
+body.themed {
+    @import "base";
+    @import "button";
+
+    @import "appbar";
+    @import "tab_strip";
+    @import "toolbar";
+    @import "image_button";
+    @import "screen_header";
+    @import "editor_header";
+
+    @import "section";
+    @import "tree";
+    @import "readme";
+    @import "splitjs";
+    @import "canvas_zoom";
+
+    @import "dialog";
+    @import "contextmenu";
+    @import "tiny_flyover_menu";
+    @import "popover_tooltip";
+    @import "config_menu";
+    @import "notify";
+
+    @import "tabpane_files";
+    @import "tabpane_draft";
+    @import "tabpane_workspaces";
+    @import "tabpane_review";
+
+    @import "finder";
+    @import "fact_sheet";
+    @import "count_badge";
+    @import "ghost_buttons";
+    @import "welcome_message";
+}

@@ -1,0 +1,13 @@
+// Ghost buttons (layout/ghost_buttons.less) — colors live here so a theme
+// can retint them in one place. Shared by card button bars, workspace
+// tiles, and the file-list Actions column.
+// Shared finder chrome (layout/finder.less) — card fill/border + the toolbar
+// divider, so all finder panes (Shared Files, My Files, Workspaces) match.
+// Retint here in one place.
+.finderCard {
+    background-color: rgb(var(--pane-bg-color));
+    border: 1px solid rgb(var(--border-color));
+    box-shadow: var(--box-shadow-1);
+}
+
+.finderToolbar { border-bottom-color: rgb(var(--border-color)); }

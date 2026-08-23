@@ -34,12 +34,14 @@
   var socket = null
   </script>
 
-  <!-- No Google Tag Manager: it loaded on every page view and handed the
-       visitor's IP to Google before any consent, and what it actually pulled in
-       was configured outside this repository. -->
+  <!-- The stored theme, applied before the first paint. Inline and here on purpose:
+       the bundle arrives long after this, and the content pages load none at all.
+       Contract with common/js/theme.js - same storage key, same attribute. -->
+  <script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
 </head>
 
-<body id="container" class="light">
+<body id="container" class="themed">
+
 
 <div id="layout">
 
@@ -259,7 +261,7 @@
 
       </div>
       <div class="modal-footer">
-        <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
+        <button data-i18n="common:button.close" class="electra-button electra-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -297,6 +299,7 @@
 
 <link href="../common/css/katex.min.css" rel="stylesheet" >
 <link href='../common/css//roboto.css' rel='stylesheet' type='text/css'>
+<link href='../common/css//inter.css' rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'/>
 <link href="../common/js/anno.js/anno.css" rel='stylesheet' type='text/css'/>
 

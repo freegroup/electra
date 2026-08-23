@@ -1,0 +1,32 @@
+.image-button {
+
+    div {
+        &.highlight {
+            animation: highlight 3s infinite;
+        }
+    }
+
+    // When the save button carries .highlight on its inner div, lift the
+    // whole button: accent background, white icon + label, subtle pulse.
+    // Only #editorFileSave is targeted so other buttons stay untouched.
+    &#editorFileSave:has(div.highlight) {
+        background-color: rgb(var(--tint-color));
+        border-radius: @borderRadiusSmall;
+        animation: saveButtonPulse 2s ease-in-out infinite;
+        div {
+            color: #fff;
+            animation: none;   // suppress the text-only animation
+        }
+        img, svg { .svgTint(white); }
+    }
+
+    &.disabled {
+        opacity: 0.2;
+    }
+
+    &:not(.disabled) {
+        &:hover{
+                box-shadow: var(--box-shadow-0);
+        }
+    }
+}

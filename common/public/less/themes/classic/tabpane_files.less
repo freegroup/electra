@@ -1,0 +1,45 @@
+#files {
+    background-color: rgb(var(--workplace-bg-color));
+    .filesTeaser {
+        .title {
+            color: rgb(var(--tint-color));
+        }
+    }
+
+    .list-group-item {
+        cursor: pointer;
+        .thumb {
+            h4 {
+                color:rgb(var(--tint-color));
+            }
+        }
+    }
+    .filesFinder {
+        header{
+            #material-tabs {
+                border: none;
+                a {
+                    color: rgb(var(--input-label-color));
+                    &.active{
+                        color:rgb(var(--tint-color));
+                    }
+                    &:hover {
+                        color:rgb(var(--tint-color));
+                    }
+                }
+            }
+        }
+
+        .material-tab-content {
+            .fileOperations{
+                border-color: rgb(var(--border-color));
+            }
+        }
+
+        .sliding-bar {
+            background:transparent;
+            transition: all 0.3s ease;
+            border-color:rgb(var(--tint-color));
+        }
+    }
+}

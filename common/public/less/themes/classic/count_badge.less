@@ -1,0 +1,12 @@
+// count badge (e.g. pending reviews on the Review tab)
+.countBadge {
+    background: rgb(var(--tint-color));
+    color: #fff;
+    // on a tint-colored host (e.g. the active Review tab) flip to white so
+    // the number stays legible; a tint border keeps it visible elsewhere too
+    &.countBadgeOnTint {
+        background: #fff;
+        color: rgb(var(--tint-color));
+        border: 1px solid rgb(var(--tint-color));
+    }
+}

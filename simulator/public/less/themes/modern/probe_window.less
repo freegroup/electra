@@ -1,0 +1,47 @@
+// probe_window - MODERN
+//
+// Mirror of themes/classic/probe_window.less: every theme carries the same file set,
+// so a component's appearance is always in the same place, whichever theme you
+// are looking at. Started as a copy - edit values and rules freely, nothing
+// here is shared with Classic.
+//
+// Loaded inside `[data-theme="modern"] body.themed`, which outranks Classic's
+// `body.themed` by one class, so anything left untouched simply repeats what
+// Classic already says.
+
+#probe_hint {
+    color: white;
+}
+
+#probe_window {
+    background: #009DAC;
+    color: white;
+}
+
+#probe_window_stick {
+    border-bottom-color: rgb(var(--border-color));
+}
+
+#probeSortable {
+    li {
+        path {
+            stroke: white;
+        }
+
+        div {
+            background: rgba(0, 157, 172, 0.8);
+        }
+    }
+
+    li:nth-child(even) {
+        background: #04A9B9;
+
+        div {
+            background: rgba(4, 169, 185, 0.5);
+        }
+    }
+
+    .inplaceEdit {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}

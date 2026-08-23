@@ -1,0 +1,61 @@
+color: rgb(var(--text-color));
+
+a {
+    color: rgb(var(--tint-color));
+}
+
+/* class used by draw2d if a element is drag&drop from a platette into a workspace */
+.shadow {
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.16));
+}
+
+.dropdown-menu {
+    border: 1px solid rgb(var(--border-color));
+    border-radius: @borderRadiusSmall;
+    background-color: rgb(var(--pane-bg-color));
+    li {
+        color: rgb(var(--input-color));
+        &:hover{
+            background-color: rgb(var(--list-item-hover-bg-color));
+        }
+    }
+}
+
+// textarea was never in this list, so it fell through to the browser default -
+// a hard dark rectangle next to properly styled inputs. Adding it here is
+// enough: the Monokai textareas in #figureConfigDialog and the ones in the
+// context menu carry their own, more specific rules and are unaffected.
+input[type=text], select, textarea{
+    color: rgb(var(--input-color));
+    border: 1px solid rgb(var(--border-color));
+    background-color: rgb(var(--input-bg-color));
+    &:focus {
+        background-color: white;
+        border-bottom: 2px solid rgb(var(--tint-color));
+    }
+}
+
+.spinner:before {
+    border-color:  rgb(var(--border-color));
+    border-top-color: rgb(var(--tint-color));
+    background-color: #fef9f9;
+}
+
+.confirm-dialog-btn-confirm {
+    background-color: rgb(var(--tint-color));
+}
+
+.modal-backdrop.in {
+    opacity: 0.7;
+    background-color: black;
+}
+
+.tab-pane {
+    box-shadow: -6px 0 20px -4px rgba(31, 73, 125, 0.3);
+}
+
+svg.inlined-svg {
+    color: rgb(var(--text-color));
+    border-color:transparent;
+    .svgTint(rgb(var(--text-color)));
+}

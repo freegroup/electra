@@ -1,0 +1,13 @@
+{
+  "name": "electra-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Repo-level checks. The four apps keep their own package.json and are built separately - this one only carries tooling and deliberately has no dependencies, so it needs no npm install.",
+  "scripts": {
+    "lint:theme": "node tools/lint-theme.js",
+    "css:fingerprint": "node tools/css-fingerprint.js",
+    "css:check": "node tools/css-fingerprint.js --check",
+    "verify": "npm run lint:theme && npm run css:check"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}

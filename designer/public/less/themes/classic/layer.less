@@ -1,0 +1,49 @@
+.layer-name-prompt {
+
+  .modal-header {
+    border-bottom-color:rgb(var(--tint-color));
+  }
+
+  input {
+    background-color: rgba(0, 0, 0, 0.02) !important;
+
+    &:focus {
+      border: 1px solid rgb(var(--tint-color));
+    }
+  }
+
+  .btn-primary {
+    background-color: rgb(var(--tint-color));
+
+    &:hover {
+      background-color: rgb(val(--tint-color-dark));
+    }
+  }
+}
+
+#layer {
+
+  .panetitle {
+    border-bottom-color: rgb(var(--border-color));
+    color:rgb(var(--tint-color));
+    box-shadow: var(--box-shadow-0);
+  }
+
+  #layer_elements {
+    .layerElement {
+
+      &[data-visibility="false"] {
+        opacity: 0.5;
+      }
+      .icon {
+        &:hover {
+          * {
+            stroke:rgb(var(--tint-color))!important;
+          }
+        }
+      }
+    }
+
+
+  }
+}

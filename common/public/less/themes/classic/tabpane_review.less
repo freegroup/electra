@@ -1,0 +1,29 @@
+#review {
+    background-color: rgb(var(--workplace-bg-color));
+    .filesTeaser {
+        .title { color: rgb(var(--tint-color)); }
+    }
+    .reviewFinder {
+        background-color: rgb(var(--pane-bg-color));
+        border: 1px solid rgb(var(--border-color));
+        border-radius: @borderRadiusBig;
+        box-shadow: var(--box-shadow-1);
+
+        .storageTable thead th { border-color: rgb(var(--border-color)); }
+        .reviewTitle { color: rgb(var(--tint-color)); }
+        .reviewDeletionBadge { background: rgb(var(--tint-color)); color: #fff; }
+
+        // ReviewFactSheet card
+        .reviewFactSheet {
+            .reviewFactSheetBadgeDeletion {
+                background: rgb(var(--tint-color));
+                color: #fff;
+            }
+            .reviewAuthorIcon {
+                border: 2px solid transparent;
+                transition: border-color 0.12s;
+                &:hover { border-color: rgb(var(--tint-color)); }
+            }
+        }
+    }
+}

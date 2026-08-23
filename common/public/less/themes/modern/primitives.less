@@ -1,0 +1,39 @@
+// ---------------------------------------------------------------------------
+// MODERN - primitives.
+//
+// Raw values with no meaning attached. Nothing outside tokens.less may use
+// them: a component asking for --slate-200 would be asking for a colour, and
+// the whole point of the layer above is that it asks for a role instead.
+//
+// Classic has no such file on purpose - its palette grew one value at a time
+// and has no system to express. This one is a ramp, and having it is what stops
+// the next value from being "roughly like the other grey".
+// ---------------------------------------------------------------------------
+[data-theme="modern"] {
+
+    /* A single cool-neutral ramp. The slight blue cast is deliberate: pure
+       greys read as unset, tinted greys read as chosen. */
+    --slate-50:  248, 250, 252;
+    --slate-100: 241, 245, 249;
+    --slate-200: 226, 232, 240;
+    --slate-400: 148, 163, 184;
+    --slate-600:  71,  85, 105;
+    --slate-800:  30,  41,  59;
+    --slate-900:  15,  23,  42;
+
+    --white:       255, 255, 255;
+
+    /* The brand stays exactly as it is. Modern does not change what Electra
+       looks like, only how much of the screen it covers. */
+    --brand-500: 218, 26, 95;
+    --brand-700: 158, 27, 52;
+
+    --green-600:  34, 134,  58;
+    --amber-600: 176, 121,   0;
+    --red-600:   203,  36,  49;
+
+    /* Shadows are built from a blue-black, not pure black. Together with a
+       larger blur and much lower opacity this is most of what separates a
+       current shadow from the 2015 one. */
+    --shadow-rgb: 16, 24, 40;
+}

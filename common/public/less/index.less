@@ -46,8 +46,12 @@
 @import "layout/author_page";
 @import "layout/config_dialog";
 @import "layout/appSwitch";
+@import "layout/settings_menu";
 @import "layout/image_button";
 @import "layout/notify";
 
 
-@import "theme_light";
+// Appearance last: these rules need layout/variables in scope and are meant to
+// sit after the structure they dress. The :root tokens inside do not need to
+// come first - custom properties resolve at computed-value time.
+@import "themes/classic/index";

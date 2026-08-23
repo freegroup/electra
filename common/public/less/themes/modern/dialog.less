@@ -1,0 +1,134 @@
+// dialog - MODERN
+//
+// Mirror of themes/classic/dialog.less, with the header rebuilt.
+//
+// Classic writes the title in the brand colour and underlines it with a 1px
+// brand-coloured rule. A coloured heading over a full-width rule is a very
+// specific 2013 gesture, and it costs twice: the colour makes the title compete
+// with the primary button for attention, and the rule draws a line where a bit
+// of space would do the same job more quietly.
+//
+// The vertical centring and the removed min-height that also made this dialog
+// look stranded are NOT here - they are behaviour, not appearance, and live in
+// layout/dialog.less where both themes get them.
+
+.genericDialog {
+    .modal-content {
+        box-shadow:  var(--elevation-3);
+        background-color: rgb(var(--surface-base));
+
+        // Modern is the airier of the two. Padding is a theme decision on
+        // purpose: density is a large part of what a theme IS, and Classic's
+        // uniform 16px is a tighter product than this.
+        //
+        // Separators are not a thing of the past either - they got quieter.
+        // GitHub, Linear, Figma and the macOS sheets all divide header from
+        // footer; what went away is the 2013 treatment, a brand-coloured rule
+        // under a brand-coloured title. Removing them altogether, as a first
+        // attempt here did, leaves three blocks with nothing to group them.
+        //
+        // One pixel at full contrast, not two at half. If a separator feels too
+        // weak the answer is contrast, not thickness: a crisp hairline reads as
+        // precise, a soft 2px line as blurred - and on a 2x display 1px is
+        // already two device pixels, so 2px CSS lands at four.
+        .modal-header {
+            padding: 24px 28px 18px;
+            border-bottom-color: rgb(var(--line-default));
+
+            h4 {
+                // Explicitly OFF, not merely absent. Deleting the declaration
+                // from this mirror would not remove the line - Classic still
+                // sets `border-bottom: 1px solid rgb(var(--tint-color))` on the
+                // same element, and a mirror only wins for what it actually
+                // declares. Leaving it out gave a crimson rule AND the new grey
+                // separator, two lines under one title.
+                //
+                // This is the sharp edge of the mirror model in general: to
+                // remove something you have to say so.
+                border-bottom: none;
+
+                // Large and LIGHT, not small and bold. Bold at 16px is how a
+                // dialog shouted in 2013; size carries the hierarchy now and
+                // the weight can step back. Inter has a real 300 cut, so this
+                // is a drawn Light and not a browser-thinned 400.
+                //
+                // The negative tracking is what keeps a large light face from
+                // looking loose - default spacing is set for text sizes, and
+                // above ~20px it reads as gappy without a slight pull-in.
+                color: rgb(var(--text-strong));
+                font-weight: var(--weight-light);
+                font-size: 1.6em;
+                letter-spacing: -0.015em;
+                line-height: 1.25;
+            }
+        }
+
+        .modal-footer {
+            padding: 18px 28px;
+            border-top-color: rgb(var(--line-default));
+            // A shade behind the actions. Subtle enough to stay a hint, enough
+            // to make the row read as a bar rather than as more content.
+            //
+            // This used to be cancelled out: the mirrored copy carried a second
+            // `.modal-footer { background-color: transparent }` further down the
+            // file, and being later it won. Three rules on one selector is easy
+            // to miss when a file starts life as a copy - keep one block per
+            // element here.
+            background-color: rgb(var(--surface-recessed));
+        }
+
+        .modal-body {
+            padding: 24px 28px;
+            // Help texts are read, not scanned. Bootstrap's 1.428 on 14px is
+            // tight for a paragraph in a narrow column.
+            line-height: 1.6;
+            color: rgb(var(--text-default));
+
+            .list-group {
+
+                *[data-draw2d="true"] {
+                    color: rgb(var(--tint-color));
+                }
+
+                .list-group-item {
+                    background-color: transparent;
+                }
+
+                *[data-draw2d="false"][data-type="file"] {
+                    color: gray;
+                }
+            }
+        }
+
+    }
+}
+
+// distribute dialog target picker
+#distributeDialog {
+    .distributeTargets { border-color: rgb(var(--border-color)); }
+    .distributeTarget:hover { background-color: rgba(0, 0, 0, 0.04); }
+    .distributeImagePanel {
+        background-color: rgba(var(--text-color), 0.03);
+        box-shadow: var(--box-shadow-1);
+    }
+}
+
+#deleteDialog {
+    // a faint tinted disc behind the delete icon
+    .deleteDialogIcon { background-color: rgba(var(--tint-color), 0.12); }
+}
+
+#figureConfigDialog{
+    textarea {
+        &.figureAttribute {
+            background-color:#272822;
+            border-color:#272822;
+            color:#ffffff;
+        }
+        &.lineNumbering {
+            background-color:#3E3D32;
+            border-color:#3E3D32;
+            color:#928869;
+        }
+    }
+}

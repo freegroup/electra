@@ -1,0 +1,38 @@
+// floating_toolbar - MODERN
+//
+// Mirror of themes/classic/floating_toolbar.less: every theme carries the same file set,
+// so a component's appearance is always in the same place, whichever theme you
+// are looking at. Started as a copy - edit values and rules freely, nothing
+// here is shared with Classic.
+//
+// Loaded inside `[data-theme="modern"] body.themed`, which outranks Classic's
+// `body.themed` by one class, so anything left untouched simply repeats what
+// Classic already says.
+
+/* theme-allow-file: position and size of the floating editor toolbar. The block
+   is near-identical in simulator, author and designer - only `right` differs,
+   because designer has to clear the filter pane. Splitting it (appearance to
+   common, position to each app's layout/) changes the selector, which the
+   fingerprint cannot verify as neutral, so it is scheduled for the adjustment
+   stage rather than smuggled into a move that must prove it changed nothing. */
+// The floating editor toolbar.
+//
+// This block is near-identical in simulator, author and designer - only the
+// `right` offset differs (designer has to clear the filter pane). Merging the
+// three would mean splitting it: appearance into common, position into each
+// app's layout/. That is the right end state, but it changes the selector and
+// so cannot be verified by the fingerprint. Left as-is deliberately; see the
+// adjustment stage.
+[data-theme="modern"] body.themed #editor .toolbar {
+    position: absolute;
+    right: calc(@filterPaneWidth + 8px);
+    left: calc(@leftPaneWidth + 8px);
+    top: 8px;
+    border-radius: @borderRadiusBig;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07);
+    border: 1px solid rgb(179 179 179 / 89%);
+    background-color: rgba(247, 248, 250, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1;
+}

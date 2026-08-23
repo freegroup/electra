@@ -1,0 +1,30 @@
+.context-menu-list {
+    border-color: rgb(var(--border-color));
+    background: rgb(var(--pane-bg-color));
+    border-left-color: rgb(var(--tint-color));
+    box-shadow:  var(--box-shadow-1);
+
+    .context-menu-separator {
+        border-bottom: 1px solid rgb(var(--border-color));
+    }
+
+    .context-menu-item {
+        &.hover {
+            background-color: rgb(var(--tint-color));
+            color: white;
+        }
+
+        &.disabled {
+            color: rgba(var(--text-color), 0.5);
+
+            &.hover {
+                background-color: #EEE;
+            }
+        }
+
+        .context-menu-submenu:after {
+            color: #666;
+        }
+    }
+
+}

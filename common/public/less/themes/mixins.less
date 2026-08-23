@@ -1,0 +1,13 @@
+// Shared by every theme. Imported by each theme's index.less before its
+// component files, so the components can call it without knowing where it
+// lives.
+
+// Tint every stroked/filled shape of an inline SVG icon, whatever the element
+// type (path, line, circle, use, ellipse, polygon, …). The :not(…="none")
+// guards leave outline shapes (fill="none") and unstroked groups untouched, so
+// new or odd SVGs (e.g. a <use>-based dotted circle from a Sketch export) just
+// work without enumerating element types.
+.svgTint(@color) {
+    [stroke]:not([stroke="none"]) { stroke: @color !important; }
+    [fill]:not([fill="none"]) { fill: @color !important; }
+}

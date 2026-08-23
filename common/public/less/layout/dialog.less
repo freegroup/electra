@@ -3,42 +3,87 @@
 }
 
 .genericDialog {
+
+  // Bootstrap 3 puts a modal 10px below the top edge and leaves it there, which
+  // on a tall screen strands a short dialog in the upper eighth with a field of
+  // dimmed app underneath.
+  //
+  // Centring must NOT touch `display` on .modal. Bootstrap drives visibility
+  // through it from JS - `show()` sets an inline `display: block`, `hide()` an
+  // inline `display: none` (Modal.prototype.hideModal). A `display: flex
+  // !important` here beats BOTH, so the dialog opens centred and then never
+  // closes again. That bug shipped for exactly one iteration.
+  //
+  // So: the full-height pseudo-element trick instead. It centres through
+  // vertical-align and leaves `display` on .modal entirely to Bootstrap.
+  text-align: center;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    // Kills the whitespace gap between the two inline-block boxes.
+    margin-right: -4px;
+  }
+
+  .modal-dialog {
+    display: inline-block;
+    vertical-align: middle;
+    // The parent's centring needs text-align; the content must not inherit it.
+    text-align: left;
+    margin: 16px auto;
+    max-width: calc(100vw - 32px);
+  }
+
   .modal-content{
     border-radius:@borderRadiusBig;
-    padding: @contentToEdgePadding;
     display: flex;
     flex-direction: column;
-    gap: @contentAreaSpacing;
+    // No padding on the shell and no gap between the sections. Each section
+    // brings its own padding, which is what lets a separator run the full width
+    // of the dialog instead of floating inside a margin. A uniform gap was also
+    // why the thing read as three unrelated blocks: identical spacing groups
+    // nothing.
+    padding: 0;
+    overflow: hidden; // keeps the section edges inside the rounded corners
 
     .modal-header{
-      border-bottom:0;
+      // Tighter below than above: the title belongs to what follows it.
+      padding: @contentToEdgePadding @contentToEdgePadding (@contentToEdgePadding - 4);
+      margin: 0;
+      border-bottom: 1px solid transparent; // colour comes from the theme
       font-weight:400;
       box-shadow:none;
-      margin:0px;
-      padding: 0px;
       h4{
-        padding-bottom:4px;
+        margin: 0;
+        padding: 0;
       }
     }
 
     .modal-footer {
-      margin:0px;
-      padding: 0px;
-      border: none;
+      // The action bar. Its own row, its own edge - a footer that only differs
+      // from the body by an accidental margin does not read as one.
+      padding: (@contentToEdgePadding - 4) @contentToEdgePadding;
+      margin: 0;
+      border-top: 1px solid transparent; // colour comes from the theme
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
       flex-wrap: nowrap;
       gap: @buttonSpacing;
-      margin-top: @contentAreaSpacing;
     }
 
     .modal-body {
       margin:0px;
-      padding: 0px;
-      min-height:120px;
-      max-height:80%;
+      padding: @contentToEdgePadding;
+      // No min-height. It used to be 120px, which is why a two-line help text
+      // sat above a large empty rectangle - the dialog reserved room it had
+      // nothing to put in. Short content should give a short dialog.
       overflow:auto;
+      // The body is the only part that may scroll; header and footer stay put.
+      flex: 1 1 auto;
+      min-height: 0;
 
       .media{
         padding:0px;

@@ -1,6 +1,22 @@
 
 body {
-    font-family: 'Roboto', sans-serif !important;
+    // The typeface is a theme decision, so the VALUE comes from a token - see
+    // themes/<name>/tokens.less. It used to be a hardcoded `'Roboto',
+    // sans-serif !important` here, so no theme could touch it.
+    //
+    // The `!important` was not decoration: Bootstrap declares
+    // `body { font-family: "Helvetica Neue" … }` and its stylesheet is linked
+    // AFTER ours (the bundle injects into <head>, bootstrap.min.css sits near
+    // the end of the document). Same selector, same specificity, later wins -
+    // drop the !important with no replacement and the whole app falls back to
+    // Helvetica.
+    //
+    // One class outranks it cleanly and, unlike !important, still lets a more
+    // specific rule downstream have the last word where that is wanted.
+    &.themed {
+        font-family: var(--font-ui);
+    }
+
     font-weight: 300;
 
     .dropdown-menu {

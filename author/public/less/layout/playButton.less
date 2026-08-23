@@ -7,9 +7,14 @@
   height:unit( @buttonSize , px);
   overflow: hidden;
   transform: translateZ(0);
-  transition: all 500ms ease;
   top: 2px;
   position: relative;
+
+  // Same reasoning as simulator/less/layout/playButton.less: it is a <div>, so
+  // it needs to be told to look clickable, and feedback at 500ms reads as none.
+  // The morph keeps its 500ms on the inner spans.
+  cursor: pointer;
+  transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
 
   &:active {
     transform: scale(1.1, 1.1);

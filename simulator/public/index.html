@@ -45,12 +45,14 @@
     var app = null
     var socket = null
   </script>
-  <!-- No Google Tag Manager: it loaded on every page view and handed the
-       visitor's IP to Google before any consent, and what it actually pulled in
-       was configured outside this repository. -->
+  <!-- The stored theme, applied before the first paint. Inline and here on purpose:
+       the bundle arrives long after this, and the content pages load none at all.
+       Contract with common/js/theme.js - same storage key, same attribute. -->
+  <script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
 </head>
 
-<body class="mousetrap light" >
+<body class="mousetrap themed" >
+
 
 <div id="layout">
 
@@ -351,7 +353,7 @@
         <div class="sectionContent" data-type="wysiwyg"></div>
       </div>
       <div class="modal-footer">
-        <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
+        <button data-i18n="common:button.close" class="electra-button electra-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -380,7 +382,7 @@
       </div>
       <div class="modal-footer">
        <button data-i18n="common:button.cancel" class="electra-button" data-dismiss="modal">Cancel</button>
-       <button data-i18n="common:button.save"   class="electra-button okBtn" >Save</button>
+       <button data-i18n="common:button.save"   class="electra-button electra-primary okBtn" >Save</button>
       </div>
     </div>
   </div>
@@ -411,7 +413,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="electra-button  btn-primary" data-dismiss="modal">Close</button>
+        <button class="electra-button electra-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -443,6 +445,7 @@
 
 <link href="../common/css/katex.min.css"                    rel="stylesheet" type='text/css'>
 <link href='../common/css//roboto.css'                      rel='stylesheet' type='text/css'>
+<link href='../common/css//inter.css'                      rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap/css/bootstrap.min.css'   rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap-slider/slider.css'       rel='stylesheet' type='text/css'>
 <link href='../common/js/bootstrap-multiselect/index.css'   rel='stylesheet' type='text/css'>

@@ -148,3 +148,8 @@ wasm
 database/_pgdata/
 .puppeteer-cache/
 .claude/
+
+# Baseline of tools/css-fingerprint.js - a local refactoring aid, recorded
+# per working copy. Not repo content: see .github/workflows/lint-theme.yml
+# for why it is not a CI gate.
+.fingerprint/

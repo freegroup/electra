@@ -1,0 +1,14 @@
+// All pane header icons are inlineSVG — color them with tint so they
+// match their pane title. Uses .inlined-svg (set by inlineSVG.js) to
+// beat the global svg.inlined-svg text-color rule in specificity.
+.screenHeader {
+    svg.inlined-svg.icon {
+        .svgTint(rgb(var(--tint-color)));
+    }
+}
+
+.filesTeaser, .draftTeaser {
+    svg.inlined-svg.icon {
+        .svgTint(rgb(var(--tint-color)));
+    }
+}

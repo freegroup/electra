@@ -1,0 +1,28 @@
+// Shared by every theme, and NOT mirrored into the theme folders.
+//
+// Keyframe names live in one document-wide namespace. Two @keyframes with the
+// same name do not scope to their theme - the later definition simply wins, for
+// both themes at once. A per-theme copy would look right and behave wrong.
+//
+// A theme that needs different motion has to name its own keyframes and point
+// the animation property at them.
+
+@keyframes saveButtonPulse {
+    0%   { background-color: rgb(var(--tint-color)); }
+    50%  { background-color: rgb(var(--tint-color-dark)); }
+    100% { background-color: rgb(var(--tint-color)); }
+}
+
+@keyframes highlight {
+    0% {
+        color:rgb(var(--tint-color));
+    }
+
+    50% {
+        color:rgba(var(--text-color), 0.4);
+    }
+
+    100% {
+        color:rgb(var(--tint-color));
+    }
+}

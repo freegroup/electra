@@ -14,4 +14,9 @@
 @import "layout/tool_dropdown";
 @import "layout/tabpane_editor";
 
-@import "theme_light";
+@import "themes/classic/index";
+
+// Modern is a token override only - no rule of Classic is duplicated. The
+// attribute selector on <html> outranks :root, so import order is irrelevant.
+@import "../../common/less/themes/modern/index";
+@import "themes/modern/index";

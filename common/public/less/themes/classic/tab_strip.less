@@ -1,0 +1,55 @@
+#leftTabStrip {
+    background-color: rgb(var(--lefttab-bg-color)) ;
+
+    // group divider: faint line in the bar's font color
+    .leftTabSeparator hr {
+        border-top-color: rgba(var(--lefttab-font-color), 0.25);
+    }
+
+    >li,
+    >div {
+        &.active {
+            a{
+                // The tab-strip colour blended into white (opaque white base
+                // + a tint overlay at --lefttab-active-bg-blend). Gives the
+                // active tab a clear edge against the white palette/content
+                // on its right, themed from --lefttab-bg-color.
+                background-color: white;
+                background-image: linear-gradient(
+                    rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                    rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
+
+                &:hover {
+                    background-color: white;
+                    background-image: linear-gradient(
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)),
+                        rgba(var(--lefttab-bg-color), var(--lefttab-active-bg-blend)));
+                }
+
+                // On the tinted active background, label + icon use the
+                // dedicated active-tab font colour for legible contrast.
+                .leftTabLabel {
+                    color: rgb(var(--lefttab-active-font-color));
+                }
+
+                svg {
+                    .svgTint(rgb(var(--lefttab-active-font-color)));
+                }
+            }
+        }
+
+        a {
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            .leftTabLabel {
+                color: rgb(var(--lefttab-font-color));
+            }
+
+            svg {
+                .svgTint(rgb(var(--lefttab-font-color)));
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+#draw2dCanvasWrapper {
+    .draw2d_tooltip {
+        background: #88b7d5;
+    }
+
+    .draw2d_tooltip:after,
+    .draw2d_tooltip:before {
+        border-color: transparent;
+    }
+
+    .draw2d_tooltip:after {
+        border-color: rgb(var(--border-color));
+    }
+
+    rect.Raft {
+        fill: rgba(28, 155, 171, 0.1);
+    }
+
+    ellipse.draw2d_shape_basic_LineStartResizeHandle,
+    ellipse.draw2d_shape_basic_LineEndResizeHandle,
+    rect.draw2d_policy_line_OrthogonalSelectionFeedbackPolicy_ResizeHandle {
+        fill: rgb(var(--tint-color));
+    }
+}

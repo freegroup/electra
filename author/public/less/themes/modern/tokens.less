@@ -1,0 +1,14 @@
+// author token overrides for MODERN.
+//
+// Same names as themes/classic/tokens.less, so the two files diff cleanly -
+// that pair is what actually distinguishes the themes.
+//
+// Classic gives each app its own tinted workplace and toolbar (simulator cyan,
+// author pink, designer blue). Modern deliberately drops that: one neutral
+// across all four apps, because three tints fighting one brand colour is a
+// large part of what made the old look restless. Hence every value here points
+// at the same surface.
+[data-theme="modern"] {
+    --toolbar-bg-color: var(--surface-recessed);
+    --workplace-bg-color: var(--surface-recessed);
+}

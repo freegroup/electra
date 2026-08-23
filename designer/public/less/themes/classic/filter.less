@@ -1,0 +1,86 @@
+.portDirectionOption {
+  & label>input+span {
+    /* IMAGE STYLES */
+    color: gray !important;
+  }
+
+  & label>input:checked+span {
+    /* (CHECKED) IMAGE STYLES */
+    color:rgb(var(--tint-color)) !important;
+  }
+}
+
+.portTypeOption {
+  & label>input {
+
+    /* HIDE RADIO */
+    +span {
+      /* IMAGE STYLES */
+      color: gray !important;
+    }
+  }
+
+  & label>input:checked+span {
+    /* (CHECKED) IMAGE STYLES */
+    color:rgb(var(--tint-color)) !important;
+  }
+}
+
+#filter {
+  background-color: #282a30;
+
+  .filter_header {
+    background: none repeat scroll 0 0 #303030;
+    border-bottom-color: rgb(var(--border-color));
+    border-top-color: #111111;
+    color: white;
+  }
+
+  .filter_toolbar {
+    background: none repeat scroll 0 0 #303030;
+  }
+
+  .filter_actions {
+    .panel-body {
+      .btn-primary {
+        color: #fff;
+        background-color: rgb(var(--tint-color));
+        border-color: rgb(var(--tint-color));
+      }
+    }
+
+
+    .icon {
+      color: #26B4A8;
+      color: rgba(255, 255, 255, 0.25);
+
+      &:hover {
+        color: rgb(var(--tint-color));
+      }
+    }
+
+    .filter-heading {
+      color: #DDDDDD !important;
+      background-color: transparent !important;
+      background-image: none !important;
+
+      .icon {
+        * {
+          stroke: white !important;
+        }
+      }
+    }
+  }
+
+
+  .input-group-addon {
+    color: rgba(0, 0, 0, 0.3);
+    background-color: rgb(var(--pane-bg-color));
+  }
+
+  .panel-default {
+    background-color: rgba(var(--tint-color), 0.2);
+    border-top-color: rgb(var(--border-color));
+    border-bottom-color: rgb(var(--border-color));
+  }
+}

@@ -23,7 +23,7 @@ class Dialog {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="electra-button" data-dismiss="modal">Cancel</button>
+                  <button class="electra-button electra-primary" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>

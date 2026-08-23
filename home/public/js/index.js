@@ -35,10 +35,10 @@ $(window).scroll(get);
 $(window).load(function () {
 
   // No socket on the home + content pages. Its only use here was syncing the
-  // language choice across a user's open windows (LngSwitch), which is not worth
-  // a persistent WebSocket on a public landing page - and that connection was
-  // what made the ingress set an anonymous `connect.sid` session cookie before
-  // any consent. `socket` stays declared (as null) so LngSwitch's guarded
+  // language choice across a user's open windows (SettingsSwitch), which is not
+  // worth a persistent WebSocket on a public landing page - and that connection
+  // was what made the ingress set an anonymous `connect.sid` session cookie
+  // before any consent. `socket` stays declared (as null) so SettingsSwitch's guarded
   // `typeof socket` check simply skips the sync.
 
   // export all required classes for deserialize JSON with "eval"

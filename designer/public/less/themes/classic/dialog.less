@@ -1,0 +1,53 @@
+#codeDialog {
+  .codeContainer {
+    background-color: rgb(var(--pane-bg-color));
+  }
+}
+
+#FigureMarkdownEdit {
+  .header {
+    background-color: rgb(var(--pane-bg-color));
+
+    .left {
+      color: rgb(var(--tint-color));
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .right {
+      color: rgb(var(--tint-color));
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+#testDialog {
+  .testInfo {
+    color: black;
+    border-color: lightgray;
+    background-color: rgb(var(--pane-bg-color));
+  }
+
+  #testCanvas {
+    background-color: rgb(var(--pane-bg-color));
+  }
+
+}
+
+#figureConfigDialog {
+  background-color: rgb(var(--pane-bg-color));
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-left-color: rgb(var(--tint-color));
+
+  .figureAddLabel {
+    &:hover {
+      color:rgb(var(--tint-color));
+    }
+  }
+
+  &:after {
+    border-right-color:rgb(var(--tint-color));
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
+}

@@ -1,0 +1,56 @@
+// The appbar settings menu (language + appearance). Its predecessor, the plain
+// language switcher, had no stylesheet at all - it rode on Bootstrap's
+// .dropdown-menu. Two grouped sections need slightly more than that: headings to
+// separate them and a tick on the entry currently in force.
+//
+// Everything here goes through theme tokens, so it follows both themes.
+.settingsMenu {
+
+    .dropdown-menu {
+        min-width: 190px;
+        padding: var(--menu-container-padding);
+    }
+
+    .settingsHeader {
+        padding: 8px 12px 4px;
+        font-size: 0.75em;
+        font-weight: var(--label-bold-font-weight);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgba(var(--text-color), 0.45);
+        cursor: default;
+    }
+
+    .settingsSeparator {
+        height: 1px;
+        margin: 6px 0;
+        background-color: rgba(var(--border-color), 0.7);
+    }
+
+    // The left inset is permanent, not only on the active row - otherwise the
+    // labels would jump sideways as the tick moves between them.
+    .settingsOption {
+        position: relative;
+        padding: 6px 12px 6px 28px;
+        border-radius: @borderRadiusSmall;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+            background-color: rgb(var(--list-item-hover-bg-color));
+        }
+
+        &.active::before {
+            content: "";
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            width: 5px;
+            height: 9px;
+            margin-top: -6px;
+            border: solid rgb(var(--tint-color));
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    }
+}

@@ -1,0 +1,58 @@
+// play_button - MODERN
+//
+// The one action the simulator exists for, so it is the one place the brand
+// colour is allowed to take a whole surface. Everywhere else Modern pushes
+// crimson down to labels and accents; here it fills.
+//
+// Classic draws a white circle with a crimson glyph, held together only by a
+// shadow. That was already quiet, and it disappeared entirely once the shadow
+// ladder was softened: Classic's --box-shadow-0 ends at rgba(0,0,0,0.24),
+// Modern's elevation-0 at 4% - invisible for a white circle on a near-white
+// canvas. Filling it solves the presence problem and the shape problem at once,
+// with no hairline needed.
+
+.playButton {
+    background-color: rgb(var(--accent));
+    border: none;
+
+    // A grey shadow under a saturated button reads as dirt. Tinting it with the
+    // button's own colour is what makes a filled control look lit rather than
+    // pasted on - and it stays legible over the dotted canvas.
+    box-shadow: 0 2px 6px rgba(var(--accent), 0.28),
+                0 8px 20px rgba(var(--accent), 0.22);
+
+    &:hover {
+        background-color: rgb(var(--accent-strong));
+        box-shadow: 0 4px 10px rgba(var(--accent), 0.34),
+                    0 12px 28px rgba(var(--accent), 0.26);
+    }
+
+    // Pressed: the shadow collapses towards the surface, so the button reads as
+    // going down rather than just changing colour. Paired with the scale in
+    // layout/playButton.less.
+    &:active {
+        box-shadow: 0 1px 3px rgba(var(--accent), 0.30);
+    }
+
+    &:focus {
+        color: rgba(0, 0, 0, 0);
+    }
+
+    // The glyph is built from nested spans that get their colour here - white
+    // now, since they sit on the accent rather than next to it. Both the
+    // resting and the .play state set it, so both have to be flipped.
+    &>span {
+        &>span {
+            background-color: rgb(var(--accent-contrast));
+            border-color: transparent;
+        }
+    }
+
+    &.play {
+        &>span {
+            &>span {
+                background-color: rgb(var(--accent-contrast));
+            }
+        }
+    }
+}

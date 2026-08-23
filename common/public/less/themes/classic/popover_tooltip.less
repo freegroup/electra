@@ -1,0 +1,8 @@
+// PopoverTooltip — appended to <body>, must be top-level (not inside a pane)
+.popoverTooltip {
+    background: rgb(var(--pane-bg-color));
+    border: 1px solid rgb(var(--border-color));
+    color: rgb(var(--text-color));
+    &::before { border-bottom-color: rgb(var(--border-color)); }
+    &::after  { border-bottom-color: rgb(var(--pane-bg-color)); }
+}

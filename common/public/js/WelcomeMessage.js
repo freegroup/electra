@@ -20,8 +20,8 @@ class Dialog {
                 </div>
                 <div class="description">
                   <p data-i18n="[html]app.description">${t("")}</p>
-                  <button data-i18n="button.new_document" class="electra-button" id="welcomeNewDocument">${t("button.new_document")}</button> 
-                  <button data-i18n="button.open_example" class="electra-button" id="welcomeOpenExample">${t("button.open_example")}</button>
+                  <button data-i18n="button.new_document" class="electra-button electra-primary" id="welcomeNewDocument">${t("button.new_document")}</button> 
+                  <button data-i18n="button.open_example" class="electra-button electra-primary" id="welcomeOpenExample">${t("button.open_example")}</button>
                 </div>
               </div>
               <div class="right">

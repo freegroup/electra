@@ -1,0 +1,51 @@
+#workspaces {
+    background-color: rgb(var(--workplace-bg-color));
+    .filesTeaser {
+        .title { color: rgb(var(--tint-color)); }
+    }
+    .workspacesFinder {
+        // card chrome comes from .finderCard; toolbar from .finderToolbar.
+
+        .scopeTile {
+            border-color: rgb(var(--border-color));
+            background-color: rgb(var(--pane-bg-color));
+            &:hover { border-color: rgb(var(--tint-color)); }
+            .scopeTileName { color: rgb(var(--tint-color)); }
+        }
+
+        // member badge = neutral (members panel); admin badge = accent
+        .wsBadgeMember {
+            background: rgba(var(--text-color), 0.08);
+            color: rgb(var(--text-color));
+        }
+        .wsBadgeAdmin,
+        .scopeBadgeAdmin {
+            background: rgb(var(--tint-color));
+            color: #fff;
+        }
+
+        // roster role marks: a golden star for admins, a muted dot otherwise
+        .wsRoleAdmin { color: #e8a200; }
+        .wsRoleMember { color: rgba(var(--text-color), 0.35); }
+
+        // Presence dots on a workspace card. They stand for people, not for
+        // roles, so the palette stays calm next to the tint and only has to
+        // separate cleanly where the dots overlap — hence the ring in the
+        // card fill rather than a border.
+        .wsAvatarDot {
+            box-shadow: 0 0 0 2px rgb(var(--pane-bg-color));
+            color: #fff; // the user glyph strokes in currentColor
+        }
+        .wsAvatarDot1 { background: rgb(218,  26,  95); }
+        .wsAvatarDot2 { background: rgb( 94, 129, 172); }
+        .wsAvatarDot3 { background: rgb(102, 168, 140); }
+        .wsAvatarDot4 { background: rgb(226, 143,  65); }
+        .wsAvatarDot5 { background: rgb(126, 108, 176); }
+        .wsAvatarDot6 { background: rgb( 72, 148, 168); }
+
+        .workspaceSidePanel {
+            border-left: 1px solid rgb(var(--border-color));
+            padding-left: @contentToEdgePadding;
+        }
+    }
+}

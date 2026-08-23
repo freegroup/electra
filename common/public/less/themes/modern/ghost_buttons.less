@@ -1,0 +1,29 @@
+// ghost_buttons - MODERN
+//
+// Mirror of themes/classic/ghost_buttons.less: every theme carries the same file set,
+// so a component's appearance is always in the same place, whichever theme you
+// are looking at. Started as a copy - edit values and rules freely, nothing
+// here is shared with Classic.
+//
+// Loaded inside `[data-theme="modern"] body.themed`, which outranks Classic's
+// `body.themed` by one class, so anything left untouched simply repeats what
+// Classic already says.
+
+.ghostButton {
+    color: rgba(var(--text-color), 0.5);
+    border-color: rgba(var(--text-color), 0.2);
+    &:hover {
+        background: rgba(var(--text-color), 0.06);
+        border-color: rgba(var(--text-color), 0.35);
+        color: rgb(var(--text-color));
+    }
+}
+
+.ghostButtonPrimary {
+    color: rgb(var(--tint-color));
+    border-color: rgba(var(--tint-color), 0.3);
+    &:hover {
+        background: rgba(var(--tint-color), 0.08);
+        border-color: rgb(var(--tint-color));
+    }
+}

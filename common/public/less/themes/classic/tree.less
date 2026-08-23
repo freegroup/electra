@@ -1,0 +1,29 @@
+.tree {
+    .tree-leaf {
+        
+
+        .tree-leaf-content {
+
+            .tree-expando {
+                background-color: transparent;
+                border: 1px solid rgb(var(--input-label-color));
+                color: rgb(var(--input-label-color));
+
+            }
+            &:hover {
+                background-color: rgb(var(--list-item-hover-bg-color));
+            }
+
+            &.selected {
+                background-color: rgb(var(--list-item-selected-bg-color));
+                .tree-leaf-text {
+                    color: rgb(var(--tint-color));
+                }
+                .tree-expando {
+                    color: rgb(var(--tint-color));
+                    border-color: rgb(var(--tint-color));
+                }
+            }
+        }
+    }
+}

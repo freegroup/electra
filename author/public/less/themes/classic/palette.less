@@ -1,0 +1,53 @@
+.paletteContainer {
+    background-color: white;
+    border-right-color: rgba(74, 74, 74, 0.5);
+    border-left-color: rgba(74, 74, 74, 0.5);
+
+    .palette_item {
+        border-color: #f0f0f0;
+
+        >div {
+            border-color: transparent;
+
+            div {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .glowBorder {
+            border-color: rgb(var(--tint-color)) ;
+        }
+    }
+}
+
+#paletteElementsOverlay {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+#paletteFilter.pages {
+    box-shadow: none !important;
+
+    #documentContentAdd {
+        .button {
+            background: rgb(var(--tint-color));
+            &:before {
+                background: white;
+            }
+            &:after {
+                background: white;
+            }
+        }
+        .nav {
+            background: rgb(var(--pane-bg-color));
+            box-shadow: --box-shadow-1;
+            border: 1px solid  rgb(var(--border-color));
+    
+            a {
+                color:  rgb(var(--input-label-color));       
+                &:hover {
+                    color:rgb(var(--tint-color));
+                }
+            }
+        }
+    }
+}

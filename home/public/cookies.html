@@ -15,6 +15,7 @@
 <link rel="icon" type="image/png" href="/common/images/favicon_32x32.png" sizes="32x32"/>
 
 <link href="/common/css/roboto.css" rel="stylesheet" type="text/css"/>
+<link href="/common/css/inter.css" rel="stylesheet" type="text/css"/>
 <link href="/common/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 <link href="/home/js/webpack/bundle.css" rel="stylesheet" type="text/css"/>
 
@@ -29,9 +30,14 @@
   var app = null
   var socket = null
 </script>
+  <!-- The stored theme, applied before the first paint. Inline and here on purpose:
+       the bundle arrives long after this, and the content pages load none at all.
+       Contract with common/js/theme.js - same storage key, same attribute. -->
+  <script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
 </head>
 
-<body class="light contentPageBody" data-appbar-subtitle-i18n="page.cookies.title">
+<body class="themed contentPageBody" data-appbar-subtitle-i18n="page.cookies.title">
+
 <div class="contentLayout">
 
   <!-- filled by the shared Header component (js/Header.js) -->

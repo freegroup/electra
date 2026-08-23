@@ -1,0 +1,79 @@
+// button - MODERN
+//
+// Gives the button hierarchy that the markup has been asking for all along.
+//
+// ConfirmDialog.js:15-16 already writes it out:
+//     <button class="electra-button">                        Cancel
+//     <button class="electra-button electra-primary ...">     Confirm
+//
+// but `.electra-primary` is styled NOWHERE in the project, so both render as a
+// filled crimson block. Two equally weighted primary buttons in a confirmation
+// dialog is not a matter of taste - the destructive-looking one and the safe one
+// look the same, and the eye has nothing to land on.
+//
+// So: `.electra-button` is the neutral default, `.electra-primary` is the one
+// filled with the brand colour. 78 buttons in the codebase carry the plain
+// class and become quiet; the ~33 marked primary keep the weight and now
+// actually stand out.
+//
+// `.electra-primary` never appears without `.electra-button` - it is a modifier
+// wearing a component's name, and it also collides by name with the CSS
+// variable --electra-primary, which is an unrelated (and dead) colour token.
+// Renaming it to electra-button--primary was considered and DECLINED: 20 markup
+// sites across 19 files is churn the name does not earn. Left as-is on purpose.
+//
+// Classic is deliberately left flat. This is a large visible change and Classic
+// is the reference the fingerprint proves against - port it over once you have
+// seen it side by side.
+
+.electra-button {
+    // Secondary by default: a surface with an edge, not a coloured block.
+    background-color: rgb(var(--surface-base));
+    color: rgb(var(--text-default));
+    border: 1px solid rgb(var(--line-default));
+
+    // layout/input_controls.less sets `border: none`, so the border above adds
+    // 2px to the box. Pulling it out of the padding keeps every button the same
+    // height as its primary neighbour.
+    padding-left: 9px;
+    padding-right: 9px;
+
+    transition: background-color 120ms ease, border-color 120ms ease;
+
+    &:hover {
+        background-color: rgb(var(--state-hover));
+        border-color: rgb(var(--text-disabled));
+        // Classic brightens; on a white button that does nothing at all.
+        filter: none;
+    }
+
+    &:active {
+        background-color: rgb(var(--state-selected));
+    }
+
+    // The one that carries the action. A dialog with a single button marks that
+    // button primary too - it IS the action, there is nothing for it to be
+    // secondary to. That is decided in the markup, one class per button, not by
+    // a selector guessing from the surroundings.
+    &.electra-primary {
+        background-color: rgb(var(--accent));
+        color: rgb(var(--accent-contrast));
+        border-color: rgb(var(--accent));
+
+        &:hover {
+            background-color: rgb(var(--accent-strong));
+            border-color: rgb(var(--accent-strong));
+        }
+
+        &:active {
+            background-color: rgb(var(--accent-strong));
+        }
+    }
+
+    &.disabled,
+    &:disabled {
+        background-color: rgb(var(--surface-muted));
+        color: rgb(var(--text-disabled));
+        border-color: rgb(var(--line-default));
+    }
+}

@@ -19,7 +19,7 @@ class Dialog {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
+                  <button data-i18n="common:button.close" class="electra-button electra-primary" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>

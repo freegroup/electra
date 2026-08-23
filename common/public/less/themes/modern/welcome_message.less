@@ -1,0 +1,26 @@
+// welcome_message - MODERN
+//
+// Mirror of themes/classic/welcome_message.less: every theme carries the same file set,
+// so a component's appearance is always in the same place, whichever theme you
+// are looking at. Started as a copy - edit values and rules freely, nothing
+// here is shared with Classic.
+//
+// Loaded inside `[data-theme="modern"] body.themed`, which outranks Classic's
+// `body.themed` by one class, so anything left untouched simply repeats what
+// Classic already says.
+
+.welcomeMessage {
+    background-color: rgba(var(--workplace-bg-color), 0.8);
+
+    .welcomeMessageContent {
+        background-color: rgb(var(--workplace-bg-color));
+        .teaser {
+        background-color: rgb(var(--pane-bg-color));
+        box-shadow: var(--box-shadow-1);
+    
+        h2 {
+            color: rgb(var(--tint-color));
+        }
+        }
+    }
+}

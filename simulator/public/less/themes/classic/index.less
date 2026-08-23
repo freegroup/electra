@@ -1,0 +1,22 @@
+// ---------------------------------------------------------------------------
+// CLASSIC, simulator-specific.
+//
+// Same shape as common/less/themes/classic/index.less: tokens on :root, the
+// component files inside one `body.themed` wrapper so they stay prefix-free.
+// Loaded after common's, so these override it where the names collide.
+// ---------------------------------------------------------------------------
+
+@import "tokens";
+
+// Outside the wrapper: it carries its own `body.themed #editor .toolbar`
+// selector, see the note in the file.
+@import "floating_toolbar";
+
+body.themed {
+    @import "canvas";
+    @import "dialog";
+    @import "play_button";
+    @import "probe_window";
+    @import "toolbar";
+    @import "workspace";
+}

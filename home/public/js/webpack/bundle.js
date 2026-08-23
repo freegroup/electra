@@ -119,7 +119,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 var _AppSwitch = _interopRequireDefault(__webpack_require__(/*! ./AppSwitch */ "../common/public/js/AppSwitch.js"));
-var _LngSwitch = _interopRequireDefault(__webpack_require__(/*! ./LngSwitch */ "../common/public/js/LngSwitch.js"));
+var _SettingsSwitch = _interopRequireDefault(__webpack_require__(/*! ./SettingsSwitch */ "../common/public/js/SettingsSwitch.js"));
 var _Userinfo = _interopRequireDefault(__webpack_require__(/*! ./Userinfo */ "../common/public/js/Userinfo.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class ApplicationFrame {
@@ -130,7 +130,7 @@ class ApplicationFrame {
     this.permissions = permissions;
     this.userinfo = new _Userinfo.default(permissions);
     this.appSwitch = new _AppSwitch.default(permissions);
-    this.lngSwitch = new _LngSwitch.default(permissions);
+    this.settingsSwitch = new _SettingsSwitch.default(permissions);
   }
   getParam(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -189,7 +189,7 @@ class Dialog {
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button data-i18n="common:button.close" class="electra-button" data-dismiss="modal">Close</button>
+                  <button data-i18n="common:button.close" class="electra-button electra-primary" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
@@ -209,11 +209,11 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ "../common/public/js/LngSwitch.js":
-/*!****************************************!*\
-  !*** ../common/public/js/LngSwitch.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ "../common/public/js/SettingsSwitch.js":
+/*!*********************************************!*\
+  !*** ../common/public/js/SettingsSwitch.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -222,7 +222,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
-// The language switcher - ONE component for every page of the site.
+var _theme = _interopRequireDefault(__webpack_require__(/*! ./theme */ "../common/public/js/theme.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// The settings menu - ONE component for every page of the site. Holds the two
+// choices a reader can make about the shell: language and appearance.
 //
 // It is used in two very different environments and must look identical in
 // both, so it carries no hard dependency on jQuery, Bootstrap, i18next or the
@@ -230,15 +233,20 @@ exports["default"] = void 0;
 //
 //   - the apps and the start page: the full stack is loaded, the switcher calls
 //     i18next.changeLanguage() and relabels everything in place
-//   - the static content pages (/home/de/…, /home/en/…): no jQuery, no i18next.
-//     Their text is baked into the HTML, so switching language is a NAVIGATION,
-//     not a relabelling
+//   - the static content pages (about, terms, privacy, cookies, imprint): no
+//     jQuery, no i18next. Their text is baked into the HTML, so switching
+//     language is a NAVIGATION, not a relabelling
 //
 // Which of the two applies is decided by the page itself: if it declares
 // <link rel="alternate" hreflang="…"> for the target language, the switcher
 // goes there. That markup is already in those pages for search engines, so
 // nothing new has to be wired up and this file needs to know nothing about the
 // page structure of any app.
+//
+// The German labels in the markup are the fallback for the static pages, where
+// i18next never runs - the same pattern the page bodies use. Language names are
+// deliberately NOT translated: someone hunting for English needs to read
+// "English", whatever the interface currently speaks.
 
 const lngs = {
   en: {
@@ -251,33 +259,52 @@ const lngs = {
 
 // The apps mount this next to a bar that lives at different depths, so the icon
 // is referenced absolutely.
-const ICON = "/common/images/toolbar_language.svg";
-class LngSwitch {
+//
+// It carries class="svg" so inlineSVG swaps the <img> for a real inline <svg>.
+// That is not cosmetic: this file has #4A4A4A baked in, and the appbar rule that
+// paints its icons white (.svgTint in theme_light.less) can only reach the
+// shapes once they are actual child elements. As an <img> the gear stayed dark
+// grey on the dark blue bar. The neighbouring waffle and the old globe get away
+// without the class only because they happen to have #FFFFFF baked in - which
+// also means they would not follow a theme that changes the bar.
+const ICON = "/common/images/canvas_configure.svg";
+class SettingsSwitch {
   constructor(permissions) {
     const bar = document.querySelector(".appbar");
     if (!bar) return;
-    const items = Object.keys(lngs).map(lng => `<li data-name="${lngs[lng].nativeName}" data-lng="${lng}">${lngs[lng].nativeName}</li>`).join("");
+    const languages = Object.keys(lngs).map(lng => `<li class="settingsOption" data-lng="${lng}">${lngs[lng].nativeName}</li>`).join("");
     const group = document.createElement("span");
     group.className = "group";
     group.innerHTML = `
-      <div class="dropdown" id="languageSwitcher">
+      <div class="dropdown settingsMenu" id="settingsMenu">
         <span class="image-button" data-toggle="dropdown">
-          <img src="${ICON}" alt="Language"/>
+          <img class="svg" src="${ICON}" alt="Einstellungen"/>
         </span>
-        <ul class="dropdown-menu dropdown-menu-right" role="menu">${items}</ul>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+          <li class="settingsHeader" data-i18n="common:settings.language">Sprache</li>
+          ${languages}
+          <li class="settingsSeparator"></li>
+          <li class="settingsHeader" data-i18n="common:settings.appearance">Darstellung</li>
+          <li class="settingsOption" data-theme="classic" data-i18n="common:settings.theme_classic">Klassisch</li>
+          <li class="settingsOption" data-theme="modern" data-i18n="common:settings.theme_modern">Modern</li>
+        </ul>
       </div>
     `;
     bar.appendChild(group);
-    this.root = group.querySelector("#languageSwitcher");
-    this.root.querySelectorAll("li").forEach(li => {
-      li.addEventListener("click", () => this.select(li.getAttribute("data-lng")));
+    this.root = group.querySelector("#settingsMenu");
+    this.root.querySelectorAll("[data-lng]").forEach(li => {
+      li.addEventListener("click", () => this.selectLanguage(li.getAttribute("data-lng")));
+    });
+    this.root.querySelectorAll("[data-theme]").forEach(li => {
+      li.addEventListener("click", () => this.selectTheme(li.getAttribute("data-theme")));
     });
     this.installFallbackToggle();
+    this.markActive();
 
     // Another browser window switched the language - follow it. Only relevant
     // where a socket exists; the static pages have none.
     if (typeof socket !== "undefined" && socket && typeof socket.on === "function") {
-      socket.on("i18n", locale => this.apply(locale, false));
+      socket.on("i18n", locale => this.applyLanguage(locale, false));
     }
   }
 
@@ -294,14 +321,35 @@ class LngSwitch {
     });
     document.addEventListener("click", () => this.root.classList.remove("open"));
   }
-  select(locale) {
+
+  // Which entries carry the tick. Runs again after every change, and after a
+  // relabelling - i18next rewrites the text of an item but leaves its classes.
+  markActive() {
+    const current = _theme.default.current();
+    this.root.querySelectorAll("[data-theme]").forEach(li => {
+      li.classList.toggle("active", li.getAttribute("data-theme") === current);
+    });
+
+    // i18next reports regional variants ("de-DE"), the menu only knows bases.
+    const spoken = typeof i18next !== "undefined" && i18next.language ? i18next.language : document.documentElement.lang;
+    this.root.querySelectorAll("[data-lng]").forEach(li => {
+      const lng = li.getAttribute("data-lng");
+      li.classList.toggle("active", !!spoken && spoken.split("-")[0] === lng);
+    });
+  }
+  selectLanguage(locale) {
     this.root.classList.remove("open");
-    this.apply(locale, true);
+    this.applyLanguage(locale, true);
+  }
+  selectTheme(name) {
+    this.root.classList.remove("open");
+    _theme.default.apply(name);
+    this.markActive();
   }
 
   // `broadcast` is false when we are reacting to another window, so the two do
   // not bounce the event back and forth.
-  apply(locale, broadcast) {
+  applyLanguage(locale, broadcast) {
     // A page that offers a translated document wins: relabelling would leave
     // the reader with a German text under an English shell.
     const alternate = document.querySelector(`link[rel="alternate"][hreflang="${locale}"]`);
@@ -323,9 +371,10 @@ class LngSwitch {
     if (typeof $ !== "undefined" && $.fn && $.fn.localize) {
       $("body").localize();
     }
+    this.markActive();
   }
 }
-exports["default"] = LngSwitch;
+exports["default"] = SettingsSwitch;
 
 /***/ }),
 
@@ -875,6 +924,91 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ "../common/public/js/theme.js":
+/*!************************************!*\
+  !*** ../common/public/js/theme.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+// The chosen look - "classic" or "modern".
+//
+// A theme is a `data-theme` attribute on <html>. The tokens of the classic look
+// live on :root, a theme overrides them from html[data-theme="…"], and an
+// attribute selector on the same element outranks :root - so the switch is one
+// attribute and needs no import order, no class juggling and no !important.
+//
+// Classic owns :root and therefore has no attribute value: switching to it means
+// REMOVING the attribute. That is deliberate - it makes the look the app has
+// always had the state everything falls back into when anything goes wrong.
+//
+// This module has no dependencies, not jQuery and not i18next. It also runs on
+// the static content pages, where neither exists.
+//
+// Note it does not apply the stored theme on load. That would be far too late:
+// the bundle arrives long after the first paint, and the content pages load no
+// bundle at all. Each index.html carries a two-line inline script in <head> that
+// does it before anything renders. Keep the two in sync - the storage key and the
+// attribute name are the contract between them.
+
+const STORAGE_KEY = "electra.theme";
+const ATTRIBUTE = "data-theme";
+
+// "classic" maps to no attribute value: it is the :root base, not an override.
+const THEMES = {
+  classic: null,
+  modern: "modern"
+};
+const DEFAULT = "classic";
+class Theme {
+  // Private browsing and hardened settings can make localStorage throw on
+  // access, not just on write. Broken storage must cost the user the
+  // preference, never the page.
+  read() {
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      return THEMES.hasOwnProperty(stored) ? stored : DEFAULT;
+    } catch (e) {
+      return DEFAULT;
+    }
+  }
+
+  // What is actually on the document right now, which is what the inline script
+  // in <head> put there. Falls back to the stored value if the attribute is
+  // missing for any reason.
+  current() {
+    const attribute = document.documentElement.getAttribute(ATTRIBUTE);
+    const match = Object.keys(THEMES).find(name => THEMES[name] === attribute);
+    return match || this.read();
+  }
+  apply(name) {
+    if (!THEMES.hasOwnProperty(name)) return;
+    if (THEMES[name] === null) {
+      document.documentElement.removeAttribute(ATTRIBUTE);
+    } else {
+      document.documentElement.setAttribute(ATTRIBUTE, THEMES[name]);
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEY, name);
+    } catch (e) {
+      // Preference is lost on reload, the current page is still correct.
+    }
+  }
+  names() {
+    return Object.keys(THEMES);
+  }
+}
+var _default = new Theme();
+exports["default"] = _default;
+
+/***/ }),
+
 /***/ "./public/js/Application.js":
 /*!**********************************!*\
   !*** ./public/js/Application.js ***!
@@ -890,7 +1024,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = void 0;
 var _ApplicationFrame = _interopRequireDefault(__webpack_require__(/*! ../../common/js/ApplicationFrame */ "../common/public/js/ApplicationFrame.js"));
 var _AppSwitch = _interopRequireDefault(__webpack_require__(/*! ../../common/js/AppSwitch */ "../common/public/js/AppSwitch.js"));
-var _LngSwitch = _interopRequireDefault(__webpack_require__(/*! ../../common/js/LngSwitch */ "../common/public/js/LngSwitch.js"));
+var _SettingsSwitch = _interopRequireDefault(__webpack_require__(/*! ../../common/js/SettingsSwitch */ "../common/public/js/SettingsSwitch.js"));
 var _partyJs = _interopRequireDefault(__webpack_require__(/*! party-js */ "./node_modules/party-js/lib/index.js"));
 var _Configuration = _interopRequireDefault(__webpack_require__(/*! ./Configuration */ "./public/js/Configuration.js"));
 var _Header = _interopRequireDefault(__webpack_require__(/*! ./Header */ "./public/js/Header.js"));
@@ -911,7 +1045,7 @@ class Application extends _ApplicationFrame.default {
     // untouched by this.
     this.permissions = permissions;
 
-    // The header first: AppSwitch and LngSwitch append themselves into .appbar,
+    // The header first: AppSwitch and SettingsSwitch append themselves into .appbar,
     // so the bar has to exist before they run. The content sub-pages give an
     // i18n key for the subtitle (their text lives in the i18n files); the start
     // page has a literal "Home".
@@ -922,7 +1056,7 @@ class Application extends _ApplicationFrame.default {
       subtitle: "Home"
     });
     this.appSwitch = new _AppSwitch.default(permissions);
-    this.lngSwitch = new _LngSwitch.default(permissions);
+    this.settingsSwitch = new _SettingsSwitch.default(permissions);
     this.footer = new _Footer.default();
     return new Promise((resolve, reject) => {
       $(".launchArea .electra-button").one("mouseover", function () {
@@ -1068,7 +1202,7 @@ exports["default"] = void 0;
 // Hand-rebuilding it for the sub-pages is what made the two look different.
 //
 // The right-hand side is an empty .applicationSwitch container that AppSwitch
-// prepends its buttons into, and LngSwitch appends its own group next to it -
+// prepends its buttons into, and SettingsSwitch appends its own group next to it -
 // the same widgets the apps use. No user menu here on purpose: the landing
 // page and the content sub-pages run no Userinfo, so a sign-in button would either do
 // nothing or pull in the Google sign-in client.
@@ -11233,10 +11367,10 @@ get();
 $(window).scroll(get);
 $(window).load(function () {
   // No socket on the home + content pages. Its only use here was syncing the
-  // language choice across a user's open windows (LngSwitch), which is not worth
-  // a persistent WebSocket on a public landing page - and that connection was
-  // what made the ingress set an anonymous `connect.sid` session cookie before
-  // any consent. `socket` stays declared (as null) so LngSwitch's guarded
+  // language choice across a user's open windows (SettingsSwitch), which is not
+  // worth a persistent WebSocket on a public landing page - and that connection
+  // was what made the ingress set an anonymous `connect.sid` session cookie
+  // before any consent. `socket` stays declared (as null) so SettingsSwitch's guarded
   // `typeof socket` check simply skips the sync.
 
   // export all required classes for deserialize JSON with "eval"

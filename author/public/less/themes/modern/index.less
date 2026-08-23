@@ -1,0 +1,34 @@
+// ---------------------------------------------------------------------------
+// MODERN - selected by <html data-theme="modern">.
+//
+// Carries the SAME file set as themes/classic/: one file per component, always
+// in the same place, whichever theme you are reading. The copies start out
+// identical and diverge as they are edited - values, radii, borders, whatever
+// the component needs. That is the trade this project makes deliberately:
+// duplication in exchange for never having to ask "does this theme override
+// that, or does it fall through?".
+//
+// Two things are NOT mirrored, because a copy of them would be silently wrong:
+//   animations - keyframe names are document-wide, the later definition would
+//                win for both themes at once
+//   mixins     - a definition, not a rule; nothing to theme
+//
+// The wrapper adds one class over Classic's `body.themed`, which is what lets
+// an untouched copy sit harmlessly on top of the rule it duplicates.
+// ---------------------------------------------------------------------------
+
+@import "tokens";
+
+// Brings its own `[data-theme="modern"] body.themed …` selector.
+@import "floating_toolbar";
+
+[data-theme="modern"] body.themed {
+    @import "canvas";
+    @import "content";
+    @import "editor";
+    @import "palette";
+    @import "play_button";
+    @import "sections";
+    @import "toolbar";
+    @import "tooltip";
+}

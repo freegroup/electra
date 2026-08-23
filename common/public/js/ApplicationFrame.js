@@ -1,5 +1,5 @@
 import AppSwitch from "./AppSwitch"
-import LngSwitch from "./LngSwitch"
+import SettingsSwitch from "./SettingsSwitch"
 import Userinfo from "./Userinfo"
 
 export default class ApplicationFrame {
@@ -13,7 +13,7 @@ export default class ApplicationFrame {
 
         this.userinfo = new Userinfo(permissions)
         this.appSwitch = new AppSwitch(permissions)
-        this.lngSwitch = new LngSwitch(permissions)
+        this.settingsSwitch = new SettingsSwitch(permissions)
     }
 
     getParam (name) {

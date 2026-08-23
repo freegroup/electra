@@ -1,0 +1,80 @@
+// tab_strip - MODERN
+//
+// The first file where Modern genuinely diverges from Classic, and the reason
+// the theme folders carry rules and not just values.
+//
+// Classic paints the whole 200px bar in the brand colour and marks the active
+// tab by blending that colour into white. On a light bar that blend produces
+// nothing - white on near-white. Modern therefore marks the active tab three
+// other ways: a solid accent bar down its left edge, a white face against the
+// slightly darker strip, and the brand colour on label and icon.
+//
+// The accent bar is a RULE, not a value. No token could have expressed it,
+// which is exactly why this file exists.
+
+#leftTabStrip {
+    background-color: rgb(var(--lefttab-bg-color));
+
+    // A hairline against the white pane on the right. Without it the bar and
+    // the file tree bleed into one another - both are light now.
+    border-right: 1px solid rgba(var(--line-default), 0.9);
+
+    // Group divider. Classic draws this in white at 25% on a saturated bar,
+    // which reads as a whisper. The same 25% of a slate grey on a light bar is
+    // a hard rule, so it drops to a tenth - the job is separation, not drawing.
+    .leftTabSeparator hr {
+        border-top-color: rgba(var(--lefttab-font-color), 0.1);
+    }
+
+    >li,
+    >div {
+        &.active {
+            a {
+                // Plain white, no blend: the bar is already light, so the face
+                // of the active tab is the lightest thing here rather than a
+                // tinted version of the bar.
+                background-color: rgb(var(--surface-base));
+                background-image: none;
+
+                // The marker. 3px reads at a glance without becoming a second
+                // piece of chrome; the transparent border on every other tab
+                // keeps the labels from shifting sideways on selection.
+                border-left: 3px solid rgb(var(--accent));
+
+                &:hover {
+                    background-color: rgb(var(--surface-base));
+                    background-image: none;
+                }
+
+                .leftTabLabel {
+                    color: rgb(var(--lefttab-active-font-color));
+                    font-weight: var(--weight-semibold);
+                }
+
+                svg {
+                    .svgTint(rgb(var(--lefttab-active-font-color)));
+                }
+            }
+        }
+
+        a {
+            // Reserved so the active tab's 3px bar costs no horizontal shift.
+            border-left: 3px solid transparent;
+
+            // Classic darkens with black at 10%, which on a light bar looks
+            // like dirt rather than a hover. A step down the neutral ramp reads
+            // as the surface reacting.
+            &:hover {
+                background-color: rgba(var(--text-muted), 0.06);
+            }
+
+            .leftTabLabel {
+                color: rgb(var(--lefttab-font-color));
+            }
+
+            svg {
+                .svgTint(rgb(var(--lefttab-font-color)));
+            }
+        }
+    }
+}

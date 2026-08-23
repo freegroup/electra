@@ -16,3 +16,7 @@ body {
     scroll-snap-type: y mandatory;
 }
 
+// Modern is a token override only - no rule of Classic is duplicated. The
+// attribute selector on <html> outranks :root, so import order is irrelevant.
+@import "../../common/less/themes/modern/index";
+

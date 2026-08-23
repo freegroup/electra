@@ -106,7 +106,7 @@
 
   .context-menu-list {
     border-color: rgb(var(--border-color));
-    background: white;
+    background: rgb(var(--surface-raised));
     border-left-color: rgb(var(--tint-color));
     box-shadow: var(--box-shadow-2);
 
@@ -117,19 +117,19 @@
     .context-menu-item {
       &.hover {
         background-color:rgb(var(--tint-color));
-        color: white;
+        color: rgb(var(--text-on-accent));
       }
 
       &.disabled {
-        color: #666;
+        color: rgb(var(--text-muted));
 
         &.hover {
-          background-color: #EEE;
+          background-color: rgb(var(--surface-muted));
         }
       }
 
       .context-menu-submenu:after {
-        color: #666;
+        color: rgb(var(--text-muted));
       }
     }
   }

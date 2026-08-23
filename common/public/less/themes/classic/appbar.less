@@ -1,0 +1,36 @@
+.appbar {
+    background-color:rgb(32, 43, 59);
+    .title {
+        h1 {
+            color: white;
+        }
+        h2 {
+            color: white;
+        }
+    }
+    .slogan{
+        color: white;
+        letter-spacing: 0.2vw;
+    }
+    .icon {
+        path,
+        rect {
+            fill:  rgb(var(--tint-color));
+            stroke:  rgb(var(--tint-color));
+        }
+    }
+
+    .image-button {
+        border: 1px solid transparent;
+
+        &:hover{
+            border: 1px solid white;
+        }
+        img,
+        svg {
+            color: white;
+            border-color:transparent;
+            .svgTint(white);
+        }
+    }
+}
