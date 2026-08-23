@@ -634,10 +634,13 @@ function page({ title, description, slugName, bodyLines, tocMarkup }) {
 
 <div class="bookLayout">
 
-  <!-- The bar is markup, not JavaScript, the same way the simulator, author and
-       designer pages carry it. common/js/AppSwitch and SettingsSwitch append
+  <!-- The bar is markup, not JavaScript. The apps build the same bar from
+       common/js/Header.js; here it is static because these pages must be
+       readable with no JavaScript at all - that is the whole point of them.
+       Keep the two in step. common/js/AppSwitch and SettingsSwitch append
        themselves into .applicationSwitch. No user menu: reading needs no
-       sign-in, and Userinfo would pull in the Google client. -->
+       sign-in, and Userinfo would pull in the Google client.
+       The slogan carries its text inline; the book loads no translations. -->
   <div class="appbar">
     <a class="brandLink" href="/home/index.html">
       <img class="icon svg" src="/common/images/favicon_64x64.svg" alt="Electra.Academy"/>
@@ -646,6 +649,7 @@ function page({ title, description, slugName, bodyLines, tocMarkup }) {
       <h1>Electra.Academy</h1>
       <h2>Grundlagen</h2>
     </div>
+    <div class="slogan" data-i18n="common:header.slogan">macht digitale Elektronik für jeden zugänglich</div>
     <span class="spacer"></span>
     <span class="group applicationSwitch"></span>
   </div>
