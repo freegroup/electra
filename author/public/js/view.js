@@ -53,7 +53,7 @@ export default class View {
         return false
       })
       .on("click", ".sectionMenuEdit", event => {
-        this.onEdit(this.page.get($(event.target).data("id")))
+        this.onEdit(this.page.get($(event.currentTarget).data("id")))
         return false
       })
       .on("click", ".sectionMenuSimulate", event => {
@@ -65,7 +65,7 @@ export default class View {
         return false
       })
       .on("click", ".sectionMenuDelete", event => {
-        this.onDelete(this.page.get($(event.target).data("id")))
+        this.onDelete(this.page.get($(event.currentTarget).data("id")))
         return false
       })
       .on("click", ".sectionMenuFlip", event => {
