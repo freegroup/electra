@@ -6,6 +6,7 @@ import View from "./view"
 import Palette from "./palette"
 
 import GenericEditor from '../editor'
+import { icon } from "../../../../common/js/icons"
 
 export default class Editor extends GenericEditor{
 
@@ -13,25 +14,30 @@ export default class Editor extends GenericEditor{
     super(type)
   }
 
-  inject(section) {
-    super.inject(section)
-    let menu = $(".activeSection .tinyFlyoverMenu")
+  inject(section, toolbarHost) {
+    super.inject(section, toolbarHost)
     $(".workspace").append(`
           <div class="content editorContainerSelector" " id="draw2dCanvasWrapper">
                <div class="canvas" id="draw2dCanvas" oncontextmenu="return false;">
           </div>
        `)
-    menu.prepend(`
-          <div class="playButton play electra-button" id="simulationStartStop">
-            <span>
-              <span class="s1"></span>
-              <span class="s2"></span>
-              <span class="s3"></span>
+    // The Run/Stop control lives in the cell toolbar now, not the flyover.
+    // Two buttons in one host: view.js flips .play/.pause, and CSS shows exactly
+    // one - "Starten" while idle, "Stoppen" while the simulation runs - so the
+    // state is obvious. The single click handler toggles either way.
+    this.toolbarHost.append(`
+          <span class="simulationToggle play" id="simulationStartStop">
+            <span class="image-button sim-start">
+              ${icon("play")}
+              <div data-i18n="common:button.start">Starten</div>
             </span>
-          </div>
+            <span class="image-button sim-stop">
+              ${icon("square")}
+              <div data-i18n="common:button.stop">Stoppen</div>
+            </span>
+          </span>
     ` )
-
-    $("#draw2dCanvasWrapper").append(menu)
+    if ($.fn && $.fn.localize) this.toolbarHost.find("#simulationStartStop").localize()
 
     this.view = new View("draw2dCanvas")
     $("#paletteElements")[0].className = '';
@@ -51,7 +57,7 @@ export default class Editor extends GenericEditor{
 
     this.view.centerDocument()
 
-    $("#simulationStartStop").on("click", () => { this.view.simulationToggle()})
+    $("#simulationStartStop").on("click", () => { this.view.simulationToggle() })
     return this
   }
 
@@ -78,6 +84,16 @@ export default class Editor extends GenericEditor{
       this.resetDOM()
       return this.section
     })
+  }
+
+  // The cell's flyover "Run": opens the circuit and starts the simulation at
+  // once. view.js calls it after inject() via onSimulate.
+  getMenu(section){
+    return `<div data-id="${section.id}" class="sectionMenuSimulate">${icon("play", { strokeWidth: 2.2 })}</div>`
+  }
+
+  startSimulation(){
+    this.view.simulationStart()
   }
 
   /**

@@ -41,6 +41,12 @@ export default class Document {
     return this.pages.some( page => page.hasLearningContent() )
   }
 
+  // No section on any page. Used to refuse overwriting a stored document with
+  // empty content (a Save fired mid-switch would otherwise blank it).
+  isEmpty(){
+    return this.pages.every( page => page.length === 0 )
+  }
+
   toJSON() {
     return {
       exercise: this.hasLearningContent(),

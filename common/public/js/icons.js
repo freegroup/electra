@@ -17,6 +17,8 @@ const PATHS = {
   pencil:     `<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><path d="m15 5 4 4"/>`,
   copy:       `<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>`,
   circleHelp: `<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>`,
+  play:       `<polygon points="6 3 20 12 6 21 6 3"/>`,
+  square:     `<rect width="18" height="18" x="3" y="3" rx="2"/>`,
 }
 
 // The stroke width can be nudged up for small renderings, where Lucide's 2px

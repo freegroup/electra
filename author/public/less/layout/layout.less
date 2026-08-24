@@ -133,8 +133,9 @@ body {
             bottom:0px;
             left: @leftPaneWidth;
             overflow: auto;
-            // Floating toolbar hovers above; keep the content clear of it.
-            padding-top: @toolbarHeight + 8px;
+            // No top padding: it shifted the canvas origin and broke hit
+            // detection. Content may run under the floating toolbar, same as
+            // the simulator.
           }
         }
       }

@@ -83,3 +83,10 @@
         }
     }
 }
+
+// The insert zone (spacer) fills on hover so it reads as one place where
+// something gets added. Layout owns the shape/spacing, the tint lives here.
+.sections:not(.editMode) .section:hover .sectionContent[data-type='spacer'] {
+    background-color: rgba(var(--border-color), 0.35);
+    border-radius: @borderRadiusSmall;
+}

@@ -16,8 +16,11 @@
 
     div {
         border-color: transparent;
+        transition: color 120ms ease, border-color 120ms ease;
         &:hover {
             border-color: rgb(var(--border-color));
+            // Glow in the accent colour - currentColor flows into the glyph.
+            color: rgb(var(--tint-color));
         }
     }
 }

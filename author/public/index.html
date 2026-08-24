@@ -140,7 +140,7 @@
                </span>
 
 
-              <span class="group">
+              <span class="group" id="editorgroup_history">
                 <span class="image-button disabled" id="editUndo">
                   <img class="icon svg" src="../common/images/toolbar_undo.svg"/>
                   <div data-i18n="common:toolbar.undo">Undo</div>
@@ -162,6 +162,22 @@
                     <img class="icon svg" title="Download Document as PDF" src="../common/images/toolbar_pdf.svg"/>
                     <div data-i18n="common:toolbar.download" >Download</div>
                   </span>
+              </span>
+
+              <!-- Cell toolbar: shown only while a section is being edited. The
+                   document groups above are hidden by display, never removed,
+                   so Toolbar.js keeps its handlers. Save/Cancel reuse the
+                   sectionMenu* classes, so view.js's delegated handlers fire. -->
+              <span class="group editorgroup_cell" id="editorgroup_cell" style="display:none">
+                  <span class="image-button sectionMenuCommitEdit" >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    <div data-i18n="common:button.apply">Übernehmen</div>
+                  </span>
+                  <span class="image-button sectionMenuCancelEdit" >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+                    <div data-i18n="common:button.close">Schließen</div>
+                  </span>
+                  <span class="group" id="editorgroup_cell_extra"></span>
               </span>
           </div>
        </div>

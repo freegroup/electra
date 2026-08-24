@@ -18,8 +18,8 @@
         gap: @buttonSpacing;
         transition: all 0.2s ease;
         .electra-button{
-          opacity: 1; 
-          transform: scale(1); 
+          opacity: 1;
+          transform: scale(1);
           transition: all 0.2s ease;
         }
       }
@@ -252,12 +252,20 @@
       justify-content: center;
       align-items: center;
 
+      // Breathing room so the insert zone sits clearly between the cells.
+      margin: 8px 0;
       transition: all 0.2s ease;
       gap: 1px;
       .electra-button{
-        opacity: 0; 
+        opacity: 0;
         transform: scale(0.3,0.5);
         transition: all 0.2s ease;
+      }
+      // A leading "+" turns each chip into an action ("+ Text" = insert here),
+      // not a filter tab. Added once, so the labels stay clean.
+      .sectionMenuInsertSection::before{
+        content: "+";
+        margin-right: 5px;
       }
     }
   }
@@ -319,6 +327,12 @@
       opacity: 1 !important;
     }
   }
+}
+
+// In edit mode the cell actions (Uebernehmen/Abbrechen, play) live in the
+// toolbar. Hide the per-cell flyover so there is only one place to act.
+.section.editMode .fc .tinyFlyoverMenu {
+  display: none;
 }
 
 

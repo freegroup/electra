@@ -11,12 +11,14 @@ export default class Editor extends GenericEditor{
   }
 
   /* public interface */
-  inject(section) {
-    super.inject(section)
+  inject(section, toolbarHost) {
+    super.inject(section, toolbarHost)
     section.flippedStateDuringInject  = $(`.section[data-id='${section.id}'] .flip_box`).hasClass("flipped-back")
     let activeSection = section.flippedStateDuringInject  ? section.content.back : section.content.front
 
-    this.editor = editorByType(activeSection.type).inject(activeSection)
+    // Pass the host down: if the shown side is a circuit, its play button lands
+    // in the cell toolbar just like a top-level circuit would.
+    this.editor = editorByType(activeSection.type).inject(activeSection, toolbarHost)
 
     return this
   }

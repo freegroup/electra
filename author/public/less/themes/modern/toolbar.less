@@ -12,3 +12,12 @@
 .toolbar {
     background-color: rgb(var(--toolbar-bg-color));
 }
+
+// Edit mode: a light-yellow bar tells the user "you left the document, you are
+// now editing a cell". Needs #editor to outrank the floating toolbar rule
+// (floating_toolbar.less, body.themed #editor .toolbar). Keeps the float shadow,
+// adds a yellow underline.
+#editor .toolbar.cellEditMode {
+    background-color: #fdf4d0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07), inset 0 -3px 0 #f2c94c;
+}

@@ -22,6 +22,10 @@
     img,
     svg {
       height: @toolbarHeight - 32;
+      // The whole button is the hit target. Without this the fill:none glyph
+      // lets the cursor fall through its interior, flickering pointer/default
+      // as it crosses the stroke lines.
+      pointer-events: none;
     }
 
     div {

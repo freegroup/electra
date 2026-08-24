@@ -7,6 +7,8 @@
   // The shorthand used to be preceded by `padding-right: 10px`, which it
   // silently overwrote.
   padding: var(--menu-container-padding);
+  // Cell edit mode tints the bar (theme files); ease the switch.
+  transition: background-color 150ms ease, box-shadow 150ms ease;
 
   * {
     outline: none;

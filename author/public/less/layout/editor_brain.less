@@ -1,20 +1,24 @@
 #draw2dCanvasWrapper {
   top:0  !important;
+}
 
-  .tinyFlyoverMenu {
-    top: @appbarHeight + 15px;
-    position: fixed;
-    right: 30px;
-    div{
-      min-width: 25px;
-      text-align: center;
-    }
-    .playButton {
-      height:initial;
-      top: 0px;
-      min-width: 60px !important;
-      padding-left: 31px;
+// The circuit's Run/Stop control lives in the cell toolbar now (not the
+// flyover). Two buttons share one host; view.js flips .play/.pause on it and CSS
+// shows exactly one - "Starten" while idle, "Stoppen" while the simulation runs.
+#editorgroup_cell_extra {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+
+  #simulationStartStop {
+    display: flex;
+    align-items: center;
+
+    .sim-stop { display: none; }
+
+    &.pause {
+      .sim-start { display: none; }
+      .sim-stop { display: flex; }
     }
   }
-
 }

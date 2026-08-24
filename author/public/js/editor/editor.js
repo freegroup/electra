@@ -11,10 +11,14 @@ export default class Editor {
     }
 
     /* public interface */
-    inject(section) {
+    // toolbarHost is the jQuery element the cell toolbar lives in. An editor may
+    // append its own controls there (e.g. brain adds the play button). Passed in
+    // rather than looked up by id, so the toolbar layout can move freely later.
+    inject(section, toolbarHost) {
       $(".sections").addClass("editMode")
       $(".sections .activeSection").addClass("editMode")
       this.section = section
+      this.toolbarHost = toolbarHost
       return this
     }
   

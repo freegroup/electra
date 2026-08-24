@@ -183,6 +183,14 @@ class Application extends GenericApplication {
     return this.view.onCommitEdit()
       .then(() => {
         let content = this.document.toJSON()
+        // Never overwrite a stored document with empty content. During a rapid
+        // switch this.document can be a transient empty reset, and a Save then
+        // would blank the doc's version. A brand-new document (no id) may start
+        // empty, so only guard once the document exists.
+        if (this.currentFile.id && this.document.isEmpty()) {
+          toast(t("common:message.save_empty"))
+          return Promise.reject()
+        }
         return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content, scopeRef })
       })
       .then((res) => {
@@ -254,8 +262,11 @@ class Application extends GenericApplication {
     this.document = document
     // the "setDocument" is used by the CommandStack for undo/redo
     // therefore a "markSaveLocation" is a bad idea in this method
-    this.view.onCancelEdit()
-    this.view.setPage(this.document.get(pageIndex || 0))
+    // Wait for the cancel to finish: its async cleanup renders the OLD page and
+    // clears currentEditor. Racing setPage against it blanked the document.
+    this.view.onCancelEdit().then(() => {
+      this.view.setPage(this.document.get(pageIndex || 0))
+    })
   }
 
   getDocument() {

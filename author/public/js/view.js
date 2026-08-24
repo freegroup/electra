@@ -56,6 +56,10 @@ export default class View {
         this.onEdit(this.page.get($(event.target).data("id")))
         return false
       })
+      .on("click", ".sectionMenuSimulate", event => {
+        this.onSimulate(this.page.get($(event.currentTarget).data("id")))
+        return false
+      })
       .on("click", ".sectionMenuCopy", event => {
         this.onCopy(this.page.get($(event.currentTarget).data("id")))
         return false
@@ -113,8 +117,11 @@ export default class View {
   }
 
   setPage(page) {
+    if (!page) {
+      return
+    }
     // commit the current changes if an editor is active
-    this.onCommitEdit().then(()=>{ 
+    this.onCommitEdit().then(()=>{
       this.onUnselect()
       
       // scroll to top
@@ -358,16 +365,39 @@ export default class View {
     if (!this.app.isEditable()) {
       return Promise.resolve()
     }
-    this.onCommitEdit().then( () => {
+    return this.onCommitEdit().then( () => {
       this.onSelect(section)
-      $(".activeSection .tinyFlyoverMenu").html(`
-        <div data-i18n="common:button.save"   data-id="${section.id}" class="sectionMenuCommitEdit electra-button">${t("common:button.save")}</div>
-        <div data-i18n="common:button.cancel" data-id="${section.id}" class="sectionMenuCancelEdit electra-button">${t("common:button.cancel")}</div>
-      `)
+      // Save/Cancel now live in the cell toolbar (index.html), not the flyover.
+      // The editor gets the extra slot so it can add its own controls (brain:
+      // play). Only display is toggled, so the document handlers survive.
+      this.showCellToolbar()
       this.currentEditor = editorByType(section.type)
-      this.currentEditor.inject(section)
+      this.currentEditor.inject(section, $("#editorgroup_cell_extra"))
       $(".sections").removeClass("activeSection")
     })
+  }
+
+  // Like edit, but drop straight into simulation - the cell's "Run". Only the
+  // brain editor implements startSimulation; other types just open.
+  onSimulate(section) {
+    this.onEdit(section).then( () => {
+      this.currentEditor?.startSimulation?.()
+    })
+  }
+
+  // Swap the document toolbar for the cell toolbar. Hide by display only - the
+  // document buttons keep the handlers Toolbar.js bound once in its ctor.
+  showCellToolbar() {
+    $("#editorgroup_fileoperations, #editorgroup_history, #editorgroup_share").hide()
+    $("#editorgroup_cell").css("display", "flex")
+    $(".toolbar").addClass("cellEditMode")
+  }
+
+  hideCellToolbar() {
+    $("#editorgroup_cell").hide()
+    $("#editorgroup_cell_extra").empty()
+    $("#editorgroup_fileoperations, #editorgroup_history, #editorgroup_share").css("display", "")
+    $(".toolbar").removeClass("cellEditMode")
   }
 
   onCopy(section) {
@@ -436,6 +466,7 @@ export default class View {
         .then(() => {
           this.currentEditor = null;
           $(".editorContainerSelector").remove()
+          this.hideCellToolbar()
           this.render(this.page)
           this.palette.render()
           doneCallback()
@@ -451,6 +482,7 @@ export default class View {
     return this.currentEditor.cancel()
       .then(() => {
         $(".editorContainerSelector").remove()
+        this.hideCellToolbar()
         this.currentEditor = null;
         this.render(this.page)
         this.palette.render()
