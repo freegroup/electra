@@ -63,6 +63,22 @@
         padding-top: 0px;
         margin-top: 20px;
         line-height: 30px;
+
+        // The header help icon is always on - it does not live inside a
+        // .list-item, so neither the opacity default nor the svg sizing from
+        // list.less reach it. Set both here.
+        .chapter_help {
+          cursor: pointer;
+          margin-left: 6px;
+          display: inline-flex;
+          vertical-align: middle;
+
+          svg {
+            width: 15px;
+            height: 15px;
+            display: block;
+          }
+        }
       }
     }
   }
@@ -75,11 +91,26 @@
       width: 100%;
       cursor: pointer;
       white-space: nowrap;
-      
+      position: relative;
+      overflow: hidden;
+
       .spacer {
         flex-grow: 1;
       }
 
+      // The actions float ON TOP of the name. With nowrap in a flex row a long
+      // chapter title pushed them past the panel edge, where they were
+      // unreachable - "Gatter mit mehreren Eingaengen" showed no menu at all.
+      .list-item-actions {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding-left: 10px;
+      }
     }
   }
 }

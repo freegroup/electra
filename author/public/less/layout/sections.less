@@ -263,42 +263,12 @@
   }
 }
 
-.activeSection {
-  position:relative;
-  border-radius: @borderRadiusSmall;
+// The type tab. Scoped to .sections - the same .section also renders PDF,
+// dialogs and the single-page view.
+.sections .section[data-type] {
+  margin-top: 22px;
 
-  .fc{
-    .tinyFlyoverMenu {
-      opacity: 1 !important;
-    }
-  }
-
-
-  /** learning content gets a special annotation on the left **/
-  &[data-type="cloze"]::before {
-    content: "Cloze 🎓";
-  }
-  &[data-type="wysiwyg"]::before {
-    content: "Text";
-  }
-  &[data-type="image"]::before {
-    content: "Image";
-  }
-  &[data-type="brain"]::before {
-    content: "Diagram";
-  }
-  &[data-type="flashcard"]::before {
-    content: "Flashcard 🎓";
-  }
-  &[data-type="markdown"]::before {
-    content: "Text 🎓";
-  }
-  &[data-type="timing"]::before {
-    content: "Timing Diagram";
-  }
-  
-  
-  &::before{
+  .sectionTypeTab {
     white-space: nowrap;
     left: 7px;
     position: absolute;
@@ -313,10 +283,42 @@
     transition: all 0.3s ease-out;
     cursor: default;
     min-width: 50px;
-    font-size:80%;
+    font-size: 80%;
     text-align: center;
-  }
 
+    // Help for the type - not an action, hence here and not in the action menu.
+    // The Lucide glyph brings its own circle, so nothing is drawn here.
+    .sectionTypeHelp {
+      display: inline-flex;
+      margin-left: 4px;
+      vertical-align: -2px;
+      // pointer, not help: it opens a dialog on click, and cursor:help promises
+      // a tooltip on hover that never comes.
+      cursor: pointer;
+
+      svg {
+        width: 13px;
+        height: 13px;
+        display: block;
+      }
+    }
+  }
+}
+
+.sections .section {
+  border-radius: @borderRadiusSmall;
+  transition: border-color 0.2s ease;
+}
+
+.activeSection {
+  position:relative;
+  border-radius: @borderRadiusSmall;
+
+  .fc{
+    .tinyFlyoverMenu {
+      opacity: 1 !important;
+    }
+  }
 }
 
 

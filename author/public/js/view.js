@@ -2,6 +2,7 @@ const shortid = require('short-uuid')
 
 import inputPrompt from "../../common/js/InputPrompt"
 import authorDialog from "../../common/js/AuthorDialog"
+import { icon } from "../../common/js/icons"
 import commandStack from "./commands/CommandStack"
 
 import State from "./commands/State"
@@ -67,9 +68,11 @@ export default class View {
         this.onFlip(this.page.get($(event.currentTarget).data("id")))
         return false
       }) 
-      .on("click", ".sectionMenuHelp", event => {
+      // On the tab, not in the action menu: help is about the TYPE, not this
+      // instance - the path only ever uses section.type.
+      .on("click", ".sectionTypeHelp", event => {
         let type = this.page.get($(event.target).closest(".section").data("id"))?.type ?? "generic"
-        authorDialog.show(`/readme/en/author/${type}.sheet`)
+        authorDialog.show(`/readme/en/author/${type}.sheet`, t(`editor.blocktype.${type}`, { defaultValue: type }))
         return false
       })
       .on("click", ".sectionMenuCommitEdit", event => {
@@ -89,8 +92,8 @@ export default class View {
         return false
       })
       .on("click", ".sectionMenuInsertSection", event => {
-        // Hier statt in addSection: der Aufrufer arbeitet mit dem gelieferten
-        // Abschnitt weiter, ein leeres Ergebnis wuerde ihn zerlegen.
+        // Here rather than in addSection: the caller keeps working with the
+        // returned section, an empty result would break it.
         if (!this.app.isEditable()) {
           return false
         }
@@ -250,6 +253,13 @@ export default class View {
     })
   }
 
+  // Label for the type tab. The cap hangs off hasLearningContent(), not off a
+  // list of types, so a new learning type gets it by itself.
+  typeLabel(editor) {
+    let name = t(`editor.blocktype.${editor.getType()}`, { defaultValue: "" })
+    return editor.hasLearningContent() ? `${name} 🎓` : name
+  }
+
   render(page) {
     // inject the host for the rendered section
     this.html.html($("<div class='sections'></div>"))
@@ -270,16 +280,19 @@ export default class View {
       let content = editor.render(section, renderMode.EDITOR)
       whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}"></div>`)
       let sectionNode = whereToAppend.find(`*[data-id='${section.id}']`)
+      // A real element, not ::before - a pseudo element cannot hold a
+      // clickable child.
+      sectionNode.append(`
+            <div class="sectionTypeTab">${this.typeLabel(editor)}<span class="sectionTypeHelp">${icon("circleHelp", { strokeWidth: 2.4 })}</span></div>`)
       editor.append(sectionNode, content)
       sectionNode.append(`
             <div class="fc">
               <div class='tinyFlyoverMenu'>
                 ${editor.getMenu(section)}
-                <div data-id="${section.id}" class="sectionMenuEdit"   >&#9998;</div>
-                <div data-id="${section.id}" class="sectionMenuCopy"   ><img src="../common/images/clipboard.svg"></div>
-                <div                         class="sectionMenuHelp"   >?</div>
-                <div data-id="${section.id}" class="sectionMenuDelete" >&#8855;</div>
-              </div>  
+                <div data-id="${section.id}" class="sectionMenuEdit"   >${icon("pencil", { strokeWidth: 2.2 })}</div>
+                <div data-id="${section.id}" class="sectionMenuCopy"   >${icon("copy",   { strokeWidth: 2.2 })}</div>
+                <div data-id="${section.id}" class="sectionMenuDelete" >${icon("trash",  { strokeWidth: 2.2 })}</div>
+              </div>
             </div>`)
 
       this.renderSpacer(whereToAppend, index + 1)
@@ -339,10 +352,8 @@ export default class View {
     this.activeSection = null
   }
 
-  // Die Waechter sitzen an den Methoden, nicht nur an den Klick-Behandlern:
-  // Palette und Platzhalter rufen sie unmittelbar auf. Auswaehlen, Umblaettern
-  // und Kopieren bleiben frei - ein Pruefer muss beide Seiten einer Karteikarte
-  // ansehen koennen.
+  // Guards sit on the methods, not only on the click handlers - palette and
+  // placeholder call them directly. Selecting and flipping stay free.
   onEdit(section) {
     if (!this.app.isEditable()) {
       return Promise.resolve()

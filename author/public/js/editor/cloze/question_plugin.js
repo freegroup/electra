@@ -2,7 +2,7 @@ var MARKER_OPEN = '[';
 var MARKER_CLOSE = ']';
 var ESCAPE_CHARACTER = '\\';
 var TAG = 'span';
-// Schmalste Luecke. Ohne Untergrenze waere [[x]] ein Zeichen breit.
+// Narrowest gap. Without a floor [[x]] would be one character wide.
 var MIN_WIDTH = 8;
 
 /*
@@ -66,9 +66,9 @@ function tokenize(state, silent) {
     state.pos += 2;
     state.posMax = end;
 
-    // Den Inhalt NICHT zerlegen. Was nie in den Token-Strom gelangt, kann auch
-    // nicht ins Arbeitsblatt lecken - [[**Antwort**]] tat genau das, weil nur
-    // das LETZTE Token geleert wurde und das die schliessende Auszeichnung war.
+    // Do NOT tokenize the content. What never enters the token stream cannot
+    // leak into the worksheet - [[**answer**]] did exactly that, because only
+    // the LAST token was blanked and that was the closing markup.
     state.push('text', '', 0).content = "\u00A0".repeat(Math.max(end - (start + 2), MIN_WIDTH))
     state.pos = end + 2;
     state.posMax = max;

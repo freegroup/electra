@@ -152,8 +152,8 @@ class Application extends GenericApplication {
     if (!this.isEditable()) {
       return Promise.resolve()
     }
-    // Abgewartet, nicht abgefeuert: der offene Abschnitt schreibt seinen Inhalt
-    // erst INNERHALB dieses Promise zurueck.
+    // Awaited, not fired and forgotten: the open section writes its content
+    // back INSIDE this promise.
     return this.view.onCommitEdit()
       .then(() => {
         if (!this.currentFile) {
@@ -178,10 +178,8 @@ class Application extends GenericApplication {
   // Serialize the document and save it. A null id creates a new document;
   // otherwise it writes a new version. The backend returns the (new) handle.
   _writeCurrent(scopeRef) {
-    // onCommitEdit ist asynchron - der offene Editor schreibt section.content
-    // erst darin zurueck. Vorher wurde direkt danach serialisiert, was genau
-    // diese Aenderungen verlor. Bisher rettete nur der Speichern-Dialog davor,
-    // weil er dem Promise Zeit gab.
+    // onCommitEdit is async - the open editor writes section.content inside it.
+    // Serializing right after the unawaited call dropped exactly those edits.
     return this.view.onCommitEdit()
       .then(() => {
         let content = this.document.toJSON()

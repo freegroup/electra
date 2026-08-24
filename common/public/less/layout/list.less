@@ -28,11 +28,20 @@
       }
 
       .list-item-action {
-        opacity: 0; 
-        transform: scale(0.5); 
+        opacity: 0;
+        transform: scale(0.5);
         transition: all 0.2s ease;
         font-size: 20px;
         min-width: 25px;
+
+        // Inline Lucide glyphs (common/js/icons.js) carry no intrinsic size and
+        // would collapse to zero width. The rule above sizes text glyphs.
+        svg {
+          width: 15px;
+          height: 15px;
+          display: block;
+          margin: 0 auto;
+        }
       }
 
       &:before {

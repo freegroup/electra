@@ -120,10 +120,9 @@ export default class Toolbar {
     // create/save/pdf actions show only when the user has write permission.
     // Everything finer (which group, promote) is governed server-side.
     //
-    // Hier stand darueber ein zweiter Block, der den PDF-Knopf nach
-    // currentFile.scope gegen "user"/"global" pruefte. Er konnte nie greifen:
-    // scope kommt aus providedBy, und das ist ein Scope-PFAD (sheets/server/
-    // files.js), nie eines dieser beiden Woerter. Rest des alten Modells.
+    // A second block above used to gate the PDF button on currentFile.scope
+    // against "user"/"global". It could never match: scope comes from
+    // providedBy, a scope PATH (sheets/server/files.js). Leftover.
     if (this.permissions[this.app.objectType].create || this.permissions[this.app.objectType].update) {
       this.pdfButton.show()
       this.saveButton.show()

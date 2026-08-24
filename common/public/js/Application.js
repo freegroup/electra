@@ -32,13 +32,9 @@ export default class Application extends AppFrame{
         */
     }
 
-    // Darf am offenen Dokument ueberhaupt geaendert werden? Falsch nur fuer eine
-    // zur Pruefung geladene Fassung - die ist versionsfest, ein Schreibvorgang
-    // wuerde sie in die persoenliche Ablage des Pruefers abzweigen.
-    //
-    // EINE Quelle fuer alle Stellen, die etwas veraendern. Vorher fragte allein
-    // fileSave() das Merkmal ab, weshalb sich im Pruefmodus per Doppelklick
-    // weiter bearbeiten und loeschen liess - nur eben folgenlos.
+    // May the open document be changed at all? False only for a version loaded
+    // for review. ONE source for every mutating call site - fileSave() used to
+    // be the only place asking, so review mode still let you edit and delete.
     isEditable() {
         return !(this.currentFile && this.currentFile.editable === false)
     }

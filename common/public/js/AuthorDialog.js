@@ -1,5 +1,6 @@
 const axios = require("axios")
 import mdFactory  from "./markdown"
+import toast from "./toast"
 let md = mdFactory()
 
 
@@ -9,18 +10,19 @@ class Dialog {
 
   }
 
-  show(file, token ) {
+  // Resolve path to handle, then read - /sheets/global/get is gone.
+  // `topic` names the missing page in the message.
+  show(file, topic) {
 
     this.containerId = '#markdownDialog .modal-body'
-    let additionalParam = ""
-    if(token){
-      additionalParam = "&token="+token
-    }
-    axios.get(`../sheets/global/get?filePath=${file}${additionalParam}`)
+    axios.get(`../sheets/file/global`, { params: { path: file } })
+      .then((response) => {
+        return axios.get(`../sheets/file`, { params: { id: response.data.id } })
+      })
       .then((response => {
         let container = $(this.containerId)
         container.html("")
-        let pages = response.data.pages
+        let pages = response.data.content.pages
         pages.forEach( (page, index) => {
           let sections = page.sections
           sections.forEach( (section) => {
@@ -44,6 +46,9 @@ class Dialog {
         $('#markdownDialog').modal('show')
 
       }))
+      .catch(() => {
+        toast(t("common:dialog.help_missing", { topic: topic ?? file }))
+      })
   }
 
   renderMarkdown(container, section){

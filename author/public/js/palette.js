@@ -1,5 +1,6 @@
 import inputPrompt from "../../common/js/InputPrompt"
 import authorDialog from "../../common/js/AuthorDialog"
+import { icon } from "../../common/js/icons"
 
 import commandStack from "./commands/CommandStack"
 import State from "./commands/State"
@@ -37,24 +38,30 @@ export default class Palette {
           return false
         }
         let page = this.app.getDocument().find($(event.currentTarget).data("page"))
-        inputPrompt.show(t("message.rename_chapter"), t("common:label.name"), page.name, value => {
-          commandStack.push(new State(this.app)).then( doneCallback => {
-            page.name = value
-            doneCallback()
+        // Result via .then. The 4th argument is a description string; a function
+        // there was taken by jQuery as a .text() setter and called with
+        // (index, ...) - which left the chapter name set to 0.
+        inputPrompt.show(t("message.rename_chapter"), t("common:label.name"), page.name)
+          .then((value) => {
+            return commandStack.push(new State(this.app))
+              .then((doneCallback) => {
+                page.name = value
+                doneCallback()
+              })
           })
-        })
+          .catch(() => { /* cancelling is not an error */ })
         return false
       })
       
-      .off("click", ".pageElement .chapter_help")
-      .on("click", ".pageElement .chapter_help", (event) => {
-        authorDialog.show(`/readme/en/author/page.sheet`)
+      .off("click", ".chapter_help")
+      .on("click", ".chapter_help", (event) => {
+        authorDialog.show(`/readme/en/author/page.sheet`, t("label.chapter"))
         return false
       })
       .off("click", ".pageElement .chapter_delete")
       .on("click", ".pageElement .chapter_delete", (event) => {
-        // Vor dem push: sonst landete ein Rueckgaengig-Schritt auf dem Stapel,
-        // dem gar keine Aenderung folgt.
+        // Before the push, or an undo step lands on the stack with no change
+        // behind it.
         if (!this.app.isEditable()) {
           return false
         }
@@ -87,6 +94,7 @@ export default class Palette {
     $("#paletteFilter").html(`
       <div class='toc'>
         <span data-i18n="label.chapter">${t("label.chapter")}</span>
+        <span class="chapter_help list-item-action">${icon("circleHelp", { strokeWidth: 2.2 })}</span>
         <div class="fabButton" id="documentContentAdd" >
           <input type="checkbox" id="toggle"/>
           <label class="button" for="toggle"></label>
@@ -134,14 +142,15 @@ export default class Palette {
       $("#documentContentAdd").toggle(this.app.isEditable())
       pages.forEach((page) => {
         let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
-        let icon    = page.hasLearningContent()?"&#127891;":""
+        let learningCap = page.hasLearningContent()?"&#127891;":""
         this.html.append(`
         <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
-          <span>${page.name}${icon}</span>
+          <span>${page.name}${learningCap}</span>
           <span class="spacer"></span>
-          <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >&#9998;</span>
-          <span                         class="list-item-action chapter_help" > ? </span>
-          <span data-page="${page.id}"  class="list-item-action chapter_delete" >&#8855;</span>
+          <span class="list-item-actions">
+            <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >${icon("pencil", { strokeWidth: 2.2 })}</span>
+            <span data-page="${page.id}"  class="list-item-action chapter_delete" >${icon("trash", { strokeWidth: 2.2 })}</span>
+          </span>
         </div>`)
       }, true)  
 
@@ -151,9 +160,9 @@ export default class Palette {
       //
       this.html.sortable({
         axis: "y",
-        // Abgeschaltet statt im update abgefangen: jQuery UI ordnet das DOM
-        // schon waehrend des Ziehens um, ein spaeteres Veto liesse die Liste in
-        // einer Reihenfolge stehen, die das Dokument nicht hat.
+        // Disabled rather than vetoed in update(): jQuery UI reorders the DOM
+        // while dragging, so a late veto would leave the list in an order the
+        // document does not have.
         disabled: !this.app.isEditable(),
         update: (event, dd) => {
           this.sourceIsSortEvent = true

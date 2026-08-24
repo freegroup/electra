@@ -28,10 +28,9 @@ export default class Editor extends GenericEditor{
   }
 
   /* public interface */
-  // Muss weitergereicht werden wie commit. Fehlte diese Methode, lief die
-  // Basisfassung - die raeumt nur CSS-Klassen ab. Der innere Editor erfuhr vom
-  // Abbruch nie: eine Schaltung in der Karteikarte simulierte weiter und liess
-  // ihren Splitter und die Bauteilliste zurueck.
+  // Must delegate like commit does. Without it the base version ran, which only
+  // strips CSS classes - the inner editor never heard about the cancel, so a
+  // circuit inside a flashcard kept simulating and left its splitter behind.
   cancel(){
     return this.editor.cancel()
       .then(() => super.cancel())

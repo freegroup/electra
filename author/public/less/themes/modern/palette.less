@@ -62,3 +62,19 @@
         }
     }
 }
+
+// The action strip sits on top of the chapter name, so it needs the row's own
+// background - otherwise the title reads through the icons.
+#paletteElementsScroll .pageElement {
+    // Transparent while resting: the icons are invisible then, and an opaque
+    // strip would cover the end of the chapter name.
+    .list-item-actions {
+        background-color: transparent;
+    }
+    &:hover .list-item-actions {
+        background-color: rgb(var(--list-item-hover-bg-color));
+    }
+    &.selected .list-item-actions {
+        background-color: rgb(var(--list-item-selected-bg-color));
+    }
+}
