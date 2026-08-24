@@ -4,9 +4,11 @@ const fs = require('fs')
 
 module.exports = {
 
+  // Throws on failure. Swallowing here wrote no file, and the caller then died
+  // on a puzzling ENOENT instead of the real cause (e.g. Chrome not launching).
   render: async (url, location) => {
+    const browser = await launch()
     try {
-      let browser = await launch()
       const page = await browser.newPage()
 
       await page.emulateMediaType('screen')
@@ -16,10 +18,11 @@ module.exports = {
       await page.screenshot({
         path: location,
       });
-      await browser.close()
     }
-    catch(e){
-      console.log(e)
+    finally {
+      // Always, not just on success - a failed render used to leak the browser.
+      // Never let a close error mask the render error on its way out.
+      await browser.close().catch(() => {})
     }
   }
 }
