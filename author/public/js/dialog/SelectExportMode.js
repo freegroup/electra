@@ -17,13 +17,13 @@ class Dialog {
                   <br>
                   <br>
                   <div class="button-container">
-                    <button data-mode="worksheet" class="electra-button  exportPdfMode">As Worksheet<img src="../common/images/export_mode_worksheet.svg"></button>
-                    <button data-mode="solution"  class="electra-button  exportPdfMode">As Solution<img src="../common/images/export_mode_solution.svg"></button>
-                    <button data-mode="all"       class="electra-button  exportPdfMode">Worksheet + Solution<img src="../common/images/export_mode_all.svg"></button>
+                    <button data-mode="worksheet" class="electra-button electra-primary exportPdfMode">As Worksheet<img src="../common/images/export_mode_worksheet.svg"></button>
+                    <button data-mode="solution"  class="electra-button electra-primary exportPdfMode">As Solution<img src="../common/images/export_mode_solution.svg"></button>
+                    <button data-mode="all"       class="electra-button electra-primary exportPdfMode">Worksheet + Solution<img src="../common/images/export_mode_all.svg"></button>
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="electra-button electra-primary" data-dismiss="modal">Cancel</button>
+                  <button class="electra-button" data-dismiss="modal">Cancel</button>
                 </div>
               </div>
             </div>
@@ -38,7 +38,7 @@ class Dialog {
       $("#exportModeDialog").modal("show")
 
       $("#exportModeDialog .exportPdfMode").off('click').on("click", (event) => {
-        let mode = $(event.target).data("mode")
+        let mode = $(event.currentTarget).data("mode")
         $('#exportModeDialog').modal('hide')
         resolve(mode)
       })
