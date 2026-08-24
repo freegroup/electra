@@ -92,22 +92,12 @@ export default class Toolbar {
     this.shareButton.hide()
     this.copyButton.hide()
     $("#editUndo, #editRedo").hide()
-    this.copyButton.hide()
 
     // Enable the edit related buttons if the user has a valid document
-    // 
+    //
     if(this.app.getDocument() !==null) {
       this.copyButton.show()
       $("#editUndo, #editRedo").show()
-      if (this.app.currentFile.scope === "user") {
-        if (this.permissions[this.app.objectType].pdf === true) {
-          this.pdfButton.show()
-        }
-      } else if (this.app.currentFile.scope === "global") {
-        if (this.permissions[this.app.objectType].global.pdf === true) {
-          this.pdfButton.show()
-        }
-      }
 
       if (this.permissions.featureset.share) {
         this.shareButton.show()
@@ -129,6 +119,11 @@ export default class Toolbar {
     // Anonymous users may read but not write (server enforces it too), so the
     // create/save/pdf actions show only when the user has write permission.
     // Everything finer (which group, promote) is governed server-side.
+    //
+    // Hier stand darueber ein zweiter Block, der den PDF-Knopf nach
+    // currentFile.scope gegen "user"/"global" pruefte. Er konnte nie greifen:
+    // scope kommt aus providedBy, und das ist ein Scope-PFAD (sheets/server/
+    // files.js), nie eines dieser beiden Woerter. Rest des alten Modells.
     if (this.permissions[this.app.objectType].create || this.permissions[this.app.objectType].update) {
       this.pdfButton.show()
       this.saveButton.show()

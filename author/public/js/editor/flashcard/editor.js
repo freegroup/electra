@@ -12,9 +12,10 @@ export default class Editor extends GenericEditor{
 
   /* public interface */
   inject(section) {
+    super.inject(section)
     section.flippedStateDuringInject  = $(`.section[data-id='${section.id}'] .flip_box`).hasClass("flipped-back")
     let activeSection = section.flippedStateDuringInject  ? section.content.back : section.content.front
-    
+
     this.editor = editorByType(activeSection.type).inject(activeSection)
 
     return this
@@ -23,6 +24,17 @@ export default class Editor extends GenericEditor{
   /* public interface */
   commit(){
     return this.editor.commit()
+      .then(() => super.commit())
+  }
+
+  /* public interface */
+  // Muss weitergereicht werden wie commit. Fehlte diese Methode, lief die
+  // Basisfassung - die raeumt nur CSS-Klassen ab. Der innere Editor erfuhr vom
+  // Abbruch nie: eine Schaltung in der Karteikarte simulierte weiter und liess
+  // ihren Splitter und die Bauteilliste zurueck.
+  cancel(){
+    return this.editor.cancel()
+      .then(() => super.cancel())
   }
 
   /**

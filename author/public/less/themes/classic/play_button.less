@@ -6,16 +6,21 @@
         color: rgba(0, 0, 0, 0);
     }
 
+    // Getoent, nicht weiss. Der Knopf haengt im hellen Flyover-Menue neben
+    // "Speichern"/"Abbrechen" - eine weisse Figur auf weissem Grund war
+    // unsichtbar, zu sehen blieb nur ihr grauer 1px-Rand. Gleiche Loesung wie
+    // simulator/less/themes/classic/play_button.less.
     &>span {
         &>span {
-            background-color: white;
+            background-color: rgb(var(--tint-color));
+            border-color: transparent;
         }
     }
 
     &.play {
         &>span {
             &>span {
-                background-color: white;
+                background-color: rgb(var(--tint-color));
             }
         }
     }

@@ -64,7 +64,10 @@ function tokenize(state, silent) {
     state.pos += 2;
     state.posMax = end;
 
-    state.md.inline.tokenize(state);
+    // Woertlich, ohne Markdown-Deutung: in einer Luecke steht reiner Text.
+    // Tippt jemand doch [[**NAND**]], stehen die Sterne hier sichtbar da - der
+    // Fehler zeigt sich selbst, statt still als Fettschrift durchzugehen.
+    state.push('text', '', 0).content = state.src.slice(start + 2, end);
 
     state.pos = end + 2;
     state.posMax = max;

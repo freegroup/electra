@@ -32,6 +32,17 @@ export default class Application extends AppFrame{
         */
     }
 
+    // Darf am offenen Dokument ueberhaupt geaendert werden? Falsch nur fuer eine
+    // zur Pruefung geladene Fassung - die ist versionsfest, ein Schreibvorgang
+    // wuerde sie in die persoenliche Ablage des Pruefers abzweigen.
+    //
+    // EINE Quelle fuer alle Stellen, die etwas veraendern. Vorher fragte allein
+    // fileSave() das Merkmal ab, weshalb sich im Pruefmodus per Doppelklick
+    // weiter bearbeiten und loeschen liess - nur eben folgenlos.
+    isEditable() {
+        return !(this.currentFile && this.currentFile.editable === false)
+    }
+
     init (permissions, conf) {
         super.init(permissions, conf)
         this.hasUnsavedChanges = false

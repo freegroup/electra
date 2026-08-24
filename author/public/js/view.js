@@ -89,6 +89,11 @@ export default class View {
         return false
       })
       .on("click", ".sectionMenuInsertSection", event => {
+        // Hier statt in addSection: der Aufrufer arbeitet mit dem gelieferten
+        // Abschnitt weiter, ein leeres Ergebnis wuerde ihn zerlegen.
+        if (!this.app.isEditable()) {
+          return false
+        }
         let index = $(event.target).data("index")
         let type = $(event.target).data("type")
         let editor = editorByType(type)
@@ -124,14 +129,16 @@ export default class View {
   }
 
   removePage(page){
+    if (!this.app.isEditable()) {
+      return Promise.resolve(page)
+    }
     // commit the current changes if an editor is active
-    // Keep the state clean. 
+    // Keep the state clean.
     //
     if(page === this.page) {
       let index = this.app.getDocument().index(page)
       return this.onCancelEdit()
         .then(()=>{
-          console.log(222)
           if(index >0){
             let newPage = this.app.getDocument().get(index-1)
             this.setPage(newPage)
@@ -157,6 +164,9 @@ export default class View {
 
 
   addPage() {
+    if (!this.app.isEditable()) {
+      return
+    }
     // commit the current changes if an editor is active
     this.onCommitEdit().then(()=>{
       inputPrompt.show(t("dialog.add_chapter"), t("label.name")).then( value => {
@@ -172,6 +182,9 @@ export default class View {
   }
 
   pastePage() {
+    if (!this.app.isEditable()) {
+      return Promise.resolve()
+    }
     // commit the current changes if an editor is active
     return this.onCommitEdit()
       .then(()=>{   
@@ -326,7 +339,14 @@ export default class View {
     this.activeSection = null
   }
 
+  // Die Waechter sitzen an den Methoden, nicht nur an den Klick-Behandlern:
+  // Palette und Platzhalter rufen sie unmittelbar auf. Auswaehlen, Umblaettern
+  // und Kopieren bleiben frei - ein Pruefer muss beide Seiten einer Karteikarte
+  // ansehen koennen.
   onEdit(section) {
+    if (!this.app.isEditable()) {
+      return Promise.resolve()
+    }
     this.onCommitEdit().then( () => {
       this.onSelect(section)
       $(".activeSection .tinyFlyoverMenu").html(`
@@ -363,6 +383,9 @@ export default class View {
   }
 
   onDelete(section) {
+    if (!this.app.isEditable()) {
+      return
+    }
     commandStack.push(new State(this.app))
     .then( doneCallback => {
       $(`.section[data-id="${section.id}"]`).slideToggle(400, ()=>{

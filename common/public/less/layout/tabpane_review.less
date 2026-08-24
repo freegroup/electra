@@ -90,4 +90,18 @@
   }
 }
 
+// Dasselbe eine Ebene tiefer, am Abschnitt selbst. Die Waechter in view.js und
+// palette.js machen diese Bedienelemente bereits folgenlos - hier verschwinden
+// sie, damit der Pruefer gar nicht erst danach greift. Ansehen bleibt moeglich:
+// Kopieren, Hilfe und das Umblaettern einer Karteikarte stehen weiter da.
+#editor.reviewMode {
+  .sectionMenuEdit,
+  .sectionMenuDelete,
+  .sectionMenuInsertSection,
+  .chapter_edit_name,
+  .chapter_delete {
+    display: none;
+  }
+}
+
 // The editor header (default + review variants) lives in editor_header.less.

@@ -24,7 +24,6 @@ export default class Editor extends GenericEditor{
                   <div data-i18n="editor.image.dragdrop" class="drop-message">${t("editor.image.dragdrop")}</div>
               </div>
                 `)
-                console.log("ddd")
     // do not use "data(..)" method. Do not have any affect to css styling. "data" do not modifies the DOM tree.
     // Jsut modifies the nodes.
     $(".sections .activeSection .sectionContent").attr("data-type", this.getType())

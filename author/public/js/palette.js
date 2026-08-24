@@ -33,6 +33,9 @@ export default class Palette {
       })
       .off("click", ".pageElement .chapter_edit_name")
       .on("click", ".pageElement .chapter_edit_name", (event) => {
+        if (!this.app.isEditable()) {
+          return false
+        }
         let page = this.app.getDocument().find($(event.currentTarget).data("page"))
         inputPrompt.show(t("message.rename_chapter"), t("common:label.name"), page.name, value => {
           commandStack.push(new State(this.app)).then( doneCallback => {
@@ -50,6 +53,11 @@ export default class Palette {
       })
       .off("click", ".pageElement .chapter_delete")
       .on("click", ".pageElement .chapter_delete", (event) => {
+        // Vor dem push: sonst landete ein Rueckgaengig-Schritt auf dem Stapel,
+        // dem gar keine Aenderung folgt.
+        if (!this.app.isEditable()) {
+          return false
+        }
         commandStack.push(new State(this.app)).then( doneCallback => {
           let page = this.app.getDocument().find($(event.currentTarget).data("page"))
           this.view.removePage(page).then( ()=>{
@@ -113,7 +121,6 @@ export default class Palette {
    * @param {draw2d.command.CommandStackEvent} event
    **/
   stackChanged(event) {
-    console.log(event)
     if (this.sourceIsSortEvent) {
       return // silently
     }
@@ -124,7 +131,7 @@ export default class Palette {
       let pages = document.getPages()
       let currentPage = this.view.getPage()
 
-      $("#documentContentAdd").show()
+      $("#documentContentAdd").toggle(this.app.isEditable())
       pages.forEach((page) => {
         let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
         let icon    = page.hasLearningContent()?"&#127891;":""
@@ -144,6 +151,10 @@ export default class Palette {
       //
       this.html.sortable({
         axis: "y",
+        // Abgeschaltet statt im update abgefangen: jQuery UI ordnet das DOM
+        // schon waehrend des Ziehens um, ein spaeteres Veto liesse die Liste in
+        // einer Reihenfolge stehen, die das Dokument nicht hat.
+        disabled: !this.app.isEditable(),
         update: (event, dd) => {
           this.sourceIsSortEvent = true
           commandStack.push(new State(this.app)).then( doneCallback => {

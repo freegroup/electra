@@ -149,24 +149,28 @@ class Application extends GenericApplication {
   fileSave() {
     // A document opened for review is read-only — never save it (that would fork
     // a pending version into the reviewer's personal workspace).
-    if (this.currentFile && this.currentFile.editable === false) {
+    if (!this.isEditable()) {
       return Promise.resolve()
     }
-    this.view.onCommitEdit()
-    if (!this.currentFile) {
-      return this.fileCreateNew()
-    }
-    return this.saveDialog.show(this.currentFile)
-      .then(({ name }) => {
-        this.currentFile.name = name
-        return this._writeCurrent()
-      })
+    // Abgewartet, nicht abgefeuert: der offene Abschnitt schreibt seinen Inhalt
+    // erst INNERHALB dieses Promise zurueck.
+    return this.view.onCommitEdit()
       .then(() => {
-        this.hasUnsavedChanges = false
-        toast(t("common:message.saved"))
-        $("#editorFileSave div").removeClass("highlight")
-        this.refreshFinders()
-        defaultEditorHeader.update(this.currentFile)
+        if (!this.currentFile) {
+          return this.fileCreateNew()
+        }
+        return this.saveDialog.show(this.currentFile)
+          .then(({ name }) => {
+            this.currentFile.name = name
+            return this._writeCurrent()
+          })
+          .then(() => {
+            this.hasUnsavedChanges = false
+            toast(t("common:message.saved"))
+            $("#editorFileSave div").removeClass("highlight")
+            this.refreshFinders()
+            defaultEditorHeader.update(this.currentFile)
+          })
       })
       .catch((err) => { if (err) console.log(err) })
   }
@@ -174,9 +178,15 @@ class Application extends GenericApplication {
   // Serialize the document and save it. A null id creates a new document;
   // otherwise it writes a new version. The backend returns the (new) handle.
   _writeCurrent(scopeRef) {
-    this.view.onCommitEdit()
-    let content = this.document.toJSON()
-    return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content, scopeRef })
+    // onCommitEdit ist asynchron - der offene Editor schreibt section.content
+    // erst darin zurueck. Vorher wurde direkt danach serialisiert, was genau
+    // diese Aenderungen verlor. Bisher rettete nur der Speichern-Dialog davor,
+    // weil er dem Promise Zeit gab.
+    return this.view.onCommitEdit()
+      .then(() => {
+        let content = this.document.toJSON()
+        return storage.save({ id: this.currentFile.id, name: this.currentFile.name, content, scopeRef })
+      })
       .then((res) => {
         this.currentFile.id = res.id
         this.currentFile.version = res.version

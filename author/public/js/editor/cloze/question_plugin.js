@@ -2,6 +2,8 @@ var MARKER_OPEN = '[';
 var MARKER_CLOSE = ']';
 var ESCAPE_CHARACTER = '\\';
 var TAG = 'span';
+// Schmalste Luecke. Ohne Untergrenze waere [[x]] ein Zeichen breit.
+var MIN_WIDTH = 8;
 
 /*
  * Add delimiters for double occurrences of MARKER_SYMBOL.
@@ -64,10 +66,10 @@ function tokenize(state, silent) {
     state.pos += 2;
     state.posMax = end;
 
-    state.md.inline.tokenize(state);
-    // delete the content of the last token. It is the content (solution) of the cloze
-    //
-    state.tokens.at(-1).content = "\u00A0".repeat(state.tokens.at(-1).content?.lenght ?? 10)
+    // Den Inhalt NICHT zerlegen. Was nie in den Token-Strom gelangt, kann auch
+    // nicht ins Arbeitsblatt lecken - [[**Antwort**]] tat genau das, weil nur
+    // das LETZTE Token geleert wurde und das die schliessende Auszeichnung war.
+    state.push('text', '', 0).content = "\u00A0".repeat(Math.max(end - (start + 2), MIN_WIDTH))
     state.pos = end + 2;
     state.posMax = max;
     // end tag

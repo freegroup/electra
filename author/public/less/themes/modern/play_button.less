@@ -17,16 +17,20 @@
         color: rgba(0, 0, 0, 0);
     }
 
+    // Wie Classic: getoent statt weiss, sonst verschwindet die Figur im hellen
+    // Flyover-Menue. Muss hier mitstehen - diese Datei ist eine vollstaendige
+    // Kopie und rangiert hoeher, eine Aenderung nur in Classic bliebe wirkungslos.
     &>span {
         &>span {
-            background-color: white;
+            background-color: rgb(var(--tint-color));
+            border-color: transparent;
         }
     }
 
     &.play {
         &>span {
             &>span {
-                background-color: white;
+                background-color: rgb(var(--tint-color));
             }
         }
     }
