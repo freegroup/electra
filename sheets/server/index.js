@@ -14,6 +14,9 @@ const envFile = PROJECT_PATH+'/settings.ini'
 
 console.log(`Component '${componentName} is loading envFile '${envFile}'`)
 dotenv.config({  debug: false, path: envFile })
+// Dev-machine overrides (e.g. PUPPETEER_EXECUTABLE_PATH for PDF rendering).
+// dotenv does not overwrite already-set vars, so this only fills the gaps.
+dotenv.config({  debug: false, path: PROJECT_PATH + '/settings.local.ini' })
 
 
 const files = require("./files")

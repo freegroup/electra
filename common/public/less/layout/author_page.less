@@ -62,6 +62,13 @@
   a {
     text-decoration: underline;
   }
+
+  // Rendered circuits and images are plain <img> with their own pixel width.
+  // Cap them to the text column so nothing bleeds past it in the PDF.
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 #readme {
