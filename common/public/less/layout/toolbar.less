@@ -25,6 +25,30 @@
     height:100%;
     gap: @buttonSpacing;
 
+    // Sheet-visibility control: select on top, label beneath - the same
+    // stack the image-buttons use, so it reads as one toolbar control.
+    &#editorgroup_cell_visibility {
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+
+      // Native select is sized for dialogs (100% wide, 34px). Shrink it to
+      // fit the value and sit as a compact toolbar control; the arrow stays.
+      .cellVisibilitySelect {
+        width: auto;
+        height: 28px;
+        padding: 0 26px 0 8px;
+        font-size: 0.9em;
+      }
+
+      .cellVisibilityLabel {
+        margin: 0;
+        font-size: 0.8em;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+    }
+
     .statusIndicator {
       margin: 20px;
 

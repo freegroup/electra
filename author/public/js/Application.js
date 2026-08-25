@@ -81,9 +81,6 @@ class Application extends GenericApplication {
         this.setDocument(new Document(doc.data), 0)
         commandStack.markSaveLocation()
         this.hasUnsavedChanges = false
-        const reviewUrl = new URL(window.location.href)
-        reviewUrl.searchParams.set("review", encodeURIComponent(uuid))
-        reviewUrl.searchParams.set("path", encodeURIComponent(path))
         this.navigate({ review: uuid, path },
           conf.application + " | " + this.currentFile.name)
         reviewEditorHeader.show({

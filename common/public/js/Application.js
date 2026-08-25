@@ -177,6 +177,10 @@ export default class Application extends AppFrame{
         const idParams = ["doc", "review", "global"]
         if (idParams.some((k) => k in params)) {
             idParams.forEach((k) => url.searchParams.delete(k))
+            // path is a review-only breadcrumb (set with ?review=, never read
+            // back). Drop a stale one when switching to a doc/global, or the URL
+            // ends up showing two different documents at once.
+            if (!("path" in params)) url.searchParams.delete("path")
         }
         for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v)
         history.pushState({ id: "editor", ...params }, title || '', url.toString())

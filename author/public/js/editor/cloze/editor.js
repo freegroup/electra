@@ -56,7 +56,13 @@ export default class Editor extends MarkdownEditor {
   hasLearningContent(){
     return true
   }
-  
+
+  // Cloze splits worksheet/solution inside the cell itself, so the sheet
+  // combobox would be a second, conflicting control - it stays hidden.
+  hasVisibilityControl(){
+    return false
+  }
+
   defaultContent() {
     return t("editor.cloze.template")
   }

@@ -10,3 +10,16 @@
     background-color: #fdf4d0;
     box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07), inset 0 -3px 0 #f2c94c;
 }
+
+// Sheet-visibility select: flat on the tinted edit bar - transparent fill,
+// a faint hairline that firms up on hover and turns to the tint on focus.
+#editorgroup_cell_visibility .cellVisibilitySelect {
+    background-color: transparent;
+    border: 1px solid rgba(var(--text-color), 0.20);
+    color: rgb(var(--text-color));
+    // Bold value to sit at the same weight as the icon buttons next to it.
+    font-weight: 600;
+
+    &:hover  { border-color: rgba(var(--text-color), 0.40); }
+    &:focus  { border-color: rgb(var(--tint-color)); }
+}

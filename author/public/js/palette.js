@@ -141,11 +141,11 @@ export default class Palette {
 
       $("#documentContentAdd").toggle(this.app.isEditable())
       pages.forEach((page) => {
-        let tooltip = page.hasLearningContent()?t("message.contains_learning"):""
-        let learningCap = page.hasLearningContent()?"&#127891;":""
+        // No learning cap here: the learning nature only matters at export, where
+        // the three-variant choice makes it self-explanatory.
         this.html.append(`
-        <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}" title="${tooltip}">
-          <span>${page.name}${learningCap}</span>
+        <div class="pageElement list-item"  data-page="${page.id}"  id="layerElement_${page.id}">
+          <span>${page.name}</span>
           <span class="spacer"></span>
           <span class="list-item-actions">
             <span data-page="${page.id}"  class="list-item-action chapter_edit_name" >${icon("pencil", { strokeWidth: 2.2 })}</span>

@@ -110,6 +110,14 @@ export default class View {
         })
         return false
       })
+      // Shared, type-driven combobox: writes straight onto the live section, so
+      // toJSON persists it and the next render shows the tab badge.
+      .on("change", "#cellVisibility", event => {
+        if (this.activeSection) {
+          this.activeSection.visibility = $(event.currentTarget).val()
+        }
+        return false
+      })
   }
 
   setPage(page) {
@@ -236,6 +244,10 @@ export default class View {
         let section = {
           id: shortid.generate(),
           type: type,
+          // Which sheet the cell lands on: all (default), worksheet or solution.
+          // Read everywhere as (section.visibility ?? "all") so old docs need no
+          // migration.
+          visibility: "all",
           content: editorByType(type).defaultContent()
         }
         this.page.add(section, index)
@@ -256,11 +268,25 @@ export default class View {
     })
   }
 
-  // Label for the type tab. The cap hangs off hasLearningContent(), not off a
-  // list of types, so a new learning type gets it by itself.
+  // Label for the type tab: just the type name. The learning nature of a cell
+  // (hasLearningContent) is not surfaced here on purpose - it only matters at
+  // export, where the three-variant choice makes it self-explanatory.
   typeLabel(editor) {
-    let name = t(`editor.blocktype.${editor.getType()}`, { defaultValue: "" })
-    return editor.hasLearningContent() ? `${name} 🎓` : name
+    return t(`editor.blocktype.${editor.getType()}`, { defaultValue: "" })
+  }
+
+  // Shown in the tab only when the cell is restricted to one sheet - default
+  // "all" cells stay clean. Makes "which sheet does this land on" glanceable
+  // without opening the cell.
+  visibilityBadge(section) {
+    let v = section.visibility ?? "all"
+    if (v === "all") {
+      return ""
+    }
+    // One shared text for combobox and badge, so nothing needs translating in
+    // the user's head. data-i18n so a live language switch relabels it; t()
+    // fills the initial text before any switch happens.
+    return `<span class="sectionVisibilityBadge" data-i18n="editor.visibility.${v}">${t(`editor.visibility.${v}`)}</span>`
   }
 
   render(page) {
@@ -288,7 +314,7 @@ export default class View {
       // readme for a type that no longer exists.
       let help = editor.getType() === "unknown" ? "" : `<span class="sectionTypeHelp">${icon("circleHelp", { strokeWidth: 2.4 })}</span>`
       sectionNode.append(`
-            <div class="sectionTypeTab">${this.typeLabel(editor)}${help}</div>`)
+            <div class="sectionTypeTab">${this.typeLabel(editor)}${this.visibilityBadge(section)}${help}</div>`)
       editor.append(sectionNode, content)
       sectionNode.append(`
             <div class="fc">
@@ -369,8 +395,22 @@ export default class View {
       this.showCellToolbar()
       this.currentEditor = editorByType(section.type)
       this.currentEditor.inject(section, $("#editorgroup_cell_extra"))
+      this.showVisibilityControl(section, this.currentEditor)
       $(".sections").removeClass("activeSection")
     })
+  }
+
+  // The sheet combobox is shared and type-driven: shown and preset only when the
+  // type can steer it (cloze etc. keep it hidden and stay "all").
+  showVisibilityControl(section, editor) {
+    let group = $("#editorgroup_cell_visibility")
+    if (editor.hasVisibilityControl()) {
+      $("#cellVisibility").val(section.visibility ?? "all")
+      group.css("display", "flex")
+    }
+    else {
+      group.hide()
+    }
   }
 
   // Like edit, but drop straight into simulation - the cell's "Run". Only the
@@ -392,6 +432,7 @@ export default class View {
   hideCellToolbar() {
     $("#editorgroup_cell").hide()
     $("#editorgroup_cell_extra").empty()
+    $("#editorgroup_cell_visibility").hide()
     $("#editorgroup_fileoperations, #editorgroup_history, #editorgroup_share").css("display", "")
     $(".toolbar").removeClass("cellEditMode")
   }

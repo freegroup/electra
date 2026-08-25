@@ -178,6 +178,16 @@
                     <div data-i18n="common:button.close">Schließen</div>
                   </span>
                   <span class="group" id="editorgroup_cell_extra"></span>
+                  <!-- Shared, type-driven: view.js shows it only for cells that
+                       can steer the sheet, and presets the value. -->
+                  <span class="group" id="editorgroup_cell_visibility" style="display:none">
+                    <select id="cellVisibility" class="cellVisibilitySelect">
+                      <option value="all"       data-i18n="editor.visibility.all">Immer</option>
+                      <option value="worksheet" data-i18n="editor.visibility.worksheet">Arbeitsblatt</option>
+                      <option value="solution"  data-i18n="editor.visibility.solution">Lösungsblatt</option>
+                    </select>
+                    <label class="cellVisibilityLabel" for="cellVisibility" data-i18n="editor.visibility.label">Sichtbarkeit</label>
+                  </span>
               </span>
           </div>
        </div>

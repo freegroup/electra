@@ -28,6 +28,11 @@ export default class Editor extends GenericEditor{
     return false
   }
 
+  // A dead legacy cell - no sheet steering, the user only deletes it.
+  hasVisibilityControl(){
+    return false
+  }
+
   defaultContent(){
     return null
   }

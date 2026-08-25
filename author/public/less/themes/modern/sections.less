@@ -24,6 +24,22 @@
             color: rgba(var(--text-color), 0.45);
             border-color: rgb(var(--border-color));
             background-color: rgb(var(--pane-bg-color));
+            // The type name carries the weight; the badge rides along normal.
+            font-weight: 600;
+
+            // Sheet badge, shown only for restricted cells. Tinted but normal
+            // weight, so the bold type name stays the anchor.
+            .sectionVisibilityBadge {
+                margin-left: 6px;
+                color: rgb(var(--tint-color));
+                font-weight: 400;
+
+                // Angle brackets read the badge as a placeholder token; kept in
+                // CSS so the i18n text (and the combobox) stay plain and a live
+                // language switch cannot drop them.
+                &::before { content: "<"; }
+                &::after  { content: ">"; }
+            }
 
             // Strokes in currentColor, so it follows the tab: faded when
             // resting, tinted once the cell is selected.

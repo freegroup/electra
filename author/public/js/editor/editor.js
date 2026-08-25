@@ -81,6 +81,13 @@ export default class Editor {
       return false
     }
 
+    // Whether the cell exposes the sheet-visibility combobox. True for plain
+    // content types; a type that steers worksheet/solution on its own (cloze)
+    // returns false and stays "all".
+    hasVisibilityControl(){
+      return true
+    }
+
     defaultContent(){
       return null
     }
