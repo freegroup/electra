@@ -77,7 +77,10 @@ export default class Editor {
       return ""
     }
 
-    hasLearningContent(){
+    // Whether the cell type renders differently on the worksheet vs the
+    // solution on its own (cloze). Plain types do not - they land on a sheet
+    // via their visibility instead.
+    hasSheetVariants(){
       return false
     }
 

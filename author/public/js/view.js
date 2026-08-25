@@ -268,8 +268,8 @@ export default class View {
     })
   }
 
-  // Label for the type tab: just the type name. The learning nature of a cell
-  // (hasLearningContent) is not surfaced here on purpose - it only matters at
+  // Label for the type tab: just the type name. Whether a cell splits per sheet
+  // (hasSheetVariants) is not surfaced here on purpose - it only matters at
   // export, where the three-variant choice makes it self-explanatory.
   typeLabel(editor) {
     return t(`editor.blocktype.${editor.getType()}`, { defaultValue: "" })

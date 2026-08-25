@@ -53,7 +53,9 @@ export default class Editor extends MarkdownEditor {
     whereToAppend.append(`<div class="sectionContent" data-type="${this.type}">${content}</div>`)
   }
 
-  hasLearningContent(){
+  // Cloze splits worksheet/solution inside the cell itself, so it always
+  // produces a per-sheet difference.
+  hasSheetVariants(){
     return true
   }
 

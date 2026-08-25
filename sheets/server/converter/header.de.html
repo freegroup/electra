@@ -7,7 +7,7 @@
       .content {
         font-family:Arial, Helvetica, sans-serif;
         width: 100%;
-        background-color: white;
+        background-color: {headerBg};
         color: gray;
         padding: 5px;
         -webkit-print-color-adjust: exact;
@@ -19,7 +19,7 @@
         display: flex;
         justify-content: space-between;
       }
-      .left{
+      .left {
         min-width:150px;
       }
       .title {
@@ -27,6 +27,7 @@
       }
       .right {
         min-width:150px;
+        text-align: right;
       }
     </style>
   </head>
@@ -34,7 +35,7 @@
     <div class="content">
         <span class="left">Name:</span>
         <span class="center">{headerText}</span>
-        <span class="right">Datum:</div>
+        <span class="right">Datum:</span>
     </div>
   </body>
 </html>

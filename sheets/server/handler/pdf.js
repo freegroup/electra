@@ -24,6 +24,10 @@ module.exports = {
                 const auth = db.pickAuthHeaders(req)
                 const { scopeRef, path: docPath } = db.decodeId(req.query.id)
                 let mode = req.query.mode ?? "worksheet"
+                // The frontend passes the current UI language; whitelist to the
+                // two we ship, default German (the audience). Only the PDF chrome
+                // (header/footer labels) is localized - content stays as authored.
+                const lang = req.query.lang === "en" ? "en" : "de"
 
                 // Mint a short-lived render token (login-free read of this exact
                 // version) — no publishing needed, so unpublished docs export too.
@@ -37,17 +41,32 @@ module.exports = {
                 const { render } = require("../converter/pdf")
                 const pageUrl = (m) => `${AUTHOR_URL}/page.html?rtoken=${encodeURIComponent(token)}&mode=${m}`
 
+                // A light green header marks the solution sheet at a glance, so
+                // a printed stack does not get worksheet and solution confused.
+                const SOLUTION_HEADER_BG = "#dff0d8"
+
+                // Static labels and layout live in the per-language chrome
+                // templates (header.<lang>.html). Only the center label depends on
+                // the mode, so it is the one string resolved here.
+                const MODE_LABEL = {
+                    en: { worksheet: "Worksheet", solution: "Sample Solution" },
+                    de: { worksheet: "Arbeitsblatt", solution: "Musterlösung" },
+                }
+                const modeLabel = MODE_LABEL[lang]
+
                 let all = false
-                let header = mode === "solution" ? "Solution Pages" : ""
+                let header = mode === "solution" ? modeLabel.solution : ""
+                let headerBg = mode === "solution" ? SOLUTION_HEADER_BG : "white"
                 if (mode === "all") {
                     mode = "worksheet"
                     all = true
-                    header = "Worksheet Pages"
+                    header = modeLabel.worksheet
+                    headerBg = "white"
                 }
 
-                let pdf = await render(pageUrl(mode), header, footer)
+                let pdf = await render(pageUrl(mode), { lang, headerText: header, footerText: footer, headerBg })
                 if (all) {
-                    const pdf2 = await render(pageUrl("solution"), "Solution Pages", footer)
+                    const pdf2 = await render(pageUrl("solution"), { lang, headerText: modeLabel.solution, footerText: footer, headerBg: SOLUTION_HEADER_BG })
                     const mergedPdf = await PDFDocument.create()
                     for (const bytes of [pdf, pdf2]) {
                         const src = await PDFDocument.load(bytes)

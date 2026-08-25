@@ -215,15 +215,17 @@ class Application extends GenericApplication {
         return true
       })
       .then(() => {
-        if (this.getDocument().hasLearningContent()) {
+        if (this.getDocument().hasSheetVariants()) {
           return exportModePrompt.show()
         }
         return "worksheet"
       })
       .then((mode) => {
         // The PDF endpoint publishes the doc (login-free public render) itself,
-        // keyed by the opaque handle.
-        window.open(`../sheets/pdf?id=${encodeURIComponent(this.currentFile.id)}&mode=${mode}`, "_blank")
+        // keyed by the opaque handle. lang localizes the PDF chrome (header/
+        // footer) to the current UI language; "de-DE" etc. narrows to the base.
+        let lang = (i18next.language || "en").split("-")[0]
+        window.open(`../sheets/pdf?id=${encodeURIComponent(this.currentFile.id)}&mode=${mode}&lang=${lang}`, "_blank")
       })
       .catch((error) => { if (error) console.log(error) })
   }

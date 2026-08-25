@@ -37,8 +37,11 @@ export default class Document {
     return this
   }
 
-  hasLearningContent(){
-    return this.pages.some( page => page.hasLearningContent() )
+  // Worksheet and solution differ when any cell splits per sheet on its own
+  // (cloze) or is pinned to one sheet via its visibility. Drives both the
+  // export-mode choice and the stored "exercise" flag.
+  hasSheetVariants(){
+    return this.pages.some( page => page.hasSheetVariants() )
   }
 
   // No section on any page. Used to refuse overwriting a stored document with
@@ -49,7 +52,7 @@ export default class Document {
 
   toJSON() {
     return {
-      exercise: this.hasLearningContent(),
+      exercise: this.hasSheetVariants(),
       pages: this.pages.map(page => page.clone().toJSON())
     }
   }

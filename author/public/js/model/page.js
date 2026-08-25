@@ -53,8 +53,13 @@ export default class Page {
     this.sections.splice(toIndex, 0, this.sections.splice(fromIndex, 1)[0]);
   };
 
-  hasLearningContent(){
-    return this.sections.some( section => editorByType(section.type).hasLearningContent() )
+  // Worksheet and solution differ when a cell splits per sheet on its own
+  // (cloze) or is pinned to one sheet via its visibility - used to decide
+  // whether the export-mode choice is offered.
+  hasSheetVariants(){
+    return this.sections.some( section =>
+      editorByType(section.type).hasSheetVariants() || (section.visibility ?? "all") !== "all"
+    )
   }
 
   forEach(callback){
