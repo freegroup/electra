@@ -47,44 +47,38 @@ class AppSwitch {
                 <div class="dropdown-menu" role="menu" >
                       <label class="applicationSwitchHome image-button">
                         <img src="/common/images/app_home.svg"/>
-                        <div>Home<br>&nbsp;</div>
+                        <div data-i18n="[html]common:apps.home">Home</div>
                       </label>
 
                       <label class="applicationSwitchSimulator image-button">
                         <img src="/common/images/app_simulator.svg"/>
-                        <div>Circuit</div>
-                        <div>Simulator</div>
+                        <div data-i18n="[html]common:apps.simulator">Circuit<br>Simulator</div>
                       </label>
 
                       <label class="applicationSwitchAuthor image-button" >
                         <img src="/common/images/app_author.svg"/>
-                        <div>Lesson</div>
-                        <div>Author</div>
+                        <div data-i18n="[html]common:apps.author">Worksheets</div>
                       </label>
 
                       <label class="applicationSwitchDesigner image-button" >
                         <img src="/common/images/app_designer.svg"/>
-                        <div>Component</div>
-                        <div>Designer</div>
+                        <div data-i18n="[html]common:apps.designer">Symbol<br>Editor</div>
                       </label>
 
 
                       <label class="applicationSwitchBook image-button" >
                         <img src="/common/images/app_book.svg"/>
-                        <div>Grundlagen</div>
-                        <div>Digitaltechnik</div>
+                        <div data-i18n="[html]common:apps.book">Grundlagen</div>
                       </label>
 
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="/common/images/app_youtube.svg"/>
-                        <div>Youtube</div>
-                        <div>Channel</div>
+                        <div data-i18n="[html]common:apps.youtube">Youtube<br>Channel</div>
                       </label>
 
                       <label class="applicationSwitchCoffee image-button" >
                         <img src="/common/images/app_coffee.svg"/>
-                        <div>Send me a</div>
-                        <div>Coffee</div>
+                        <div data-i18n="[html]common:apps.coffee">Send me a<br>Coffee</div>
                       </label>
 
                 </div>

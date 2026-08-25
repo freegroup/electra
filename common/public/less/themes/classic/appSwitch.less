@@ -1,0 +1,37 @@
+// App switcher dropdown - CLASSIC.
+//
+// The switcher is a landing pad, not a dense toolbar: bigger icons, roomier
+// gaps. The grid structure itself (display, position, visibility) stays in
+// layout/appSwitch.less - here live only the visible dimensions.
+.applicationSwitch .open .dropdown-menu {
+    padding: 12px;
+    max-width: 340px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-auto-rows: minmax(100px, auto);
+    grid-gap: 12px;
+
+    // Enlarge the shared .image-button only inside the switcher - the
+    // toolbar/appbar variant keeps its compact size.
+    .image-button {
+        gap: 6px;
+        // Transparent by default so hover does not shift the tile; the tint
+        // border only appears on hover.
+        border: 2px solid transparent;
+        border-radius: @borderRadiusSmall;
+        transition: border-color 0.15s ease;
+        img,
+        svg {
+            height: 40px;
+        }
+        div {
+            font-size: 0.9em;
+            // Reserve two lines for every label so one- and two-line tiles are
+            // the same height - keeps icons and first text lines on one baseline
+            // across a row.
+            min-height: 2.4em;
+        }
+        &:hover {
+            border-color: rgb(var(--tint-color));
+        }
+    }
+}
