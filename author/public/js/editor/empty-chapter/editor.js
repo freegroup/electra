@@ -18,7 +18,6 @@ export default class Editor extends GenericEditor{
       <div class="placeholderButtons">
         <button data-i18n="button.add_text"      data-index="0" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >${t("button.add_text")}</button>
         <button data-i18n="button.add_cloze"     data-index="0" data-type="cloze"     class='sectionMenuInsertSection electra-button' >${t("button.add_cloze")}</button>
-        <button data-i18n="button.add_flashcard" data-index="0" data-type="flashcard" class='sectionMenuInsertSection electra-button' >${t("button.add_flashcard")}</button>
         <button data-i18n="button.add_timing"    data-index="0" data-type="timing"    class='sectionMenuInsertSection electra-button' >${t("button.add_timing")}</button>
         <button data-i18n="button.add_brain"     data-index="0" data-type="brain"     class='sectionMenuInsertSection electra-button' >${t("button.add_brain")}</button>
         <button data-i18n="button.add_image"     data-index="0" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>

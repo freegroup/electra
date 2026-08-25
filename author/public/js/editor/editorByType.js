@@ -2,20 +2,16 @@ import MarkdownEditor from "./markdown/editor"
 import BrainEditor from "./brain/editor"
 import ClozeEditor from "./cloze/editor"
 import ImageEditor from "./image/editor"
-import FlashCardEditor from "./flashcard/editor"
-import PlaceholderEditor from "./placeholder/editor"
 import WysiwygEditor from "./wysiwyg/editor"
 import TimingEditor from "./timing/editor"
 import EmptyChapterEditor from "./empty-chapter/editor"
-import UnknownEditor from "./editor"
+import UnknownEditor from "./unknown/editor"
 
 let unknownEditor = new UnknownEditor()
 let editors = [
   new MarkdownEditor(),
   new ClozeEditor(),
-  new FlashCardEditor(),
   new BrainEditor(),
-  new PlaceholderEditor(),
   new WysiwygEditor(),
   new TimingEditor(),
   new EmptyChapterEditor(),

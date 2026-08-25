@@ -14,19 +14,7 @@ export default class Page {
   }
 
   get(id){
-    let section = this.sections.find( value => value.id===id)
-    if(section){
-      return section
-    }
-    // the searched section could be a children of a top level section. This could happen e.g. in flashcard
-    //
-    let childSections = this.sections.flatMap( value => value.content?.front ? [value.content.front, value.content.back]:[])
-
-    return  childSections.find( value => value.id===id)
-  }
-
-  parent(section){
-    return this.sections.find( value => value.content?.front?.id===section.id || value.content?.back?.id===section.id)
+    return this.sections.find( value => value.id===id)
   }
 
   set(section){

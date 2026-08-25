@@ -18,7 +18,6 @@
         border-color:rgb(var(--tint-color)) ;
     }
     .sectionContent {
-        &[data-type='flashcard'],
         &[data-type='wysiwyg'],
         &[data-type='markdown'],
         &[data-type='cloze'] {
@@ -59,14 +58,6 @@
             }    
             a:hover {
                 background-size: 0 1px, 100% 1px;
-            }
-        }
-
-        /** learning content gets a special annotation on the left **/
-        &[data-type="flashcard"] {
-            .sectionMenuFlip {
-                background-color: rgba(var(--tint-color), 0.2) ;
-                border: 1px solid white;
             }
         }
 

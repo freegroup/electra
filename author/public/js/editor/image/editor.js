@@ -173,7 +173,7 @@ export default class Editor extends GenericEditor{
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flashcard"
+   * @param {String} mode Either "worksheet" or "solution"
    */
    render(section, mode){
     section.content = this.convertToNewContentFormat(section.content)

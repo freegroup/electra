@@ -19,6 +19,7 @@ const PATHS = {
   circleHelp: `<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>`,
   play:       `<polygon points="6 3 20 12 6 21 6 3"/>`,
   square:     `<rect width="18" height="18" x="3" y="3" rx="2"/>`,
+  unplug:     `<path d="m19 5 3-3"/><path d="m2 22 3-3"/><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z"/><path d="M7.5 13.5 10 11"/><path d="M10.5 16.5 13 14"/><path d="m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z"/>`,
 }
 
 // The stroke width can be nudged up for small renderings, where Lucide's 2px

@@ -14,7 +14,6 @@
     "add_text": "Text",
     "add_brain": "Circuit",
     "add_cloze": "Cloze",
-    "add_flashcard": "Flashcard",
     "add_image": "Image",
     "add_timing": "Timing Diagram",
     "new_document": "New Document",
@@ -33,14 +32,18 @@
       "wysiwyg": "Text",
       "markdown": "Text",
       "cloze": "Cloze",
-      "flashcard": "Flashcard",
       "brain": "Circuit",
       "timing": "Timing Diagram",
-      "image": "Image"
+      "image": "Image",
+      "unknown": "Unknown"
     },
     "empty": {
       "header": "Welcome to your new page!",
       "description": "Start by adding your first content to make it feel more alive in here!"
+    },
+    "unknown": {
+      "header": "Well, this block is a mystery",
+      "description": "The \"{{type}}\" type is no longer supported."
     },
     "image": {
       "dragdrop": "Drag & Drop image or click to upload"

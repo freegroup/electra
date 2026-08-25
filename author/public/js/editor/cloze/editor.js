@@ -22,7 +22,7 @@ export default class Editor extends MarkdownEditor {
    * 
    * @param {*} whereToAppend 
    * @param {*} section 
-   * @param {String} mode Either "worksheet", "solution", "flashcard"
+   * @param {String} mode Either "worksheet" or "solution"
    */
   render(section, mode){
     let errorCSS = ""

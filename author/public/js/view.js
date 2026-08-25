@@ -68,10 +68,6 @@ export default class View {
         this.onDelete(this.page.get($(event.currentTarget).data("id")))
         return false
       })
-      .on("click", ".sectionMenuFlip", event => {
-        this.onFlip(this.page.get($(event.currentTarget).data("id")))
-        return false
-      }) 
       // On the tab, not in the action menu: help is about the TYPE, not this
       // instance - the path only ever uses section.type.
       .on("click", ".sectionTypeHelp", event => {
@@ -288,9 +284,11 @@ export default class View {
       whereToAppend.append(`<div class='section' data-id="${section.id}" data-type="${section.type}"></div>`)
       let sectionNode = whereToAppend.find(`*[data-id='${section.id}']`)
       // A real element, not ::before - a pseudo element cannot hold a
-      // clickable child.
+      // clickable child. No help glyph for the unknown fallback: there is no
+      // readme for a type that no longer exists.
+      let help = editor.getType() === "unknown" ? "" : `<span class="sectionTypeHelp">${icon("circleHelp", { strokeWidth: 2.4 })}</span>`
       sectionNode.append(`
-            <div class="sectionTypeTab">${this.typeLabel(editor)}<span class="sectionTypeHelp">${icon("circleHelp", { strokeWidth: 2.4 })}</span></div>`)
+            <div class="sectionTypeTab">${this.typeLabel(editor)}${help}</div>`)
       editor.append(sectionNode, content)
       sectionNode.append(`
             <div class="fc">
@@ -303,7 +301,6 @@ export default class View {
             </div>`)
 
       this.renderSpacer(whereToAppend, index + 1)
-      delete section.flippedStateDuringInject
     })
   }
 
@@ -313,7 +310,6 @@ export default class View {
           <div class='sectionContent ' data-type="spacer" >
             <button data-i18n="button.add_text"      data-index="${index}" data-type="wysiwyg"   class='sectionMenuInsertSection electra-button' >${t("button.add_text")}</button>
             <button data-i18n="button.add_cloze"     data-index="${index}" data-type="cloze"     class='sectionMenuInsertSection electra-button' >${t("button.add_cloze")}</button>
-            <button data-i18n="button.add_flashcard" data-index="${index}" data-type="flashcard" class='sectionMenuInsertSection electra-button' >${t("button.add_flashcard")}</button>
             <button data-i18n="button.add_timing"    data-index="${index}" data-type="timing"    class='sectionMenuInsertSection electra-button' >${t("button.add_timing")}</button>
             <button data-i18n="button.add_brain"     data-index="${index}" data-type="brain"     class='sectionMenuInsertSection electra-button' >${t("button.add_brain")}</button>
             <button data-i18n="button.add_image"     data-index="${index}" data-type="image"     class='sectionMenuInsertSection electra-button' >${t("button.add_image")}</button>
@@ -359,8 +355,8 @@ export default class View {
     this.activeSection = null
   }
 
-  // Guards sit on the methods, not only on the click handlers - palette and
-  // placeholder call them directly. Selecting and flipping stay free.
+  // Guards sit on the methods, not only on the click handlers - the palette
+  // calls them directly. Selecting stays free.
   onEdit(section) {
     if (!this.app.isEditable()) {
       return Promise.resolve()
@@ -435,25 +431,6 @@ export default class View {
         doneCallback()
       })
     })
-  }
-
-  onFlip(section) {
-    let card = $(`[data-id='${section.id}'] .flip_box`)
-
-    if (card.hasClass('flipped-back')) {
-        // Restart animaton, See: https://css-tricks.com/restart-css-animation/
-        card.removeClass('flipped-back');
-        void card[0].offsetWidth;
-      
-      card.addClass('flipped-front');
-    }
-    else{
-      // Restart animaton, See: https://css-tricks.com/restart-css-animation/
-      card.removeClass('flipped-front');
-      void card[0].offsetWidth;
-
-      card.addClass('flipped-back');
-    }
   }
 
   onCommitEdit() {
