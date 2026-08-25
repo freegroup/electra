@@ -6,4 +6,27 @@
       width: 90px;
     }
   }
+
+  // The menu is a single column: profile card, logout underneath. It shares the
+  // .applicationSwitch container with the app switcher, whose grid rule
+  // (.applicationSwitch .open .dropdown-menu) has the same specificity and would
+  // win by source order. The extra .dropdown class here - the element carries it
+  // anyway - outranks that grid so the column wins, without touching appSwitch.
+  .dropdown-menu {
+    display: none;
+  }
+  &.dropdown.open .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    // Right edge under the toggler, opening leftward - same as the app switcher.
+    right: 0;
+    left: initial;
+  }
+
+  // Logout sits under the profile card; colours come from .electra-button.
+  .userLogout {
+    margin-top: 8px;
+    width: 100%;
+  }
 }

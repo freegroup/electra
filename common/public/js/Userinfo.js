@@ -1,3 +1,4 @@
+import axios from "axios"
 import loadScript from "./loadScript"
 import session from "./session"
 import authConfiguration from "./authConfiguration"
@@ -52,7 +53,9 @@ export default class Userinfo {
               <div>${this.user.displayName}</div>
               <div>${role}</div>
             </div>
+            <button class="userLogout electra-button" data-i18n="common:button.logout">${t("common:button.logout")}</button>
         `)
+        $(".userinfo_toggler .userLogout").on("click", () => this.logout())
       }
       else {
         $(".userinfo_toggler").each(function( i, element ) {
@@ -64,5 +67,19 @@ export default class Userinfo {
 
   getUser(){
     return this.user
+  }
+
+  logout(){
+    // Google merkt sich sonst das Konto und waehlt es beim naechsten Besuch
+    // still wieder aus - abschalten, damit Logout auch wie Logout wirkt.
+    google.accounts.id.disableAutoSelect()
+    axios.post("../logout")
+      .catch(() => {})
+      .then(() => {
+        // Reset the document: drop ?doc/?global/... from the URL. The open doc
+        // may be a personal one the now-anonymous visitor can no longer load,
+        // so land on the welcome root instead of retrying a dead document.
+        window.location.href = window.location.origin + window.location.pathname
+      })
   }
 }

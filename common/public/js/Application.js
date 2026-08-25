@@ -196,6 +196,18 @@ export default class Application extends AppFrame{
         }
     }
 
+    // Anonymous visitors may edit freely (try before sign-in) but cannot
+    // persist. Call this at every write entry point: it points them at the
+    // login toggler instead of letting the save silently fail. Returns whether
+    // the caller may proceed.
+    requireLogin(){
+        if (session.isLoggedIn()) {
+            return true
+        }
+        this.showLoginHint()
+        return false
+    }
+
     showLoginHint(){
         new Anno([
             {

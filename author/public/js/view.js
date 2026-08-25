@@ -110,12 +110,18 @@ export default class View {
         })
         return false
       })
-      // Shared, type-driven combobox: writes straight onto the live section, so
-      // toJSON persists it and the next render shows the tab badge.
+      // Shared, type-driven combobox. Routed through the command stack like
+      // every other edit: gives undo/redo and marks the document dirty (via
+      // Toolbar.stackChanged), so Save and PDF export pick the change up.
       .on("change", "#cellVisibility", event => {
-        if (this.activeSection) {
-          this.activeSection.visibility = $(event.currentTarget).val()
+        if (!this.activeSection) {
+          return false
         }
+        let value = $(event.currentTarget).val()
+        commandStack.push(new State(this.app)).then( doneCallback => {
+          this.activeSection.visibility = value
+          doneCallback()
+        })
         return false
       })
   }

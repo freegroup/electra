@@ -330,6 +330,16 @@ app.use('/oauth/callback{/:componentUri}', async function(req, res) {
 // down when the http/https listeners start; they are collected here so a
 // broadcast reaches clients on whichever transport is live. Own bodyParser
 // because the global json parser is registered only after the catch-all.
+// Log out: drop the session so the identity headers stop being set, and clear
+// the session cookie. POST (state-changing); the client resets the document URL
+// afterwards, so a personal doc is not reloaded as an anonymous visitor.
+app.post('/logout', function (req, res) {
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid')
+        res.json({ status: "ok" })
+    })
+})
+
 const ioServers = []
 app.use('/broadcast', ensureLocalhost, bodyParser.json(), function (req, res) {
     ioServers.forEach((io) => io.sockets.emit(req.body.topic, req.body.event))

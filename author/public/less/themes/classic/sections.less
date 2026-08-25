@@ -19,11 +19,12 @@
             // The type name carries the weight; the badge rides along normal.
             font-weight: 600;
 
-            // Sheet badge, shown only for restricted cells. Tinted but normal
-            // weight, so the bold type name stays the anchor.
+            // Sheet badge, shown only for restricted cells. Follows the tab
+            // colour (inherit): muted while resting, tinted once the cell is
+            // selected - the bold type name stays the anchor via its weight.
             .sectionVisibilityBadge {
                 margin-left: 6px;
-                color: rgb(var(--tint-color));
+                color: inherit;
                 font-weight: 400;
 
                 // Angle brackets read the badge as a placeholder token; kept in

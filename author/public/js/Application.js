@@ -101,6 +101,7 @@ class Application extends GenericApplication {
   // Publish the current document as an anonymous public link.
   fileShare() {
     if (!this.currentFile) return Promise.resolve()
+    if (!this.requireLogin()) return Promise.resolve()
     return this.fileSave()
       .then(() => this.publishDialog.show(this.currentFile.id, this.currentFile.version))
       .catch((error) => { if (error) console.log(error) })
@@ -108,6 +109,7 @@ class Application extends GenericApplication {
 
   // Create a brand-new document: choose a name, then write version 1.
   fileCreateNew() {
+    if (!this.requireLogin()) return Promise.resolve()
     return new Promise((resolve, reject) => {
       if (this.hasUnsavedChanges === true) {
         return confirmDialog.show(t("common:message.unsaved_changes")).then(resolve, reject)
@@ -144,6 +146,11 @@ class Application extends GenericApplication {
   }
 
   fileSave() {
+    // Anonymous visitors can edit but not persist - hint at login instead of
+    // silently dropping the save (also covers the auto-save before PDF export).
+    if (!this.requireLogin()) {
+      return Promise.resolve()
+    }
     // A document opened for review is read-only — never save it (that would fork
     // a pending version into the reviewer's personal workspace).
     if (!this.isEditable()) {
