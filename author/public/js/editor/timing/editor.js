@@ -91,20 +91,29 @@ export default class Editor extends GenericEditor{
 
   defaultContent(){
     return `
-
-{ "signal" : [
-    { "name": "clk1",  "wave": "P.....H......" },
-    { "name": "clk2",  "wave": "d............" },
-    { "name": "bus1",  "wave": "x....=..=.=x.",   "data": "head body tail" },
-    { "name": "bus1",  "wave": "x.3..4.5x....",   "data": "head body tail" },
-    { "name": "wire",  "wave": "0....1..0..1." },
-    { "name": "wire",  "wave": "l....h...L.H." }
+{ "signal": [
+    ["RS-Latch",
+      { "name": "S", "wave": "010..10." },
+      { "name": "R", "wave": "0..10..1" },
+      { "name": "Q", "wave": "01.0.1.0" },
+      { "name": "Q̅", "wave": "10.1.0.1" }
+    ],
+    {},
+    ["D-Flipflop",
+      { "name": "CLK",  "wave": "P.......", "node": "...a...." },
+      { "name": "D",    "wave": "0.1.010." , "phase": -0.2},
+      { "name": "Q",    "wave": "0..1.010", "node": "...b...." },
+      { "name": "Q̅",    "wave": "1..0.101" }
+    ],
+      {},
+     { "name": "Signal","wave": "l.H.LHLH" },
+    {},
+    { "name": "DATA[7:0]", "wave": "3.4.5.3.", "data": ["0x0F", "0xA0", "0x55", "0x0F"] }
   ],
-  "config": { 
-    "hscale": 2 
-  }
+  "edge": [ "a~>b t_CO" ],
+  "config": { "hscale": 2 },
+  "head": { "text": "Flipflops / Latch" }
 }
-  
 `
   }
 

@@ -5,14 +5,34 @@
     height: auto;
   }
 
-  .left {
+  // Each half stacks its label on top of the content, so it is always clear
+  // which side is the source and which is the live preview.
+  .left,
+  .right {
     flex: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .left {
     border-right-width: 1px;
     border-right-style: dotted;
   }
 
-  .right {
-    flex:50%;
+  // Quiet header strip - reads as a caption, not a button.
+  .paneLabel {
+    font-size: 75%;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    opacity: 0.55;
+    user-select: none;
+    border-bottom: 1px solid rgb(var(--border-color));
+  }
+
+  .right .markdown-body {
+    padding: 6px 10px;
   }
 
   .CodeMirror {

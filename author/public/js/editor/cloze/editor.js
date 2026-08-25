@@ -58,10 +58,6 @@ export default class Editor extends MarkdownEditor {
   }
   
   defaultContent() {
-    return  `### Lückentext
-Erstellen Sie weitere [[Lücken]] mit Hilfe von doppelten eckigen 
-Klammern (*Mac:* \`Alt + 5\` und \`6\`. *Windows:* \`AltGr + 7\` und \`8\`). 
-
-Texte der Lücken werden nur im Editor und auf dem Lösungsblatt angezeigt. Das *Arbeitsblatt* PDF enthält die Lösung nicht`
+    return t("editor.cloze.template")
   }
 }

@@ -17,8 +17,8 @@ export default class Editor extends GenericEditor{
     <div class="placeholderContainer">
       <div class="placeholderText brokenBlock">
         <div class="brokenIcon">${icon("unplug")}</div>
-        <h1 data-i18n="editor.unknown.header">${t("editor.unknown.header", { defaultValue: "Uff, den Block kennen wir nicht" })}</h1>
-        <h2 data-i18n="editor.unknown.description" data-i18n-options='${JSON.stringify({ type })}'>${t("editor.unknown.description", { type, defaultValue: `Der Typ „${type}“ wird nicht mehr unterstützt.` })}</h2>
+        <h1 data-i18n="editor.unknown.header">${t("editor.unknown.header")}</h1>
+        <h2 data-i18n="editor.unknown.description" data-i18n-options='${JSON.stringify({ type })}'>${t("editor.unknown.description", { type })}</h2>
       </div>
     </div>
     `

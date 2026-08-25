@@ -22,9 +22,11 @@ export default class Editor extends GenericEditor{
     $(".sections .activeSection .sectionContent").html(`
               <div class="editorContainerSelector" id="editor-container">
                 <div class="left">
+                  <div class="paneLabel" data-i18n="editor.pane.source">${t("editor.pane.source")}</div>
                   <textarea id="markdownEditor"></textarea>
                 </div>
                 <div class="right">
+                  <div class="paneLabel" data-i18n="editor.pane.preview">${t("editor.pane.preview")}</div>
                   <article class="markdown-body" id="htmlPreview"></article>
                 </div>
               </div>
