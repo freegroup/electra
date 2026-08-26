@@ -1,0 +1,41 @@
+// Card selection + title link - CLASSIC
+//
+// The document name is the link that opens it; everything else on a selectable
+// card picks it. Only appearance lives here - the click wiring is in
+// storage/FileFactSheet.js, the spacing in layout/.
+
+.factSheetTitleLink {
+    color: rgb(var(--tint-color));
+    cursor: pointer;
+    // Always underlined, not just on hover: it is the only way to open the
+    // document, so it has to look clickable before the pointer arrives.
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(var(--tint-color), 0.45);
+
+    &:hover {
+        text-decoration-color: rgb(var(--tint-color));
+    }
+}
+
+// A selectable card shows it is clickable; the selected one carries the tint.
+.factSheetSelectable {
+    cursor: pointer;
+}
+
+.factSheet.selected {
+    border-color: rgb(var(--tint-color));
+    background-color: rgba(var(--tint-color), 0.08);
+}
+
+// Upload dialog drop zone: a dashed field that firms up while a file hovers.
+.uploadDropZone {
+    border: 2px dashed rgba(var(--text-color), 0.25);
+    border-radius: @borderRadiusBig;
+    color: rgba(var(--text-color), 0.75);
+
+    &.dragOver {
+        border-color: rgb(var(--tint-color));
+        background-color: rgba(var(--tint-color), 0.08);
+    }
+}

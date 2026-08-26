@@ -145,3 +145,22 @@
     }
   }
 }
+
+// Bootstrap declares `input[type="file"] { display: block }` and is linked AFTER
+// our bundle, which beats the plain `hidden` attribute (that one only lives in
+// the UA stylesheet). Class + attribute outranks element + attribute, so this
+// wins without !important.
+.uploadFileInput[hidden] {
+  display: none;
+}
+
+// Upload dialog drop zone - structure only; the dashed edge is in the themes.
+.uploadDropZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 34px 20px;
+  text-align: center;
+}

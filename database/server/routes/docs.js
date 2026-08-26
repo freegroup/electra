@@ -69,6 +69,9 @@ async function routes(fastify) {
               meta: pinned.meta,
               doc_path: pinned.path,
               version: pinned.version,
+              // Same field set as the walk-up read - without the uuid a pinned
+              // version could not be addressed (e.g. to read its blobs).
+              uuid: pinned.uuid,
               status: pinned.status,
               author: pinned.author,
               created_at: pinned.createdAt,

@@ -2,9 +2,14 @@
 // grid: thumbnail on top, title + workspace below, badges and actions in the
 // footer. Subclasses override overlayBadge(), badges(), and actions().
 //
+// The TITLE opens the document - it is styled as a link, so where to click is
+// visible rather than guessed. Clicking the card elsewhere selects it, but only
+// in panes that opt in by passing onSelect (Drive-style multi-select).
+//
 // Usage:
 //   $grid.append(new SomeFactSheet(item, {
 //     onOpen: (item, $sheet) => {},
+//     onSelect: (item, { meta, shift }) => {},   // optional
 //     ...subclass-specific action callbacks
 //   }).render())
 //
@@ -121,9 +126,19 @@ export default class FileFactSheet {
       $bar.append($btn)
     }
 
-    $sheet.on("click", () => {
+    // The title is the link that opens the document.
+    $sheet.find(".factSheetTitle").addClass("factSheetTitleLink").on("click", (event) => {
+      event.stopPropagation()
       if (typeof this.opts.onOpen === "function") this.opts.onOpen(it, $sheet)
     })
+
+    // Anywhere else on the card selects - but only where a pane asked for it.
+    // Without onSelect the card simply does nothing outside the title.
+    if (typeof this.opts.onSelect === "function") {
+      $sheet.addClass("factSheetSelectable").on("click", (event) => {
+        this.opts.onSelect(it, { meta: event.metaKey || event.ctrlKey, shift: event.shiftKey })
+      })
+    }
 
     return $sheet
   }

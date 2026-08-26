@@ -94,14 +94,14 @@ async function versionsUnder(scopeId) {
 async function docAt(scopeId, docPath, version) {
   const res = version != null
     ? await pool.query(
-        `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
+        `SELECT scope_id, doc_path, version, uuid, status, is_deletion, data, meta,
                 author, public_id, published_at, unpublished_at, created_at
            FROM versions
           WHERE scope_id = $1 AND doc_path = $2 AND version = $3`,
         [scopeId, docPath, version]
       )
     : await pool.query(
-        `SELECT scope_id, doc_path, version, status, is_deletion, data, meta,
+        `SELECT scope_id, doc_path, version, uuid, status, is_deletion, data, meta,
                 author, public_id, published_at, unpublished_at, created_at
            FROM versions
           WHERE scope_id = $1 AND doc_path = $2 AND status IN ('committed', 'deleted')
@@ -114,6 +114,9 @@ async function docAt(scopeId, docPath, version) {
     scopeRef: String(r.scope_id),
     path: r.doc_path,
     version: r.version,
+    // The version's stable external id - a pinned read used to drop it, so
+    // callers could not address the row's blobs.
+    uuid: r.uuid,
     status: r.status,
     isDeletion: r.is_deletion,
     data: r.data,

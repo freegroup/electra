@@ -35,6 +35,34 @@ function withSuffix(name) {
 // a content type, from a row that a bulk read never touches.
 const PREVIEW_KEY = "preview"
 
+// Bucket this app's documents live in inside a backup package: ".sheet" ->
+// "sheets". Derived, so the suffix stays the single source of truth.
+const BACKUP_KIND = `${SUFFIX.replace(".", "")}s`
+
+// The preview blob of one version, base64-encoded for the backup package.
+// Best-effort: a version without a preview (or one whose blob has gone) must
+// not fail the export - the image is derivable from the document anyway.
+async function previewBlob(uuid, auth) {
+  if (!uuid) return {}
+  try {
+    const r = await db.raw(
+      "GET",
+      `/database/docs/${encodeURIComponent(uuid)}/blobs/${PREVIEW_KEY}`,
+      { authHeaders: auth }
+    )
+    const bytes = Buffer.from(await r.arrayBuffer())
+    if (bytes.length === 0) return {}
+    return {
+      [PREVIEW_KEY]: {
+        contentType: r.headers.get("content-type") || "image/png",
+        base64: bytes.toString("base64"),
+      },
+    }
+  } catch {
+    return {}
+  }
+}
+
 // Display name of whoever last committed a version. personRef is the plain
 // email (database/server/auth.js), and only the part before the @ leaves the
 // server — so no full address ends up on a card, nor in the JSON behind it.
@@ -326,6 +354,78 @@ function init(app) {
         editable: h.version === newest,
       }))
       res.json({ versions })
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // --- backup export --------------------------------------------------------
+  // Assembles the whole package server-side: the client only sends the list of
+  // documents it wants. Doing it here keeps the browser from firing one request
+  // per version. Lossless on purpose (every version plus its preview blob), even
+  // though today's additive import only replays the newest one - a backup taken
+  // now must still be enough for a later, exact restore.
+  //
+  // Every read goes through the caller's auth headers, so the export can never
+  // contain more than the caller may already read.
+  app.post("/sheets/export", async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const ids = (req.body || {}).ids
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: { message: "no documents selected" } })
+      }
+
+      const files = []
+      for (const id of ids) {
+        const { scopeRef, path } = db.decodeId(id)
+        if (!hasSuffix(path)) continue
+
+        const hist = await db.call(
+          "GET",
+          `/database/scopes/${scopeRef}/docs/history?path=${encodeURIComponent(path)}`,
+          { authHeaders: auth }
+        )
+        const versions = []
+        let scopePath = null
+        for (const h of (hist.history || []).slice().sort((a, b) => a.version - b.version)) {
+          // The per-version read is what yields both `data` and the version's
+          // uuid - and the uuid is what addresses its preview blob.
+          const doc = await db.call(
+            "GET",
+            `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&version=${h.version}`,
+            { authHeaders: auth }
+          )
+          versions.push({
+            version: h.version,
+            status: h.status,
+            createdAt: h.createdAt,
+            author: doc.author ?? null,
+            uuid: doc.uuid ?? null,
+            data: doc.data ?? {},
+            blobs: await previewBlob(doc.uuid, auth),
+          })
+          scopePath = scopePath ?? doc.scope ?? null
+        }
+        // The scope as a readable PATH, never its id - ids are local to one
+        // database, so an id would be meaningless on another system. Today's
+        // additive import ignores this and always writes to the caller's own
+        // workspace; an exact restore later needs to know where it came from,
+        // and the same path can exist in several scopes at once.
+        files.push({ path, scope: scopePath, versions })
+      }
+
+      // Documents are grouped by kind ("sheets", "brains", ...) even though this
+      // backend only ever fills one bucket. A backup file outlives the code that
+      // wrote it: once a full per-user export exists, it drops into the same
+      // shape instead of forcing a second format - and an app reading a package
+      // simply takes its own bucket and leaves the rest alone.
+      res.json({
+        format: "electra-backup",
+        formatVersion: 1,
+        exportedAt: new Date().toISOString(),
+        [BACKUP_KIND]: files,
+      })
     } catch (err) {
       fail(res, err)
     }

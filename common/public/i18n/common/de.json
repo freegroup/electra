@@ -11,7 +11,10 @@
     "cancel": "Abbrechen",
     "start": "Starten",
     "stop": "Stoppen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "backup": "Sichern",
+    "import": "Hochladen",
+    "choose_file": "Datei auswählen"
   },
   "settings": {
     "language": "Sprache",
@@ -73,9 +76,12 @@
     "text": "Text"
   },
   "label": {
-    "public_link": "Link zum Teilen"
+    "public_link": "Link zum Teilen",
+    "selected": "{{count}} ausgewählt"
   },
   "dialog": {
+    "upload": "Sicherung hochladen",
+    "upload_explain": "Zieh deine Sicherungs-Datei hierher - oder such sie auf deinem Rechner.",
     "confirm": "Bestätigen zum Fortfahren",
     "coffee": "Fördere die Academy",
     "help_missing": "Zu „{{topic}}“ gibt es noch keine Hilfe."
@@ -85,6 +91,9 @@
     "coffee_2": "dann unterstütze mich gerne mit einem <a href='https://www.paypal.me/freegroup' target='_blank'>Kaffee</a>!",
     "authenticate_before_save": "Um Dateien speichern zu können, sollten Sie sich anmelden.<br><br><i>..aber natürlich können sie auch vorher damit experimentieren</i>",
     "link_copied": "Link kopiert",
+    "backup_failed": "Das Sichern hat nicht geklappt. Bitte versuche es nochmal.",
+    "import_done": "{{count}} Dateien hochgeladen.",
+    "import_failed": "Das ist keine Electra-Sicherung.",
     "unsaved_changes": "Die Seite enthält ungespeicherte Änderunge welche verloren gehen",
     "saved": "Gespeichert",
     "save_failed": "Speichern fehlgeschlagen - deine Änderungen sind noch da, bitte versuche es erneut.",

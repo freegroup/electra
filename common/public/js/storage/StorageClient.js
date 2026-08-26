@@ -54,6 +54,16 @@ class StorageClient {
       .then((response) => response.data)
   }
 
+  // --- backup ---------------------------------------------------------------
+
+  // The backup package for the given documents, assembled server-side (one
+  // request instead of one per version). Lossless: every version plus its
+  // preview blob. -> { format, formatVersion, fileSuffix, exportedAt, files }
+  exportFiles(ids) {
+    return axios.post(`${this.base}/export`, { ids })
+      .then((response) => response.data)
+  }
+
   // --- sharing -------------------------------------------------------------
 
   // Discard the caller's personal copy so the shared/official version shows
