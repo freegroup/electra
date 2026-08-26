@@ -223,13 +223,6 @@
               </div>
           </span>
 
-          <span class="group" id="editorgroup_share">
-              <span class="image-button" id="editorFileShare" >
-                <img title="Share Document" src="../common/images/toolbar_share.svg" class="svg"/>
-                <div data-i18n="common:toolbar.share" >Share</div>
-              </span>
-          </span>
-
           <span class="group simulationBase" style="display: none;">
             <div class="image-button">
               <input id="simulationBaseTimer"
@@ -248,6 +241,15 @@
           </span>
 
           <div class="spacer"></div>
+
+          <!-- Sharing acts on the finished circuit, not on editing it - right
+               edge, same as in the author. -->
+          <span class="group" id="editorgroup_share">
+              <span class="image-button" id="editorFileShare" >
+                <img title="Share Document" src="../common/images/toolbar_share.svg" class="svg"/>
+                <div data-i18n="common:toolbar.share" >Share</div>
+              </span>
+          </span>
 
           <span class="group">
             <span class="image-button" id="editorFullscreen" >

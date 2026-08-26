@@ -1,0 +1,27 @@
+// list - MODERN
+//
+// Mirror of themes/classic/list.less: every theme carries the same file set, so
+// a component's appearance is always in the same place. Started as a copy -
+// edit freely, nothing here is shared with Classic. The mechanics (absolute
+// position, the scaleY reveal) stay in layout/list.less.
+
+.list .list-item {
+    // Air between the marker and the label. On every row, not just the
+    // selected one, so nothing shifts sideways on selection.
+    padding-left: 10px;
+
+    // Selection marker: a thin square rule, flush against the left edge and
+    // running the full height - the same pattern as the active tab in
+    // #leftTabStrip, so a selected thing looks the same everywhere.
+    &:before {
+        background-color: rgb(var(--tint-color));
+        inline-size: 2px;
+        border-radius: 0;
+    }
+
+    &.selected {
+        // Square left edge, so the full-height marker sits flush against it.
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+}

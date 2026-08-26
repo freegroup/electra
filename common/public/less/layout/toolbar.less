@@ -18,6 +18,12 @@
     flex-grow: 1;
   }
 
+  // Cell edit mode hides the document groups but not the spacer - left in, it
+  // would push the cell controls to the right edge.
+  &.cellEditMode .spacer {
+    display: none;
+  }
+
   .group {
     display: flex;
     flex-direction: row;
@@ -31,6 +37,13 @@
       flex-direction: column;
       justify-content: center;
       gap: 2px;
+
+      // Room for the divider that separates the cell ACTIONS on the left from
+      // this setting. The rule itself is appearance and lives in the themes;
+      // hiding the group takes the divider with it.
+      margin-left: 12px;
+      padding-left: 14px;
+      align-self: stretch;
 
       // Native select is sized for dialogs (100% wide, 34px). Shrink it to
       // fit the value and sit as a compact toolbar control; the arrow stays.

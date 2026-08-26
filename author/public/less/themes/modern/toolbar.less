@@ -22,6 +22,12 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.07), inset 0 -3px 0 #f2c94c;
 }
 
+// Divider between the cell actions and this setting - a hairline, not a second
+// piece of chrome. Spacing for it is in layout/toolbar.less.
+#editorgroup_cell_visibility {
+    border-left: 1px solid rgba(var(--text-color), 0.15);
+}
+
 // Sheet-visibility select: flat on the tinted edit bar - transparent fill,
 // a faint hairline that firms up on hover and turns to the tint on focus.
 #editorgroup_cell_visibility .cellVisibilitySelect {

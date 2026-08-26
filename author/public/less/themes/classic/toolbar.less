@@ -13,6 +13,12 @@
 
 // Sheet-visibility select: flat on the tinted edit bar - transparent fill,
 // a faint hairline that firms up on hover and turns to the tint on focus.
+// Divider between the cell actions and this setting - a hairline, not a second
+// piece of chrome. Spacing for it is in layout/toolbar.less.
+#editorgroup_cell_visibility {
+    border-left: 1px solid rgba(var(--text-color), 0.15);
+}
+
 #editorgroup_cell_visibility .cellVisibilitySelect {
     background-color: transparent;
     border: 1px solid rgba(var(--text-color), 0.20);
