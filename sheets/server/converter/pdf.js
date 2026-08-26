@@ -32,7 +32,7 @@ module.exports = {
       await page.emulateMediaType('screen')
       await page.goto(url)
       await page.waitForFunction(() =>  mathMLdone === true)
-      return await page.pdf({
+      const pdf = await page.pdf({
         format: 'A4',
         displayHeaderFooter: true,
         printBackground: true,
@@ -45,6 +45,10 @@ module.exports = {
           top: 60,
         }
       });
+      // puppeteer >=23 returns a Uint8Array, not a Buffer. Express res.send()
+      // treats a non-Buffer as an object and JSON-serializes it (under the
+      // application/pdf header) - a corrupt download. Normalize for every caller.
+      return Buffer.from(pdf)
     }
     finally {
       // Always, not just on success - a failed render used to leak the browser.
