@@ -101,6 +101,18 @@ async function scopeIdByPath(path, authHeaders) {
   return j.scopeRef
 }
 
+// Resolve a scope path as it appears in REST responses (prefix stripped, e.g.
+// "apps") back to a scopeRef. Returns null when the scope is unknown - a backup
+// may name a workspace that no longer exists, and that must not throw.
+async function scopeIdByRelPath(relPath, authHeaders) {
+  if (!relPath) return null
+  try {
+    return await scopeIdByPath(`${CONTENT_SCOPE_PATH}/${relPath}`, authHeaders)
+  } catch {
+    return null
+  }
+}
+
 // The app-root scope (electra/content/apps) — the shared, app-owned content.
 async function appRootId(authHeaders) {
   return scopeIdByPath(APP_SCOPE_PATH, authHeaders)
@@ -134,5 +146,6 @@ module.exports = {
   appRootId,
   contentRootId,
   personalWorkspaceId,
+  scopeIdByRelPath,
   pickAuthHeaders,
 }

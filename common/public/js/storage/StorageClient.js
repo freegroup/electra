@@ -49,22 +49,32 @@ class StorageClient {
   // -> { id, version, path }
   // scopeRef (optional) targets a brand-new document at a chosen workspace;
   // ignored once the document has an id (its scope is then fixed).
-  // preview (optional) is a { contentType, base64 } thumbnail the caller already
-  // has - the backup import carries one, and passing it saves the server from
-  // re-rendering a picture it was just given.
-  save({ id, name, content, scopeRef, preview }) {
-    return axios.post(`${this.base}/file`, { id, name, content, scopeRef, preview })
+  save({ id, name, content, scopeRef }) {
+    return axios.post(`${this.base}/file`, { id, name, content, scopeRef })
       .then((response) => response.data)
   }
 
   // --- backup ---------------------------------------------------------------
 
-  // The backup package for the given documents, assembled server-side (one
-  // request instead of one per version). Lossless: every version plus its
-  // preview blob. -> { format, formatVersion, fileSuffix, exportedAt, files }
-  exportFiles(ids) {
-    return axios.post(`${this.base}/export`, { ids })
-      .then((response) => response.data)
+  // The backup package for the given documents. The server assembles, compresses
+  // and names it; this side only ever sees bytes, so the package format can
+  // change without touching the browser.
+  // -> { blob, filename }
+  backupFiles(ids) {
+    return axios.post(`${this.base}/backup`, { ids }, { responseType: "blob" })
+      .then((response) => ({
+        blob: response.data,
+        filename: filenameFromDisposition(response.headers["content-disposition"]),
+      }))
+  }
+
+  // Send a package file back. The server unpacks it and writes the documents,
+  // for the same reason: only one side needs to know the format.
+  // -> { imported, moved }
+  importPackage(file) {
+    return axios.post(`${this.base}/import`, file, {
+      headers: { "Content-Type": "application/octet-stream" },
+    }).then((response) => response.data)
   }
 
   // --- sharing -------------------------------------------------------------
@@ -149,6 +159,13 @@ class StorageClient {
       .filter((seg) => seg.length > 0)
       .join("/")
   }
+}
+
+// The server names the download; fall back to a generic name if the header is
+// missing (a proxy may drop it).
+function filenameFromDisposition(header) {
+  let m = /filename="?([^";]+)"?/.exec(header || "")
+  return m ? m[1] : "electra-backup.electra"
 }
 
 export default conf => new StorageClient(conf)

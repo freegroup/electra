@@ -216,25 +216,17 @@ export default class DraftScreen {
   }
 
   // --- backup / import ------------------------------------------------------
+  //
+  // Both directions are the server's job: it assembles and compresses the
+  // package, and it unpacks and writes it back. This screen only moves bytes and
+  // never parses the format - so the format can change without touching here.
 
-  // The bucket this app owns inside a backup package: ".sheet" -> "sheets".
-  // Derived from the suffix, so it matches what the backend writes.
-  backupKind() {
-    return `${(this.conf.fileSuffix || "").replace(".", "")}s`
-  }
-
-  // The package is assembled server-side; here it only becomes a download.
   backupSelection() {
     if (!this.app.requireLogin()) return Promise.resolve()
     let $host = $("#draft .draftFinder .storageList").addClass("spinner")
-    return this.storage.exportFiles([...this.selection])
-      .then((pkg) => {
-        let stamp = new Date().toISOString().slice(0, 10)
-        // "electra-sheets-2026-08-26.electra": the content is in the NAME, the
-        // type in the extension. Naming the file ".sheets" instead would sit one
-        // letter away from a ".sheet" document - unreadable in a file manager,
-        // which is the one place this name has to work.
-        this.download(`electra-${this.backupKind()}-${stamp}.electra`, JSON.stringify(pkg, null, 2))
+    return this.storage.backupFiles([...this.selection])
+      .then(({ blob, filename }) => {
+        this.download(filename, blob)
         this.clearSelection()
       })
       .catch((err) => {
@@ -244,8 +236,8 @@ export default class DraftScreen {
       .finally(() => $host.removeClass("spinner"))
   }
 
-  download(filename, text) {
-    let url = URL.createObjectURL(new Blob([text], { type: "application/json" }))
+  download(filename, blob) {
+    let url = URL.createObjectURL(blob)
     let a = Object.assign(document.createElement("a"), { href: url, download: filename })
     document.body.appendChild(a)
     a.click()
@@ -253,50 +245,18 @@ export default class DraftScreen {
     URL.revokeObjectURL(url)
   }
 
-  // Additive: every file in the package is written at its own path. The write
-  // goes through the normal save path, so an existing document gains a version
-  // and a missing one is created - and the usual approval rules still apply.
   importPackage(file) {
     if (!this.app.requireLogin()) return Promise.resolve()
-    return file.text()
-      .then((text) => {
-        let pkg = JSON.parse(text)
-        if (pkg?.format !== "electra-backup") {
-          throw new Error("not a backup")
-        }
-        // Take this app's bucket and ignore the others: a package holding
-        // several document kinds stays usable here instead of being rejected.
-        let files = pkg[this.backupKind()]
-        if (!Array.isArray(files) || files.length === 0) {
-          throw new Error("nothing for this app")
-        }
-        // Sequentially, not in parallel: each write is a version bump on the
-        // server, and a burst of them races for the same document.
-        return files.reduce((chain, f) => chain.then((n) => {
-          let newest = this.newestVersion(f)
-          if (!newest) return n
-          // The package carries the thumbnail; hand it over so the imported
-          // document has its preview at once instead of waiting for a re-render.
-          return this.storage
-            .save({ name: f.path, content: newest.data, preview: newest.blobs?.preview })
-            .then(() => n + 1)
-        }), Promise.resolve(0))
-      })
-      .then((count) => {
-        toast(t("common:message.import_done", { count }))
+    let $host = $("#draft .draftFinder .storageList").addClass("spinner")
+    return this.storage.importPackage(file)
+      .then(({ imported }) => {
+        toast(t("common:message.import_done", { count: imported }))
         this.reload()
       })
       .catch((err) => {
         console.log(err)
         toast(t("common:message.import_failed"))
       })
-  }
-
-  // Stage 1 replays only the newest committed version; the package keeps the
-  // full history for a later, exact restore.
-  newestVersion(file) {
-    let versions = (file.versions || []).filter((v) => v.status === "committed")
-    if (versions.length === 0) return null
-    return versions.reduce((a, b) => (b.version > a.version ? b : a))
+      .finally(() => $host.removeClass("spinner"))
   }
 }

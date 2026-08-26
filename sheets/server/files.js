@@ -9,59 +9,12 @@
 // Uniform item: { id, name, path, providedBy, version, editable, published,
 //                 instanceType, original, thumbnailUrl }
 
+const bodyParser = require("body-parser")
 const db = require("./db")
+const backup = require("./backup")
+const preview = require("./preview")
 const conf = require("./configuration")
-
-// This app backend owns exactly one document type, identified by file suffix
-// (.sheet). All app backends share ONE content scope, so the suffix — not the
-// scope — is what separates the types. We enforce it on BOTH sides:
-//   read  — the finder lists only matching docs; opening a foreign type 404s
-//   write — save/rename force the suffix so nothing else can land here
-const SUFFIX = conf.fileSuffix // e.g. ".sheet"
-
-function hasSuffix(docPath) {
-  return !SUFFIX || (typeof docPath === "string" && docPath.endsWith(SUFFIX))
-}
-
-// Force the app's suffix onto a document name (used on save/rename). Idempotent.
-function withSuffix(name) {
-  const n = sanitizePath(name)
-  if (!SUFFIX || n.endsWith(SUFFIX)) return n
-  return n + SUFFIX
-}
-
-// The preview image is stored as a blob on the version, under this key — not
-// inside `data`. A thumbnail is an image, so it is served as one: raw bytes with
-// a content type, from a row that a bulk read never touches.
-const PREVIEW_KEY = "preview"
-
-// Bucket this app's documents live in inside a backup package: ".sheet" ->
-// "sheets". Derived, so the suffix stays the single source of truth.
-const BACKUP_KIND = `${SUFFIX.replace(".", "")}s`
-
-// The preview blob of one version, base64-encoded for the backup package.
-// Best-effort: a version without a preview (or one whose blob has gone) must
-// not fail the export - the image is derivable from the document anyway.
-async function previewBlob(uuid, auth) {
-  if (!uuid) return {}
-  try {
-    const r = await db.raw(
-      "GET",
-      `/database/docs/${encodeURIComponent(uuid)}/blobs/${PREVIEW_KEY}`,
-      { authHeaders: auth }
-    )
-    const bytes = Buffer.from(await r.arrayBuffer())
-    if (bytes.length === 0) return {}
-    return {
-      [PREVIEW_KEY]: {
-        contentType: r.headers.get("content-type") || "image/png",
-        base64: bytes.toString("base64"),
-      },
-    }
-  } catch {
-    return {}
-  }
-}
+const { hasSuffix, withSuffix } = require("./paths")
 
 // Display name of whoever last committed a version. personRef is the plain
 // email (database/server/auth.js), and only the part before the @ leaves the
@@ -167,7 +120,7 @@ function init(app) {
       const auth = db.pickAuthHeaders(req)
       const { scopeRef, path } = db.decodeId(req.query.id)
       if (!hasSuffix(path)) {
-        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+        return res.status(404).json({ error: { message: `not a ${conf.fileSuffix} document` } })
       }
       const v = req.query.version ? `&version=${encodeURIComponent(req.query.version)}` : ""
       const doc = await db.call(
@@ -187,7 +140,7 @@ function init(app) {
       // The preview image lives inside the document (content.image) so it stays
       // an atomic unit with the doc — but it's large and the editor doesn't need
       // it on open. Strip it here; it's served separately via /sheets/thumb.
-      res.json({ ...item, personal: loc.personal, content: withoutPreview(doc.data) })
+      res.json({ ...item, personal: loc.personal, content: preview.withoutImage(doc.data) })
     } catch (err) {
       fail(res, err)
     }
@@ -203,7 +156,7 @@ function init(app) {
       const auth = db.pickAuthHeaders(req)
       const path = withSuffix(req.query.path || "")
       if (!hasSuffix(path)) {
-        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
+        return res.status(404).json({ error: { message: `not a ${conf.fileSuffix} document` } })
       }
       const rootId = await db.appRootId(auth)
       res.json({ id: db.encodeId(rootId, path) })
@@ -222,7 +175,7 @@ function init(app) {
   app.post("/sheets/file", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, name, content, scopeRef: chosenScope, preview } = req.body || {}
+      const { id, name, content, scopeRef: chosenScope } = req.body || {}
       let scopeRef, path
       if (id) {
         const decoded = db.decodeId(id)
@@ -243,7 +196,7 @@ function init(app) {
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}`,
         // Never let an image back into `data` — the preview is a blob, written
         // by generatePreview below.
-        { authHeaders: auth, body: { data: withoutPreview(content) } }
+        { authHeaders: auth, body: { data: preview.withoutImage(content) } }
       )
       // Re-read the effective version so the header shows where it now lives and
       // that it is a personal copy (the write landed in the caller's leaf). The
@@ -254,15 +207,6 @@ function init(app) {
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&_=${Date.now()}`,
         { authHeaders: auth }
       )
-      // A caller that brings its own preview (the import replays one from a
-      // backup) gets it stored as-is - BEFORE responding, so the caller's next
-      // list request already finds the thumbnail. It is a single write of bytes
-      // we were just handed; rendering the same picture again would launch a
-      // browser and leave the card blank for the seconds that takes.
-      if (preview && preview.base64) {
-        await storePreview({ auth, scopeRef, path, preview }).catch((e) =>
-          console.log(`[sheets] preview store failed: ${e && e.message}`))
-      }
       const loc = displayLocation(eff.scope, auth)
       res.json({
         id: db.encodeId(scopeRef, path),
@@ -271,35 +215,8 @@ function init(app) {
         providedBy: loc.scope,
         personal: loc.personal,
       })
-      // No preview supplied: render one (best-effort, after responding).
-      if (!(preview && preview.base64)) {
-        generatePreview({ auth, scopeRef, path }).catch((e) =>
-          console.log(`[sheets] preview generation failed: ${e && e.message}`))
-      }
-    } catch (err) {
-      fail(res, err)
-    }
-  })
-
-  // --- rename within the caller's leaf -------------------------------------
-  app.post("/sheets/file/rename", async (req, res) => {
-    try {
-      const auth = db.pickAuthHeaders(req)
-      const { id, name } = req.body || {}
-      const { scopeRef, path } = db.decodeId(id)
-      if (!hasSuffix(path)) {
-        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
-      }
-      // keep any directory prefix; only the leaf name changes
-      const slash = path.lastIndexOf("/")
-      const dir = slash === -1 ? "" : path.slice(0, slash + 1)
-      const newPath = dir + withSuffix(name)
-      const r = await db.call(
-        "POST",
-        `/database/scopes/${scopeRef}/docs/rename`,
-        { authHeaders: auth, body: { path, newPath } }
-      )
-      res.json({ id: db.encodeId(scopeRef, r.path || newPath) })
+      // Refresh the preview thumbnail (best-effort, after responding).
+      preview.refresh({ auth, scopeRef, path })
     } catch (err) {
       fail(res, err)
     }
@@ -370,73 +287,36 @@ function init(app) {
     }
   })
 
-  // --- backup export --------------------------------------------------------
-  // Assembles the whole package server-side: the client only sends the list of
-  // documents it wants. Doing it here keeps the browser from firing one request
-  // per version. Lossless on purpose (every version plus its preview blob), even
-  // though today's additive import only replays the newest one - a backup taken
-  // now must still be enough for a later, exact restore.
-  //
-  // Every read goes through the caller's auth headers, so the export can never
-  // contain more than the caller may already read.
-  app.post("/sheets/export", async (req, res) => {
+  // --- backup ---------------------------------------------------------------
+  // The package is assembled, compressed and named in backup.js; this hands the
+  // bytes to the browser.
+  app.post("/sheets/backup", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const ids = (req.body || {}).ids
-      if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ error: { message: "no documents selected" } })
-      }
-
-      const files = []
-      for (const id of ids) {
-        const { scopeRef, path } = db.decodeId(id)
-        if (!hasSuffix(path)) continue
-
-        const hist = await db.call(
-          "GET",
-          `/database/scopes/${scopeRef}/docs/history?path=${encodeURIComponent(path)}`,
-          { authHeaders: auth }
-        )
-        const versions = []
-        let scopePath = null
-        for (const h of (hist.history || []).slice().sort((a, b) => a.version - b.version)) {
-          // The per-version read is what yields both `data` and the version's
-          // uuid - and the uuid is what addresses its preview blob.
-          const doc = await db.call(
-            "GET",
-            `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&version=${h.version}`,
-            { authHeaders: auth }
-          )
-          versions.push({
-            version: h.version,
-            status: h.status,
-            createdAt: h.createdAt,
-            author: doc.author ?? null,
-            uuid: doc.uuid ?? null,
-            data: doc.data ?? {},
-            blobs: await previewBlob(doc.uuid, auth),
-          })
-          scopePath = scopePath ?? doc.scope ?? null
-        }
-        // The scope as a readable PATH, never its id - ids are local to one
-        // database, so an id would be meaningless on another system. Today's
-        // additive import ignores this and always writes to the caller's own
-        // workspace; an exact restore later needs to know where it came from,
-        // and the same path can exist in several scopes at once.
-        files.push({ path, scope: scopePath, versions })
-      }
-
-      // Documents are grouped by kind ("sheets", "brains", ...) even though this
-      // backend only ever fills one bucket. A backup file outlives the code that
-      // wrote it: once a full per-user export exists, it drops into the same
-      // shape instead of forcing a second format - and an app reading a package
-      // simply takes its own bucket and leaves the rest alone.
-      res.json({
-        format: "electra-backup",
-        formatVersion: 1,
-        exportedAt: new Date().toISOString(),
-        [BACKUP_KIND]: files,
+      const gz = await backup.create({ auth, ids: (req.body || {}).ids })
+      res.set({
+        "Content-Type": "application/gzip",
+        "Content-Length": gz.length,
+        "Content-Disposition": `attachment; filename="${backup.filename()}"`,
       })
+      res.send(gz)
+    } catch (err) {
+      fail(res, err)
+    }
+  })
+
+  // Takes the package as raw bytes; unpacking and writing happen in backup.js.
+  // Documents that arrived without a thumbnail get one rendered afterwards, so
+  // the response is not held up by a browser start per document.
+  app.post("/sheets/import", bodyParser.raw({ type: "*/*", limit: "50mb" }), async (req, res) => {
+    try {
+      const auth = db.pickAuthHeaders(req)
+      const { imported, moved, needPreview } = await backup.restoreAdditive({
+        auth,
+        pkg: backup.parse(req.body),
+      })
+      res.json({ imported, moved })
+      needPreview.forEach(({ scopeRef, path }) => preview.refresh({ auth, scopeRef, path }))
     } catch (err) {
       fail(res, err)
     }
@@ -474,8 +354,7 @@ function init(app) {
       )
       res.json({ status: r.status })
       // The promoted (shared) version needs its own preview. Best-effort.
-      generatePreview({ auth, scopeRef, path }).catch((e) =>
-        console.log(`[sheets] preview generation failed: ${e && e.message}`))
+      preview.refresh({ auth, scopeRef, path })
     } catch (err) {
       fail(res, err)
     }
@@ -518,8 +397,7 @@ function init(app) {
         { authHeaders: auth, body }
       )
       // Best-effort preview refresh (also covered by save; harmless here).
-      generatePreview({ auth, scopeRef, path }).catch((e) =>
-        console.log(`[sheets] preview generation failed: ${e && e.message}`))
+      preview.refresh({ auth, scopeRef, path })
       res.json({ url: `../sheets/public/${r.publicId}`, publicId: r.publicId, version: r.version })
     } catch (err) {
       fail(res, err)
@@ -561,49 +439,9 @@ function init(app) {
     }
   })
 
-  // --- review queue ---------------------------------------------------------
-  app.get("/sheets/reviews", async (req, res) => {
-    try {
-      const auth = db.pickAuthHeaders(req)
-      const group = req.query.group
-      if (!group) return res.json({ items: [] })
-      const j = await db.call("GET", `/database/scopes/${group}/pending`, { authHeaders: auth })
-      const items = (j.pending || []).map((p) => ({
-        ...toItem({ scopeRef: group, docPath: p.path, version: p.version }),
-        approvalScore: p.approvalScore,
-        requiredApprovalScore: p.requiredApprovalScore,
-      }))
-      res.json({ items })
-    } catch (err) {
-      fail(res, err)
-    }
-  })
-
-  app.post("/sheets/reviews/approve", (req, res) => reviewVote(req, res, "approve"))
-  app.post("/sheets/reviews/reject", (req, res) => reviewVote(req, res, "reject"))
-
-  async function reviewVote(req, res, decision) {
-    try {
-      const auth = db.pickAuthHeaders(req)
-      const { id, version, reason } = req.body || {}
-      const { scopeRef, path } = db.decodeId(id)
-      await db.call(
-        "POST",
-        `/database/scopes/${scopeRef}/pending/${decision}`,
-        { authHeaders: auth, body: { path, version, reason } }
-      )
-      res.json({ ok: true })
-    } catch (err) {
-      fail(res, err)
-    }
-  }
-
-  // --- preview thumbnail ----------------------------------------------------
-  // Author docs have no client-side preview; the preview is a puppeteer
-  // screenshot (generatePreview) refreshed on every save/promote/publish and
-  // stored as a "preview" blob on the version (walk-up resolved by the DB).
-  // Stream it here.
-  // --- fetch one document by UUID (for review + thumbnail) ----------------
+  // --- one document by uuid -------------------------------------------------
+  // Serves the content of exactly that version. The review pane reads a pending
+  // version this way, which the walk-up by path would never surface.
   app.get("/sheets/file/doc", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
@@ -627,7 +465,7 @@ function init(app) {
       // out of it and then ask again.
       const dbRes = await db.raw(
         "GET",
-        `/database/docs/${encodeURIComponent(req.query.uuid)}/blobs/${PREVIEW_KEY}`,
+        `/database/docs/${encodeURIComponent(req.query.uuid)}/blobs/${preview.KEY}`,
         { authHeaders: auth }
       )
       const ct = dbRes.headers.get("content-type")
@@ -688,80 +526,16 @@ function init(app) {
   })
 }
 
-// Store a preview the caller brought along (backup import) as the version's
-// blob - same target as generatePreview, minus the browser.
-async function storePreview({ auth, scopeRef, path, preview }) {
-  const bytes = Buffer.from(preview.base64, "base64")
-  if (bytes.length === 0) return
-  await db.raw(
-    "PUT",
-    `/database/scopes/${scopeRef}/blobs/${PREVIEW_KEY}?path=${encodeURIComponent(path)}`,
-    { authHeaders: auth, rawBody: bytes, contentType: preview.contentType || "image/png" }
-  )
-}
-
-// Render the page with puppeteer and store the PNG as a "preview" blob on the
-// caller's version. Uses a short-lived render token (no publish needed): the
-// headless browser loads the doc login-free via ?rtoken=. Best-effort.
-async function generatePreview({ auth, scopeRef, path }) {
-  const die = require("./utils/die")
-  const PORT_INGRESS = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS")
-  const os = require("os")
-  const fs = require("fs")
-  const nodePath = require("path")
-  const { render } = require("./converter/screenshot")
-
-  // Mint a render token for this exact doc (walk-up resolved server-side).
-  const { token } = await db.call(
-    "POST",
-    `/database/scopes/${scopeRef}/docs/render-token`,
-    { authHeaders: auth, body: { path } }
-  )
-  const url = `http://localhost:${PORT_INGRESS}/author/page.html?rtoken=${encodeURIComponent(token)}&mode=worksheet`
-  const tmp = nodePath.join(os.tmpdir(), `sheet-preview-${Date.now()}.png`)
-  await render(url, tmp)
-  try {
-    const png = fs.readFileSync(tmp)
-    await db.raw(
-      "PUT",
-      `/database/scopes/${scopeRef}/blobs/preview?path=${encodeURIComponent(path)}`,
-      { authHeaders: auth, rawBody: png, contentType: "image/png" }
-    )
-  } finally {
-    try { fs.unlinkSync(tmp) } catch { /* ignore */ }
-  }
-}
-
-// Returns a shallow copy of a document's data with the (large) preview image
-// removed. Only documents written before the move to blobs still carry one;
-// this keeps them from shipping it on every open. Can go once the backfill has
-// run everywhere (bin/backfill-previews.js).
-function withoutPreview(data) {
-  if (!data || typeof data !== "object") return data
-  if (data.image === undefined) return data
-  const { image, ...rest } = data
-  return rest
-}
-
-// Strip unsafe characters from a document name (path separators, control chars,
-// collapsed dot runs). Does NOT touch the suffix — that's withSuffix's job.
-// Sanitize ONE path segment (no "/"): strip separators / control chars, collapse
-// dot runs.
-function sanitizeSegment(seg) {
-  return String(seg || "").trim().replace(/[/\\\x00-\x1f]/g, "").replace(/\.\.+/g, ".")
-}
-function sanitizeName(name) {
-  return sanitizeSegment(name) || "untitled"
-}
-// Path-aware: doc_path is a virtual DB key, so keep "/" as a separator and clean
-// each segment, dropping empty ones (leading/trailing/double slashes).
-function sanitizePath(name) {
-  const segs = String(name || "").split("/").map(sanitizeSegment).filter(Boolean)
-  return segs.join("/") || "untitled"
-}
-
+// Name of a downloaded backup: "electra-sheets-2026-08-27.electra". The content
+// is in the NAME and the type in the EXTENSION - calling the file ".sheets"
+// would sit one letter away from a ".sheet" document, which is unreadable in
+// the one place the name has to work: a file manager.
 function fail(res, err) {
-  const code = err && err.statusCode ? err.statusCode : 500
+  // Unusable input from the backup module is a client error; everything else
+  // that carries no status is ours.
+  let code = 500
+  if (err instanceof backup.InvalidInput) code = 400
+  else if (err && err.statusCode) code = err.statusCode
   console.log(`[sheets/files] ${code}: ${err && err.message}`)
   res.status(code).json({ error: { message: err && err.message } })
 }

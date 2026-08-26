@@ -253,30 +253,6 @@ function init(app) {
     }
   })
 
-  // --- rename within the caller's leaf -------------------------------------
-  app.post("/brains/file/rename", async (req, res) => {
-    try {
-      const auth = db.pickAuthHeaders(req)
-      const { id, name } = req.body || {}
-      const { scopeRef, path } = db.decodeId(id)
-      if (!hasSuffix(path)) {
-        return res.status(404).json({ error: { message: `not a ${SUFFIX} document` } })
-      }
-      // keep any directory prefix; only the leaf name changes
-      const slash = path.lastIndexOf("/")
-      const dir = slash === -1 ? "" : path.slice(0, slash + 1)
-      const newPath = dir + withSuffix(name)
-      const r = await db.call(
-        "POST",
-        `/database/scopes/${scopeRef}/docs/rename`,
-        { authHeaders: auth, body: { path, newPath } }
-      )
-      res.json({ id: db.encodeId(scopeRef, r.path || newPath) })
-    } catch (err) {
-      fail(res, err)
-    }
-  })
-
   // --- delete (local tombstone) --------------------------------------------
   app.delete("/brains/file", async (req, res) => {
     try {
