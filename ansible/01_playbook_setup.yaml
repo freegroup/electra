@@ -120,9 +120,13 @@
         - libxdamage1 
         - libxfixes3 
         - libxrandr2 
-        - libgbm1 
+        - libgbm1
         - libpango-1.0-0
         - libcairo2
+        # ALSA runtime lib the downloaded Chrome links against. Missing it, the
+        # sheets PDF export died with "libasound.so.2: cannot open shared object
+        # file". On Ubuntu 24.04 the package is the t64 name, not libasound2.
+        - libasound2t64
       # present, NOT latest: "latest" would upgrade node and 16 system libraries
       # on every run of this playbook, so re-running it on a live server could
       # pull in a new node major and take the whole stack down. Upgrades are a
