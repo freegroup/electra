@@ -107,6 +107,11 @@
     apt:
       name:
         - git
+        # puppeteer's @puppeteer/browsers extracts the downloaded Chrome zip via
+        # the system unzip. Missing it, extraction fails and leaves a partial
+        # (folder present, binary missing) - the sheets PDF/shapes thumbnail
+        # Chrome then never runs.
+        - unzip
         - libnss3
         - libharfbuzz-bin
         - libharfbuzz-dev
