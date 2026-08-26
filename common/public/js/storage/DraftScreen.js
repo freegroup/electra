@@ -275,7 +275,11 @@ export default class DraftScreen {
         return files.reduce((chain, f) => chain.then((n) => {
           let newest = this.newestVersion(f)
           if (!newest) return n
-          return this.storage.save({ name: f.path, content: newest.data }).then(() => n + 1)
+          // The package carries the thumbnail; hand it over so the imported
+          // document has its preview at once instead of waiting for a re-render.
+          return this.storage
+            .save({ name: f.path, content: newest.data, preview: newest.blobs?.preview })
+            .then(() => n + 1)
         }), Promise.resolve(0))
       })
       .then((count) => {

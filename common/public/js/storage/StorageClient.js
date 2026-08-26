@@ -49,8 +49,11 @@ class StorageClient {
   // -> { id, version, path }
   // scopeRef (optional) targets a brand-new document at a chosen workspace;
   // ignored once the document has an id (its scope is then fixed).
-  save({ id, name, content, scopeRef }) {
-    return axios.post(`${this.base}/file`, { id, name, content, scopeRef })
+  // preview (optional) is a { contentType, base64 } thumbnail the caller already
+  // has - the backup import carries one, and passing it saves the server from
+  // re-rendering a picture it was just given.
+  save({ id, name, content, scopeRef, preview }) {
+    return axios.post(`${this.base}/file`, { id, name, content, scopeRef, preview })
       .then((response) => response.data)
   }
 

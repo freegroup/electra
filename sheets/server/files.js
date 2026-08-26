@@ -222,7 +222,7 @@ function init(app) {
   app.post("/sheets/file", async (req, res) => {
     try {
       const auth = db.pickAuthHeaders(req)
-      const { id, name, content, scopeRef: chosenScope } = req.body || {}
+      const { id, name, content, scopeRef: chosenScope, preview } = req.body || {}
       let scopeRef, path
       if (id) {
         const decoded = db.decodeId(id)
@@ -254,6 +254,15 @@ function init(app) {
         `/database/scopes/${scopeRef}/docs?path=${encodeURIComponent(path)}&_=${Date.now()}`,
         { authHeaders: auth }
       )
+      // A caller that brings its own preview (the import replays one from a
+      // backup) gets it stored as-is - BEFORE responding, so the caller's next
+      // list request already finds the thumbnail. It is a single write of bytes
+      // we were just handed; rendering the same picture again would launch a
+      // browser and leave the card blank for the seconds that takes.
+      if (preview && preview.base64) {
+        await storePreview({ auth, scopeRef, path, preview }).catch((e) =>
+          console.log(`[sheets] preview store failed: ${e && e.message}`))
+      }
       const loc = displayLocation(eff.scope, auth)
       res.json({
         id: db.encodeId(scopeRef, path),
@@ -262,9 +271,11 @@ function init(app) {
         providedBy: loc.scope,
         personal: loc.personal,
       })
-      // Refresh the preview thumbnail (best-effort, after responding).
-      generatePreview({ auth, scopeRef, path }).catch((e) =>
-        console.log(`[sheets] preview generation failed: ${e && e.message}`))
+      // No preview supplied: render one (best-effort, after responding).
+      if (!(preview && preview.base64)) {
+        generatePreview({ auth, scopeRef, path }).catch((e) =>
+          console.log(`[sheets] preview generation failed: ${e && e.message}`))
+      }
     } catch (err) {
       fail(res, err)
     }
@@ -675,6 +686,18 @@ function init(app) {
       fail(res, err)
     }
   })
+}
+
+// Store a preview the caller brought along (backup import) as the version's
+// blob - same target as generatePreview, minus the browser.
+async function storePreview({ auth, scopeRef, path, preview }) {
+  const bytes = Buffer.from(preview.base64, "base64")
+  if (bytes.length === 0) return
+  await db.raw(
+    "PUT",
+    `/database/scopes/${scopeRef}/blobs/${PREVIEW_KEY}?path=${encodeURIComponent(path)}`,
+    { authHeaders: auth, rawBody: bytes, contentType: preview.contentType || "image/png" }
+  )
 }
 
 // Render the page with puppeteer and store the PNG as a "preview" blob on the
