@@ -1,13 +1,11 @@
 // App switcher dropdown - MODERN.
 //
 // Mirror of themes/classic/appSwitch.less - started identical, edit freely.
-// The grid structure (display, position, visibility) stays in
-// layout/appSwitch.less; only the visible dimensions live here.
+// The raster (grid columns, panel width, icon and label sizing) is structure and
+// lives in layout/appSwitch.less - here are the colours, borders and the
+// distances between the tiles.
 .applicationSwitch .open .dropdown-menu {
     padding: 12px;
-    max-width: 340px;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-auto-rows: minmax(100px, auto);
     grid-gap: 12px;
 
     // Enlarge the shared .image-button only inside the switcher - the
@@ -19,16 +17,8 @@
         border: 2px solid transparent;
         border-radius: @borderRadiusSmall;
         transition: border-color 0.15s ease;
-        img,
-        svg {
-            height: 40px;
-        }
         div {
             font-size: 0.9em;
-            // Reserve two lines for every label so one- and two-line tiles are
-            // the same height - keeps icons and first text lines on one baseline
-            // across a row.
-            min-height: 2.4em;
         }
         &:hover {
             border-color: rgb(var(--tint-color));

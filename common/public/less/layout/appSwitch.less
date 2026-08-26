@@ -9,15 +9,33 @@
     }
   }
 
-  // Structure only - it is a right-aligned grid that toggles on .open.
-  // The tile dimensions, gaps and icon/label sizing are appearance and live
-  // in themes/{classic,modern}/appSwitch.less.
+  // Structure only - a right-aligned grid that toggles on .open. Colours,
+  // borders and the gaps between the tiles are appearance and live in
+  // themes/{classic,modern}/appSwitch.less.
   .open {
     .dropdown-menu{
       z-index: 10000;
       right:0;
       left: initial;
       display: grid;
+      // The raster itself: how wide the panel may get and how the tiles are
+      // laid out. Both themes had identical values, so nothing is lost by
+      // owning it once here.
+      max-width: 340px;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-auto-rows: minmax(100px, auto);
+
+      .image-button {
+        img,
+        svg {
+          height: 40px;
+        }
+        // Two lines reserved for every label, so one- and two-line tiles are
+        // the same height and the icons share a baseline across a row.
+        div {
+          min-height: 2.4em;
+        }
+      }
     }
   }
   .dropdown-menu{

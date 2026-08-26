@@ -44,7 +44,12 @@ const NAMED = new Set([
   "gold", "beige", "ivory", "coral", "salmon", "khaki", "orchid", "plum",
 ])
 
-const LAYOUT_PROPS = /^(display|position|top|right|bottom|left|width|height|min-width|max-width|min-height|max-height|margin(-|$)|flex(-|$)|grid(-|$)|float|clear|overflow(-|$)|z-index|align-|justify-|gap|row-gap|column-gap|order|box-sizing)/
+// The line is: SPACING is design, POSITION and SIZE are structure.
+// So margin, padding and the gaps (gap/row-gap/column-gap/grid-gap) may live in
+// a theme - a theme may want its tiles to breathe differently without reaching
+// into the layout. Everything that decides where a box sits or how big it gets
+// stays in layout/.
+const LAYOUT_PROPS = /^(display|position|top|right|bottom|left|width|height|min-width|max-width|min-height|max-height|flex(-|$)|grid(?!-gap)(-|$)|float|clear|overflow(-|$)|z-index|align-|justify-|order|box-sizing)/
 
 function walk(dir, out = []) {
   if (!fs.existsSync(dir)) return out
