@@ -18,6 +18,62 @@
     background-color: rgb(var(--surface-base));
     border: 1px solid rgb(var(--line-default));
     border-radius: @borderRadiusBig;
+}
+
+// --- the bands a page is built from ---------------------------------------
+// Where you are. Its own strip above the head, quiet and small.
+.crumbs {
+    background-color: rgb(var(--surface-base));
+    border-bottom: 1px solid rgb(var(--line-default));
+    padding: 10px @contentToEdgePadding;
+    gap: 10px;
+    font-size: 14px;
+    color: rgb(var(--text-muted));
+
+    // A trail, not a call to action - it stays quiet until hovered.
+    a {
+        color: rgb(var(--text-muted));
+        text-decoration: none;
+
+        &:hover {
+            color: rgb(var(--accent));
+            text-decoration: underline;
+        }
+    }
+
+    .sep {
+        color: rgb(var(--text-disabled));
+    }
+}
+
+// Who this is. A shade darker than the content below, so the title reads as a
+// header rather than as the first paragraph.
+.docHead {
+    background-color: rgb(var(--surface-recessed));
+    border-bottom: 1px solid rgb(var(--line-default));
+    padding: @contentToEdgePadding;
+    gap: 4px;
+
+    h1 {
+        margin: 0;
+    }
+
+    .lead {
+        color: rgb(var(--text-muted));
+        margin: 0;
+    }
+}
+
+// What you can do with it. One button today, room for more.
+.docToolbar {
+    background-color: rgb(var(--surface-base));
+    border-bottom: 1px solid rgb(var(--line-default));
+    gap: @buttonSpacing;
+    padding: 10px @contentToEdgePadding;
+}
+
+// The content itself.
+.docBody {
     padding: @contentToEdgePadding;
 }
 

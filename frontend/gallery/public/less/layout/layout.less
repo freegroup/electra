@@ -31,6 +31,23 @@
 
 .galleryContent {
   min-width: 0;
+
+  // The bands inside run edge to edge, so the padding lives in each band and
+  // not here. overflow keeps their backgrounds inside the pane's rounded corner.
+  overflow: hidden;
+}
+
+// The bands a page is built from: where you are, who this is, what you can do,
+// and the content itself.
+.docHead {
+  display: flex;
+  flex-direction: column;
+}
+
+.docToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 // The rendered worksheet has its own file: layout/document.less (structure) and

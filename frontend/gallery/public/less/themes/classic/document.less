@@ -144,15 +144,25 @@
     }
 }
 
-// A component page: the symbol sits on its own quiet band, so it reads as the
-// component's portrait rather than as an image dropped into the text.
-.galleryPart {
+// A component's page head. The symbol gets a quiet plate so a line drawing does
+// not float against the pane, and the name/category column sits beside it.
+.partHead {
+    gap: 16px;
 
+    // Lighter than the head band it sits on, otherwise the plate would
+    // disappear into it.
     .partSymbol {
-        background-color: rgb(var(--surface-recessed));
+        background-color: rgb(var(--surface-base));
         border: 1px solid rgb(var(--line-default));
         border-radius: @borderRadiusBig;
-        margin: 0 0 24px;
-        padding: 16px;
+        padding: 10px;
     }
+
+    // The folder the component lives in, as a quiet line under the name.
+    .partCategory {
+        color: rgb(var(--text-muted));
+        font-size: var(--label-font-size);
+        margin-top: 2px;
+    }
+
 }

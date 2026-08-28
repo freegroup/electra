@@ -15,7 +15,7 @@ const branches = require("./render/branches")
 const { getIndexes, getSheet, getPartMarkdown, pathToSlug } = require("./render/list")
 const { renderTree } = require("./render/tree")
 const { renderPage, SITE } = require("./render/page")
-const { rootView, branchView, folderView, sheetView, partView } = require("./render/views")
+const { rootView, branchView, folderView, sheetView, partView, notFoundView } = require("./render/views")
 
 function die(msg){
     console.log(msg)
@@ -184,6 +184,28 @@ function docDescription(branch, name) {
 // Static assets (the client bundle, images). The ingress re-prepends the mount
 // prefix before forwarding, so the service sees /gallery/... and mounts there.
 app.use('/gallery', express.static(scriptPath+'/../public'));
+
+// Anything under /gallery that is neither a page nor a file. AFTER the static
+// handler on purpose - in front of it this would answer for the bundle too.
+//
+// A dead address still gets the whole gallery: tree, header, footer. Someone who
+// lands here from an old link is then one click from everything, instead of
+// looking at a bare error.
+app.use(/^\/gallery(\/.*)?$/, async (req, res) => {
+  let tree = ""
+  try {
+    tree = renderTree(await getIndexes(branches.ALL), { branch: null, currentPath: null })
+  } catch (err) {
+    // A tree is a nicety here; never let it turn the 404 into a 500.
+    console.log(`[gallery] tree for 404 unavailable: ${err && err.message}`)
+  }
+  res.status(404).send(renderPage({
+    title: "Seite nicht gefunden - Electra.Academy",
+    description: "Diese Seite gibt es nicht mehr.",
+    tree,
+    content: notFoundView(),
+  }))
+});
 
 // Start Server
 // "localhost" => Service ist nicht von ausserhalb aufrufbar.

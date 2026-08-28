@@ -7,18 +7,6 @@
   align-items: center;
 }
 
-.galleryHead {
-  h1 {
-    margin-top: 0;
-  }
-}
-
-.galleryActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
 .tileGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -65,5 +53,21 @@
       max-width: 100%;
       max-height: 100%;
     }
+  }
+}
+
+// The 404. Centred in the content pane, so a dead address still looks like a
+// page rather than an accident.
+.galleryNotFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 50vh;
+
+  // A readable measure for the one sentence of explanation.
+  p {
+    max-width: 46ch;
   }
 }

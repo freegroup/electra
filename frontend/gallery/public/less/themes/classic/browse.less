@@ -1,39 +1,5 @@
 // Breadcrumb, page heading and the tiles that lead into folders and worksheets.
 
-.crumbs {
-    font-size: var(--label-font-size);
-    color: rgb(var(--text-muted));
-    gap: 6px;
-    margin-bottom: @contentAreaSpacing;
-
-    a {
-        color: rgb(var(--text-muted));
-        text-decoration: none;
-
-        &:hover {
-            color: rgb(var(--accent));
-            text-decoration: underline;
-        }
-    }
-
-    .sep {
-        color: rgb(var(--text-disabled));
-    }
-}
-
-.galleryHead {
-    margin-bottom: @contentAreaSpacing;
-
-    .lead {
-        color: rgb(var(--text-muted));
-    }
-}
-
-.galleryActions {
-    gap: @buttonSpacing;
-    margin-top: @buttonSpacing;
-}
-
 .browseHead {
     font-size: calc(14px + 0.2vw);
     font-weight: 400;
@@ -104,5 +70,27 @@
     .tileCount {
         color: rgb(var(--text-muted));
         margin-left: 12px;
+    }
+}
+
+// The 404. The big number is scenery, so it stays quiet and lets the sentence
+// underneath do the talking.
+.galleryNotFound {
+
+    .notFoundCode {
+        color: rgb(var(--text-disabled));
+        font-size: calc(48px + 4vw);
+        font-weight: 200;
+        line-height: 1;
+    }
+
+    h1 {
+        font-weight: 300;
+        margin: 16px 0 8px;
+    }
+
+    p {
+        color: rgb(var(--text-muted));
+        margin: 0 0 24px;
     }
 }

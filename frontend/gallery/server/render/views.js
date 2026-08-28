@@ -122,7 +122,8 @@ function browseGrid(branch, items, folderPath) {
   return html
 }
 
-// The gallery root: the two branches, each as an entry tile.
+// The gallery root: the two branches, each as an entry tile. No breadcrumb -
+// this IS the top.
 function rootView(indexes) {
   const tiles = indexes
     .map(
@@ -133,11 +134,11 @@ function rootView(indexes) {
     )
     .join("")
   return (
-    `<header class="galleryHead">` +
-    `<h1 data-i18n="gallery:title">Galerie</h1>` +
-    `<p class="lead" data-i18n="gallery:lead">Fertige Arbeitsblätter und alle Bauteile - anschauen, laden oder weiterbauen.</p>` +
-    `</header>` +
-    `<section class="galleryBrowse"><ul class="tileGrid">${tiles}</ul></section>`
+    headBand(
+      `<h1 data-i18n="gallery:title">Galerie</h1>` +
+      `<p class="lead" data-i18n="gallery:lead">Fertige Arbeitsblätter und alle Bauteile - anschauen, laden oder weiterbauen.</p>`
+    ) +
+    bodyBand(`<section class="galleryBrowse"><ul class="tileGrid">${tiles}</ul></section>`)
   )
 }
 
@@ -145,8 +146,8 @@ function rootView(indexes) {
 function branchView(branch, items) {
   return (
     breadcrumb(branch, "") +
-    `<header class="galleryHead"><h1 data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</h1></header>` +
-    `<section class="galleryBrowse">${browseGrid(branch, items, "")}</section>`
+    headBand(`<h1 data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</h1>`) +
+    bodyBand(`<section class="galleryBrowse">${browseGrid(branch, items, "")}</section>`)
   )
 }
 
@@ -156,34 +157,52 @@ function folderView(branch, items, folderPath) {
   const parent = folderPath.includes("/") ? folderPath.slice(0, folderPath.lastIndexOf("/")) : ""
   return (
     breadcrumb(branch, parent, name) +
-    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1></header>` +
-    `<section class="galleryBrowse">${browseGrid(branch, items, folderPath)}</section>`
+    headBand(`<h1>${escapeHtml(name)}</h1>`) +
+    bodyBand(`<section class="galleryBrowse">${browseGrid(branch, items, folderPath)}</section>`)
   )
 }
 
-// Shared page head for a document: breadcrumb, title, action buttons.
-function docHeader(branch, slug, name, actions) {
-  const folderPath = slug.includes("/") ? slug.slice(0, slug.lastIndexOf("/")) : ""
-  return (
-    breadcrumb(branch, folderPath, name) +
-    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1>${actions}</header>`
-  )
+// Every page is built from the same four bands, so a worksheet, a component and
+// a folder all read the same way:
+//
+//   crumbs   where you are, clickable
+//   docHead  who this is - title, and for a component its symbol
+//   toolbar  what you can do with it
+//   body     the content itself
+//
+// They are separate bands rather than one block because the reader answers those
+// questions in that order, and because the toolbar will hold more than one
+// button before long.
+function headBand(inner) {
+  return `<header class="docHead">${inner}</header>`
+}
+
+function toolbarBand(actions) {
+  return actions ? `<div class="docToolbar">${actions}</div>` : ""
+}
+
+function bodyBand(inner) {
+  return `<div class="docBody">${inner}</div>`
 }
 
 // One worksheet: the rendered sheet, plus PDF and author links.
 function sheetView(branch, item, doc) {
   const slug = pathToSlug(branch, item.path)
   const name = slug.split("/").pop()
+  const folderPath = slug.includes("/") ? slug.slice(0, slug.lastIndexOf("/")) : ""
   const id = encodeURIComponent(item.id)
   const actions =
-    `<div class="galleryActions">` +
     `<a class="electra-button" href="../sheets/pdf?id=${id}&mode=all&lang=de" target="_blank" rel="noopener" data-i18n="gallery:action.pdf">PDF</a>` +
-    `<a class="electra-button electra-primary" href="../author/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.open">Im Autor öffnen</a>` +
-    `</div>`
+    `<a class="electra-button electra-primary" href="../author/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.open">Im Autor öffnen</a>`
   const body = doc
     ? renderDocument(doc)
     : `<p class="galleryEmpty" data-i18n="gallery:empty">Hier ist noch nichts.</p>`
-  return docHeader(branch, slug, name, actions) + `<div class="galleryDoc">${body}</div>`
+  return (
+    breadcrumb(branch, folderPath, name) +
+    headBand(`<h1>${escapeHtml(name)}</h1>`) +
+    toolbarBand(actions) +
+    bodyBand(`<div class="galleryDoc">${body}</div>`)
+  )
 }
 
 // One component: its symbol, its description, and the way into the designer.
@@ -196,14 +215,19 @@ function partView(branch, item, markdown) {
   const name = slug.split("/").pop()
   const id = encodeURIComponent(item.id)
   const actions =
-    `<div class="galleryActions">` +
-    `<a class="electra-button electra-primary" href="../designer/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.designer">Im Designer öffnen</a>` +
-    `</div>`
+    `<a class="electra-button electra-primary" href="../designer/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.designer">Im Symbol Editor öffnen</a>`
 
-  // The symbol is the component's identity, so it is named in the alt text
-  // rather than left decorative.
+  // The symbol sits NEXT TO the name, not above the text: it is the component's
+  // identity, the way an app icon is - and it is named in the alt text rather
+  // than left decorative.
   const symbol = item.thumbnailUrl
     ? `<figure class="partSymbol"><img src="${escapeHtml(item.thumbnailUrl)}" alt="Schaltsymbol ${escapeHtml(name)}"></figure>`
+    : ""
+
+  // The folder the component lives in, as a plain category line under the name.
+  const folderPath = slug.includes("/") ? slug.slice(0, slug.lastIndexOf("/")) : ""
+  const category = folderPath
+    ? `<div class="partCategory">${escapeHtml(folderPath.split("/").join(" / "))}</div>`
     : ""
 
   let body = ""
@@ -216,9 +240,28 @@ function partView(branch, item, markdown) {
   }
 
   return (
-    docHeader(branch, slug, name, actions) +
-    `<div class="galleryDoc galleryPart">${symbol}<div class="galleryPage">${body}</div></div>`
+    breadcrumb(branch, folderPath, name) +
+    headBand(
+      `<div class="partHead">${symbol}` +
+      `<div class="partHeadText"><h1>${escapeHtml(name)}</h1>${category}</div></div>`
+    ) +
+    toolbarBand(actions) +
+    bodyBand(`<div class="galleryDoc galleryPart"><div class="galleryPage">${body}</div></div>`)
   )
 }
 
-module.exports = { rootView, branchView, folderView, sheetView, partView }
+// A dead address inside the gallery. It gets the whole page - tree, header,
+// footer - so the visitor is not on a dead end but standing in the gallery with
+// everything else in reach.
+function notFoundView() {
+  return (
+    `<div class="galleryNotFound">` +
+    `<div class="notFoundCode">404</div>` +
+    `<h1 data-i18n="gallery:notfound.title">Hier ist eine Leitung unterbrochen.</h1>` +
+    `<p data-i18n="gallery:notfound.text">Die Seite gibt es nicht (mehr). Nebenan liegen Arbeitsblätter und Bauteile.</p>` +
+    `<a class="electra-button electra-primary" href="${BASE}/" data-i18n="gallery:notfound.back">Zur Galerie</a>` +
+    `</div>`
+  )
+}
+
+module.exports = { rootView, branchView, folderView, sheetView, partView, notFoundView }

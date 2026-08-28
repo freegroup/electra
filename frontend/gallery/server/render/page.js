@@ -28,11 +28,19 @@ function fill(html, token, value) {
 // `page` = { title, description, canonicalPath, tree, content }. canonicalPath
 // is the absolute in-site path (e.g. "/gallery/Logik/"); tree and content are
 // ready HTML.
+//
+// Leaving canonicalPath out means "this page stands for no address" - the 404 -
+// and then no canonical is written at all. og:url still needs a URL, so it falls
+// back to the gallery entrance.
 function renderPage(page) {
-  const canonical = SITE + page.canonicalPath
+  const canonical = SITE + (page.canonicalPath || "/gallery/")
+  const canonicalLink = page.canonicalPath
+    ? `<link rel="canonical" href="${escapeHtml(canonical)}">`
+    : ""
   let html = TEMPLATE
   html = fill(html, "<!--GALLERY_TITLE-->", escapeHtml(page.title))
   html = fill(html, "<!--GALLERY_DESCRIPTION-->", escapeHtml(page.description || ""))
+  html = fill(html, "<!--GALLERY_CANONICAL_LINK-->", canonicalLink)
   html = fill(html, "<!--GALLERY_CANONICAL-->", escapeHtml(canonical))
   html = fill(html, "<!--GALLERY_TREE-->", page.tree || "")
   html = fill(html, "<!--GALLERY_CONTENT-->", page.content || "")

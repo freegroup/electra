@@ -50,24 +50,29 @@
   }
 }
 
-// A component page: its schematic symbol above the description. The symbol is
-// small artwork (a few hundred pixels), so it is centred on a band of its own
-// rather than left to sit at the top of the text.
-.galleryPart {
+// A component's page head: the symbol NEXT TO the name, the way an app is
+// introduced by its icon. Name, category and the action sit in a column beside
+// it, so the eye gets the symbol and the word in one glance.
+.partHead {
+  display: flex;
+  align-items: flex-start;
 
   .partSymbol {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 140px;
-
-    // The same measure as the description below it, so the two share an edge
-    // instead of the band running wider than the text it belongs to.
-    max-width: 72ch;
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    margin: 0;
 
     img {
       max-width: 100%;
-      max-height: 220px;
+      max-height: 100%;
     }
+  }
+
+  .partHeadText {
+    min-width: 0;
   }
 }
