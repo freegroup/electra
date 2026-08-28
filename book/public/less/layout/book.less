@@ -18,6 +18,22 @@ body.bookBody {
     min-height: 100vh;
   }
 
+  // Kopfleiste: die Wortmarke ist eine Marke, keine Ueberschrift, damit je Seite
+  // allein der Kapiteltitel als H1 zaehlt. Groesse und Laufweite spiegeln die
+  // frueheren appbar-Titel, sodass sich optisch nichts aendert.
+  .appbar .title {
+    .brand {
+      font-size: 24px;
+      font-weight: 200;
+      letter-spacing: 6px;
+    }
+    .brandSub {
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 4px;
+    }
+  }
+
   main {
     flex: 1 1 auto;
     display: flex;
