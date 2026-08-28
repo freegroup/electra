@@ -2,11 +2,13 @@ import renderMode from "../../renderMode"
 
 import mdFactory from "../../../../common/js/markdown"
 
+// The cloze gap plugins live in common: both this editor and the gallery SSR
+// share them (frontend/common/public/js/cloze_*).
 let md_q = mdFactory()
-md_q.use(require('./question_plugin'))
+md_q.use(require('../../../../common/js/cloze_question_plugin'))
 
 let md_s  = mdFactory()
-md_s.use(require('./solution_plugin'))
+md_s.use(require('../../../../common/js/cloze_solution_plugin'))
 
 import MarkdownEditor from '../markdown/editor'
 

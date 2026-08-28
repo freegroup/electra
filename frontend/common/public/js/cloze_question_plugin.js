@@ -1,7 +1,11 @@
+// Shared cloze markdown-it plugin: worksheet view, blanks the [[gaps]].
+// Used by the author editor (editor/cloze/editor.js) and the gallery SSR.
 var MARKER_OPEN = '[';
 var MARKER_CLOSE = ']';
 var ESCAPE_CHARACTER = '\\';
 var TAG = 'span';
+// Narrowest gap. Without a floor [[x]] would be one character wide.
+var MIN_WIDTH = 8;
 
 /*
  * Add delimiters for double occurrences of MARKER_SYMBOL.
@@ -64,20 +68,17 @@ function tokenize(state, silent) {
     state.pos += 2;
     state.posMax = end;
 
-    // Verbatim, no markdown: a gap holds plain text. Type [[**NAND**]] anyway
-    // and the stars show up here - the mistake reveals itself instead of
-    // quietly passing as bold.
-    state.push('text', '', 0).content = state.src.slice(start + 2, end);
-
+    // Do NOT tokenize the content. What never enters the token stream cannot
+    // leak into the worksheet - [[**answer**]] did exactly that, because only
+    // the LAST token was blanked and that was the closing markup.
+    state.push('text', '', 0).content = "\u00A0".repeat(Math.max(end - (start + 2), MIN_WIDTH))
     state.pos = end + 2;
     state.posMax = max;
     // end tag
     state.push('kbd_close', TAG, -1);
     return true;
 }
-
 function kbdplugin(markdownit) {
     markdownit.inline.ruler.before('link', 'kbd', tokenize);
 }
-
 module.exports = kbdplugin;
