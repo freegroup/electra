@@ -43,7 +43,7 @@ const ICON = "/common/images/canvas_configure.svg"
 
 export default class SettingsSwitch {
 
-  constructor(permissions) {
+  constructor() {
     // In DIE Gruppe, die die Leiste schon hat - nicht in eine zweite eigene.
     // Frueher haengte sich dieser Schalter ein weiteres <span class="group">
     // an die Leiste, weil es zu seiner Entstehungszeit keinen vorgesehenen

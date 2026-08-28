@@ -1,4 +1,3 @@
-import axios from "axios"
 import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
 import jqueryI18next from "jquery-i18next"
@@ -76,12 +75,12 @@ $(window).load(function () {
     // session.load() is what lets GenericApplication know the caller is logged
     // in — without it the Draft/Review/Activity tabs stay hidden (they are
     // account-scoped) and Userinfo can't read the client id synchronously.
-    return Promise.all([axios.get("../permissions"), session.load(), authConfiguration.load()])
+    return Promise.all([session.load(), authConfiguration.load()])
   })
-  .then( ([response]) => {
+  .then( () => {
     // set the global scope for the "app" object
     app = require("./Application").default
-    return app.init(response.data)
+    return app.init()
   })
   .then( app => {
     $('body').localize(); 

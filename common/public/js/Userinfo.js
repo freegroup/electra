@@ -6,13 +6,13 @@ import inlineSVG from "./inlineSVG"
 
 export default class Userinfo {
 
-  constructor(permissions){
+  constructor(){
 
     // Without a client id there is no way to start a sign-in, so offering the
     // button would be a lie. Everything else on the page keeps working.
     const clientId = authConfiguration.getGoogleClientId()
 
-    if(permissions.featureset.authentication === false || !clientId){
+    if(!clientId){
       $(".userinfo_toggler").remove()
     }
     else {
@@ -36,7 +36,6 @@ export default class Userinfo {
         // itself so a broken fallback can't loop.
         let fallback = "../common/images/toolbar_user.svg"
         let icon = this.user.picture?this.user.picture:fallback
-        let role = this.user.role==="admin"?"(Administrator)":""
         let toWhiteFallback = function() {
           $(this).off("error.avatar")
             .addClass("svg")            // inlineSVG only converts img.svg
@@ -51,7 +50,6 @@ export default class Userinfo {
             <div class="userContainer">
               <img crossorigin="anonymous" src="${icon}" onerror="this.onerror=null;this.src='${fallback}'"/>
               <div>${this.user.displayName}</div>
-              <div>${role}</div>
             </div>
             <button class="userLogout electra-button" data-i18n="common:button.logout">${t("common:button.logout")}</button>
         `)

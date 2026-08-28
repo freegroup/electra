@@ -32,7 +32,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // content pages live at /home/de/… and /home/en/…, where the same relative path
 // would point at /home/common and 404. Absolute works from any depth.
 class AppSwitch {
-  constructor(permissions) {
+  constructor() {
     // <div>, nicht <label>: die drei Umschalter in der Leiste sollen dasselbe
     // Element sein. Ein <label> gehoert zu einem Formularfeld, hier gab es
     // keins - dafuer brachte es Regeln mit, die ein <div> nicht hat, und die
@@ -132,12 +132,7 @@ var _Userinfo = _interopRequireDefault(__webpack_require__(/*! ./Userinfo */ "..
 var _Header = _interopRequireDefault(__webpack_require__(/*! ./Header */ "../common/public/js/Header.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class ApplicationFrame {
-  constructor() {
-    this.permissions = null;
-  }
-  init(permissions, conf) {
-    this.permissions = permissions;
-
+  init(conf) {
     // Die Leiste zuerst - die drei Widgets darunter haengen sich in .appbar
     // ein, die muss also stehen. Slogan und Benutzermenue hat jeder Editor,
     // deshalb fest; seinen Namen holt sich Header aus data-subtitle am
@@ -147,9 +142,9 @@ class ApplicationFrame {
       slogan: true,
       userinfo: true
     });
-    this.userinfo = new _Userinfo.default(permissions);
-    this.appSwitch = new _AppSwitch.default(permissions);
-    this.settingsSwitch = new _SettingsSwitch.default(permissions);
+    this.userinfo = new _Userinfo.default();
+    this.appSwitch = new _AppSwitch.default();
+    this.settingsSwitch = new _SettingsSwitch.default();
   }
   getParam(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -483,7 +478,7 @@ const lngs = {
 // also means they would not follow a theme that changes the bar.
 const ICON = "/common/images/canvas_configure.svg";
 class SettingsSwitch {
-  constructor(permissions) {
+  constructor() {
     // In DIE Gruppe, die die Leiste schon hat - nicht in eine zweite eigene.
     // Frueher haengte sich dieser Schalter ein weiteres <span class="group">
     // an die Leiste, weil es zu seiner Entstehungszeit keinen vorgesehenen
@@ -614,17 +609,18 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
+var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs"));
 var _loadScript = _interopRequireDefault(__webpack_require__(/*! ./loadScript */ "../common/public/js/loadScript.js"));
 var _session = _interopRequireDefault(__webpack_require__(/*! ./session */ "../common/public/js/session.js"));
 var _authConfiguration = _interopRequireDefault(__webpack_require__(/*! ./authConfiguration */ "../common/public/js/authConfiguration.js"));
 var _inlineSVG = _interopRequireDefault(__webpack_require__(/*! ./inlineSVG */ "../common/public/js/inlineSVG.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class Userinfo {
-  constructor(permissions) {
+  constructor() {
     // Without a client id there is no way to start a sign-in, so offering the
     // button would be a lie. Everything else on the page keeps working.
     const clientId = _authConfiguration.default.getGoogleClientId();
-    if (permissions.featureset.authentication === false || !clientId) {
+    if (!clientId) {
       $(".userinfo_toggler").remove();
     } else {
       // The client id comes from the server (GET /auth/configuration) rather
@@ -647,7 +643,6 @@ class Userinfo {
         // itself so a broken fallback can't loop.
         let fallback = "../common/images/toolbar_user.svg";
         let icon = this.user.picture ? this.user.picture : fallback;
-        let role = this.user.role === "admin" ? "(Administrator)" : "";
         let toWhiteFallback = function () {
           $(this).off("error.avatar").addClass("svg") // inlineSVG only converts img.svg
           .attr("src", fallback);
@@ -659,9 +654,10 @@ class Userinfo {
             <div class="userContainer">
               <img crossorigin="anonymous" src="${icon}" onerror="this.onerror=null;this.src='${fallback}'"/>
               <div>${this.user.displayName}</div>
-              <div>${role}</div>
             </div>
+            <button class="userLogout electra-button" data-i18n="common:button.logout">${t("common:button.logout")}</button>
         `);
+        $(".userinfo_toggler .userLogout").on("click", () => this.logout());
       } else {
         $(".userinfo_toggler").each(function (i, element) {
           google.accounts.id.renderButton(element, {
@@ -676,6 +672,17 @@ class Userinfo {
   }
   getUser() {
     return this.user;
+  }
+  logout() {
+    // Google merkt sich sonst das Konto und waehlt es beim naechsten Besuch
+    // still wieder aus - abschalten, damit Logout auch wie Logout wirkt.
+    google.accounts.id.disableAutoSelect();
+    _axios.default.post("../logout").catch(() => {}).then(() => {
+      // Reset the document: drop ?doc/?global/... from the URL. The open doc
+      // may be a personal one the now-anonymous visitor can no longer load,
+      // so land on the welcome root instead of retrying a dead document.
+      window.location.href = window.location.origin + window.location.pathname;
+    });
   }
 }
 exports["default"] = Userinfo;
@@ -1257,7 +1264,7 @@ class Application extends _ApplicationFrame.default {
   constructor() {
     super();
   }
-  init(permissions) {
+  init() {
     // Deliberately NOT super.init(). That would also construct Userinfo, which
     // calls google.accounts.id.initialize() and therefore needs the Google
     // sign-in client loaded from accounts.google.com.
@@ -1266,7 +1273,6 @@ class Application extends _ApplicationFrame.default {
     // should not have a request to Google fired at them before they have agreed
     // to anything. Sign-in stays in the apps that actually save work - they are
     // untouched by this.
-    this.permissions = permissions;
 
     // The header first: AppSwitch and SettingsSwitch append themselves into .appbar,
     // so the bar has to exist before they run. The content sub-pages give an
@@ -1281,8 +1287,8 @@ class Application extends _ApplicationFrame.default {
       }),
       slogan: true
     });
-    this.appSwitch = new _AppSwitch.default(permissions);
-    this.settingsSwitch = new _SettingsSwitch.default(permissions);
+    this.appSwitch = new _AppSwitch.default();
+    this.settingsSwitch = new _SettingsSwitch.default();
     this.footer = new _Footer.default();
     return new Promise((resolve, reject) => {
       $(".launchArea .electra-button").one("mouseover", function () {
@@ -11410,7 +11416,6 @@ var __webpack_exports__ = {};
   \****************************/
 
 
-var _axios = _interopRequireDefault(__webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs"));
 var _i18next = _interopRequireDefault(__webpack_require__(/*! i18next */ "./node_modules/i18next/dist/cjs/i18next.js"));
 var _i18nextHttpBackend = _interopRequireDefault(__webpack_require__(/*! i18next-http-backend */ "./node_modules/i18next-http-backend/cjs/index.js"));
 var _jqueryI18next = _interopRequireDefault(__webpack_require__(/*! jquery-i18next */ "./node_modules/jquery-i18next/index.js"));
@@ -11467,11 +11472,9 @@ $(window).load(function () {
     _jqueryI18next.default.init(_i18next.default, $, {
       useOptionsAttr: true
     });
-    return _axios.default.get("/permissions");
-  }).then(response => {
     // set the global scope for the "app" object
     app = (__webpack_require__(/*! ./Application */ "./public/js/Application.js")["default"]);
-    return app.init(response.data);
+    return app.init();
   }).then(app => {
     $('body').localize();
     // The content sub-pages name their own title key; suffix it with the brand

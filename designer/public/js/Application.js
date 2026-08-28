@@ -31,8 +31,8 @@ class Application extends GenericApplication {
     this.newDialog = new NewDocumentDialog(storage, conf)
   }
 
-  init(permissions){
-    super.init(permissions, conf)
+  init(){
+    super.init(conf)
     // super.init builds the scope-based finder (StorageScreen, Draft, Workspace,
     // Review) because conf.database is set, and wires this.storage to the plain
     // StorageClient. The designer needs its own client — open/save carry the
@@ -51,10 +51,10 @@ class Application extends GenericApplication {
       //
       this.documentConfiguration = {...this.documentConfigurationTempl}
   
-      this.view = new View(this, "canvas", permissions)
-      this.toolbar = new Toolbar(this, "#editor .toolbar", this.view, permissions)
-      this.layer = new Layer(this, "layer_elements", this.view, permissions)
-      this.filter = new FilterPane(this, "#filter .filter_actions", this.view, permissions)
+      this.view = new View(this, "canvas")
+      this.toolbar = new Toolbar(this, "#editor .toolbar", this.view)
+      this.layer = new Layer(this, "layer_elements", this.view)
+      this.filter = new FilterPane(this, "#filter .filter_actions", this.view)
 
       this.view.installEditPolicy(new SelectionToolPolicy())
   

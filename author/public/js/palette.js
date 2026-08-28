@@ -7,11 +7,10 @@ import State from "./commands/State"
 
 export default class Palette {
 
-  constructor(app, view, permissions, elementId) {
+  constructor(app, view, elementId) {
     this.html = $(elementId)
     this.app = app
     this.view = view
-    this.permissions = permissions
     this.sourceIsSortEvent = false
     this.hideMenu = ()=>{ 
       $("body").off( "click", this.hideMenu)

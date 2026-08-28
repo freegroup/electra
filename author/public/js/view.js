@@ -18,7 +18,7 @@ export default class View {
    * @constructor
    *
    */
-  constructor(app, id, permissions) {
+  constructor(app, id) {
     this.app = app
     this.page = new Page()
     this.activeSectionDom = null
@@ -26,7 +26,7 @@ export default class View {
     this.currentEditor = null
     this.html = $(id)
     this.clipboardSection = null
-    this.palette = new Palette(app, this, permissions, "#paletteElements")
+    this.palette = new Palette(app, this, "#paletteElements")
     this.palette.render()
 
     $(document)

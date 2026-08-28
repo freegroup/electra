@@ -15,7 +15,7 @@ export default class Palette {
    *
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
-  constructor(view, id, permissions) {
+  constructor(view, id) {
     // remove all classes from the other editors
     $("#paletteElementsScroll, #paletteFilter").removeClass("pages")
 

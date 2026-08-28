@@ -73,9 +73,10 @@ auf E-Mail-Form**.
 - Teuer: `local` bringt die erste echte Benutzerverwaltung ins Produkt. Tabelle,
   Hash, Lebenszyklus. Das Anmeldeformular ist davon der kleinste Teil.
 
-**`usermanagement` ist eine tote Flagge.** Sie steht in allen drei Dateien
-`permissions/server/permissions-{anonym,user,admin}.json` auf `false`, auch bei
-admin. Es gibt keine Oberfläche dahinter. Die Admin-Seite ist grüne Wiese.
+**Es gibt keine Benutzerverwaltung.** Der alte globale Rollen-Service ist
+entfernt; die Sichtbarkeit entscheidet die DB pro Scope, einen globalen Admin
+gibt es nicht mehr. Eine Oberfläche zum Anlegen und Verwalten von Konten fehlt
+ganz. Die Admin-Seite ist grüne Wiese.
 
 **Nebenbefund, der Stufe 1 billiger macht:** `common/public/js/Userinfo.js:1`
 importiert `loadScript` und benutzt es nicht - ein Rest aus der Zeit, als das
@@ -229,8 +230,7 @@ Dazu ein Sammelanlegen: eine Liste von Namen einfügen, eine Tabelle mit
 Zugangsdaten zum Ausdrucken fällt heraus. Das ist die Funktion, die im
 Klassenzimmer den Unterschied macht.
 
-Aufhängen an `usermanagement` in `permissions-admin.json` - die Flagge existiert
-schon und wartet auf ihren Inhalt.
+Das gehört zur Benutzerverwaltung aus Stufe 2 - eigene Oberfläche, grüne Wiese.
 
 ---
 
@@ -309,8 +309,9 @@ Voraussetzung dafür.
 
 Stufe 1 ist die Voraussetzung für das Docker-Image und lohnt sich auch dann,
 wenn Stufe 2 nie kommt: ein Container ohne Login ist heute schon ein
-vollwertiger Probier-Modus, weil `permissions-anonym.json` Simulator, Designer,
-Author und die Schaltungsbibliothek bereits freigibt.
+vollwertiger Probier-Modus, weil das per-Scope-Modell Simulator, Designer,
+Author und die Schaltungsbibliothek anonym freigibt - Lesen ist offen, die DB
+setzt die Sichtbarkeit je Scope durch.
 
 Stufe 2 ist das, was aus dem Probieren Unterricht macht - mit eigenen Konten
 trägt das vorhandene Scope- und Mitgliedschaftsmodell ohne eine einzige

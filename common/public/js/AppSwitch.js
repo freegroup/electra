@@ -8,7 +8,7 @@ import coffeeDialog from "./CoffeeDialog"
 // would point at /home/common and 404. Absolute works from any depth.
 export default class AppSwitch {
 
-  constructor(permissions){
+  constructor(){
     // <div>, nicht <label>: die drei Umschalter in der Leiste sollen dasselbe
     // Element sein. Ein <label> gehoert zu einem Formularfeld, hier gab es
     // keins - dafuer brachte es Regeln mit, die ein <div> nicht hat, und die

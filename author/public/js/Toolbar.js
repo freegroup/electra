@@ -1,4 +1,5 @@
 import commandStack from "./commands/CommandStack"
+import session from "../../common/js/session"
 
 import conf from "./Configuration"
 let storage = require('../../common/js/BackendStorage').default(conf)
@@ -6,11 +7,10 @@ let storage = require('../../common/js/BackendStorage').default(conf)
 
 export default class Toolbar {
 
-  constructor(app, view, elementId, permissions) {
+  constructor(app, view, elementId) {
     this.html = $(elementId)
     this.app = app
     this.view = view
-    this.permissions = permissions
 
     commandStack.off(this).on("change", this)
 
@@ -49,7 +49,7 @@ export default class Toolbar {
     })
 
     this.shareButton = $("#editorFileShare")
-    if(permissions.featureset.share) {
+    if(session.isLoggedIn()) {
       this.shareButton.off("click").on("click", () => {
         this.app.fileShare()
       })
@@ -59,14 +59,11 @@ export default class Toolbar {
     }
 
 
+    // PDF export is a read-side action - anyone may take the document with them.
     this.pdfButton = $("#editorFileToPDF")
-    if (permissions[this.app.objectType].pdf || permissions[this.app.objectType].global.pdf) {
-      this.pdfButton.off("click").on("click", () => {
-        this.app.onPDFExport()
-      })
-    } else {
-      this.pdfButton.hide()
-    }
+    this.pdfButton.off("click").on("click", () => {
+      this.app.onPDFExport()
+    })
 
     // must delegate event from parent DOM because of the dynamic property of the CSS selector
     $(".toolbar")
@@ -88,7 +85,6 @@ export default class Toolbar {
       return // silently
     }
 
-    this.pdfButton.hide()
     this.shareButton.hide()
     this.copyButton.hide()
     $("#editUndo, #editRedo").hide()
@@ -97,38 +93,35 @@ export default class Toolbar {
     //
     if(this.app.getDocument() !==null) {
       this.copyButton.show()
+      // PDF export is read-side: available to anyone with a document open.
+      this.pdfButton.show()
       $("#editUndo, #editRedo").show()
 
-      if (this.permissions.featureset.share) {
+      // Sharing publishes a public link - a write action, so it needs a login.
+      if (session.isLoggedIn()) {
         this.shareButton.show()
       }
-      
+
       $("#editUndo").addClass("disabled")
       $("#editRedo").addClass("disabled")
-  
+
       if (event.getStack().canUndo()) {
         $("#editUndo").removeClass("disabled")
       }
-  
+
       if (event.getStack().canRedo()) {
         $("#editRedo").removeClass("disabled")
-      }  
+      }
     }
 
     // Scope model: the only client-side distinction left is logged-in vs not.
-    // Anonymous users may read but not write (server enforces it too), so the
-    // create/save/pdf actions show only when the user has write permission.
-    // Everything finer (which group, promote) is governed server-side.
-    //
-    // A second block above used to gate the PDF button on currentFile.scope
-    // against "user"/"global". It could never match: scope comes from
-    // providedBy, a scope PATH (sheets/server/files.js). Leftover.
-    if (this.permissions[this.app.objectType].create || this.permissions[this.app.objectType].update) {
-      this.pdfButton.show()
+    // Anonymous users may read but not persist (the server enforces it too), so
+    // Save and Create show only for a logged-in user. Everything finer (which
+    // group, promote) is governed server-side.
+    if (session.isLoggedIn()) {
       this.saveButton.show()
       this.createFileButton.show()
     } else {
-      this.pdfButton.hide()
       this.saveButton.hide()
       this.createFileButton.hide()
     }

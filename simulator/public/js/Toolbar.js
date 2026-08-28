@@ -1,13 +1,13 @@
 import webUSBHelpDialog from "./dialog/WebUSBHelpDialog"
+import session from "../../common/js/session"
 
 
 export default class Toolbar {
 
-  constructor(app, view, elementId, permissions) {
+  constructor(app, view, elementId) {
     this.html = $(elementId)
     this.app = app
     this.view = view
-    this.permissions = permissions
 
 
     // register this class as event listener for the canvas
@@ -15,9 +15,10 @@ export default class Toolbar {
     // the Undo/Redo Buttons.
     //
     view.getCommandStack().on("change", this)
-  
-    if(permissions[this.app.objectType].global.update || permissions[this.app.objectType].global.create ||
-       permissions[this.app.objectType].update        || permissions[this.app.objectType].create) {
+
+    // Scope model: the only client-side distinction left is logged-in vs not.
+    // Anonymous users may read but not persist (the server enforces it too).
+    if(session.isLoggedIn()) {
         $("#editorFileCreate").on("click",  () => {this.app.fileCreateNew()})
         $("#editorFileSave").on("click",    () => {this.app.fileSave()})
     }
@@ -26,7 +27,7 @@ export default class Toolbar {
         $("#editorFileSave").remove()
     }
 
-    if(permissions.featureset.share) {
+    if(session.isLoggedIn()) {
         $("#editorFileShare").on("click", () => {this.app.fileShare()})
     }
     else{

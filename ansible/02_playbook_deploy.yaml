@@ -75,12 +75,6 @@
     community.general.npm:
       path: /home/electra/server/ingress
 
-  - name: Install packages in /permissions
-    become: true
-    become_user: electra
-    community.general.npm:
-      path: /home/electra/server/permissions
-
   - name: Install packages in /shapes
     become: true
     become_user: electra

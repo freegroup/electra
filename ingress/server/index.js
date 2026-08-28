@@ -58,7 +58,6 @@ app.use(helmet.xssFilter());
 const PORT = process.env.PORT_INGRESS || die("missing env variable PORT_INGRESS");
 const PORT_COMMON = process.env.PORT_COMMON || die("missing env variable PORT_COMMON");
 const PORT_HOME = process.env.PORT_HOME || die("missing env variable PORT_HOME");
-const PORT_PERMISSIONS = process.env.PORT_PERMISSIONS || die("missing env variable PORT_PERMISSIONS");
 const PORT_SIMULATOR = process.env.PORT_SIMULATOR || die("missing env variable PORT_SIMULATOR");
 const PORT_SHAPES = process.env.PORT_SHAPES || die("missing env variable PORT_SHAPES");
 const PORT_BRAINS = process.env.PORT_BRAINS || die("missing env variable PORT_BRAINS");
@@ -224,7 +223,7 @@ function prefixed(mount, port) {
 // single-segment path (no dot, no deeper path) ONLY when the browser is
 // navigating to it as a top-level document (Sec-Fetch-Dest: document). Every
 // modern browser sets that header on page loads; API/XHR calls (fetch → the
-// single-segment /permissions, /userinfo, and all deeper paths) carry a
+// single-segment /userinfo and all deeper paths) carry a
 // non-document value, and a missing header (non-browser client) is left alone
 // too — redirecting an XHR/POST could degrade it to GET.
 app.use((req, res, next) => {
@@ -253,7 +252,6 @@ app.use('/brains',       prefixed('/brains',       PORT_BRAINS))
 app.use('/shapes',       prefixed('/shapes',       PORT_SHAPES))
 app.use('/simulator',    prefixed('/simulator',    PORT_SIMULATOR))
 app.use('/common',       prefixed('/common',       PORT_COMMON))
-app.use('/permissions',  prefixed('/permissions',  PORT_PERMISSIONS))
 
 
 

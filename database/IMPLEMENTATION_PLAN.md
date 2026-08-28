@@ -1,6 +1,6 @@
 # Implementation Plan
 
-Concrete task list for building the `database` service. Follows the model in [README.md](README.md) and the technical design in [ARCHITECTURE.md](ARCHITECTURE.md). Follows the layout conventions of the existing Electra modules (`brains/`, `gamification/`, `permissions/`).
+Concrete task list for building the `database` service. Follows the model in [README.md](README.md) and the technical design in [ARCHITECTURE.md](ARCHITECTURE.md). Follows the layout conventions of the existing Electra modules (`brains/`, `gamification/`).
 
 ## Status
 
@@ -87,7 +87,7 @@ Route prefix for the ingress reverse proxy: `/database`.
 
 ## Route Prefix Convention
 
-All endpoints are prefixed `/database/...` to match the pattern of other services (`/brains`, `/gamification`, `/permissions`, ...). Fastify's router only allows the `*` wildcard in the trailing segment. Action endpoints (revert, publish, promote, distribute, rename) therefore live one level higher and pass the doc-path in the request body — see ARCHITECTURE.md §7 for the full REST surface.
+All endpoints are prefixed `/database/...` to match the pattern of other services (`/brains`, `/gamification`, ...). Fastify's router only allows the `*` wildcard in the trailing segment. Action endpoints (revert, publish, promote, distribute, rename) therefore live one level higher and pass the doc-path in the request body — see ARCHITECTURE.md §7 for the full REST surface.
 
 ---
 

@@ -14,8 +14,6 @@
 // Kein Userinfo, aus demselben Grund wie auf der Startseite: das wuerde den
 // Google-Anmeldeclient nachladen, und zum Lesen muss sich niemand anmelden.
 
-import axios from "axios"
-
 import "../../common/js/polyfill"
 import "../less/index.less"
 
@@ -31,19 +29,10 @@ $(document).ready(() => {
   initToc()
   new Footer()
 
-  axios.get("/permissions")
-    .then((response) => {
-      new AppSwitch(response.data)
-      new SettingsSwitch(response.data)
-    })
-    .catch((err) => {
-      // Die Leiste ist Beiwerk. Faellt der Dienst aus, wird der Text trotzdem
-      // gelesen - also nicht abbrechen.
-      console.log(err)
-    })
-    .then(() => {
-      inlineSVG.init({}, () => {
-        $(".loader").fadeOut(500, function () { $(this).remove() })
-      })
-    })
+  new AppSwitch()
+  new SettingsSwitch()
+
+  inlineSVG.init({}, () => {
+    $(".loader").fadeOut(500, function () { $(this).remove() })
+  })
 })

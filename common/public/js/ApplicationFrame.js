@@ -5,13 +5,7 @@ import Header from "./Header"
 
 export default class ApplicationFrame {
 
-    constructor() {
-        this.permissions= null
-    }
-
-    init (permissions, conf) {
-        this.permissions = permissions
-
+    init (conf) {
         // Die Leiste zuerst - die drei Widgets darunter haengen sich in .appbar
         // ein, die muss also stehen. Slogan und Benutzermenue hat jeder Editor,
         // deshalb fest; seinen Namen holt sich Header aus data-subtitle am
@@ -19,9 +13,9 @@ export default class ApplicationFrame {
         // selbst (kein Userinfo, siehe home/js/Application.js).
         this.header = new Header(".appbarMount", { slogan: true, userinfo: true })
 
-        this.userinfo = new Userinfo(permissions)
-        this.appSwitch = new AppSwitch(permissions)
-        this.settingsSwitch = new SettingsSwitch(permissions)
+        this.userinfo = new Userinfo()
+        this.appSwitch = new AppSwitch()
+        this.settingsSwitch = new SettingsSwitch()
     }
 
     getParam (name) {

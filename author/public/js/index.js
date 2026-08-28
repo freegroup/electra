@@ -1,5 +1,4 @@
 import "../../common/js/polyfill"
-import axios from "axios"
 
 import i18next from 'i18next';
 import Backend from 'i18next-http-backend';
@@ -80,12 +79,12 @@ $(window).load(function () {
     // Resolve the login identity and the deployment sign-in config before init,
     // so panes/tabs can gate on the identity and Userinfo can read the client id
     // synchronously.
-    return Promise.all([axios.get("../permissions"), session.load(), authConfiguration.load()])
+    return Promise.all([session.load(), authConfiguration.load()])
   })
-  .then( ([response]) => {
+  .then( () => {
     // set the global scope for the "app" object
     app = require("./Application").default
-    return app.init(response.data)
+    return app.init()
   })
   .then( app => {
     $('body').localize(); 

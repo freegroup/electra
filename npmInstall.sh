@@ -24,13 +24,10 @@ set -x
 (cd ./home && npm install )
 (cd ./home && npm run build)
 
-(cd ./ingress && rm -rf node_modules )  
+(cd ./ingress && rm -rf node_modules )
 (cd ./ingress && npm install )
 
-(cd ./permissions && rm -rf node_modules )  
-(cd ./permissions && npm install )
-
-(cd ./shapes && rm -rf node_modules )  
+(cd ./shapes && rm -rf node_modules )
 (cd ./shapes && npm install )
 
 (cd ./sheets && rm -rf node_modules )  

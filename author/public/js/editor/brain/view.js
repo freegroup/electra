@@ -7,12 +7,11 @@ import SimulationEditPolicy from "./SimulationEditPolicy"
 
 export default draw2d.Canvas.extend({
 
-  init: function (id, permissions) {
+  init: function (id) {
     let _this = this
 
     this._super(id, 6000, 6000)
 
-    this.permissions = permissions
     this.simulate = false
     this.animationFrameFunc = this._calculate.bind(this)
 

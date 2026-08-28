@@ -24,10 +24,9 @@ import FolderCard from "./FolderCard"
 // directly.
 export default class StorageScreen {
 
-  constructor(app, conf, permissions) {
+  constructor(app, conf) {
     this.app = app
     this.conf = conf
-    this.permissions = permissions
     this.storage = storageFactory(conf)
     this.dirty = false   // set on save/promote/revert; reloaded lazily on show
 

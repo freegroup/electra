@@ -2,6 +2,7 @@ import Hogan from "hogan.js"
 import axios from "axios"
 import "./PopConfirm"
 import fs from "path-browserify"
+import session from "./session"
 
 import inputPrompt  from "./InputPrompt"
 
@@ -12,7 +13,7 @@ export default class Files {
    *
    * @param {String} canvasId the id of the DOM element to use as paint container
    */
-  constructor(app, conf, permissions) {
+  constructor(app, conf) {
     $("#files_tab a").on("click", this.onShow.bind(this))
 
     $("body").append(` 
@@ -66,7 +67,7 @@ export default class Files {
 
     this.conf = conf
     this.app = app
-    this.render(conf, permissions)
+    this.render(conf)
   }
 
   onShow() {
@@ -92,27 +93,27 @@ export default class Files {
     },100)
   }
 
-  refresh(conf, permissions, file){
+  refresh(conf, file){
     let directory = fs.dirname(file.name)
     if(file.scope==="user") {
-      this.initPane("user", "#userFiles", conf.backend.user, permissions, directory)
+      this.initPane("user", "#userFiles", conf.backend.user, directory)
     }
     else {
-      this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, directory)
+      this.initPane("global", "#globalFiles", conf.backend.global, directory)
     }
   }
 
-  render(conf, permissions) {
+  render(conf) {
     let storage = require("./BackendStorage").default(conf)
 
-    this.initTabs(permissions)
-    this.initPane("user",   "#userFiles",   conf.backend.user,   permissions       , "")
-    this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, "")
+    this.initTabs()
+    this.initPane("user",   "#userFiles",   conf.backend.user,   "")
+    this.initPane("global", "#globalFiles", conf.backend.global, "")
 
     socket.off("file:generated").on("file:generated", msg => {
       let preview = $(".list-group-item[data-name='" + msg.filePath + "'] img")
       if (preview.length === 0) {
-        this.render(conf, permissions)
+        this.render(conf)
       } else {
         let scope =  $(".list-group-item[data-name='" + msg.filePath + "']").data("scope")
         $(".list-group-item[data-name='" + msg.filePath + "'] img").attr({src: conf.backend[scope].image(msg.filePath) + "&timestamp=" + new Date().getTime()})
@@ -125,7 +126,7 @@ export default class Files {
         inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "user")
-          this.initPane("user", "#userFiles", conf.backend.user, permissions, folder)
+          this.initPane("user", "#userFiles", conf.backend.user, folder)
         })
       })
       .on("click", "#globalFiles .fileOperationsFolderAdd", (event) => {
@@ -133,7 +134,7 @@ export default class Files {
         inputPrompt.show(t("dialog.add_folder"), t("label.name"))
         .then( value => {
           storage.createFolder(folder+value, "global")
-          this.initPane("global", "#globalFiles", conf.backend.global, permissions.global, folder)
+          this.initPane("global", "#globalFiles", conf.backend.global, folder)
         })
       })
       .on("click", "#userFiles .fileOperationsDocumentAdd", (event) => {
@@ -148,56 +149,41 @@ export default class Files {
       })
   }
 
-  initTabs(permissions) {
+  initTabs() {
     let fileScreen = this;
-    // user can see private files and the demo files
-    //
-    if(permissions.list===true && permissions.global.list===true) {
-      $('#material-tabs').each(function () {
-        let $active, $content, $links = $(this).find('a');
-        $active = $($links[0]);
-        $active.addClass('active');
-        $content = $($active[0].hash);
-        $links.not($active).each(function () {
-          $(this.hash).hide()
-        })
-
-        $(this).on('click', 'a', function (e) {
-          $active.removeClass('active')
-          $content.css('display', 'none')
-
-          $active = $(this)
-          $content = $(this.hash)
-
-          $active.addClass('active')
-          $content.css('display', 'inline-block') // jQuery show adds "display:block" which do not work for me
-
-          e.preventDefault()
-          fileScreen.onTabClick()
-        })
+    // Reading is open to everyone, so both the personal and the shared tab
+    // always exist. The DB decides per scope what an anonymous visitor sees.
+    $('#material-tabs').each(function () {
+      let $active, $content, $links = $(this).find('a');
+      $active = $($links[0]);
+      $active.addClass('active');
+      $content = $($active[0].hash);
+      $links.not($active).each(function () {
+        $(this.hash).hide()
       })
-    }
-    else if (permissions.list===false && permissions.global.list===true){
-      $('#material-tabs').remove()
-      $("#globalFiles").show()
-      $("#userFiles").remove()
-      $("#files .title span").html("Open a document")
-    }
-    else if (permissions.list===true && permissions.global.list===false){
-      $('#material-tabs').remove()
-      $("#globalFiles").remove()
-      $("#userFiles").show()
-      $("#files .title span").html("Open a document")
-    }
-    else if (permissions.list===true && permissions.global.list===false) {
-    }
+
+      $(this).on('click', 'a', function (e) {
+        $active.removeClass('active')
+        $content.css('display', 'none')
+
+        $active = $(this)
+        $content = $(this.hash)
+
+        $active.addClass('active')
+        $content.css('display', 'inline-block') // jQuery show adds "display:block" which do not work for me
+
+        e.preventDefault()
+        fileScreen.onTabClick()
+      })
+    })
   }
 
-  initPane(scope, paneSelector, backendConf, permissions, initialPath) {
+  initPane(scope, paneSelector, backendConf, initialPath) {
     let storage = require("./BackendStorage").default(this.conf)
-    if(permissions.list===false){
-      return
-    }
+
+    // Scope model: the only client-side distinction left is logged-in vs not.
+    // Anonymous visitors may read but not write (the server enforces it too).
+    let canWrite = session.isLoggedIn()
 
     let _this = this
     // load demo files
@@ -210,8 +196,8 @@ export default class Files {
         files = files.map(file => {
           return {
             ...file,
-            delete: permissions.delete,
-            update: permissions.update,
+            delete: canWrite,
+            update: canWrite,
             scope: scope,
             title: file.name.replace(_this.conf.fileSuffix,""),
             image: backendConf.image(file.filePath)
@@ -234,11 +220,11 @@ export default class Files {
         let compiled = Hogan.compile($("#filesTemplate").html())
         let output = compiled.render({folder: path, files: files})
         $(paneSelector).html($(output))
-        if(permissions.create === false){
+        if(!canWrite){
           $(paneSelector + " .fileOperations").remove()
         }
 
-        if(permissions.delete === true) {
+        if(canWrite) {
 
           $(paneSelector+ " .deleteIcon").on("click", (event) => {
             let $el = $(event.target).closest(".list-group-item")
@@ -260,7 +246,7 @@ export default class Files {
 
         // Rename of a file or folder is the very same as delete -> create
         // I this case the user must have the two permissions to rename a folder or file
-        if (permissions.delete === true && permissions.create === true) {
+        if (canWrite) {
           $(paneSelector + " .list-group-item .editIcon").off("click").on("click", (event) => {
             // check if the editor is already visible. We can do on/off of events or do it this way....
             if($(".filenameInplaceEdit").length>0){

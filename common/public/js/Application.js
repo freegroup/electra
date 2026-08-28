@@ -39,8 +39,8 @@ export default class Application extends AppFrame{
         return !(this.currentFile && this.currentFile.editable === false)
     }
 
-    init (permissions, conf) {
-        super.init(permissions, conf)
+    init (conf) {
+        super.init(conf)
         this.hasUnsavedChanges = false
 
         // Apps that opt into the database REST model (conf.database) get the new
@@ -65,7 +65,7 @@ export default class Application extends AppFrame{
               $("#draft_tab, #review_tab, #activity_tab").hide()
             }
         } else {
-            this.filePane = new Files(this, conf, permissions[this.objectType])
+            this.filePane = new Files(this, conf)
         }
         // The help/readme pane. Renders lazily on first show (onShow), like the
         // other panes — no eager render here.

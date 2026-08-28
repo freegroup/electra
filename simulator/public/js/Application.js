@@ -34,12 +34,12 @@ class Application extends GenericApplication {
     this.publishDialog    = new PublishDialog(storage, conf)
   }
 
-  init(permissions) {
-    super.init(permissions, conf)
+  init() {
+    super.init(conf)
     return new Promise((resolve, reject) => {
       this.palette = new Palette()
-      this.view    = new View("draw2dCanvas", permissions)
-      this.toolbar = new Toolbar(this, this.view, "#editor .toolbar", permissions)
+      this.view    = new View("draw2dCanvas")
+      this.toolbar = new Toolbar(this, this.view, "#editor .toolbar")
 
       // deep-links: ?doc=<id> opens a document by its opaque handle;
       // ?review=<uuid>&path=<docPath> loads a pending version read-only for review.

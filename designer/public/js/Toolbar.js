@@ -12,10 +12,11 @@ import FigureCodeEdit from "./dialog/FigureCodeEdit"
 import FigureMarkdownEdit from "./dialog/FigureMarkdownEdit"
 import FigureTest from "./dialog/FigureTest"
 import toast from "../../common/js/toast"
+import session from "../../common/js/session"
 
 export default class Toolbar {
 
-  constructor(app, elementId, view, permissions) {
+  constructor(app, elementId, view) {
     this.html = $(elementId)
     this.view = view
     this.app = app
@@ -36,8 +37,9 @@ export default class Toolbar {
     this.html.append(buttonGroup)
 
 
-    if(permissions[this.app.objectType].global.update || permissions[this.app.objectType].global.create ||
-       permissions[this.app.objectType].update        || permissions[this.app.objectType].create) {
+    // Scope model: the only client-side distinction left is logged-in vs not.
+    // Anonymous users may read but not persist (the server enforces it too).
+    if(session.isLoggedIn()) {
       this.saveButton = $(`<div class="image-button" id="editorFileSave" ><img class="svg" src="../common/images/toolbar_save.svg"/><div data-i18n="common:toolbar.save" >${t("common:toolbar.save")}</div></div>`)
       buttonGroup.append(this.saveButton)
       this.saveButton.on("click",    () => {this.app.fileSave()})

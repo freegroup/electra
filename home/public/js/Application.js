@@ -11,7 +11,7 @@ class Application extends AppFrame{
     super()
   }
 
-  init(permissions) {
+  init() {
     // Deliberately NOT super.init(). That would also construct Userinfo, which
     // calls google.accounts.id.initialize() and therefore needs the Google
     // sign-in client loaded from accounts.google.com.
@@ -20,7 +20,6 @@ class Application extends AppFrame{
     // should not have a request to Google fired at them before they have agreed
     // to anything. Sign-in stays in the apps that actually save work - they are
     // untouched by this.
-    this.permissions = permissions
 
     // The header first: AppSwitch and SettingsSwitch append themselves into .appbar,
     // so the bar has to exist before they run. The content sub-pages give an
@@ -31,8 +30,8 @@ class Application extends AppFrame{
       ...(subtitleKey ? { subtitleKey } : { subtitle: "Home" }),
       slogan: true
     })
-    this.appSwitch = new AppSwitch(permissions)
-    this.settingsSwitch = new SettingsSwitch(permissions)
+    this.appSwitch = new AppSwitch()
+    this.settingsSwitch = new SettingsSwitch()
     this.footer = new Footer()
 
     return new Promise( (resolve, reject) => {

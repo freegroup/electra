@@ -24,7 +24,7 @@ require("bootstrap-toggle/js/bootstrap-toggle.min")
 
 export default draw2d.Canvas.extend({
 
-  init: function (id, permissions) {
+  init: function (id) {
     this._super(id, 6000, 6000)
 
     this.probeWindow = new ProbeWindow(this)
@@ -35,7 +35,6 @@ export default draw2d.Canvas.extend({
     // so that code touching it outside a run never sees undefined.
     this.simulationContext = {}
 
-    this.permissions = permissions
     this.simulate = false
     // read-only viewing mode (set when a document is opened for review):
     // the canvas can be panned/simulated but not edited. Decided at each
@@ -226,23 +225,12 @@ export default draw2d.Canvas.extend({
         let items = {}
 
         if (figure instanceof CircuitFigure) {
-          if(this.permissions.shapes.global.update) {
-            items = {
-              "label": {name: t("contextmenu.add_label")},
-              "delete": {name: t("contextmenu.delete")},
-              "sep1": "---------",
-              "design": {name: t("contextmenu.open_designer")},
-              "help": {name: t("contextmenu.description")}
-            }
-          }
-          else {
-            items = {
-              "label": {name: t("contextmenu.add_label")},
-              "delete": {name: t("contextmenu.delete")},
-              "sep1": "---------",
-              "design": {name: t("contextmenu.open_designer")},
-              "help": {name: t("contextmenu.description")}
-            }
+          items = {
+            "label": {name: t("contextmenu.add_label")},
+            "delete": {name: t("contextmenu.delete")},
+            "sep1": "---------",
+            "design": {name: t("contextmenu.open_designer")},
+            "help": {name: t("contextmenu.description")}
           }
 
           let figureEntries = figure.getContextMenuEntries()
