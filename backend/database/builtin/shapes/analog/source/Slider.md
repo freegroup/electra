@@ -1,20 +1,21 @@
-# Slider
+# Schieberegler
 
-An adjustable analog source. Drag the slider while the simulation runs and watch
-the circuit react - a stand-in for a potentiometer or a sensor.
+Eine einstellbare analoge Quelle. Zieh den Regler während der Simulation und sieh
+zu, wie die Schaltung reagiert - der Ersatz für ein Potentiometer oder einen
+Sensor.
 
-## Ports
+## Anschlüsse
 
-| Port   | Direction | Meaning                |
-| :----- | :--------- | :-------------------- |
-| output | out        | the set value, 0 to 5 |
+| Anschluss | Richtung | Bedeutung                      |
+| :-------- | :------- | :----------------------------- |
+| output    | Ausgang  | der eingestellte Wert, 0 bis 5 |
 
-## What to expect
+## Was zu erwarten ist
 
-- **The output goes from 0 to 5**, spread evenly over the slider travel. The
-  middle position is 2.5.
-- **It works while the simulation runs.** Dragging changes the output at once, no
-  restart needed.
-- **The position is saved with the circuit** and is put on the output again when
-  the simulation starts.
-- **Set by dragging, not in the settings dialog.**
+- **Der Ausgang läuft von 0 bis 5**, gleichmässig über den Weg des Reglers
+  verteilt. Die Mittelstellung ergibt 2,5.
+- **Er wirkt während der Simulation.** Ziehen ändert den Ausgang sofort, ein
+  Neustart ist nicht nötig.
+- **Die Stellung wird mit der Schaltung gespeichert** und beim Start der
+  Simulation wieder ausgegeben.
+- **Eingestellt wird durch Ziehen**, nicht im Einstellungsdialog.

@@ -1,11 +1,11 @@
-# Polygon
+# Vieleck
 
-A drawing element with freely placed corners. Put it on the canvas to mark an
-area that a rectangle does not fit.
+Ein Zeichenelement mit frei gesetzten Ecken. Für Bereiche, in die ein Rechteck
+nicht passt.
 
-## What to expect
+## Was zu erwarten ist
 
-- **No ports and no function.** Nothing connects to it and it takes no part in
-  the simulation.
-- **Default size** is 100 by 100. The corners, position and colour are set on the
-  canvas.
+- **Keine Anschlüsse, keine Funktion.** Nichts wird daran verbunden, und an der
+  Simulation nimmt es nicht teil.
+- **Standardgrösse** 100 mal 100. Ecken, Position und Farbe stellst du auf der
+  Fläche ein.

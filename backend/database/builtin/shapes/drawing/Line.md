@@ -1,11 +1,12 @@
-# Line
+# Linie
 
-A drawing element. A plain line for separating or pointing - not a wire, and not
-connected to anything.
+Ein Zeichenelement. Eine schlichte Linie zum Trennen oder Zeigen - **keine**
+Leitung, und mit nichts verbunden.
 
-## What to expect
+## Was zu erwarten ist
 
-- **No ports and no function.** It carries no signal and takes no part in the
-  simulation. Use a connection if you want to wire two components.
-- **Both ends are set on the canvas.** By default the line runs from 200,200 to
-  250,250.
+- **Keine Anschlüsse, keine Funktion.** Sie führt kein Signal und nimmt an der
+  Simulation nicht teil. Zum Verdrahten zweier Bauteile ziehst du eine
+  Verbindung.
+- **Beide Enden setzt du auf der Fläche.** Voreingestellt läuft die Linie von
+  200,200 nach 250,250.

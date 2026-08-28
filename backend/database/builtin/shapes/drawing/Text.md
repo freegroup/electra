@@ -1,14 +1,16 @@
 # Text
 
-A text label for the canvas - a heading, a note, a name for a group of gates.
+Eine Beschriftung für die Fläche - eine Überschrift, eine Notiz, ein Name für
+eine Gruppe von Gattern.
 
 ## Parameter
 
-| Name | Meaning        | Default                                    |
-| :--- | :------------- | :----------------------------------------- |
-| Text | the text shown | `The quick brown fox jumps over the lazy dog` |
+| Name | Bedeutung         | Voreinstellung                                |
+| :--- | :---------------- | :-------------------------------------------- |
+| Text | der gezeigte Text | *The quick brown fox jumps over the lazy dog* |
 
-## What to expect
+## Was zu erwarten ist
 
-- **No ports and no function.** The label takes no part in the simulation.
-- **Verdana 10** on a light background. Colour and size are set on the canvas.
+- **Keine Anschlüsse, keine Funktion.** Die Beschriftung nimmt an der Simulation
+  nicht teil.
+- **Verdana 10** auf hellem Grund. Farbe und Grösse stellst du auf der Fläche ein.

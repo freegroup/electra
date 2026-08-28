@@ -1,10 +1,11 @@
-# Circle
+# Kreis
 
-A drawing element. Put it on the canvas to group or highlight parts of a circuit.
+Ein Zeichenelement. Auf die Fläche gelegt, um Teile einer Schaltung zu
+gruppieren oder hervorzuheben.
 
-## What to expect
+## Was zu erwarten ist
 
-- **No ports and no function.** Nothing connects to it and it takes no part in
-  the simulation.
-- **Default size** is 100 by 100. Position, size and colour are set on the
-  canvas.
+- **Keine Anschlüsse, keine Funktion.** Nichts wird daran verbunden, und an der
+  Simulation nimmt es nicht teil.
+- **Standardgrösse** 100 mal 100. Position, Grösse und Farbe stellst du auf der
+  Fläche ein.

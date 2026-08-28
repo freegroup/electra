@@ -1,15 +1,17 @@
 # Text
 
-A text label for the canvas - a heading, a note, a name for a group of gates.
+Eine Beschriftung für die Fläche - eine Überschrift, eine Notiz, ein Name für
+eine Gruppe von Gattern.
 
 ## Parameter
 
-| Name | Meaning        | Default                                        |
-| :--- | :------------- | :--------------------------------------------- |
-| Text | the text shown | `The quick brown fox $ jumps over the lazy dog` |
+| Name | Bedeutung         | Voreinstellung                                  |
+| :--- | :---------------- | :---------------------------------------------- |
+| Text | der gezeigte Text | *The quick brown fox $ jumps over the lazy dog* |
 
-## What to expect
+## Was zu erwarten ist
 
-- **No ports and no function.** The label takes no part in the simulation.
-- **Plain text only.** It is shown as written, without formatting. For bold,
-  lists or a table use the Markdown widget.
+- **Keine Anschlüsse, keine Funktion.** Die Beschriftung nimmt an der Simulation
+  nicht teil.
+- **Nur reiner Text.** Er erscheint, wie er dasteht, ohne Formatierung. Für
+  Fettschrift, Listen oder eine Tabelle nimmst du das Markdown-Widget.

@@ -1,23 +1,24 @@
 # Sparkline
 
-A small chart that draws the last 100 values of a signal over time. Put it into a
-line to watch what actually happens there while the simulation runs.
+Ein kleines Diagramm, das die letzten 100 Werte eines Signals über der Zeit
+zeichnet. In eine Leitung gesetzt, um während der Simulation zu sehen, was dort
+tatsächlich passiert.
 
-## Ports
+## Anschlüsse
 
-| Port   | Direction | Meaning                                 |
-| :----- | :-------- | :-------------------------------------- |
-| input  | in        | the signal to plot, one value per cycle |
-| output | out       | the input, passed through unchanged     |
+| Anschluss | Richtung | Bedeutung                                  |
+| :-------- | :------- | :----------------------------------------- |
+| input     | Eingang  | das Signal, ein Wert je Simulationsschritt |
+| output    | Ausgang  | der Eingang, unverändert weitergereicht    |
 
-## What to expect
+## Was zu erwarten ist
 
-- **It does not delay the signal.** The output hands out the value of the
-  connected source directly, so a circuit behaves exactly the same whether a
-  Sparkline sits in the line or not.
-- **100 values wide.** Every cycle adds one value on the right, the oldest drops
-  off on the left.
-- **The scale is fixed to 0 to 5.** Values outside that range are drawn at the
-  edge, not scaled to fit.
-- **A missing value counts as 0.**
-- **One connection at the input.** The input accepts a single source.
+- **Es verzögert das Signal nicht.** Der Ausgang gibt den Wert der angeschlossenen
+  Quelle direkt weiter - eine Schaltung verhält sich also gleich, ob eine
+  Sparkline dazwischen sitzt oder nicht.
+- **100 Werte breit.** Jeder Schritt setzt rechts einen Wert an, links fällt der
+  älteste heraus.
+- **Der Massstab liegt fest bei 0 bis 5.** Werte darüber oder darunter werden am
+  Rand gezeichnet, nicht eingepasst.
+- **Ein fehlender Wert zählt als 0.**
+- **Am Eingang eine Verbindung.** Er nimmt genau eine Quelle an.

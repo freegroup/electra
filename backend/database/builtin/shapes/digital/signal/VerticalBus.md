@@ -1,30 +1,31 @@
-# Vertical Bus
+# Senkrechter Bus
 
-A vertical rail that distributes one named signal. Give the bus a Signal Id, and
-it carries whatever a Signal Target with the same Id has picked up. Everything
-that needs the signal connects to the rail instead of being wired to the source
-across the whole drawing.
+Eine senkrechte Schiene, die ein benanntes Signal verteilt. Gib dem Bus eine
+Signal Id, und er führt, was ein Signalziel mit derselben Id aufgenommen hat.
+Alles, was das Signal braucht, wird an die Schiene gehängt, statt quer durch die
+Zeichnung zur Quelle verdrahtet zu werden.
 
-## Ports
+## Anschlüsse
 
-| Port | Direction | Meaning                       |
-| :--- | :-------- | :---------------------------- |
-| rail | out       | the value of the named signal |
+| Anschluss | Richtung | Bedeutung                      |
+| :-------- | :------- | :----------------------------- |
+| Schiene   | Ausgang  | der Wert des benannten Signals |
 
 ## Parameter
 
-| Name      | Meaning                         | Default     |
-| :-------- | :------------------------------ | :---------- |
-| Signal Id | the name of the signal to carry | `Signal_Id` |
+| Name      | Bedeutung                      | Voreinstellung |
+| :-------- | :----------------------------- | :------------- |
+| Signal Id | der Name des geführten Signals | *Signal_Id*    |
 
-## What to expect
+## Was zu erwarten ist
 
-- **The bus can only be read, not fed.** No connection may end at the rail. The
-  value does not come from a wire but from the Signal Id: a Signal Target with
-  the same Id publishes it, the bus and every Signal Source with that Id pick it
-  up.
-- **The Signal Id is written on the rail**, so the drawing shows which signal
-  runs where.
-- **The link is made when the simulation starts.** If no Signal Target carries
-  that Id, the bus delivers nothing.
-- **Changing the Id resets the rail to 0** until the simulation is started again.
+- **Der Bus lässt sich nur lesen, nicht speisen.** An der Schiene darf keine
+  Verbindung enden. Der Wert kommt nicht aus einer Leitung, sondern aus der
+  Signal Id: ein Signalziel mit derselben Id veröffentlicht ihn, der Bus und jede
+  Signalquelle mit dieser Id nehmen ihn auf.
+- **Die Signal Id steht auf der Schiene**, die Zeichnung zeigt also, welches
+  Signal wo läuft.
+- **Die Verbindung entsteht beim Start der Simulation.** Trägt kein Signalziel
+  diese Id, führt der Bus nichts.
+- **Eine Änderung der Id setzt die Schiene auf 0**, bis die Simulation neu
+  gestartet wird.
