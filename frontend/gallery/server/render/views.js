@@ -207,9 +207,9 @@ function sheetView(branch, item, doc) {
 
 // One component: its symbol, its description, and the way into the designer.
 //
-// The description is written in the designer and stored with the component; it
-// runs through the same markdown pipeline as a worksheet, so its headings are
-// demoted below the page title exactly the same way.
+// The description is written in the designer and stored with the component. It
+// is rendered as written - never trimmed for display - and runs through the same
+// pipeline as a worksheet, so its headings sit below the page title.
 function partView(branch, item, markdown) {
   const slug = pathToSlug(branch, item.path)
   const name = slug.split("/").pop()

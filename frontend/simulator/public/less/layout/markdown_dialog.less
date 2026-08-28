@@ -42,12 +42,16 @@
   // 31-386 tall, aspect ratios from 0.18 to 2.58. So no fixed box and no forced
   // dimension - bounds only, and a floor so the tiniest symbols are not lost.
   // object-fit guards against both axes being clamped at once.
+  // The tile starts where the text starts. Centring it put the symbol somewhere
+  // in the middle of a long description, with nothing beside it at the top.
   .media-left.componentPreview {
     display: flex;
     align-items: center;
     justify-content: center;
-    align-self: center;
-    padding: 100px;
+    align-self: flex-start;
+    // Roomy enough to read as a plate, small enough that the symbol still sits
+    // next to the opening lines rather than below them.
+    padding: 40px;
     border-radius: @borderRadiusBig;
 
     img {

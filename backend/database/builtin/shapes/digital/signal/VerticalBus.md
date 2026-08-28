@@ -1,69 +1,30 @@
-# What is Markdown
+# Vertical Bus
 
-Markdown is a way to style text on the web. You control the display of the 
-document; formatting words as bold or italic, adding images, and creating 
-lists are just a few of the things we can do with Markdown. Mostly, Markdown 
-is just regular text with a few non-alphabetic characters thrown in, like `#` or `*`.
+A vertical rail that distributes one named signal. Give the bus a Signal Id, and
+it carries whatever a Signal Target with the same Id has picked up. Everything
+that needs the signal connects to the rail instead of being wired to the source
+across the whole drawing.
 
-## Syntax guide
-Here’s an overview of Markdown syntax that you can use.
+## Ports
 
-### Header
-``` 
-# This is an <h1> tag
-## This is an <h2> tag
-###### This is an <h6> tag
-```
+| Port | Direction | Meaning                       |
+| :--- | :-------- | :---------------------------- |
+| rail | out       | the value of the named signal |
 
-### Emphasis
+## Parameter
 
-```  
-*This text will be italic*
-_This will also be italic_
+| Name      | Meaning                         | Default     |
+| :-------- | :------------------------------ | :---------- |
+| Signal Id | the name of the signal to carry | `Signal_Id` |
 
-**This text will be bold**
-__This will also be bold__
+## What to expect
 
-_You **can** combine them_
-```
-
-### Lists
-
-#### Unordered
-``` 
-* Item 1
-* Item 2
-  * Item 2a
-  * Item 2b
-```
-
-#### Ordered
-``` 
-1. Item 1
-1. Item 2
-1. Item 3
-   1. Item 3a
-   1. Item 3b
-```
-
-### Links
-
-``` 
-http://github.com - automatic!
-[GitHub](http://github.com)
-```
-
-### Block quotes
-``` 
-As Kanye West said:
-
-> We're living the future so
-> the present is our past.
-```
-
-### Math expressions
-```  
-    ```math
-    a = sum(a^2+ sin(x) ) 
-    ```
-```
+- **The bus can only be read, not fed.** No connection may end at the rail. The
+  value does not come from a wire but from the Signal Id: a Signal Target with
+  the same Id publishes it, the bus and every Signal Source with that Id pick it
+  up.
+- **The Signal Id is written on the rail**, so the drawing shows which signal
+  runs where.
+- **The link is made when the simulation starts.** If no Signal Target carries
+  that Id, the bus delivers nothing.
+- **Changing the Id resets the rail to 0** until the simulation is started again.

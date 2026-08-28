@@ -30,9 +30,11 @@ class Dialog {
     // The same preview the palette shows, addressed by the same version uuid.
     let preview = componentIndex.imageUrl(entry)
 
+    // The heading stays as the markup has it ("Was ist das?"). The component is
+    // named by the description itself, which opens with its name - writing it
+    // into the heading as well showed it twice.
     let render = (content) => {
       $('#markdownDialog .sectionContent').html(content ? md.render(content) : "")
-      $('#markdownDialog .media-heading').html(displayName)
 
       // Hide the slot rather than leave a broken image when the component has
       // no preview, or is gone from this context.

@@ -21,8 +21,8 @@ export default class FigureMarkdownEdit {
           <div class="full-height section">
           </div>
           <div class="header">
-             <span class="left">Markdown Editor (<a target="_blank" href="https://en.wikipedia.org/wiki/Markdown">markdown syntax </a>)</span>
-             <span class="right">HTML Preview</span>
+             <span class="left"><span data-i18n="dialog.markdown.title">${t("dialog.markdown.title")}</span> (<a target="_blank" href="https://en.wikipedia.org/wiki/Markdown" data-i18n="dialog.markdown.syntax">${t("dialog.markdown.syntax")}</a>)</span>
+             <span class="right" data-i18n="dialog.markdown.preview">${t("dialog.markdown.preview")}</span>
           </div>
           <div class="tinyFlyoverMenu">
             <button data-i18n="common:button.save" id="test_commit" class="electra-button">${t("common:button.save")}</button>

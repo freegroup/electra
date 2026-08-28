@@ -153,3 +153,8 @@ database/_pgdata/
 # per working copy. Not repo content: see .github/workflows/lint-theme.yml
 # for why it is not a CI gate.
 .fingerprint/
+
+# Datenbank-Sicherungen. Liegen bewusst im Projekt, damit sie beim Arbeiten
+# zur Hand sind - aber ein Dump ist Zustand, kein Quellcode, und jeder waere
+# zwoelf Megabyte dauerhaft in der Historie.
+backup/

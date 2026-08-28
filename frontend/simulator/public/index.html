@@ -328,8 +328,11 @@
 <div id="markdownDialog" class="modal fade genericDialog " tabindex="-1">
   <div class="modal-dialog ">
     <div class="modal-content">
+      <!-- A fixed caption, not the component name: the description below opens
+           with the name as its own heading, so naming it here as well would
+           print it twice. -->
       <div class="modal-header">
-        <h4 class="media-heading"></h4>
+        <h4 class="media-heading" data-i18n="dialog.markdown.title">Was ist das?</h4>
       </div>
       <div class="modal-body section">
         <div class="media">

@@ -111,19 +111,26 @@ function demoteHeadings(md) {
 // --- pipeline instances -----------------------------------------------------
 // Mirrors common/js/markdown.js: one shared base, plus the cloze variants that
 // blank the gaps (question) or fill them in (solution).
-function base() {
+function base(options) {
   const md = new MarkdownIt()
   md.use(asciimath)
   md.use(container, "info")
   md.use(linkTarget)
-  md.use(demoteHeadings)
+  if (!options || options.demote !== false) md.use(demoteHeadings)
   return md
 }
 
 const md = base()
+
+// Without the demotion, for text whose top level has already been removed: a
+// component description always opens with `# <name>`, which the gallery drops
+// because the page names the component itself. What is left starts at `##` and
+// belongs directly under the page title - demoting it as well would skip a
+// heading level.
+const mdPlain = base({ demote: false })
 const mdQuestion = base()
 mdQuestion.use(questionPlugin)
 const mdSolution = base()
 mdSolution.use(solutionPlugin)
 
-module.exports = { md, mdQuestion, mdSolution }
+module.exports = { md, mdPlain, mdQuestion, mdSolution }
