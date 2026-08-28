@@ -85,6 +85,29 @@ function asciimath(md) {
   }
 }
 
+// --- heading demotion -------------------------------------------------------
+// A gallery page already carries an <h1>: the document title. The document's own
+// chapters are written as `# Chapter` and would produce a second, third, fourth
+// <h1> on the same page - a flat outline where a hierarchy belongs.
+//
+// So every heading inside the rendered document moves down one level: the
+// chapter becomes <h2>, its sections <h3>, and so on. <h6> has nowhere left to
+// go and stays.
+//
+// This lives here and not in the shared pipeline on purpose: the author and the
+// PDF export render a document as a whole page, where `# Chapter` IS the top
+// level and demoting it would be wrong. Only the gallery frames the document
+// with a title of its own.
+function demoteHeadings(md) {
+  md.core.ruler.push("demote_headings", (state) => {
+    state.tokens.forEach((token) => {
+      if (token.type !== "heading_open" && token.type !== "heading_close") return
+      const level = Number(token.tag.slice(1))
+      if (level < 6) token.tag = `h${level + 1}`
+    })
+  })
+}
+
 // --- pipeline instances -----------------------------------------------------
 // Mirrors common/js/markdown.js: one shared base, plus the cloze variants that
 // blank the gaps (question) or fill them in (solution).
@@ -93,6 +116,7 @@ function base() {
   md.use(asciimath)
   md.use(container, "info")
   md.use(linkTarget)
+  md.use(demoteHeadings)
   return md
 }
 

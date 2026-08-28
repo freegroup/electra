@@ -1,0 +1,51 @@
+// The rendered worksheet - structure only, the look lives in the themes.
+//
+// The gallery owns this completely. It does NOT reuse the author's .authorPage
+// / .section / .sectionContent, because those carry editor chrome the reader
+// has no use for, and their type scale is shared with the PDF export. Nothing
+// in common/ reaches these class names, and nothing here reaches the print
+// output.
+
+.galleryDoc {
+
+  // One sheet of the document.
+  .galleryPage {
+    // A reading measure. Without a cap a paragraph runs the full pane width,
+    // which on a wide screen is far past what the eye tracks comfortably.
+    max-width: 72ch;
+  }
+
+  // One cell. Read-only: no frame, no click target, no toolbar.
+  .galleryCell {
+    position: relative;
+
+    &[data-type='image'],
+    &[data-type='brain'],
+    &[data-type='timing'] {
+      text-align: center;
+    }
+
+    // Circuits, pictures and timing diagrams carry their own pixel width and
+    // must not push past the text column.
+    img,
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  // A gap in a cloze text. It has to hold its width even while empty, which is
+  // what the non-breaking spaces from the plugin do; this keeps it on the text
+  // baseline instead of letting it break the line box.
+  .cloze {
+    display: inline-block;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
+}

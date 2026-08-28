@@ -116,9 +116,14 @@ function timingNames(json) {
   return `<ul>${items}</ul>`
 }
 
-// The author's per-type append() wraps rendered content in a sectionContent div
-// tagged with the type; timing uses a shadow DOM in the browser but here the
-// SVG sits inline, its skin CSS scoped under [data-type=timing] in the LESS.
+// One cell. The class names are the gallery's OWN - deliberately not the
+// author's .section/.sectionContent/.authorPage.
+//
+// Those carry editor chrome from the shared LESS (drop zones, sliders, flyover
+// menus, click cursors) that a read-only page has no use for, and their heading
+// scale is shared with the PDF export - so tuning it here would reach into the
+// print output. With names of its own the gallery styles its documents in full
+// and nothing shared can reach in.
 function renderSection(section) {
   let inner = ""
   try {
@@ -127,11 +132,7 @@ function renderSection(section) {
     console.log(`[gallery] section ${section && section.id} (${section && section.type}) failed: ${err && err.message}`)
     inner = ""
   }
-  return (
-    `<div class="section" data-id="${escapeAttr(section.id)}" data-type="${escapeAttr(section.type)}">` +
-    `<div class="sectionContent" data-type="${escapeAttr(section.type)}">${inner}</div>` +
-    `</div>`
-  )
+  return `<div class="galleryCell" data-type="${escapeAttr(section.type)}">${inner}</div>`
 }
 
 // Whole document -> HTML. `doc` is the sheet JSON ({ pages:[ { sections } ] }).
@@ -142,8 +143,10 @@ function renderDocument(doc) {
   pages.forEach((page) => {
     const sections = (page.sections || []).filter(visibleIn)
     if (!sections.length) return
-    if (rendered > 0) html += "<div style='page-break-before:always;'></div>"
-    html += `<div class="authorPage">${sections.map(renderSection).join("")}</div>`
+    // A separator between sheets, not a print page break: this is a screen view
+    // of the document, and the reader should see where one sheet ends.
+    if (rendered > 0) html += `<hr class="galleryPageBreak">`
+    html += `<div class="galleryPage">${sections.map(renderSection).join("")}</div>`
     rendered++
   })
   return html

@@ -33,22 +33,9 @@
   min-width: 0;
 }
 
-// The rendered worksheet. .authorPage brings its own reading typography from
-// common/less/layout/author_page.less; it only needs to stop centering itself
-// inside the pane.
-.galleryDoc {
-  .authorPage {
-    margin-left: 0;
-  }
-
-  // A read-only view: no cell frames, no click affordance, no editor chrome.
-  .section {
-    border: none;
-    cursor: default;
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
+// The rendered worksheet has its own file: layout/document.less (structure) and
+// themes/*/document.less (the look). It shares no class name with the author,
+// so nothing in common/ styles it.
 
 // One column on narrow screens: the tree moves above the content and stops
 // being sticky, so a phone is not left with a third of the width for text.
