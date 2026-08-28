@@ -17,28 +17,33 @@
   .tile {
     display: block;
 
+    // Picture above the name, and the same box whatever the tile holds - a
+    // folder, a document, or the way up. Differently sized boxes read as two
+    // kinds of thing where there is only one.
     a {
       display: flex;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-height: 56px;
+
+      // Fills the grid cell. A long name wraps and makes its row taller; without
+      // this the neighbouring cards keep their own height and the row ends up
+      // with cards of two sizes.
+      height: 100%;
     }
 
     .tileName {
       min-width: 0;
       overflow-wrap: anywhere;
+      text-align: center;
     }
   }
 
-  // A component tile leads with its symbol - a list of component names without
-  // the drawings would not be identifiable. The picture stacks above the name,
-  // so these tiles are taller than the text-only ones.
-  .tile.hasThumb a {
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  // A branch tile on the gallery root: name left, count right.
+  // A branch tile on the gallery root is a row, not a card: name left, count
+  // right. It stands for a whole branch and carries no picture.
   .tile.branchTile a {
+    flex-direction: row;
     justify-content: space-between;
   }
 
@@ -52,6 +57,13 @@
     img {
       max-width: 100%;
       max-height: 100%;
+    }
+
+    // The folder and up glyphs. Smaller than a preview, so they read as a sign
+    // rather than as a picture in their own right.
+    svg {
+      width: 32px;
+      height: 32px;
     }
   }
 }

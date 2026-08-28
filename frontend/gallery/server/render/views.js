@@ -14,6 +14,10 @@ const { renderDocument } = require("./sections")
 const { md } = require("./markdown")
 const { pathToSlug } = require("./list")
 
+// The shared Lucide set, reached through the gallery/common symlink - the same
+// glyphs the author draws with.
+const { icon } = require("../../common/js/icons")
+
 const BASE = "/gallery"
 
 function escapeHtml(s) {
@@ -81,17 +85,24 @@ function breadcrumb(branch, folderPath, leaf) {
   return `<nav class="crumbs">${crumbs.join('<span class="sep">/</span>')}</nav>`
 }
 
+// One tile. Folder, document and the way up all use the same body - a picture
+// slot above the name - so a grid of them reads as one row of equal things
+// instead of two kinds of box.
+function tile(cls, href, inner, name) {
+  return (
+    `<li class="tile ${cls}"><a href="${escapeHtml(href)}">` +
+    `<span class="tileThumb">${inner}</span>` +
+    `<span class="tileName">${escapeHtml(name)}</span></a></li>`
+  )
+}
+
 // A document tile. Components carry a preview image - a list of component names
 // without their symbols would be unusable, the picture IS the identification.
 function docTile(branch, d) {
   const thumb = d.item.thumbnailUrl
-    ? `<span class="tileThumb"><img src="${escapeHtml(d.item.thumbnailUrl)}" alt="" loading="lazy"></span>`
+    ? `<img src="${escapeHtml(d.item.thumbnailUrl)}" alt="" loading="lazy">`
     : ""
-  const withThumb = thumb ? " hasThumb" : ""
-  return (
-    `<li class="tile docTile${withThumb}"><a href="${escapeHtml(docHref(branch, d.slug))}">` +
-    `${thumb}<span class="tileName">${escapeHtml(d.name)}</span></a></li>`
-  )
+  return tile("docTile", docHref(branch, d.slug), thumb, d.name)
 }
 
 // A grid of folder and document tiles for a browse view.
@@ -100,26 +111,21 @@ function browseGrid(branch, items, folderPath) {
   if (!folders.length && !docs.length) {
     return `<p class="galleryEmpty" data-i18n="gallery:empty">Hier ist noch nichts.</p>`
   }
-  let html = ""
-  if (folders.length) {
-    const tiles = folders
-      .map(
-        (f) =>
-          `<li class="tile folderTile"><a href="${escapeHtml(folderHref(branch, f.slug))}">` +
-          `<span class="tileName">${escapeHtml(f.name)}</span></a></li>`
-      )
-      .join("")
-    html +=
-      `<h2 class="browseHead" data-i18n="gallery:section.folders">Ordner</h2>` +
-      `<ul class="tileGrid">${tiles}</ul>`
-  }
-  if (docs.length) {
-    const tiles = docs.map((d) => docTile(branch, d)).join("")
-    html +=
-      `<h2 class="browseHead" data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</h2>` +
-      `<ul class="tileGrid">${tiles}</ul>`
-  }
-  return html
+  // One grid, the way a file manager shows a directory: the way up, then the
+  // folders, then the documents. Splitting it under two headings said nothing
+  // the icons do not already say, and made a short folder look like two lists.
+  const up = folderPath
+    ? tile("upTile", folderPath.includes("/")
+        ? folderHref(branch, folderPath.slice(0, folderPath.lastIndexOf("/")))
+        : branchHref(branch), icon("cornerUpLeft", { strokeWidth: 1.5 }), "..")
+    : ""
+
+  const tiles =
+    up +
+    folders.map((f) => tile("folderTile", folderHref(branch, f.slug), icon("folder", { strokeWidth: 1.5 }), f.name)).join("") +
+    docs.map((d) => docTile(branch, d)).join("")
+
+  return `<ul class="tileGrid">${tiles}</ul>`
 }
 
 // The gallery root: the two branches, each as an entry tile. No breadcrumb -

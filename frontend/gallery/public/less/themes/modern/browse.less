@@ -1,11 +1,4 @@
-// Breadcrumb, page heading and the tiles that lead into folders and worksheets.
-
-.browseHead {
-    font-size: calc(14px + 0.2vw);
-    font-weight: 400;
-    color: rgb(var(--text-muted));
-    margin: @contentAreaSpacing 0 @buttonSpacing;
-}
+// Breadcrumb, page heading and the tiles that lead into folders and documents.
 
 .tileGrid {
     gap: @buttonSpacing;
@@ -15,10 +8,10 @@
         background-color: rgb(var(--surface-base));
         border: 1px solid rgb(var(--line-default));
         border-radius: @borderRadiusBig;
-        padding: @buttonSpacing 12px;
+        padding: 12px;
+        gap: 10px;
         color: rgb(var(--text-default));
         text-decoration: none;
-        gap: 8px;
         transition: border-color 0.15s ease, background-color 0.15s ease;
 
         &:hover {
@@ -27,35 +20,17 @@
         }
     }
 
-    // A folder and a worksheet lead to different things, so they are told apart
-    // at a glance by a leading glyph rather than by colour alone.
-    .folderTile a::before {
-        content: "\1F4C1";
-    }
-
-    // Only on text tiles: a component tile already shows its symbol, a page
-    // glyph next to it would be a second, weaker picture.
-    .docTile:not(.hasThumb) a::before {
-        content: "\1F4C4";
-    }
-}
-
-.galleryEmpty {
-    color: rgb(var(--text-muted));
-}
-
-// Component tiles: the symbol needs room to breathe and a quiet backing, so a
-// drawing on white does not float against the tile edge.
-.tileGrid {
-
-    .tile.hasThumb a {
-        gap: 10px;
-        padding: 12px;
-    }
-
+    // A quiet backing behind the picture, so a line drawing does not float
+    // against the tile edge and a folder glyph reads as an icon.
     .tileThumb {
         background-color: rgb(var(--surface-recessed));
         border-radius: @borderRadiusSmall;
+    }
+
+    // The glyph is a sign, not content - it steps back from the name.
+    .folderTile svg,
+    .upTile svg {
+        color: rgb(var(--text-muted));
     }
 }
 
@@ -71,6 +46,10 @@
         color: rgb(var(--text-muted));
         margin-left: 12px;
     }
+}
+
+.galleryEmpty {
+    color: rgb(var(--text-muted));
 }
 
 // The 404. The big number is scenery, so it stays quiet and lets the sentence
