@@ -26,6 +26,12 @@
   <link href='../common/css/inter.css' rel='stylesheet' type='text/css'>
   <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 
+  <!-- Formulas are rendered to KaTeX markup on the server. KaTeX emits the
+       formula TWICE - once as MathML for screen readers, once as styled HTML -
+       and it is this stylesheet that hides the MathML copy. Without it every
+       formula and every inline `code` span shows up doubled. -->
+  <link href='../common/css/katex.min.css' rel='stylesheet' type='text/css'>
+
   <!-- The compiled LESS. Delivered as a file rather than injected by
        style-loader, so the page shows no flash of unstyled content. -->
   <link href="./js/webpack/bundle.css" rel="stylesheet" type="text/css">

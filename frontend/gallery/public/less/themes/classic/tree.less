@@ -41,3 +41,17 @@
         margin-left: 4px;
     }
 }
+
+// The two branches at the top of the tree. They name what the reader is in, so
+// they carry more weight than a folder and keep a little air between them.
+.galleryTree {
+
+    .treeRoot > .treeBranch {
+        margin-bottom: 10px;
+
+        > details > summary > a,
+        > a {
+            font-weight: 600;
+        }
+    }
+}

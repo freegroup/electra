@@ -1,16 +1,17 @@
-// The three article bodies the gallery serves: the root, a folder page and a
-// single worksheet. Each returns ready HTML for the <article> placeholder; the
-// left folder tree and the page shell are added around it by page.js.
+// The article bodies the gallery serves: the root with its two branches, a
+// folder listing, one worksheet, one component. Each returns ready HTML for the
+// <article> placeholder; the tree and the page shell are added by page.js.
 //
 // Chrome copy is German (the served default); each label also carries a
 // data-i18n attribute, so the client bundle re-localizes it after load. No
 // server-side i18n - German ships immediately, the client adjusts if needed.
 //
 // Links are plain, crawlable <a href> - folders end in a slash, documents do
-// not. The action links (PDF, author) point at other apps and open in their own
-// tab; they are tools, not indexable gallery content.
+// not. The action links (PDF, author, designer) point at other apps and open in
+// their own tab; they are tools, not indexable gallery content.
 
 const { renderDocument } = require("./sections")
+const { md } = require("./markdown")
 const { pathToSlug } = require("./list")
 
 const BASE = "/gallery"
@@ -25,22 +26,26 @@ function encodeSegments(p) {
   return p.split("/").map(encodeURIComponent).join("/")
 }
 
-function folderHref(slug) {
-  return `${BASE}/${encodeSegments(slug)}/`
+function branchHref(branch) {
+  return `${BASE}/${branch.slug}/`
 }
 
-function docHref(slug) {
-  return `${BASE}/${encodeSegments(slug)}`
+function folderHref(branch, slug) {
+  return `${BASE}/${branch.slug}/${encodeSegments(slug)}/`
 }
 
-// Immediate children of a folder ("" = root): the next-level subfolders and the
-// documents that sit directly in it.
-function childrenOf(items, folderPath) {
+function docHref(branch, slug) {
+  return `${BASE}/${branch.slug}/${encodeSegments(slug)}`
+}
+
+// Immediate children of a folder ("" = the branch root): the next-level
+// subfolders and the documents that sit directly in it.
+function childrenOf(branch, items, folderPath) {
   const prefix = folderPath ? folderPath + "/" : ""
   const subfolders = new Map() // name -> full slug
   const docs = [] // { item, name, slug }
   items.forEach((it) => {
-    const slug = pathToSlug(it.path)
+    const slug = pathToSlug(branch, it.path)
     if (prefix && !slug.startsWith(prefix)) return
     const rest = slug.slice(prefix.length)
     if (!rest) return
@@ -58,24 +63,40 @@ function childrenOf(items, folderPath) {
   return { folders, docs }
 }
 
-// Breadcrumb from the site root down to `folderPath`. When `leaf` is given it is
-// appended as the current (unlinked) page - a document name.
-function breadcrumb(folderPath, leaf) {
-  const crumbs = [`<a href="${BASE}/">Arbeitsblätter</a>`]
+// Breadcrumb from the gallery root through the branch down to `folderPath`. A
+// `leaf` is appended as the current, unlinked page - a document name.
+function breadcrumb(branch, folderPath, leaf) {
+  const crumbs = [
+    `<a href="${BASE}/" data-i18n="gallery:title">Galerie</a>`,
+    `<a href="${escapeHtml(branchHref(branch))}" data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</a>`,
+  ]
   if (folderPath) {
     let accum = ""
     folderPath.split("/").forEach((seg) => {
       accum = accum ? `${accum}/${seg}` : seg
-      crumbs.push(`<a href="${escapeHtml(folderHref(accum))}">${escapeHtml(seg)}</a>`)
+      crumbs.push(`<a href="${escapeHtml(folderHref(branch, accum))}">${escapeHtml(seg)}</a>`)
     })
   }
   if (leaf) crumbs.push(`<span aria-current="page">${escapeHtml(leaf)}</span>`)
   return `<nav class="crumbs">${crumbs.join('<span class="sep">/</span>')}</nav>`
 }
 
-// A grid of folder and document tiles for a browse view (root or folder).
-function browseGrid(items, folderPath) {
-  const { folders, docs } = childrenOf(items, folderPath)
+// A document tile. Components carry a preview image - a list of component names
+// without their symbols would be unusable, the picture IS the identification.
+function docTile(branch, d) {
+  const thumb = d.item.thumbnailUrl
+    ? `<span class="tileThumb"><img src="${escapeHtml(d.item.thumbnailUrl)}" alt="" loading="lazy"></span>`
+    : ""
+  const withThumb = thumb ? " hasThumb" : ""
+  return (
+    `<li class="tile docTile${withThumb}"><a href="${escapeHtml(docHref(branch, d.slug))}">` +
+    `${thumb}<span class="tileName">${escapeHtml(d.name)}</span></a></li>`
+  )
+}
+
+// A grid of folder and document tiles for a browse view.
+function browseGrid(branch, items, folderPath) {
+  const { folders, docs } = childrenOf(branch, items, folderPath)
   if (!folders.length && !docs.length) {
     return `<p class="galleryEmpty" data-i18n="gallery:empty">Hier ist noch nichts.</p>`
   }
@@ -84,7 +105,7 @@ function browseGrid(items, folderPath) {
     const tiles = folders
       .map(
         (f) =>
-          `<li class="tile folderTile"><a href="${escapeHtml(folderHref(f.slug))}">` +
+          `<li class="tile folderTile"><a href="${escapeHtml(folderHref(branch, f.slug))}">` +
           `<span class="tileName">${escapeHtml(f.name)}</span></a></li>`
       )
       .join("")
@@ -93,45 +114,65 @@ function browseGrid(items, folderPath) {
       `<ul class="tileGrid">${tiles}</ul>`
   }
   if (docs.length) {
-    const tiles = docs
-      .map(
-        (d) =>
-          `<li class="tile docTile"><a href="${escapeHtml(docHref(d.slug))}">` +
-          `<span class="tileName">${escapeHtml(d.name)}</span></a></li>`
-      )
-      .join("")
+    const tiles = docs.map((d) => docTile(branch, d)).join("")
     html +=
-      `<h2 class="browseHead" data-i18n="gallery:section.sheets">Blätter</h2>` +
+      `<h2 class="browseHead" data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</h2>` +
       `<ul class="tileGrid">${tiles}</ul>`
   }
   return html
 }
 
-// The root article: title, lead and the top-level browse grid.
-function rootView(items) {
+// The gallery root: the two branches, each as an entry tile.
+function rootView(indexes) {
+  const tiles = indexes
+    .map(
+      ({ branch, items }) =>
+        `<li class="tile branchTile"><a href="${escapeHtml(branchHref(branch))}">` +
+        `<span class="tileName" data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</span>` +
+        `<span class="tileCount">${items.length}</span></a></li>`
+    )
+    .join("")
   return (
     `<header class="galleryHead">` +
-    `<h1 data-i18n="gallery:title">Arbeitsblätter</h1>` +
-    `<p class="lead" data-i18n="gallery:lead">Anschauen, als PDF laden oder im Autor weiterbauen.</p>` +
+    `<h1 data-i18n="gallery:title">Galerie</h1>` +
+    `<p class="lead" data-i18n="gallery:lead">Fertige Arbeitsblätter und alle Bauteile - anschauen, laden oder weiterbauen.</p>` +
     `</header>` +
-    `<section class="galleryBrowse">${browseGrid(items, "")}</section>`
+    `<section class="galleryBrowse"><ul class="tileGrid">${tiles}</ul></section>`
   )
 }
 
-// A folder article: breadcrumb, folder name and its browse grid.
-function folderView(items, folderPath) {
-  const name = folderPath.split("/").pop()
+// A branch's entry page: its top-level folders and documents.
+function branchView(branch, items) {
   return (
-    breadcrumb(folderPath) +
-    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1></header>` +
-    `<section class="galleryBrowse">${browseGrid(items, folderPath)}</section>`
+    breadcrumb(branch, "") +
+    `<header class="galleryHead"><h1 data-i18n="${branch.i18n}">${escapeHtml(branch.label)}</h1></header>` +
+    `<section class="galleryBrowse">${browseGrid(branch, items, "")}</section>`
   )
 }
 
-// A worksheet article: breadcrumb, title, action links and the rendered sheet.
-function docView(item, doc) {
-  const slug = pathToSlug(item.path)
+// A folder inside a branch.
+function folderView(branch, items, folderPath) {
+  const name = folderPath.split("/").pop()
+  const parent = folderPath.includes("/") ? folderPath.slice(0, folderPath.lastIndexOf("/")) : ""
+  return (
+    breadcrumb(branch, parent, name) +
+    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1></header>` +
+    `<section class="galleryBrowse">${browseGrid(branch, items, folderPath)}</section>`
+  )
+}
+
+// Shared page head for a document: breadcrumb, title, action buttons.
+function docHeader(branch, slug, name, actions) {
   const folderPath = slug.includes("/") ? slug.slice(0, slug.lastIndexOf("/")) : ""
+  return (
+    breadcrumb(branch, folderPath, name) +
+    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1>${actions}</header>`
+  )
+}
+
+// One worksheet: the rendered sheet, plus PDF and author links.
+function sheetView(branch, item, doc) {
+  const slug = pathToSlug(branch, item.path)
   const name = slug.split("/").pop()
   const id = encodeURIComponent(item.id)
   const actions =
@@ -139,12 +180,45 @@ function docView(item, doc) {
     `<a class="electra-button" href="../sheets/pdf?id=${id}&mode=all&lang=de" target="_blank" rel="noopener" data-i18n="gallery:action.pdf">PDF</a>` +
     `<a class="electra-button electra-primary" href="../author/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.open">Im Autor öffnen</a>` +
     `</div>`
-  const body = doc ? renderDocument(doc) : `<p class="galleryEmpty" data-i18n="gallery:empty">Hier ist noch nichts.</p>`
+  const body = doc
+    ? renderDocument(doc)
+    : `<p class="galleryEmpty" data-i18n="gallery:empty">Hier ist noch nichts.</p>`
+  return docHeader(branch, slug, name, actions) + `<div class="galleryDoc">${body}</div>`
+}
+
+// One component: its symbol, its description, and the way into the designer.
+//
+// The description is written in the designer and stored with the component; it
+// runs through the same markdown pipeline as a worksheet, so its headings are
+// demoted below the page title exactly the same way.
+function partView(branch, item, markdown) {
+  const slug = pathToSlug(branch, item.path)
+  const name = slug.split("/").pop()
+  const id = encodeURIComponent(item.id)
+  const actions =
+    `<div class="galleryActions">` +
+    `<a class="electra-button electra-primary" href="../designer/?doc=${id}" target="_blank" rel="noopener" data-i18n="gallery:action.designer">Im Designer öffnen</a>` +
+    `</div>`
+
+  // The symbol is the component's identity, so it is named in the alt text
+  // rather than left decorative.
+  const symbol = item.thumbnailUrl
+    ? `<figure class="partSymbol"><img src="${escapeHtml(item.thumbnailUrl)}" alt="Schaltsymbol ${escapeHtml(name)}"></figure>`
+    : ""
+
+  let body = ""
+  if (markdown && markdown.trim()) {
+    try {
+      body = md.render(markdown)
+    } catch (err) {
+      console.log(`[gallery] description of ${slug} failed: ${err && err.message}`)
+    }
+  }
+
   return (
-    breadcrumb(folderPath, name) +
-    `<header class="galleryHead"><h1>${escapeHtml(name)}</h1>${actions}</header>` +
-    `<div class="galleryDoc">${body}</div>`
+    docHeader(branch, slug, name, actions) +
+    `<div class="galleryDoc galleryPart">${symbol}<div class="galleryPage">${body}</div></div>`
   )
 }
 
-module.exports = { rootView, folderView, docView, browseGrid }
+module.exports = { rootView, branchView, folderView, sheetView, partView }

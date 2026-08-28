@@ -67,11 +67,42 @@
         content: "\1F4C1";
     }
 
-    .docTile a::before {
+    // Only on text tiles: a component tile already shows its symbol, a page
+    // glyph next to it would be a second, weaker picture.
+    .docTile:not(.hasThumb) a::before {
         content: "\1F4C4";
     }
 }
 
 .galleryEmpty {
     color: rgb(var(--text-muted));
+}
+
+// Component tiles: the symbol needs room to breathe and a quiet backing, so a
+// drawing on white does not float against the tile edge.
+.tileGrid {
+
+    .tile.hasThumb a {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .tileThumb {
+        background-color: rgb(var(--surface-recessed));
+        border-radius: @borderRadiusSmall;
+    }
+}
+
+// The branch tiles on the gallery root. The count is a secondary fact, so it
+// steps back from the name rather than running on directly after it.
+.branchTile a {
+
+    .tileName {
+        font-weight: 600;
+    }
+
+    .tileCount {
+        color: rgb(var(--text-muted));
+        margin-left: 12px;
+    }
 }

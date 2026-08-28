@@ -49,3 +49,25 @@
     max-width: 100%;
   }
 }
+
+// A component page: its schematic symbol above the description. The symbol is
+// small artwork (a few hundred pixels), so it is centred on a band of its own
+// rather than left to sit at the top of the text.
+.galleryPart {
+
+  .partSymbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+
+    // The same measure as the description below it, so the two share an edge
+    // instead of the band running wider than the text it belongs to.
+    max-width: 72ch;
+
+    img {
+      max-width: 100%;
+      max-height: 220px;
+    }
+  }
+}
