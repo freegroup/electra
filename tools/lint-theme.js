@@ -33,7 +33,7 @@ const fs = require("fs")
 const path = require("path")
 
 const ROOT = path.resolve(__dirname, "..")
-const AREAS = ["common", "home", "simulator", "author", "designer"]
+const AREAS = ["common", "home", "simulator", "author", "designer", "gallery"]
 
 // Colour words that mean a decision was baked in. `transparent`, `currentColor`
 // and `inherit` are the opposite of hardcoding, so they are fine.

@@ -1,0 +1,30 @@
+// The gallery shell's surfaces: the page background, the tree column and the
+// content pane it sits next to.
+
+.galleryMain {
+    background-color: rgb(var(--surface-recessed));
+    gap: @contentAreaSpacing;
+    padding: @contentAreaSpacing;
+}
+
+.galleryTree {
+    background-color: rgb(var(--surface-base));
+    border: 1px solid rgb(var(--line-default));
+    border-radius: @borderRadiusBig;
+    padding: @contentToEdgePadding;
+}
+
+.galleryContent {
+    background-color: rgb(var(--surface-base));
+    border: 1px solid rgb(var(--line-default));
+    border-radius: @borderRadiusBig;
+    padding: @contentToEdgePadding;
+}
+
+// The rendered worksheet reads as a document, not as a form: the cells lose
+// their editor frame and the page keeps only its reading rhythm.
+.galleryDoc {
+    .section {
+        background-color: transparent;
+    }
+}

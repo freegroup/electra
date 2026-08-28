@@ -1,0 +1,64 @@
+// The gallery shell: app bar on top, then a two-column body - the folder tree
+// on the left, the content pane on the right - and the footer below.
+//
+// The tree and the pane are both filled by the server; nav.js only swaps the
+// pane's inner HTML, so nothing here may depend on JS having run.
+
+.galleryBody {
+  margin: 0;
+  padding: 0;
+}
+
+.galleryLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.galleryMain {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  align-items: start;
+  flex: 1 1 auto;
+}
+
+.galleryTree {
+  position: sticky;
+  top: @appbarHeight;
+  max-height: calc(100vh - @appbarHeight);
+  overflow-y: auto;
+}
+
+.galleryContent {
+  min-width: 0;
+}
+
+// The rendered worksheet. .authorPage brings its own reading typography from
+// common/less/layout/author_page.less; it only needs to stop centering itself
+// inside the pane.
+.galleryDoc {
+  .authorPage {
+    margin-left: 0;
+  }
+
+  // A read-only view: no cell frames, no click affordance, no editor chrome.
+  .section {
+    border: none;
+    cursor: default;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+// One column on narrow screens: the tree moves above the content and stops
+// being sticky, so a phone is not left with a third of the width for text.
+@media (max-width: 900px) {
+  .galleryMain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .galleryTree {
+    position: static;
+    max-height: none;
+  }
+}

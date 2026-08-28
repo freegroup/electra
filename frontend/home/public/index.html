@@ -68,9 +68,9 @@
           <div data-i18n="[html]teaser.description" class="textblock"><i>Bau deine eigenen Schaltungen</i>, von einer einzelnen Verknüpfung bis zum kompletten Schaltwerk. Dazu Aufgaben, Erklärungen und Lernmaterial - alles im selben Browser.<br><br><b>Kein Konto, keine Installation. Schaltung zeichnen, Simulation starten, Strom fließt.</b></div>
         </div>
       </div>
-      <!-- Zwei gleichwertige Eingaenge: bauen oder lernen. .launchArea ist eine
-           Flexzeile mit flex:1 auf den Kindern, der zweite Block setzt sich
-           also von selbst daneben.
+      <!-- Drei gleichwertige Eingaenge: bauen, nehmen oder lernen. .launchArea
+           ist eine Flexzeile mit flex:1 auf den Kindern, jeder weitere Block
+           setzt sich also von selbst daneben.
 
            Das Titelbild kommt aus /book/ und nicht aus einer Kopie hier -
            tools/publish-pdf.js erneuert es bei jedem Buchsatz, eine zweite
@@ -86,6 +86,12 @@
             <img class="image" src="./images/component_simulator.png" alt="">
           </a>
           <a data-i18n="button.launch_simulator" class="electra-button electra-primary" href="../simulator" target="simulator">Entdecke den Simulator</a>
+        </div>
+        <div class="imageContainer">
+          <a class="imageLink" href="../gallery/" aria-hidden="true" tabindex="-1">
+            <img class="image" src="./images/component_gallery.png" alt="">
+          </a>
+          <a data-i18n="button.launch_gallery" class="electra-button electra-primary" href="../gallery/">Galerie</a>
         </div>
         <div class="imageContainer bookLaunch">
           <a class="imageLink blob" href="../book/" aria-hidden="true" tabindex="-1">

@@ -47,6 +47,11 @@ export default class AppSwitch {
                         <div data-i18n="[html]common:apps.book">Grundlagen</div>
                       </label>
 
+                      <label class="applicationSwitchGallery image-button" >
+                        <img src="/common/images/app_gallery.svg"/>
+                        <div data-i18n="[html]common:apps.gallery">Galerie</div>
+                      </label>
+
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="/common/images/app_youtube.svg"/>
                         <div data-i18n="[html]common:apps.youtube">Youtube<br>Channel</div>
@@ -67,6 +72,9 @@ export default class AppSwitch {
     })
     $(".applicationSwitchBook").off("click").on("click", () => {
       window.open("../book", "book")
+    })
+    $(".applicationSwitchGallery").off("click").on("click", () => {
+      window.open("../gallery/", "gallery")
     })
     $(".applicationSwitchDesigner").off("click").on("click", () => {
       window.open("../designer", "designer")

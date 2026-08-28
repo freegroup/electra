@@ -1,0 +1,77 @@
+// Breadcrumb, page heading and the tiles that lead into folders and worksheets.
+
+.crumbs {
+    font-size: var(--label-font-size);
+    color: rgb(var(--text-muted));
+    gap: 6px;
+    margin-bottom: @contentAreaSpacing;
+
+    a {
+        color: rgb(var(--text-muted));
+        text-decoration: none;
+
+        &:hover {
+            color: rgb(var(--accent));
+            text-decoration: underline;
+        }
+    }
+
+    .sep {
+        color: rgb(var(--text-disabled));
+    }
+}
+
+.galleryHead {
+    margin-bottom: @contentAreaSpacing;
+
+    .lead {
+        color: rgb(var(--text-muted));
+    }
+}
+
+.galleryActions {
+    gap: @buttonSpacing;
+    margin-top: @buttonSpacing;
+}
+
+.browseHead {
+    font-size: calc(14px + 0.2vw);
+    font-weight: 400;
+    color: rgb(var(--text-muted));
+    margin: @contentAreaSpacing 0 @buttonSpacing;
+}
+
+.tileGrid {
+    gap: @buttonSpacing;
+    margin-bottom: @contentAreaSpacing;
+
+    .tile a {
+        background-color: rgb(var(--surface-base));
+        border: 1px solid rgb(var(--line-default));
+        border-radius: @borderRadiusBig;
+        padding: @buttonSpacing 12px;
+        color: rgb(var(--text-default));
+        text-decoration: none;
+        gap: 8px;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
+
+        &:hover {
+            background-color: rgb(var(--state-hover));
+            border-color: rgb(var(--accent));
+        }
+    }
+
+    // A folder and a worksheet lead to different things, so they are told apart
+    // at a glance by a leading glyph rather than by colour alone.
+    .folderTile a::before {
+        content: "\1F4C1";
+    }
+
+    .docTile a::before {
+        content: "\1F4C4";
+    }
+}
+
+.galleryEmpty {
+    color: rgb(var(--text-muted));
+}

@@ -1,0 +1,17 @@
+// ---------------------------------------------------------------------------
+// MODERN, gallery-specific - selected by <html data-theme="modern">.
+//
+// Carries the SAME file set as themes/classic/, the convention the other apps
+// follow (see author/less/themes/modern/index.less): the copies start out
+// identical and diverge as they are edited, so nobody has to ask whether a rule
+// falls through or is overridden.
+//
+// No tokens of its own - the gallery dresses itself from the common vocabulary,
+// and common's Modern tokens are already in scope.
+// ---------------------------------------------------------------------------
+
+[data-theme="modern"] body.themed {
+    @import "layout";
+    @import "tree";
+    @import "browse";
+}

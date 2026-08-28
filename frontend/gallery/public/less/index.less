@@ -1,0 +1,16 @@
+// Before common's: its layout files read @leftPaneWidth, and a LESS variable
+// has to be in scope where it is used.
+@import "layout/variables";
+
+@import "../../common/less/index";
+
+@import "layout/layout";
+@import "layout/tree";
+@import "layout/browse";
+
+@import "themes/classic/index";
+
+// Modern is a token override only - no rule of Classic is duplicated. The
+// attribute selector on <html> outranks :root, so import order is irrelevant.
+@import "../../common/less/themes/modern/index";
+@import "themes/modern/index";

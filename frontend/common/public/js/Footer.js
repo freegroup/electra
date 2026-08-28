@@ -63,6 +63,11 @@ export default class Footer {
             <a href="/simulator">Simulator</a>
             <a href="/author">Author</a>
             <a href="/designer">Designer</a>
+            <!-- Mit Schraegstrich: /gallery holt sich sonst erst eine 301 beim
+                 Ingress. Und mit Schluessel, anders als die Nachbarn - die sind
+                 Eigennamen, "Galerie" ist ein Wort und heisst auf Englisch
+                 anders. Der common-Namensraum ist in jeder App geladen. -->
+            <a href="/gallery/" data-i18n="common:apps.gallery">Galerie</a>
             <a href="/book/">Grundkurs Digitaltechnik</a>
           </nav>
 

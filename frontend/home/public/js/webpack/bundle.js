@@ -71,6 +71,11 @@ class AppSwitch {
                         <div data-i18n="[html]common:apps.book">Grundlagen</div>
                       </label>
 
+                      <label class="applicationSwitchGallery image-button" >
+                        <img src="/common/images/app_gallery.svg"/>
+                        <div data-i18n="[html]common:apps.gallery">Galerie</div>
+                      </label>
+
                       <label class="applicationSwitchYoutube image-button" >
                         <img src="/common/images/app_youtube.svg"/>
                         <div data-i18n="[html]common:apps.youtube">Youtube<br>Channel</div>
@@ -90,6 +95,9 @@ class AppSwitch {
     });
     $(".applicationSwitchBook").off("click").on("click", () => {
       window.open("../book", "book");
+    });
+    $(".applicationSwitchGallery").off("click").on("click", () => {
+      window.open("../gallery/", "gallery");
     });
     $(".applicationSwitchDesigner").off("click").on("click", () => {
       window.open("../designer", "designer");
@@ -297,6 +305,11 @@ class Footer {
             <a href="/simulator">Simulator</a>
             <a href="/author">Author</a>
             <a href="/designer">Designer</a>
+            <!-- Mit Schraegstrich: /gallery holt sich sonst erst eine 301 beim
+                 Ingress. Und mit Schluessel, anders als die Nachbarn - die sind
+                 Eigennamen, "Galerie" ist ein Wort und heisst auf Englisch
+                 anders. Der common-Namensraum ist in jeder App geladen. -->
+            <a href="/gallery/" data-i18n="common:apps.gallery">Galerie</a>
             <a href="/book/">Grundkurs Digitaltechnik</a>
           </nav>
 

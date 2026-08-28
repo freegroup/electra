@@ -1,0 +1,51 @@
+// The folder navigation tree.
+//
+// Server-rendered, folders only, the full hierarchy collapsed into nested
+// <details>. It works without JS: <details> opens natively and every folder is
+// a real link. The active branch ships already open (the `open` attribute).
+
+.galleryTree {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  // Each level steps in; the first level sits flush with the pane edge.
+  ul ul {
+    padding-left: 14px;
+  }
+
+  li {
+    display: block;
+  }
+
+  a {
+    display: block;
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    // The marker is drawn by the theme (a rotating chevron), so the browser's
+    // own triangle has to go - in both engines.
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // The folder link fills the row, so the whole width is clickable.
+    a {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    // The theme draws a chevron glyph here; it has to be a block to rotate.
+    &::before {
+      display: inline-block;
+    }
+  }
+}

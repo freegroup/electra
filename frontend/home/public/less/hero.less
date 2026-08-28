@@ -55,13 +55,40 @@
         .launchArea{
             display: flex;
             text-align: center;
+            // Waagerecht zentriert die Gruppe. Senkrecht bleibt es beim
+            // Standard "stretch" - der ist tragend: nur eine gestreckte Kachel
+            // hat eine definierte Hoehe, gegen die das max-height:100% der
+            // Bilder rechnen kann. Mit align-items:center wachsen sie aus der
+            // 20vh hohen Zeile heraus.
             justify-content: center;
             flex-direction: row;
             max-height:20vh;
             max-width:100%;
 
+            // Der Abstand zwischen den Eingaengen. Er steht hier, weil die
+            // Kacheln sich nicht mehr die volle Breite teilen (siehe unten) -
+            // ohne Luecke wuerden sie sich beruehren.
+            gap: 3vw;
+
             .imageContainer {
-                flex: 1;
+                // Kein flex-grow: mit drei Eingaengen bekaeme jeder ein Drittel
+                // der Fensterbreite und die Bilder stuenden weit auseinander.
+                // So ist jede Kachel so breit wie ihr Bild und die Reihe rueckt
+                // ueber justify-content:center zusammen. min-width:0 laesst sie
+                // auf schmalen Fenstern trotzdem schrumpfen - ohne das
+                // verhindert die Bildbreite als automatische Mindestbreite,
+                // dass die Zeile ins Fenster passt.
+                flex: 0 1 auto;
+                min-width: 0;
+
+                // Die Kachel soll so breit sein wie ihr Bild. Ohne Deckel ist
+                // sie so breit wie die NATUERLICHE Bildbreite (817px), obwohl
+                // das Bild ueber max-height auf ein Viertel davon skaliert -
+                // die Reihe stand deshalb weit auseinander. Die Bilder sind
+                // hoehendefiniert (20vh), also deckelt die Breite in derselben
+                // Einheit: 30vh deckt das breiteste Seitenverhaeltnis ab.
+                max-width: 30vh;
+
                 flex-flow: column wrap;
                 align-items: center;
 
@@ -74,6 +101,9 @@
 
                 img{
                     max-height:100%;
+                    // Zaehlt zusammen mit min-width:0 oben: das Bild darf mit
+                    // der Kachel schmaler werden, statt die Zeile aufzuspannen.
+                    max-width:100%;
                 }
 
                 // Das Bild ist ein Link wie der Knopf darunter.

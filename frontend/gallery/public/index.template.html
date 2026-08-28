@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <title><!--GALLERY_TITLE--></title>
+  <meta name="description" content="<!--GALLERY_DESCRIPTION-->">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <!-- The trailing slash is required. Without it the browser drops "gallery"
+       as a filename and resolves "./js/..." against "/", which lands on the
+       start page's bundle instead of ours. It also keeps every relative URL
+       stable across the nested worksheet paths. -->
+  <base href="/gallery/" />
+
+  <link rel="canonical" href="<!--GALLERY_CANONICAL-->">
+  <link rel="icon" type="image/png" href="../common/images/favicon_64x64.png" sizes="64x64">
+  <link rel="icon" type="image/png" href="../common/images/favicon_32x32.png" sizes="32x32">
+
+  <meta property="og:title" content="<!--GALLERY_TITLE-->">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<!--GALLERY_CANONICAL-->">
+  <meta property="og:description" content="<!--GALLERY_DESCRIPTION-->">
+
+  <link href='../common/css/roboto.css' rel='stylesheet' type='text/css'>
+  <link href='../common/css/inter.css' rel='stylesheet' type='text/css'>
+  <link href='../common/js/bootstrap/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+
+  <!-- The compiled LESS. Delivered as a file rather than injected by
+       style-loader, so the page shows no flash of unstyled content. -->
+  <link href="./js/webpack/bundle.css" rel="stylesheet" type="text/css">
+
+  <script src="../common/js/jquery/jquery.js"></script>
+  <script src="../common/js/bootstrap/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript">
+    var app = null
+    var socket = null
+  </script>
+  <!-- The stored theme, applied before the first paint. Contract with
+       common/js/theme.js - same storage key, same attribute. -->
+  <script>try{if(localStorage.getItem("electra.theme")==="modern")document.documentElement.setAttribute("data-theme","modern")}catch(e){}</script>
+</head>
+
+<body class="themed galleryBody" data-appbar-subtitle-i18n="gallery:subtitle">
+
+  <div class="galleryLayout">
+
+    <!-- filled by the shared Header component (js/Header.js), the same bar the
+         start page and the editors use -->
+    <div class="appbarMount"></div>
+
+    <main class="galleryMain">
+
+      <!-- The folder tree, rendered server-side into this placeholder (folders
+           only, the full hierarchy collapsed). Every folder is a real crawlable
+           link; nav.js turns clicks into in-place swaps where JS is available. -->
+      <nav class="galleryTree" aria-label="Ordner"><!--GALLERY_TREE--></nav>
+
+      <!-- The content pane, filled server-side per route: root, a folder, or one
+           rendered worksheet. nav.js swaps only this node on internal clicks. -->
+      <article class="galleryContent"><!--GALLERY_CONTENT--></article>
+
+    </main>
+
+    <!-- filled by js/Footer.js -->
+    <div class="footerMount"></div>
+
+  </div>
+
+</body>
+
+<script src="./js/webpack/bundle.js"></script>
+</html>

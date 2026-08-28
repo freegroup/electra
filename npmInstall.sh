@@ -24,6 +24,10 @@ set -x
 (cd ./frontend/home && npm install )
 (cd ./frontend/home && npm run build)
 
+(cd ./frontend/gallery && rm -rf node_modules )
+(cd ./frontend/gallery && npm install )
+(cd ./frontend/gallery && npm run build)
+
 (cd ./ingress && rm -rf node_modules )
 (cd ./ingress && npm install )
 

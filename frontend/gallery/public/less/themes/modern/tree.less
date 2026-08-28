@@ -1,0 +1,43 @@
+// The folder tree's look: quiet rows, a chevron that turns when a branch opens,
+// and the current folder marked by the accent.
+
+.galleryTree {
+    font-size: var(--label-font-size);
+
+    a {
+        color: rgb(var(--text-default));
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: @borderRadiusSmall;
+
+        &:hover {
+            background-color: rgb(var(--state-hover));
+        }
+
+        &.active {
+            background-color: rgb(var(--state-selected));
+            color: rgb(var(--accent));
+            font-weight: 600;
+        }
+    }
+
+    // The chevron replaces the browser's default marker (hidden in the layout
+    // layer). A glyph rather than a CSS-border triangle: it needs no box of its
+    // own and scales with the row's font size.
+    summary::before {
+        content: "\25B8";
+        margin-right: 6px;
+        color: rgb(var(--text-muted));
+        transition: transform 0.15s ease;
+    }
+
+    details[open] > summary::before {
+        transform: rotate(90deg);
+    }
+
+    // Nested levels get a guide line, so a deep branch stays readable.
+    ul ul {
+        border-left: 1px solid rgb(var(--line-default));
+        margin-left: 4px;
+    }
+}

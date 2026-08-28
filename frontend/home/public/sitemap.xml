@@ -7,7 +7,11 @@
   home/server/index.js mounts the directory twice - those variants carry a
   rel=canonical pointing here and must not appear in this file.
 
-  Kept by hand: nine pages, and no build step exists that could generate it.
+  Kept by hand: ten pages, and no build step exists that could generate it. The
+  gallery appears here with its entry page only - its folders and worksheets
+  change with the content and are listed in /gallery/sitemap.xml, which the
+  gallery server generates from the live document list and robots.txt announces
+  separately.
 
   No <lastmod>, <changefreq> or <priority> on purpose. Google ignores the latter
   two outright, and a <lastmod> nobody keeps accurate is worse than none - once it
@@ -24,6 +28,7 @@
   <url><loc>https://electra.academy/simulator/</loc></url>
   <url><loc>https://electra.academy/author/</loc></url>
   <url><loc>https://electra.academy/designer/</loc></url>
+  <url><loc>https://electra.academy/gallery/</loc></url>
   <url>
     <loc>https://electra.academy/book/</loc>
   </url>

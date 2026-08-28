@@ -66,6 +66,7 @@ const PORT_AUTHOR = process.env.PORT_AUTHOR || die("missing env variable PORT_AU
 const PORT_SHEETS = process.env.PORT_SHEETS || die("missing env variable PORT_SHEETS");
 const PORT_DESIGNER = process.env.PORT_DESIGNER || die("missing env variable PORT_DESIGNER");
 const PORT_BOOK = process.env.PORT_BOOK || die("missing env variable PORT_BOOK");
+const PORT_GALLERY = process.env.PORT_GALLERY || die("missing env variable PORT_GALLERY");
 const LOCALHOST = process.env.LOCALHOST || die("missing env variable LOCALHOST");
 
 // The OAuth client this deployment accepts tokens for. NOT a secret - it is
@@ -240,6 +241,7 @@ app.use('/home',         prefixed('/home',         PORT_HOME))
 app.use('/userinfo',     prefixed('/userinfo',     PORT_USERINFO))
 app.use('/designer',     prefixed('/designer',     PORT_DESIGNER))
 app.use('/book',     prefixed('/book',     PORT_BOOK))
+app.use('/gallery',      prefixed('/gallery',      PORT_GALLERY))
 app.use('/author',       prefixed('/author',       PORT_AUTHOR))
 app.use('/sheets',       prefixed('/sheets',       PORT_SHEETS))
 app.use('/brains',       prefixed('/brains',       PORT_BRAINS))

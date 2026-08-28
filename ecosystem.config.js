@@ -39,6 +39,13 @@ module.exports = {
             env: { "NODE_ENV": "production"}
           },
           {
+            name   : "frontend-gallery",
+            cwd : "./frontend/gallery",
+            script: "node",
+            args: "./server/index",
+            env: { "NODE_ENV": "production"}
+          },
+          {
             name   : "frontend-designer",
             cwd : "./frontend/designer",
             script: "node",
