@@ -1,15 +1,15 @@
 module.exports = {
     apps : [          
           {
-            name   : "author",
-            cwd : "./author",
+            name   : "frontend-author",
+            cwd : "./frontend/author",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production",}
           },          
           {
-            name   : "brains",
-            cwd : "./brains",
+            name   : "backend-brains",
+            cwd : "./backend/brains",
             script: "node",
             args: "./server/index",
             env: {
@@ -18,43 +18,43 @@ module.exports = {
             }
           },
           {
-            name   : "simulator",
-            cwd : "./simulator",
+            name   : "frontend-simulator",
+            cwd : "./frontend/simulator",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production",}
           },          
           {
-            name   : "common",
-            cwd : "./common",
+            name   : "frontend-common",
+            cwd : "./frontend/common",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },          
           {
-            name   : "book",
-            cwd : "./book",
+            name   : "frontend-book",
+            cwd : "./frontend/book_html",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },
           {
-            name   : "designer",
-            cwd : "./designer",
+            name   : "frontend-designer",
+            cwd : "./frontend/designer",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },          
           {
-            name   : "home",
-            cwd : "./home",
+            name   : "frontend-home",
+            cwd : "./frontend/home",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },
           {
-            name   : "database",
-            cwd : "./database",
+            name   : "backend-database",
+            cwd : "./backend/database",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
@@ -62,8 +62,8 @@ module.exports = {
           {
             // Localhost-only admin/testing explorer. Deliberately NOT proxied
             // by the ingress — reach it via localhost or an SSH tunnel.
-            name   : "database-admin",
-            cwd : "./database/admin",
+            name   : "backend-database-admin",
+            cwd : "./backend/database/admin",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
@@ -76,22 +76,22 @@ module.exports = {
             env: { "NODE_ENV": "production"}
           },
           {
-            name   : "shapes",
-            cwd : "./shapes",
+            name   : "backend-shapes",
+            cwd : "./backend/shapes",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },          
           {
-            name   : "sheets",
-            cwd : "./sheets",
+            name   : "backend-sheets",
+            cwd : "./backend/sheets",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}
           },          
           {
-            name   : "userinfo",
-            cwd : "./userinfo",
+            name   : "backend-userinfo",
+            cwd : "./backend/userinfo",
             script: "node",
             args: "./server/index",
             env: { "NODE_ENV": "production"}

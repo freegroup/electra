@@ -41,9 +41,9 @@ const fs = require("fs")
 const path = require("path")
 
 const ROOT = path.resolve(__dirname, "..")
-const APPS = ["home", "simulator", "author", "designer", "book"]
+const APPS = ["home", "simulator", "author", "designer", "book_html"]
 const OUT = path.join(ROOT, ".fingerprint")
-const LESSC = path.join(ROOT, "home", "node_modules", ".bin", "lessc")
+const LESSC = path.join(ROOT, "frontend", "home", "node_modules", ".bin", "lessc")
 
 const NAMED = {
   white: "rgb(255,255,255)", black: "rgb(0,0,0)", red: "rgb(255,0,0)",
@@ -210,7 +210,7 @@ function fingerprint(css) {
 }
 
 function compile(app) {
-  const entry = path.join(ROOT, app, "public", "less", "index.less")
+  const entry = path.join(ROOT, "frontend", app, "public", "less", "index.less")
   return execFileSync(LESSC, [entry], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })
 }
 

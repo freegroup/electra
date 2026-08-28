@@ -134,7 +134,7 @@ const warnings = []   // counted, not fatal - see the note at the top
 const exempt   = []   // waived per file with theme-allow-file, still counted
 
 for (const area of AREAS) {
-  const base = path.join(ROOT, area, "public", "less")
+  const base = path.join(ROOT, "frontend", area, "public", "less")
 
   for (const file of walk(path.join(base, "layout"))) {
     for (const d of declarations(fs.readFileSync(file, "utf8"))) {

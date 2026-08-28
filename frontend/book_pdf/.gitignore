@@ -1,0 +1,21 @@
+# Aus media/*.svg abgeleitet, siehe Makefile. Die SVG sind die Quelle - ein
+# eingechecktes PDF daneben waere eine zweite Wahrheit, die niemand pflegt.
+media/*.pdf
+
+# LaTeX-Zwischendateien
+*.aux
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.log
+*.out
+*.toc
+*.lof
+*.synctex.gz
+kapitel/*.aux
+
+# Das Satzergebnis selbst. Es wird beim Ausrollen gebaut und nach
+# book_html/public/ kopiert.
+grundkurs.pdf

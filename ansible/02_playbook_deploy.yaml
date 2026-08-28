@@ -31,43 +31,43 @@
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/author
+      path: /home/electra/server/frontend/author
     
   - name: Install packages in /brains
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/brains
+      path: /home/electra/server/backend/brains
 
   - name: Install packages in /simulator
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/simulator
+      path: /home/electra/server/frontend/simulator
 
   - name: Install packages in /common
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/common
+      path: /home/electra/server/frontend/common
 
   - name: Install packages in /designer
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/designer
+      path: /home/electra/server/frontend/designer
 
   - name: Install packages in /book
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/book
+      path: /home/electra/server/frontend/book_html
 
   - name: Install packages in /home
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/home
+      path: /home/electra/server/frontend/home
 
   - name: Install packages in /ingress
     become: true
@@ -79,19 +79,19 @@
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/shapes
+      path: /home/electra/server/backend/shapes
 
   - name: Install packages in /sheets
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/sheets
+      path: /home/electra/server/backend/sheets
 
   # Download the Chrome-for-Testing build matched to the installed puppeteer.
   # The npm postinstall does this too, but running the browsers CLI explicitly
   # makes a partial/absent cache self-heal (a broken extraction never blocks a
   # re-download). .puppeteerrc.cjs pins the sheets cache to
-  # /home/electra/server/sheets/.puppeteer-cache; shapes uses the default
+  # /home/electra/server/backend/sheets/.puppeteer-cache; shapes uses the default
   # ~/.cache/puppeteer. Run as the user that runs the process so the browser is
   # found at runtime. Needed for PDF export (sheets) and thumbnails (shapes).
   - name: Install Chrome for puppeteer (/sheets)
@@ -99,61 +99,61 @@
     become_user: electra
     command: npx puppeteer browsers install chrome
     args:
-      chdir: /home/electra/server/sheets
+      chdir: /home/electra/server/backend/sheets
 
   - name: Install Chrome for puppeteer (/shapes)
     become: true
     become_user: electra
     command: npx puppeteer browsers install chrome
     args:
-      chdir: /home/electra/server/shapes
+      chdir: /home/electra/server/backend/shapes
 
   - name: Install packages in /database
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/database
+      path: /home/electra/server/backend/database
 
   - name: Install packages in /userinfo
     become: true
     become_user: electra
     community.general.npm:
-      path: /home/electra/server/userinfo
+      path: /home/electra/server/backend/userinfo
 
   - name: Build /home
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/home
+      chdir: /home/electra/server/frontend/home
 
   - name: Build /book
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/book
+      chdir: /home/electra/server/frontend/book_html
 
   - name: Build /author
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/author
+      chdir: /home/electra/server/frontend/author
 
   - name: Build /simulator
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/simulator
+      chdir: /home/electra/server/frontend/simulator
 
   - name: Build /designer
     become: true
     become_user: electra
     command: npm run build
     args:
-      chdir: /home/electra/server/designer
+      chdir: /home/electra/server/frontend/designer
 
   # The PRODUCTION secrets, not the dev ones from the project root. Both files
   # are git-ignored; this is the only one that ever reaches the server.
